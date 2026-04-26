@@ -3,6 +3,9 @@ config.json
 settings.json
 settings.json.bak
 
+# Installed by RTK — not part of this repo
+RTK.md
+
 # Keep example configs (shareable templates)
 !config.json.example
 !settings.json.example
