@@ -1,0 +1,92 @@
+{
+  "effortLevel": "high",
+  "env": {},
+  "additionalDirectories": [],
+  "statusLine": {
+    "type": "command",
+    "command": "printf '[%s] %s' \"$(basename \"$PWD\")\" \"$(git branch --show-current 2>/dev/null || echo no-git)\""
+  },
+  "permissions": {
+    "allow": [
+      "mcp__github__get_file_contents",
+      "mcp__github__get_me",
+      "mcp__github__search_repositories",
+      "mcp__github__list_commits",
+      "mcp__github__list_issues",
+      "mcp__github__list_branches",
+      "mcp__github__list_pull_requests",
+      "mcp__github__search_pull_requests",
+      "mcp__github__search_issues",
+      "mcp__github__search_code",
+      "mcp__github__issue_read",
+      "mcp__github__pull_request_read",
+      "mcp__github__pull_request_review_write",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs",
+      "Read(//root/.claude/**)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:docs.github.com)",
+      "WebFetch(domain:modelcontextprotocol.info)",
+      "Skill(humanizer)",
+      "Skill(humanizer:*)",
+      "Skill(github-comment)",
+      "Skill(github-comment:*)",
+      "Bash(npm install:*)",
+      "Bash(npm info:*)",
+      "Bash(npm list:*)",
+      "Bash(npx tsc:*)",
+      "Bash(uv run:*)",
+      "Bash(uv add:*)",
+      "Bash(make lint:*)",
+      "Bash(make check:*)",
+      "Bash(make test:*)",
+      "Bash(make format:*)",
+      "Bash(git log:*)",
+      "Bash(python3 -m json.tool)"
+    ],
+    "deny": [
+      "Read(/var/lib/docker/volumes/**)",
+      "Write(/var/lib/docker/volumes/**)",
+      "Edit(/var/lib/docker/volumes/**)",
+      "Bash(docker volume rm*)",
+      "Bash(docker volume prune*)",
+      "Bash(*docker*volume*remove*)",
+      "Bash(*docker*volume*delete*)",
+      "Bash(*docker-compose*down*-v*)",
+      "Bash(*docker*compose*down*--volumes*)",
+      "Bash(*docker*compose*down*-volumes*)",
+      "Bash(rm -rf */var/lib/docker/volumes*)",
+      "Bash(rm -rf */docker/volumes*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/format-on-edit.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/protect-docker-volumes.sh"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/secret-scan-on-commit.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
