@@ -1,0 +1,61 @@
+# Personal configuration
+config.json
+settings.json
+settings.json.bak
+
+# Keep example configs (shareable templates)
+!config.json.example
+!settings.json.example
+
+# Runtime caches
+mcp-needs-auth-cache.json
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Temporary/Working directories
+cache/
+backups/
+debug/
+file-history/
+ide/
+shell-snapshots/
+projects/
+plugins/
+
+# Memory and state (personal data, but templates are tracked)
+memory/*.md
+!memory/*.template.md
+!memory/README.md
+plans/
+
+# History
+history.jsonl
+
+# Credentials and sessions (sensitive data)
+.credentials.json
+sessions/
+
+# Skills: only personal skills are tracked.
+# Anything else under skills/ (gstack-installed, third-party plugins, etc.) is ignored.
+# When adding a new personal skill, append a `!skills/<name>/` line below.
+skills/*
+!skills/add-mcp/
+!skills/blog-from-chat/
+!skills/find-issues/
+!skills/find-repos/
+!skills/github-comment/
+!skills/github-profile-blog/
+!skills/humanizer/
+!skills/linkedin-post/
+!skills/pr-followup/
+!skills/solve-issue/
+
+# Node.js/Bun (inside gstack)
+node_modules/
+.bun/
+
+# Usage Data
+usage-data/

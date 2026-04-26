@@ -1,0 +1,23 @@
+{
+  "user": {
+    "name": "Your Name",
+    "username": "your-github-username",
+    "email": "your-email@example.com"
+  },
+  "profiles": {
+    "github": "https://github.com/your-github-username",
+    "website": "https://your-website.com",
+    "blog": "https://your-blog.com"
+  },
+  "paths": {
+    "blog_dir": "/path/to/your/blog/directory",
+    "memory_dir": "/root/.claude/memory",
+    "utils_dir": "/root/.claude/utils"
+  },
+  "blog": {
+    "default_language": "en",
+    "scan_days_ago": 60,
+    "posts_dir": "_posts",
+    "images_dir": "assets/img"
+  }
+}
