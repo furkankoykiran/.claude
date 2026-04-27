@@ -12,6 +12,7 @@ RTK.md
 
 # Runtime caches
 mcp-needs-auth-cache.json
+.cache/
 
 # Python cache
 __pycache__/
@@ -53,6 +54,7 @@ skills/*
 !skills/github-profile-blog/
 !skills/humanizer/
 !skills/linkedin-post/
+!skills/manim-narration/
 !skills/pr-followup/
 !skills/solve-issue/
 
