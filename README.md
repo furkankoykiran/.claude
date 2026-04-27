@@ -35,7 +35,14 @@ they're already in `.gitignore`.
    (`/qa`, `/review`, `/ship`, `/browse`, `/retro`, etc.) into `~/.claude/skills/`
 5. Installs [rtk](https://github.com/rtk-ai/rtk) if missing and runs `rtk init -g`
    to wire its PreToolUse hook into `~/.claude/settings.json`
-6. Optionally prompts to configure two portable MCP servers (`github`, `context7`)
+6. Installs Python deps (`manim`, `edge-tts`) via `pip install --user`, and
+   `ffmpeg`/`ffprobe` via `apt-get` or `brew` if missing
+7. Clones MIT-licensed [`adithya-s-k/manim_skill`](https://github.com/adithya-s-k/manim_skill)
+   and copies its three skills (`manimce-best-practices`, `manimgl-best-practices`,
+   `manim-composer`) into `~/.claude/skills/`, alongside the locally-authored
+   `manim-narration` skill that adds edge-tts narration plus a `/browse`-driven
+   screenshot pipeline
+8. Optionally prompts to configure two portable MCP servers (`github`, `context7`)
    via `scripts/setup-mcp.sh`
 
 Re-running is safe — every step checks "already done?" first.
