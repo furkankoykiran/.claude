@@ -64,3 +64,8 @@ node_modules/
 
 # Usage Data
 usage-data/
+
+# graphify runtime output (generated per-project on demand, not tracked)
+graphify-out/
+.graphify/
+.graphify_*.json
