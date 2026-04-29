@@ -230,7 +230,27 @@ install_manim_upstream() {
 }
 
 # ---------------------------------------------------------------------------
-# 8. Optional: configure portable MCP servers (github, context7)
+# 8. Install graphify (safishamsi/graphify) — knowledge-graph skill
+# ---------------------------------------------------------------------------
+install_graphify() {
+  # Ensure ~/.local/bin is on PATH (where pip --user lands the binary)
+  export PATH="$HOME/.local/bin:$PATH"
+
+  if ! command -v graphify >/dev/null 2>&1; then
+    log "Installing graphifyy (graphify CLI)"
+    if ! python3 -m pip install --user graphifyy; then
+      warn "graphifyy install failed. Install manually: python3 -m pip install --user graphifyy"
+      return 0
+    fi
+  fi
+
+  log "Wiring graphify skill into Claude Code"
+  graphify install \
+    || warn "graphify install returned non-zero — check $CLAUDE_DIR/skills/graphify/"
+}
+
+# ---------------------------------------------------------------------------
+# 9. Optional: configure portable MCP servers (github, context7)
 # ---------------------------------------------------------------------------
 maybe_setup_mcp() {
   local script="$CLAUDE_DIR/scripts/setup-mcp.sh"
@@ -262,6 +282,7 @@ main() {
   install_rtk
   ensure_manim_deps
   install_manim_upstream
+  install_graphify
   maybe_setup_mcp
 
   cat <<EOF
