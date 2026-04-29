@@ -93,3 +93,6 @@ Use `@`-imports in project-level `CLAUDE.md`:
 ## CLI Token Optimization
 This setup uses [rtk](https://github.com/rtk-ai/rtk) — a transparent CLI proxy that filters and summarizes shell-tool output before it reaches the model context. Most rewrites happen via a PreToolUse hook (no action needed); a few meta commands (`rtk gain`, `rtk discover`) you call directly.
 Reference: @RTK.md
+# graphify
+- **graphify** (`~/.claude/skills/graphify/SKILL.md`) - any input to knowledge graph. Trigger: `/graphify`
+When the user types `/graphify`, invoke the Skill tool with `skill: "graphify"` before doing anything else.
