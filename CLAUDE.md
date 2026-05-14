@@ -19,6 +19,13 @@ Edit `~/.claude/config.json` with your profile (user, profiles, paths). Schema l
 - **Verification discipline**: run build + lint + typecheck + tests before claiming "done." But don't run extra verification the user didn't request after a config-only edit.
 - **Mega-prompt handling**: when a single prompt bundles 5+ tasks, first output a sequenced continuation-prompt plan (one prompt per task, each ending in a merged PR with passing CI). Wait for `go` before executing prompt 1.
 
+## Coding Discipline (Karpathy)
+Full reference: @docs/karpathy-guidelines.md (derived from [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills))
+- **Think before coding**: state assumptions, present alternatives, push back, stop and ask when confused.
+- **Simplicity first**: minimum code; no speculative abstractions, flags, or error handling for impossible cases. If 200 lines could be 50, rewrite.
+- **Surgical changes**: every changed line must trace to the request. Don't touch adjacent code or refactor unprompted.
+- **Goal-driven execution**: turn imperatives into verifiable goals (e.g. "fix bug" → "write a failing test, then pass it"). State a numbered plan with explicit verify steps for multi-step work.
+
 ## GitHub Workflow
 Full reference: @docs/github-workflow.md
 - **GitHub MCP first** for collaboration (PRs, issues, comments, reviews). `gh` CLI is fallback only.
