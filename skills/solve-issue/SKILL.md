@@ -13,7 +13,7 @@ Solve the GitHub issue at `$ISSUE_URL` and create a pull request.
 - **Target**: All commits/pushes go to your fork, PR opens to original repository
 
 ## GitHub Tools
-- **GitHub MCP**: Preferred - see @docs/github-workflow.md for complete tool reference
+- **GitHub MCP**: Preferred for collaboration (PRs, issues, comments, reviews). Tool names follow `mcp__github__*`.
 - **gh CLI**: Fallback when MCP unavailable - `gh --help` for commands
 - Check auth: `gh auth status`
 

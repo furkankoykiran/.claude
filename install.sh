@@ -103,7 +103,7 @@ install_rtk() {
     # rtk lands in ~/.local/bin; make sure it's on PATH for the rest of this script
     export PATH="$HOME/.local/bin:$PATH"
   fi
-  log "Initializing rtk hook (--hook-only --auto-patch: skips RTK.md/CLAUDE.md, this repo owns both)"
+  log "Initializing rtk hook (--hook-only --auto-patch: writes the PreToolUse hook to settings.json only; CLAUDE.md is owned by this repo)"
   rtk init -g --hook-only --auto-patch \
     || warn "rtk init returned non-zero — inspect ~/.claude/settings.json"
 }

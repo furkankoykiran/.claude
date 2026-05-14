@@ -21,7 +21,7 @@ Before searching for issues, dynamically discover my current interests:
 5. Infer interests dynamically - don't use static assumptions
 
 ## GitHub Tools
-- **GitHub MCP**: Preferred - see @docs/github-workflow.md for complete tool reference
+- **GitHub MCP**: Preferred for collaboration (PRs, issues, comments, reviews). Tool names follow `mcp__github__*`.
 - **gh CLI**: Fallback when MCP unavailable - `gh --help` for commands
 
 ## Search Steps
