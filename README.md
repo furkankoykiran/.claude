@@ -87,12 +87,10 @@ rm -rf ~/.claude ~/.claude.json ~/.gstack
 
 ```
 .
-├── CLAUDE.md                # global instructions (loaded at session start)
-├── RTK.md                   # rtk usage notes (imported by CLAUDE.md)
+├── CLAUDE.md                # global instructions (loaded at session start, ~95 lines)
 ├── agents/                  # custom subagents (researcher, code-reviewer, ...)
-├── docs/                    # reference docs imported by CLAUDE.md
 ├── hooks/                   # PreToolUse / PostToolUse / pre-push hooks
-├── skills/                  # personal slash commands
+├── skills/                  # personal + upstream slash commands (gstack, manim, graphify, ...)
 ├── scripts/                 # helpers (setup-mcp.sh, ...)
 ├── utils/                   # Python utilities (blog-scan, github-scan, ...)
 ├── memory/                  # per-user memory templates
@@ -100,6 +98,8 @@ rm -rf ~/.claude ~/.claude.json ~/.gstack
 ├── settings.json.example    # template for ~/.claude/settings.json
 └── install.sh               # the bootstrap entrypoint
 ```
+
+CLAUDE.md is intentionally kept tight (under Anthropic's 200-line target). Domain-specific knowledge lives in skills (loaded on demand), not in CLAUDE.md.
 
 ## License
 
