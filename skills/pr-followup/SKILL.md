@@ -12,7 +12,7 @@ Analyze the pull request at `$PR_URL` and take any necessary action based on the
 - **Target**: All commits/pushes go to your fork, PR updates the existing PR
 
 ## GitHub Tools
-- **GitHub MCP**: Preferred - see @docs/github-workflow.md for complete tool reference
+- **GitHub MCP**: Preferred for collaboration (PRs, issues, comments, reviews). Tool names follow `mcp__github__*`.
 - **gh CLI**: Fallback when MCP unavailable - `gh --help` for commands
 
 ## Steps
