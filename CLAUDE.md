@@ -8,7 +8,7 @@ Edit `~/.claude/config.json` with your profile (user, profiles, paths). Schema l
 
 ## Coding Discipline (CRITICAL — applies to every task)
 
-Derived from [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) and personal experience. Bias: caution over speed. For trivial tasks (typo fixes, one-liners), use judgment.
+Derived from [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) and personal experience. Bias: caution over speed. For trivial tasks (typo fixes, one-liners), use judgment. Full upstream text lives in `/karpathy-guidelines` skill.
 
 **Think before coding.** State assumptions explicitly. If multiple interpretations exist, present them — don't pick silently. Push back when a simpler approach exists. Stop and ask when confused; don't paper over ambiguity.
 

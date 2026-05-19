@@ -42,7 +42,13 @@ they're already in `.gitignore`.
    `manim-composer`) into `~/.claude/skills/`, alongside the locally-authored
    `manim-narration` skill that adds edge-tts narration plus a `/browse`-driven
    screenshot pipeline
-8. Optionally prompts to configure two portable MCP servers (`github`, `context7`)
+8. Clones four more upstream skill packs into `~/.claude/skills/` (each
+   gitignored, auto-discovered by Claude Code):
+   - [`multica-ai/andrej-karpathy-skills`](https://github.com/multica-ai/andrej-karpathy-skills) — `karpathy-guidelines` (the full text behind the Coding Discipline section in `CLAUDE.md`)
+   - [`coreyhaines31/marketingskills`](https://github.com/coreyhaines31/marketingskills) — ~40 marketing skills: `ads`, `cro`, `copywriting`, `seo-audit`, `analytics`, `pricing`, `launch`, `onboarding`, `community-marketing`, …
+   - [`pbakaus/impeccable`](https://github.com/pbakaus/impeccable) — premium frontend design skill with 7 domain references and anti-pattern rules
+   - [`Leonxlnx/taste-skill`](https://github.com/Leonxlnx/taste-skill) — anti-slop frontend pack: `taste-skill`, `gpt-tasteskill`, `brutalist-skill`, `minimalist-skill`, `soft-skill`, `redesign-skill`, `image-to-code-skill`, `output-skill`, `brandkit`, `stitch-skill`, `imagegen-frontend-web`, `imagegen-frontend-mobile`
+9. Optionally prompts to configure two portable MCP servers (`github`, `context7`)
    via `scripts/setup-mcp.sh`
 
 Re-running is safe — every step checks "already done?" first.
