@@ -2,6 +2,7 @@
 config.json
 settings.json
 settings.json.bak
+settings.json.backup.*
 
 # Installed by RTK — not part of this repo
 RTK.md
@@ -69,3 +70,7 @@ usage-data/
 graphify-out/
 .graphify/
 .graphify_*.json
+
+# Local-only state we never want committed
+.last-cleanup
+.contextify/
