@@ -15,6 +15,10 @@ CLAUDE_DIR="${CLAUDE_DIR:-$HOME/.claude}"
 GSTACK_REPO="https://github.com/garrytan/gstack.git"
 RTK_INSTALLER="https://raw.githubusercontent.com/rtk-ai/rtk/master/install.sh"
 MANIM_UPSTREAM_REPO="https://github.com/adithya-s-k/manim_skill.git"
+KARPATHY_REPO="https://github.com/multica-ai/andrej-karpathy-skills.git"
+MARKETING_REPO="https://github.com/coreyhaines31/marketingskills.git"
+IMPECCABLE_REPO="https://github.com/pbakaus/impeccable.git"
+TASTE_REPO="https://github.com/Leonxlnx/taste-skill.git"
 
 log()  { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m!!\033[0m %s\n'  "$*" >&2; }
@@ -230,6 +234,133 @@ install_manim_upstream() {
 }
 
 # ---------------------------------------------------------------------------
+# 7b. Karpathy coding-discipline skill (multica-ai/andrej-karpathy-skills)
+#     CLAUDE.md inlines the four principles for always-on guidance; this
+#     skill ships the full upstream text so it can be invoked on demand and
+#     stay in sync with upstream edits.
+# ---------------------------------------------------------------------------
+install_karpathy_skill() {
+  local stage="$CLAUDE_DIR/skills/.karpathy_upstream_src"
+  if [ ! -d "$stage/.git" ]; then
+    log "Cloning multica-ai/andrej-karpathy-skills into $stage"
+    git clone --depth 1 "$KARPATHY_REPO" "$stage"
+  else
+    log "Updating andrej-karpathy-skills"
+    git -C "$stage" fetch origin --depth 1 >/dev/null 2>&1 || true
+    git -C "$stage" reset --hard origin/HEAD >/dev/null 2>&1 \
+      || warn "karpathy upstream pull failed — continuing"
+  fi
+  local target="$CLAUDE_DIR/skills/karpathy-guidelines"
+  if [ -d "$stage/skills/karpathy-guidelines" ]; then
+    mkdir -p "$target"
+    cp -r "$stage/skills/karpathy-guidelines/." "$target/"
+    cp "$stage/README.md" "$target/UPSTREAM_README.md" 2>/dev/null || true
+    log "Synced upstream skill: karpathy-guidelines"
+  else
+    warn "Upstream skill not found in clone: karpathy-guidelines"
+  fi
+}
+
+# ---------------------------------------------------------------------------
+# 7c. Marketing skills collection (coreyhaines31/marketingskills)
+#     Installs the entire skills/ tree (~40 skills: cro, copywriting, ads,
+#     seo-audit, analytics, …). Touches a marker file so re-runs cleanly
+#     overwrite their own dirs but never clobber unrelated user skills.
+# ---------------------------------------------------------------------------
+install_marketing_skills() {
+  local stage="$CLAUDE_DIR/skills/.marketing_upstream_src"
+  if [ ! -d "$stage/.git" ]; then
+    log "Cloning coreyhaines31/marketingskills into $stage"
+    git clone --depth 1 "$MARKETING_REPO" "$stage"
+  else
+    log "Updating coreyhaines31/marketingskills"
+    git -C "$stage" fetch origin --depth 1 >/dev/null 2>&1 || true
+    git -C "$stage" reset --hard origin/HEAD >/dev/null 2>&1 \
+      || warn "marketingskills upstream pull failed — continuing"
+  fi
+  local count=0
+  local sd name target
+  for sd in "$stage"/skills/*/; do
+    name=$(basename "$sd")
+    target="$CLAUDE_DIR/skills/$name"
+    if [ -d "$target" ] && [ ! -f "$target/.from_marketing" ]; then
+      warn "skipping collision (not from marketingskills): $name"
+      continue
+    fi
+    mkdir -p "$target"
+    cp -r "$sd"/. "$target/"
+    touch "$target/.from_marketing"
+    [ -f "$stage/LICENSE" ] && cp "$stage/LICENSE" "$target/UPSTREAM_LICENSE"
+    count=$((count+1))
+  done
+  log "Synced $count marketingskills"
+}
+
+# ---------------------------------------------------------------------------
+# 7d. Impeccable frontend-design skill (pbakaus/impeccable)
+#     Repo bundles a ready Claude-Code distribution at .claude/skills/impeccable
+# ---------------------------------------------------------------------------
+install_impeccable_skill() {
+  local stage="$CLAUDE_DIR/skills/.impeccable_upstream_src"
+  if [ ! -d "$stage/.git" ]; then
+    log "Cloning pbakaus/impeccable into $stage"
+    git clone --depth 1 "$IMPECCABLE_REPO" "$stage"
+  else
+    log "Updating pbakaus/impeccable"
+    git -C "$stage" fetch origin --depth 1 >/dev/null 2>&1 || true
+    git -C "$stage" reset --hard origin/HEAD >/dev/null 2>&1 \
+      || warn "impeccable upstream pull failed — continuing"
+  fi
+  local src="$stage/.claude/skills/impeccable"
+  local target="$CLAUDE_DIR/skills/impeccable"
+  if [ -d "$src" ]; then
+    mkdir -p "$target"
+    cp -r "$src"/. "$target/"
+    [ -f "$stage/LICENSE" ]   && cp "$stage/LICENSE"   "$target/UPSTREAM_LICENSE"
+    [ -f "$stage/NOTICE.md" ] && cp "$stage/NOTICE.md" "$target/UPSTREAM_NOTICE.md"
+    log "Synced upstream skill: impeccable"
+  else
+    warn "impeccable upstream layout changed — $src missing"
+  fi
+}
+
+# ---------------------------------------------------------------------------
+# 7e. Taste-skill collection (Leonxlnx/taste-skill)
+#     Anti-slop frontend skills: taste-skill, gpt-tasteskill, brutalist-skill,
+#     minimalist-skill, soft-skill, redesign-skill, image-to-code-skill,
+#     output-skill, brandkit, stitch-skill, imagegen-frontend-{web,mobile}.
+# ---------------------------------------------------------------------------
+install_taste_skills() {
+  local stage="$CLAUDE_DIR/skills/.taste_upstream_src"
+  if [ ! -d "$stage/.git" ]; then
+    log "Cloning Leonxlnx/taste-skill into $stage"
+    git clone --depth 1 "$TASTE_REPO" "$stage"
+  else
+    log "Updating Leonxlnx/taste-skill"
+    git -C "$stage" fetch origin --depth 1 >/dev/null 2>&1 || true
+    git -C "$stage" reset --hard origin/HEAD >/dev/null 2>&1 \
+      || warn "taste-skill upstream pull failed — continuing"
+  fi
+  local count=0
+  local sd name target
+  for sd in "$stage"/skills/*/; do
+    name=$(basename "$sd")
+    [ -f "$sd/SKILL.md" ] || continue
+    target="$CLAUDE_DIR/skills/$name"
+    if [ -d "$target" ] && [ ! -f "$target/.from_taste" ]; then
+      warn "skipping collision (not from taste-skill): $name"
+      continue
+    fi
+    mkdir -p "$target"
+    cp -r "$sd"/. "$target/"
+    touch "$target/.from_taste"
+    [ -f "$stage/LICENSE" ] && cp "$stage/LICENSE" "$target/UPSTREAM_LICENSE"
+    count=$((count+1))
+  done
+  log "Synced $count taste skills"
+}
+
+# ---------------------------------------------------------------------------
 # 8. Install graphify (safishamsi/graphify) — knowledge-graph skill
 # ---------------------------------------------------------------------------
 install_graphify() {
@@ -282,6 +413,10 @@ main() {
   install_rtk
   ensure_manim_deps
   install_manim_upstream
+  install_karpathy_skill
+  install_marketing_skills
+  install_impeccable_skill
+  install_taste_skills
   install_graphify
   maybe_setup_mcp
 
