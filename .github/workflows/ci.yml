@@ -18,7 +18,7 @@ jobs:
     name: Lint shell scripts
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Run shellcheck
         run: |
           sudo apt-get update
@@ -29,7 +29,7 @@ jobs:
     name: Lint install.ps1 (PSScriptAnalyzer)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Run PSScriptAnalyzer
         shell: pwsh
         run: |
@@ -54,7 +54,7 @@ jobs:
         run: |
           apt-get update
           apt-get install -y git
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install bootstrap prerequisites
         run: apt-get install -y curl unzip xz-utils ca-certificates
       # Use $GITHUB_WORKSPACE (the env var), not ${{ github.workspace }}: inside a
