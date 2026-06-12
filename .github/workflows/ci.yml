@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  shellcheck:
+    name: Lint shell scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run shellcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+          shellcheck install.sh hooks/*.sh scripts/*.sh
+
+  powershell:
+    name: Lint install.ps1 (PSScriptAnalyzer)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Set-PSRepository PSGallery -InstallationPolicy Trusted
+          Install-Module PSScriptAnalyzer -Force -Scope CurrentUser
+          $results = Invoke-ScriptAnalyzer -Path ./install.ps1 -Settings ./PSScriptAnalyzerSettings.psd1
+          if ($results) {
+            $results | Format-Table -AutoSize RuleName, Severity, Line, Message | Out-String | Write-Host
+            Write-Error "PSScriptAnalyzer reported $($results.Count) issue(s)."
+            exit 1
+          }
+          Write-Host "PSScriptAnalyzer: clean"
+
+  install-smoke:
+    name: Install smoke test + Chromium launch (ubuntu:24.04)
+    runs-on: ubuntu-latest
+    container: ubuntu:24.04
+    timeout-minutes: 25
+    steps:
+      # ubuntu:24.04 is bare — git must exist before actions/checkout runs.
+      - name: Install git for checkout
+        run: |
+          apt-get update
+          apt-get install -y git
+      - uses: actions/checkout@v4
+      - name: Install bootstrap prerequisites
+        run: apt-get install -y curl unzip xz-utils ca-certificates
+      # Use $GITHUB_WORKSPACE (the env var), not ${{ github.workspace }}: inside a
+      # container the context expression can resolve to the runner-host path,
+      # while the env var is the container mount (/__w/...). They must match the
+      # path install.sh actually wrote to.
+      - name: Run install.sh against the checked-out code (minimal, no git sync)
+        run: |
+          export CLAUDE_DIR="$GITHUB_WORKSPACE"
+          export CLAUDE_BOOTSTRAP_MINIMAL=1
+          export CLAUDE_BOOTSTRAP_NO_SYNC=1
+          ./install.sh
+      # The real regression guard: the original bug was Chromium downloading but
+      # failing to launch (libatk-1.0.so.0 missing). install.sh is fail-soft, so
+      # it exits 0 even if the browser broke — this step is what turns CI red if
+      # the fix ever regresses.
+      - name: Assert Chromium can actually launch
+        run: |
+          export PATH="$HOME/.bun/bin:$PATH"
+          cd "$GITHUB_WORKSPACE/skills/gstack"
+          bun --eval 'import { chromium } from "playwright"; const b = await chromium.launch(); await b.close(); console.log("CHROMIUM_OK");'

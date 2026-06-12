@@ -1,0 +1,8 @@
+# ShellCheck configuration for this repo.
+# Our scripts use bash features; analyze them as bash regardless of how they're
+# invoked. CI runs: shellcheck install.sh hooks/*.sh scripts/*.sh
+shell=bash
+
+# Allow following `source`d files when they can't be resolved statically
+# (e.g. paths built at runtime). Avoids noisy SC1091 on optional includes.
+external-sources=true
