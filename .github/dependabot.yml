@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # Only GitHub Actions versions are tracked here — the language toolchains
+  # (bun, rtk, gstack, pip packages) are installed at bootstrap from upstream,
+  # not pinned in a manifest in this repo.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: chore
+    labels:
+      - dependencies
