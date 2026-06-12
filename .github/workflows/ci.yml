@@ -57,12 +57,16 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install bootstrap prerequisites
         run: apt-get install -y curl unzip xz-utils ca-certificates
+      # Use $GITHUB_WORKSPACE (the env var), not ${{ github.workspace }}: inside a
+      # container the context expression can resolve to the runner-host path,
+      # while the env var is the container mount (/__w/...). They must match the
+      # path install.sh actually wrote to.
       - name: Run install.sh against the checked-out code (minimal, no git sync)
-        env:
-          CLAUDE_DIR: ${{ github.workspace }}
-          CLAUDE_BOOTSTRAP_MINIMAL: "1"
-          CLAUDE_BOOTSTRAP_NO_SYNC: "1"
-        run: ./install.sh
+        run: |
+          export CLAUDE_DIR="$GITHUB_WORKSPACE"
+          export CLAUDE_BOOTSTRAP_MINIMAL=1
+          export CLAUDE_BOOTSTRAP_NO_SYNC=1
+          ./install.sh
       # The real regression guard: the original bug was Chromium downloading but
       # failing to launch (libatk-1.0.so.0 missing). install.sh is fail-soft, so
       # it exits 0 even if the browser broke — this step is what turns CI red if
@@ -70,5 +74,5 @@ jobs:
       - name: Assert Chromium can actually launch
         run: |
           export PATH="$HOME/.bun/bin:$PATH"
-          cd "${{ github.workspace }}/skills/gstack"
+          cd "$GITHUB_WORKSPACE/skills/gstack"
           bun --eval 'import { chromium } from "playwright"; const b = await chromium.launch(); await b.close(); console.log("CHROMIUM_OK");'
