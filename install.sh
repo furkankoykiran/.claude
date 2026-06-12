@@ -6,7 +6,21 @@
 #   # or, after cloning manually:
 #   cd ~/.claude && ./install.sh
 #
-# Idempotent: safe to re-run. Each step checks "already done?" before acting.
+# Platforms: Linux and macOS (and Windows via Git Bash / WSL). For native
+# Windows PowerShell, use install.ps1 instead.
+#
+# Environment knobs:
+#   CLAUDE_DIR=/path             Install target (default: ~/.claude)
+#   CLAUDE_BOOTSTRAP_MINIMAL=1   Core install only (configs + gstack + rtk);
+#                                skips the heavy upstream skill packs and manim.
+#                                Useful for CI and lean setups.
+#   CLAUDE_BOOTSTRAP_NO_SYNC=1   Use the working tree as-is; skip the git
+#                                fetch/reset. For testing local changes, CI, and
+#                                offline installs.
+#
+# Resilience: every step except the git/curl prerequisites is fail-soft. A
+# failing optional step (e.g. the headless browser) is reported at the end and
+# never aborts the whole bootstrap. Re-running is always safe (idempotent).
 
 set -euo pipefail
 
@@ -23,6 +37,122 @@ TASTE_REPO="https://github.com/Leonxlnx/taste-skill.git"
 log()  { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m!!\033[0m %s\n'  "$*" >&2; }
 die()  { printf '\033[1;31mxx\033[0m %s\n'  "$*" >&2; exit 1; }
+
+# ---------------------------------------------------------------------------
+# Fail-soft step runner
+# ---------------------------------------------------------------------------
+# Only git + curl are hard requirements. Everything else is optional: a tool
+# that won't install, a browser that won't launch, a skill pack that moved —
+# none of these should sink the entire bootstrap. run_step runs an optional
+# step, records (but swallows) its failure, and lets the script continue. The
+# summary at the end lists what was skipped so nothing fails silently.
+FAILED_STEPS=()
+run_step() {
+  local label="$1"; shift
+  if "$@"; then
+    return 0
+  fi
+  warn "step skipped/failed: $label (continuing — see summary at the end)"
+  FAILED_STEPS+=("$label")
+  return 0
+}
+
+# Echo the privilege-escalation prefix for package installs: empty when already
+# root, "sudo" when sudo is available, non-zero exit when neither (caller skips).
+_root_prefix() {
+  if [ "$(id -u)" -eq 0 ]; then
+    printf ''
+  elif command -v sudo >/dev/null 2>&1; then
+    printf 'sudo'
+  else
+    return 1
+  fi
+}
+
+# Install apt packages best-effort. Rather than pre-checking with apt-cache
+# (which misreports virtual packages — e.g. libasound2 on Ubuntu 24.04 looks
+# present via `apt-cache show` but has no install candidate), we ask apt to
+# install directly and let it be the source of truth. For each package we try
+# the base name, then the t64 ABI-renamed variant (24.04+ renamed libasound2 ->
+# libasound2t64, etc.). A package that won't install is skipped, never fatal.
+apt_install_best_effort() {
+  local as_root; as_root="$(_root_prefix)" || return 1
+  local want=() p
+  for p in "$@"; do
+    dpkg -s "$p" >/dev/null 2>&1 && continue
+    dpkg -s "${p}t64" >/dev/null 2>&1 && continue
+    want+=("$p")
+  done
+  [ ${#want[@]} -eq 0 ] && return 0
+
+  # Fast path: one shot with the base names. Succeeds on releases without the
+  # t64 rename (Debian 12, Ubuntu 22.04).
+  # shellcheck disable=SC2086  # $as_root is intentionally word-split (empty when root)
+  $as_root apt-get install -y --no-install-recommends "${want[@]}" >/dev/null 2>&1 && return 0
+
+  # Slow path (e.g. Ubuntu 24.04 t64 renames, or one bad package): per-package,
+  # base name then t64 fallback, so one failure can't block the rest.
+  warn "browser-deps batch install failed — retrying per package (with t64 fallback)"
+  for p in "${want[@]}"; do
+    dpkg -s "$p" >/dev/null 2>&1 && continue
+    dpkg -s "${p}t64" >/dev/null 2>&1 && continue
+    # shellcheck disable=SC2086
+    $as_root apt-get install -y --no-install-recommends "$p" >/dev/null 2>&1 && continue
+    # shellcheck disable=SC2086
+    $as_root apt-get install -y --no-install-recommends "${p}t64" >/dev/null 2>&1 && continue
+    warn "could not install $p (or ${p}t64) — skipping"
+  done
+  return 0
+}
+
+# ---------------------------------------------------------------------------
+# Ensure Chromium's runtime system libraries are present (Linux only)
+# ---------------------------------------------------------------------------
+# THE FIX for the classic "gstack setup failed: Playwright Chromium could not be
+# launched" error on clean Linux servers/containers. The bun/npm playwright
+# package downloads the Chromium *binary* but NOT the OS-level .so libraries it
+# dlopen()s at launch (libatk-1.0.so.0, libnss3, libcups, ...). Without them the
+# browser is present but cannot start. macOS and Windows bundle these; only
+# Linux needs the explicit install. We install them proactively, before gstack's
+# setup runs, so the failure never happens. install_gstack also retries with
+# Playwright's own version-aware `install-deps` if setup still fails.
+ensure_browser_deps() {
+  [ "$(uname -s)" = "Linux" ] || return 0
+  if ! command -v apt-get >/dev/null 2>&1; then
+    warn "Chromium needs GTK/graphics libraries but this Linux has no apt-get."
+    warn "If /browse, /qa, or screenshots fail later, install them manually"
+    warn "(see the Troubleshooting section in README.md)."
+    return 0
+  fi
+  local as_root
+  if ! as_root="$(_root_prefix)"; then
+    warn "Not root and no sudo — skipping Chromium system-library install."
+    warn "If the headless browser fails later, run as root:"
+    warn "  cd $CLAUDE_DIR/skills/gstack && bunx playwright install-deps chromium"
+    return 0
+  fi
+
+  # Runtime libraries Chromium dlopen()s at launch. Names track Debian 12 /
+  # Ubuntu 22.04; apt_install_best_effort maps to the t64 variants on 24.04+.
+  local libs=(
+    libglib2.0-0 libnss3 libnspr4 libdbus-1-3 libatk1.0-0 libatk-bridge2.0-0
+    libcups2 libdrm2 libatspi2.0-0 libx11-6 libxcomposite1 libxdamage1
+    libxext6 libxfixes3 libxrandr2 libxcb1 libxkbcommon0 libpango-1.0-0
+    libcairo2 libasound2 libgbm1
+  )
+
+  # If every lib is already present, skip the slow `apt-get update`.
+  local need=0 p
+  for p in "${libs[@]}"; do
+    dpkg -s "$p" >/dev/null 2>&1 || dpkg -s "${p}t64" >/dev/null 2>&1 || { need=1; break; }
+  done
+  [ "$need" -eq 0 ] && return 0
+
+  log "Installing Chromium system libraries (prevents 'libatk-1.0.so.0' launch failures)"
+  # shellcheck disable=SC2086
+  $as_root apt-get update -y >/dev/null 2>&1 || warn "apt-get update failed — attempting install anyway"
+  apt_install_best_effort "${libs[@]}"
+}
 
 # ---------------------------------------------------------------------------
 # 1. Sync ~/.claude with the remote repo
@@ -74,7 +204,9 @@ ensure_bun() {
   fi
   log "Installing bun (required by gstack)"
   if ! curl -fsSL https://bun.sh/install | bash; then
-    die "bun install failed. Install manually from https://bun.sh and re-run."
+    warn "bun install failed. gstack/browser skills need it — install manually"
+    warn "from https://bun.sh and re-run. Continuing with the rest of the setup."
+    return 1
   fi
   export PATH="$HOME/.bun/bin:$PATH"
 }
@@ -91,8 +223,32 @@ install_gstack() {
     log "Updating gstack"
     git -C "$gstack_dir" pull --ff-only origin main || warn "gstack pull failed — continuing"
   fi
+
+  # Make sure Chromium can actually launch BEFORE setup tries to use it. This is
+  # the proactive half of the libatk fix; the retry below is the reactive half.
+  ensure_browser_deps || warn "browser dependency pre-install hit an issue — continuing"
+
   log "Running gstack setup"
-  (cd "$gstack_dir" && ./setup --no-prefix)
+  if (cd "$gstack_dir" && ./setup --no-prefix); then
+    return 0
+  fi
+
+  # Setup failed. On Linux the usual cause is Chromium present but unable to
+  # launch because a system library is still missing (e.g. a newer Ubuntu our
+  # curated list didn't cover). Repair with Playwright's own version-aware
+  # installer — node_modules exists now, so it's available — then retry once.
+  warn "gstack setup failed once — repairing Playwright deps and retrying"
+  local as_root; as_root="$(_root_prefix || true)"
+  # shellcheck disable=SC2086
+  (cd "$gstack_dir" && $as_root env "PATH=$PATH" bunx playwright install-deps chromium) \
+    || warn "playwright install-deps failed (need root/apt?) — see README troubleshooting"
+
+  if (cd "$gstack_dir" && ./setup --no-prefix); then
+    return 0
+  fi
+  warn "gstack setup still failing — browser skills (/browse, /qa, screenshots) may not work."
+  warn "Fix later: cd $gstack_dir && sudo bunx playwright install-deps chromium && ./setup --no-prefix"
+  return 1
 }
 
 # ---------------------------------------------------------------------------
@@ -403,21 +559,34 @@ maybe_setup_mcp() {
 # ---------------------------------------------------------------------------
 
 main() {
+  # The only hard requirements. Everything below is fail-soft via run_step.
   command -v git  >/dev/null || die "git is required"
   command -v curl >/dev/null || die "curl is required"
 
-  sync_repo
-  seed_configs
-  ensure_bun
-  install_gstack
-  install_rtk
-  ensure_manim_deps
-  install_manim_upstream
-  install_karpathy_skill
-  install_marketing_skills
-  install_impeccable_skill
-  install_taste_skills
-  install_graphify
+  # Core: the repo itself, personal configs, the runtime gstack needs.
+  if [ "${CLAUDE_BOOTSTRAP_NO_SYNC:-0}" = "1" ]; then
+    log "CLAUDE_BOOTSTRAP_NO_SYNC=1 — using the working tree as-is (skipping git sync)"
+  else
+    sync_repo
+  fi
+  run_step "config seeding"   seed_configs
+  run_step "bun"              ensure_bun
+  run_step "gstack + browser" install_gstack
+  run_step "rtk"              install_rtk
+
+  # Optional skill packs + heavy media deps. Skip in minimal mode (CI / lean).
+  if [ "${CLAUDE_BOOTSTRAP_MINIMAL:-0}" = "1" ]; then
+    log "CLAUDE_BOOTSTRAP_MINIMAL=1 — skipping manim + upstream skill packs"
+  else
+    run_step "manim deps"        ensure_manim_deps
+    run_step "manim skills"      install_manim_upstream
+    run_step "karpathy skill"    install_karpathy_skill
+    run_step "marketing skills"  install_marketing_skills
+    run_step "impeccable skill"  install_impeccable_skill
+    run_step "taste skills"      install_taste_skills
+    run_step "graphify"          install_graphify
+  fi
+
   maybe_setup_mcp
 
   cat <<EOF
@@ -429,6 +598,17 @@ Next steps:
   2. Restart Claude Code to load skills, agents, and hooks.
   3. Re-run ./install.sh anytime to update — it's idempotent.
 EOF
+
+  if [ ${#FAILED_STEPS[@]} -gt 0 ]; then
+    printf '\n'
+    warn "${#FAILED_STEPS[@]} optional step(s) were skipped or failed:"
+    local s
+    for s in "${FAILED_STEPS[@]}"; do
+      warn "  - $s"
+    done
+    warn "These are non-fatal. See the Troubleshooting section in README.md,"
+    warn "fix the cause, and re-run ./install.sh (it's idempotent)."
+  fi
 }
 
 main "$@"
