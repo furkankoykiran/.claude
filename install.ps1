@@ -414,6 +414,55 @@ function Install-ImpeccableSkill {
     }
 }
 
+# Curated always-on subset from anthropics/skills (office docs + authoring +
+# meta). The rest of the repo stays on-demand via the plugin marketplace. Skips
+# `claude-api` (name-collides with an existing skill) and skills that overlap
+# existing packs (frontend-design, webapp-testing, canvas-design, algorithmic-art).
+function Install-AnthropicSkill {
+    $stage = Join-Path $ClaudeDir 'skills\.anthropic_upstream_src'
+    Update-SkillStage 'https://github.com/anthropics/skills.git' $stage
+    $count = 0
+    foreach ($name in @('docx', 'pdf', 'pptx', 'xlsx', 'mcp-builder', 'skill-creator', 'web-artifacts-builder', 'doc-coauthoring')) {
+        $src = Join-Path $stage "skills\$name"
+        if (-not (Test-Path (Join-Path $src 'SKILL.md'))) { Write-Warn "anthropic skill missing upstream: $name"; continue }
+        $dest = Join-Path $ClaudeDir "skills\$name"
+        if ((Test-Path $dest) -and -not (Test-Path (Join-Path $dest '.from_anthropic'))) {
+            Write-Warn "skipping collision (not from anthropics/skills): $name"
+            continue
+        }
+        Copy-SkillDir $src $name
+        New-Item -ItemType File -Force -Path (Join-Path $dest '.from_anthropic') | Out-Null
+        $lic = Join-Path $stage 'LICENSE'
+        if (Test-Path $lic) { Copy-Item $lic (Join-Path $dest 'UPSTREAM_LICENSE') -Force }
+        $count++
+    }
+    Write-Step "Synced $count anthropic skills (claude-api skipped: name collision)"
+}
+
+# Breadth without catalog bloat: registering a marketplace is free per session;
+# only INSTALLED plugins load. Register the big collections for on-demand use,
+# eagerly install a curated domain set (backend/data/cloud/CI-CD/database) that
+# fills gaps without conflicting with gstack. Fail-soft: needs the `claude` CLI.
+function Register-PluginMarketplace {
+    if (-not (Test-Command 'claude')) {
+        Write-Warn 'claude CLI not found - skipping plugin marketplaces. Re-run after Claude Code is installed.'
+        return
+    }
+    $existing = (claude plugin marketplace list 2>$null | Out-String)
+    # Third-party marketplaces: only add sources you trust (no built-in gate).
+    foreach ($repo in @('anthropics/skills', 'wshobson/agents', 'obra/superpowers', 'mukul975/Anthropic-Cybersecurity-Skills')) {
+        if ($existing -match [regex]::Escape($repo)) { continue }
+        claude plugin marketplace add $repo 2>$null
+        if ($LASTEXITCODE -ne 0) { Write-Warn "plugin marketplace add failed: $repo" }
+    }
+    # wshobson's marketplace name is 'claude-code-workflows' (NOT the repo name).
+    foreach ($p in @('backend-development', 'data-engineering', 'cloud-infrastructure', 'cicd-automation', 'database-design')) {
+        claude plugin install "$p@claude-code-workflows" 2>$null
+        if ($LASTEXITCODE -ne 0) { Write-Warn "plugin install failed: $p@claude-code-workflows" }
+    }
+    Write-Step 'Plugin marketplaces registered; curated workflow plugins installed'
+}
+
 # ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------
@@ -471,7 +520,9 @@ function Invoke-Main {
                 -StageDir (Join-Path $ClaudeDir 'skills\.taste_upstream_src') `
                 -Marker '.from_taste' -RequireSkillMd
         }
+        Invoke-Step 'anthropic skills' { Install-AnthropicSkill }
         Invoke-Step 'graphify' { Install-Graphify }
+        Invoke-Step 'plugin marketplaces' { Register-PluginMarketplace }
     }
 
     Write-Summary

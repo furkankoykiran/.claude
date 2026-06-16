@@ -7,7 +7,8 @@
 My personal [Claude Code](https://claude.com/claude-code) configuration —
 `CLAUDE.md`, custom skills, agents, hooks, and utility scripts, plus a
 self-contained bootstrap that wires in a handful of upstream tools (gstack, rtk,
-manim, graphify, and several skill packs).
+manim, graphify, several skill packs, Anthropic's official skills, and curated
+plugin marketplaces).
 
 It's public so others can fork it, borrow pieces, and leave the rest. The
 installer is **idempotent** (safe to re-run) and **fail-soft** (one broken
@@ -85,10 +86,19 @@ Both installers honour the same knobs:
    [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills),
    [pbakaus/impeccable](https://github.com/pbakaus/impeccable), and
    [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill).
-8. Installs (or upgrades) [graphify](https://pypi.org/project/graphifyy/) and
+8. File-copies a curated, always-on subset of Anthropic's official
+   [anthropics/skills](https://github.com/anthropics/skills) — the
+   office-document and authoring skills (`docx`, `pdf`, `pptx`, `xlsx`,
+   `doc-coauthoring`) plus `mcp-builder`, `skill-creator`, and
+   `web-artifacts-builder`. Overlapping skills and the name-colliding
+   `claude-api` are skipped.
+9. Installs (or upgrades) [graphify](https://pypi.org/project/graphifyy/) and
    wires its skill — re-running the bootstrap pulls the latest `graphifyy`, just
    like the git skill packs above.
-9. Optionally configures portable MCP servers (`github`, `context7`).
+10. Registers four [plugin marketplaces](#plugin-marketplaces) and installs a
+    curated set of workflow plugins (see below). Skipped if the `claude` CLI
+    isn't on `PATH` yet.
+11. Optionally configures portable MCP servers (`github`, `context7`).
 
 Every step except cloning the repo is **fail-soft**: a failure is recorded and
 printed in an end-of-run summary instead of aborting the bootstrap. Re-run
@@ -113,6 +123,34 @@ Both are git-ignored, so your edits never conflict with `git pull`.
 
 Tokens are stored in `~/.claude.json` (mode `600`), never in this repo. For
 other MCP servers, use `claude mcp add` directly (or the `/add-mcp` skill).
+
+## Plugin marketplaces
+
+Beyond the file-copied skills, the installer registers four Claude Code **plugin
+marketplaces** so a large catalog is one `/plugin install` away without loading
+every skill into each session. Registering a marketplace is free; only
+*installed* plugins cost per-session context — so the big collections stay
+on-demand:
+
+- [anthropics/skills](https://github.com/anthropics/skills) — the rest of
+  Anthropic's official Agent Skills (marketplace `anthropic-agent-skills`).
+- [wshobson/agents](https://github.com/wshobson/agents) — 80+ domain workflow
+  plugins (marketplace `claude-code-workflows`).
+- [obra/superpowers](https://github.com/obra/superpowers) — a TDD / debugging /
+  planning methodology (`superpowers-dev`). Left install-on-demand because it
+  overlaps gstack's own plan / review / investigate skills.
+- [mukul975/Anthropic-Cybersecurity-Skills](https://github.com/mukul975/Anthropic-Cybersecurity-Skills)
+  — 700+ MITRE/NIST-mapped security skills (`anthropic-cybersecurity-skills`).
+  Marketplace-only so it never floods the catalog.
+
+From `claude-code-workflows` it eagerly installs a few high-value domain plugins
+that fill real gaps without conflicting with gstack: `backend-development`,
+`data-engineering`, `cloud-infrastructure`, `cicd-automation`, `database-design`.
+
+Browse and install more with `/plugin` (or
+`claude plugin install <name>@<marketplace>`). **Trust note:** Claude Code does
+not vet marketplace contents — only add sources you trust. Remove one with
+`claude plugin marketplace remove <name>`.
 
 ## Updating
 
