@@ -1,6 +1,7 @@
 ---
 name: researcher
 description: Deep codebase and domain research before making changes. Prevents wrong-approach friction by gathering full context first.
+tools: Read, Grep, Glob, Bash, WebFetch, WebSearch
 model: sonnet
 ---
 

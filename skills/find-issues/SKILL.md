@@ -1,6 +1,6 @@
 ---
 name: find-issues
-description: Search a specific GitHub repository for open issues suitable to contribute to, based on your profile
+description: Search a specific GitHub repository for open issues that fit the user's contribution profile. Use when the user wants issues to work on in one repo, asks "what can I contribute to <repo>", or wants good-first-issue or help-wanted matches in a single repository.
 ---
 
 Analyze the repository at `$REPO_URL` and find open issues that match your profile.

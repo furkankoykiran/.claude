@@ -1,6 +1,7 @@
 ---
 name: planner
 description: Breaks complex tasks into structured, dependency-aware execution plans with verification steps. Prevents mega-session chaos.
+tools: Read, Grep, Glob, Bash, WebFetch, WebSearch
 model: sonnet
 ---
 

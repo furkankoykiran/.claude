@@ -1,6 +1,6 @@
 ---
 name: blog-from-chat
-description: Write a blog post from chat summary with multi-language support (generic, works for any user)
+description: Write a polished blog post from a chat or conversation summary, with multi-language output. Use when the user wants to turn a Claude conversation, chat log, or discussion into a publishable blog article, or mentions "blog from this chat" or "write up our conversation".
 ---
 
 # Blog from Chat Summary (Generic)

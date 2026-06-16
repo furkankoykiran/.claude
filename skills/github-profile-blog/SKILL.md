@@ -1,6 +1,6 @@
 ---
 name: github-profile-blog
-description: Write a blog post about GitHub profile activity with educational focus (generic, works for any user)
+description: Write an educational blog post analyzing a GitHub profile's public activity. Use when the user wants to turn their GitHub activity, contributions, or projects into a blog article, or mentions "blog about my GitHub" or a writeup of their open-source work.
 ---
 
 # GitHub Profile Activity Blog (Generic)
