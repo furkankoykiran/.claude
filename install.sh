@@ -524,16 +524,28 @@ install_graphify() {
   # Ensure ~/.local/bin is on PATH (where pip --user lands the binary)
   export PATH="$HOME/.local/bin:$PATH"
 
-  # Always pass --upgrade so re-running the bootstrap pulls the latest graphifyy,
-  # mirroring the git skill packs (which reset to upstream HEAD on every run).
-  # pip --upgrade is a fast no-op when already current.
+  # Always upgrade so a re-run pulls the latest graphifyy, mirroring the git
+  # skill packs. graphifyy ships the `graphify` CLI, so when system pip is
+  # missing ("No module named pip") or PEP 668 blocks --user, pipx (isolated
+  # venv) is the right tool — the same fallback ensure_manim_deps uses.
   log "Installing/upgrading graphifyy (graphify CLI)"
-  if ! python3 -m pip install --user --upgrade graphifyy; then
-    warn "graphifyy install/upgrade failed. Run manually: python3 -m pip install --user --upgrade graphifyy"
-    # A prior install can still be wired; if there's none, give up gracefully.
-    command -v graphify >/dev/null 2>&1 || return 0
+  if python3 -m pip install --user --upgrade graphifyy 2>/dev/null; then
+    :
+  elif command -v pipx >/dev/null 2>&1; then
+    warn "python3 -m pip unavailable (no pip module / PEP 668) — using pipx for graphifyy"
+    pipx install graphifyy >/dev/null 2>&1 \
+      || pipx upgrade graphifyy >/dev/null 2>&1 \
+      || warn "pipx install/upgrade graphifyy failed"
+  else
+    warn "graphifyy install failed: no usable pip and no pipx. Install one, then run:"
+    warn "  python3 -m pip install --user --upgrade graphifyy   (or: pipx install graphifyy)"
   fi
 
+  # Wire the skill only if the CLI is actually on PATH now (or from a prior run).
+  if ! command -v graphify >/dev/null 2>&1; then
+    warn "graphify CLI not on PATH — skipping skill wiring. Add ~/.local/bin to PATH and re-run."
+    return 0
+  fi
   log "Wiring graphify skill into Claude Code"
   graphify install \
     || warn "graphify install returned non-zero — check $CLAUDE_DIR/skills/graphify/"
