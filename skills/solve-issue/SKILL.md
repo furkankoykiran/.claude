@@ -1,6 +1,6 @@
 ---
 name: solve-issue
-description: Solve a GitHub issue and create a pull request
+description: Solve a GitHub issue end-to-end and open a pull request. Use when the user wants to fix or resolve a specific GitHub issue (often by number or URL), or says "solve issue #123", "fix this issue", or "implement and PR this issue".
 disable-model-invocation: true
 ---
 

@@ -1,6 +1,7 @@
 ---
 name: code-reviewer
 description: Pre-commit code review catching bugs, security issues, and quality problems before they ship.
+tools: Read, Grep, Glob, Bash
 model: sonnet
 ---
 

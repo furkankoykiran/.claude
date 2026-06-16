@@ -1,6 +1,6 @@
 ---
 name: pr-followup
-description: Analyze a GitHub pull request, understand the latest state of discussion, and dynamically act on any pending requests or feedback
+description: Analyze a GitHub pull request's latest discussion and act on pending review feedback or requested changes. Use when the user wants to address PR review comments, respond to reviewer feedback, or asks to "follow up on PR #123" or "handle the review comments".
 ---
 
 Analyze the pull request at `$PR_URL` and take any necessary action based on the current state of discussion.

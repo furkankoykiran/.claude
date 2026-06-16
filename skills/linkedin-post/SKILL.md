@@ -1,6 +1,6 @@
 ---
 name: linkedin-post
-description: Generate LinkedIn posts from blog content, URLs, or chat context with professional formatting
+description: Generate professionally formatted LinkedIn posts from a blog post, URL, or chat context. Use when the user wants a LinkedIn post, to share an article on LinkedIn, or to repurpose content as LinkedIn social copy.
 ---
 
 # LinkedIn Post Generator
