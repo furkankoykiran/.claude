@@ -85,7 +85,9 @@ Both installers honour the same knobs:
    [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills),
    [pbakaus/impeccable](https://github.com/pbakaus/impeccable), and
    [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill).
-8. Installs [graphify](https://pypi.org/project/graphifyy/) and wires its skill.
+8. Installs (or upgrades) [graphify](https://pypi.org/project/graphifyy/) and
+   wires its skill — re-running the bootstrap pulls the latest `graphifyy`, just
+   like the git skill packs above.
 9. Optionally configures portable MCP servers (`github`, `context7`).
 
 Every step except cloning the repo is **fail-soft**: a failure is recorded and

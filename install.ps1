@@ -303,12 +303,19 @@ function Install-Graphify {
     if (-not $py) { throw 'python not found - skipping graphify.' }
 
     Update-SessionPath
-    if (-not (Test-Command 'graphify')) {
-        Write-Step 'Installing graphifyy (graphify CLI)'
-        & $py.Exe @($py.Prefix) -m pip install --user graphifyy
-        if ($LASTEXITCODE -ne 0) { throw 'graphifyy install failed (python -m pip install --user graphifyy)' }
-        Update-SessionPath
+    # Always pass --upgrade so re-running the bootstrap pulls the latest graphifyy,
+    # mirroring the git skill packs (which reset to upstream HEAD on every run).
+    # pip --upgrade is a fast no-op when already current.
+    Write-Step 'Installing/upgrading graphifyy (graphify CLI)'
+    & $py.Exe @($py.Prefix) -m pip install --user --upgrade graphifyy
+    $pipOk = ($LASTEXITCODE -eq 0)
+    Update-SessionPath
+    if (-not $pipOk) {
+        Write-Warn 'graphifyy install/upgrade failed. Run manually: python -m pip install --user --upgrade graphifyy'
+        # A prior install can still be wired; only give up if there's none (mirrors install.sh).
+        if (-not (Test-Command 'graphify')) { throw 'graphifyy install/upgrade failed and graphify not on PATH' }
     }
+
     if (-not (Test-Command 'graphify')) {
         Write-Warn 'graphify installed but not on PATH. Add your pip --user Scripts dir (e.g. %APPDATA%\Python\Scripts) to PATH, then run: graphify install'
         return

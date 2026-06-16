@@ -523,12 +523,14 @@ install_graphify() {
   # Ensure ~/.local/bin is on PATH (where pip --user lands the binary)
   export PATH="$HOME/.local/bin:$PATH"
 
-  if ! command -v graphify >/dev/null 2>&1; then
-    log "Installing graphifyy (graphify CLI)"
-    if ! python3 -m pip install --user graphifyy; then
-      warn "graphifyy install failed. Install manually: python3 -m pip install --user graphifyy"
-      return 0
-    fi
+  # Always pass --upgrade so re-running the bootstrap pulls the latest graphifyy,
+  # mirroring the git skill packs (which reset to upstream HEAD on every run).
+  # pip --upgrade is a fast no-op when already current.
+  log "Installing/upgrading graphifyy (graphify CLI)"
+  if ! python3 -m pip install --user --upgrade graphifyy; then
+    warn "graphifyy install/upgrade failed. Run manually: python3 -m pip install --user --upgrade graphifyy"
+    # A prior install can still be wired; if there's none, give up gracefully.
+    command -v graphify >/dev/null 2>&1 || return 0
   fi
 
   log "Wiring graphify skill into Claude Code"
