@@ -353,9 +353,12 @@ ensure_manim_deps() {
   fi
 
   # ---- 3. Final sanity check + actionable hint ----
-  if ! python3 -c "import manim" >/dev/null 2>&1; then
-    warn "manim still not importable after install. Likely cause: missing"
-    warn "system headers. On Debian/Ubuntu, run:"
+  # manim may live in a pipx-managed venv (the pip-blocked fallback above), where
+  # system python3 can't `import manim` even though the `manim` CLI works fine.
+  # Only warn when NEITHER path is usable — otherwise it's a false alarm.
+  if ! python3 -c "import manim" >/dev/null 2>&1 && ! command -v manim >/dev/null 2>&1; then
+    warn "manim not importable and the 'manim' CLI is not on PATH. Likely cause:"
+    warn "missing system headers. On Debian/Ubuntu, run:"
     warn "  sudo apt install pkg-config build-essential python3-dev \\"
     warn "                   libcairo2-dev libpango1.0-dev"
     warn "Then re-run ./install.sh."
@@ -602,7 +605,7 @@ install_anthropic_skills() {
 # ---------------------------------------------------------------------------
 register_plugin_marketplaces() {
   if ! command -v claude >/dev/null 2>&1; then
-    warn "claude CLI not found — skipping plugin marketplaces. Re-run after Claude Code is installed."
+    log "claude CLI not present — skipping plugin marketplaces (expected on servers without Claude Code; re-run here once it's installed to register them)."
     return 0
   fi
   local existing repo p

@@ -311,9 +311,18 @@ function Install-Graphify {
     $pipOk = ($LASTEXITCODE -eq 0)
     Update-SessionPath
     if (-not $pipOk) {
-        Write-Warn 'graphifyy install/upgrade failed. Run manually: python -m pip install --user --upgrade graphifyy'
-        # A prior install can still be wired; only give up if there's none (mirrors install.sh).
-        if (-not (Test-Command 'graphify')) { throw 'graphifyy install/upgrade failed and graphify not on PATH' }
+        # pip missing or PEP 668 blocked --user: pipx is the right installer for a
+        # CLI app (mirrors install.sh's fallback).
+        if (Test-Command 'pipx') {
+            Write-Warn 'pip install failed - falling back to pipx for graphifyy'
+            pipx install graphifyy 2>$null
+            if ($LASTEXITCODE -ne 0) { pipx upgrade graphifyy 2>$null }
+            Update-SessionPath
+        }
+        # A prior install can still be wired; only give up if there's none.
+        if (-not (Test-Command 'graphify')) {
+            throw 'graphifyy install failed (no working pip; pipx fallback unavailable or failed). Run: python -m pip install --user --upgrade graphifyy'
+        }
     }
 
     if (-not (Test-Command 'graphify')) {
@@ -445,7 +454,7 @@ function Install-AnthropicSkill {
 # fills gaps without conflicting with gstack. Fail-soft: needs the `claude` CLI.
 function Register-PluginMarketplace {
     if (-not (Test-Command 'claude')) {
-        Write-Warn 'claude CLI not found - skipping plugin marketplaces. Re-run after Claude Code is installed.'
+        Write-Step 'claude CLI not present - skipping plugin marketplaces (expected without Claude Code; re-run here once it''s installed).'
         return
     }
     $existing = (claude plugin marketplace list 2>$null | Out-String)
