@@ -33,6 +33,7 @@ KARPATHY_REPO="https://github.com/multica-ai/andrej-karpathy-skills.git"
 MARKETING_REPO="https://github.com/coreyhaines31/marketingskills.git"
 IMPECCABLE_REPO="https://github.com/pbakaus/impeccable.git"
 TASTE_REPO="https://github.com/Leonxlnx/taste-skill.git"
+ANTHROPIC_SKILLS_REPO="https://github.com/anthropics/skills.git"
 
 log()  { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m!!\033[0m %s\n'  "$*" >&2; }
@@ -539,6 +540,81 @@ install_graphify() {
 }
 
 # ---------------------------------------------------------------------------
+# 8b. Anthropic official Agent Skills (anthropics/skills) — curated file-copy
+#     Always-on subset: office-document + authoring + meta skills. The rest of
+#     the repo (and the big third-party collections) stay on-demand via plugin
+#     marketplaces below. Overlapping skills (frontend-design, webapp-testing,
+#     canvas-design, algorithmic-art) and the name-colliding `claude-api` are
+#     intentionally skipped to keep the always-loaded catalog clean.
+# ---------------------------------------------------------------------------
+install_anthropic_skills() {
+  local stage="$CLAUDE_DIR/skills/.anthropic_upstream_src"
+  if [ ! -d "$stage/.git" ]; then
+    log "Cloning anthropics/skills into $stage"
+    git clone --depth 1 "$ANTHROPIC_SKILLS_REPO" "$stage"
+  else
+    log "Updating anthropics/skills"
+    git -C "$stage" fetch origin --depth 1 >/dev/null 2>&1 || true
+    git -C "$stage" reset --hard origin/HEAD >/dev/null 2>&1 \
+      || warn "anthropics/skills upstream pull failed — continuing"
+  fi
+  local curated="docx pdf pptx xlsx mcp-builder skill-creator web-artifacts-builder doc-coauthoring"
+  local count=0 name src target
+  for name in $curated; do
+    src="$stage/skills/$name"
+    target="$CLAUDE_DIR/skills/$name"
+    [ -f "$src/SKILL.md" ] || { warn "anthropic skill missing upstream: $name"; continue; }
+    if [ -d "$target" ] && [ ! -f "$target/.from_anthropic" ]; then
+      warn "skipping collision (not from anthropics/skills): $name"
+      continue
+    fi
+    mkdir -p "$target"
+    cp -r "$src"/. "$target/"
+    touch "$target/.from_anthropic"
+    [ -f "$stage/LICENSE" ] && cp "$stage/LICENSE" "$target/UPSTREAM_LICENSE"
+    count=$((count+1))
+  done
+  log "Synced $count anthropic skills (claude-api skipped: name collision)"
+}
+
+# ---------------------------------------------------------------------------
+# 8c. Plugin marketplaces — breadth without catalog bloat
+#     Registering a marketplace costs nothing per session; only INSTALLED
+#     plugins load into the always-on catalog. So we register the big
+#     collections (the full anthropics/skills set, wshobson's 80+ workflow
+#     plugins, obra's methodology skills, and 700+ cybersecurity skills) for
+#     on-demand use, and eagerly install only a curated set of domain plugins
+#     that fill real gaps (backend, data, cloud, CI/CD, database) without
+#     conflicting with gstack's own workflow skills.
+#     Fail-soft: needs the `claude` CLI; skipped with a note if absent.
+# ---------------------------------------------------------------------------
+register_plugin_marketplaces() {
+  if ! command -v claude >/dev/null 2>&1; then
+    warn "claude CLI not found — skipping plugin marketplaces. Re-run after Claude Code is installed."
+    return 0
+  fi
+  local existing repo p
+  existing="$(claude plugin marketplace list 2>/dev/null || true)"
+  # Third-party marketplaces: only add sources you trust — there is no built-in
+  # security gate on marketplace contents.
+  for repo in anthropics/skills wshobson/agents obra/superpowers \
+              mukul975/Anthropic-Cybersecurity-Skills; do
+    printf '%s\n' "$existing" | grep -q "$repo" && continue
+    claude plugin marketplace add "$repo" >/dev/null 2>&1 \
+      || warn "plugin marketplace add failed: $repo"
+  done
+  # Curated eager installs from wshobson's marketplace. Its marketplace name is
+  # 'claude-code-workflows' (NOT the repo name); pin it explicitly. Installing
+  # an already-installed plugin is a no-op.
+  for p in backend-development data-engineering cloud-infrastructure \
+           cicd-automation database-design; do
+    claude plugin install "$p@claude-code-workflows" >/dev/null 2>&1 \
+      || warn "plugin install failed: $p@claude-code-workflows"
+  done
+  log "Plugin marketplaces registered; curated workflow plugins installed"
+}
+
+# ---------------------------------------------------------------------------
 # 9. Optional: configure portable MCP servers (github, context7)
 # ---------------------------------------------------------------------------
 maybe_setup_mcp() {
@@ -586,7 +662,9 @@ main() {
     run_step "marketing skills"  install_marketing_skills
     run_step "impeccable skill"  install_impeccable_skill
     run_step "taste skills"      install_taste_skills
+    run_step "anthropic skills"  install_anthropic_skills
     run_step "graphify"          install_graphify
+    run_step "plugin marketplaces" register_plugin_marketplaces
   fi
 
   maybe_setup_mcp
