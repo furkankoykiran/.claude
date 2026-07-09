@@ -258,6 +258,43 @@ function Install-Rtk {
 }
 
 # ---------------------------------------------------------------------------
+# Provider switcher (z.ai <-> Anthropic) — settings.json copy system
+# ---------------------------------------------------------------------------
+# settings.json is a COPY of providers/<active>.json (copy, not symlink, so it
+# works on Windows where symlinks need admin/Developer Mode). Provider files
+# are local (gitignored, hold auth tokens); *.json.example templates are
+# tracked with a <ZAI_TOKEN>-style placeholder. `ccs` (-> bin/cc-provider.ps1)
+# copies the chosen provider to settings.json and records it in providers/.active.
+# Fresh installs opt in by running `ccs zai` once after filling the token.
+function Set-Providers {
+    $pdir = Join-Path $ClaudeDir 'providers'
+    if (-not (Test-Path $pdir)) { New-Item -ItemType Directory -Path $pdir -Force | Out-Null }
+    foreach ($p in @('zai', 'anthropic')) {
+        $target  = Join-Path $pdir "$p.json"
+        $example = Join-Path $pdir "$p.json.example"
+        if ((-not (Test-Path $target)) -and (Test-Path $example)) {
+            Copy-Item $example $target
+            Write-Step "Seeded providers/$p.json from template (fill your token before switching to it)"
+        }
+    }
+    Install-CcsProfile
+}
+
+# Add a `ccs` function to the user's PowerShell profile (idempotent).
+# CurrentUserAllHosts so it loads in both Windows PowerShell and pwsh.
+function Install-CcsProfile {
+    $profilePath = $PROFILE.CurrentUserAllHosts
+    $profileDir  = Split-Path $profilePath -Parent
+    if (-not (Test-Path $profileDir)) { New-Item -ItemType Directory -Path $profileDir -Force | Out-Null }
+    if (-not (Test-Path $profilePath)) { New-Item -ItemType File -Path $profilePath -Force | Out-Null }
+    $existing = Get-Content -LiteralPath $profilePath -Raw -ErrorAction SilentlyContinue
+    if ($existing -match 'cc-provider') { return }
+    $entry = "`r`n# Claude Code provider switcher (managed by ~/.claude/install.ps1)`r`nfunction ccs { & `"$HOME\.claude\bin\cc-provider.ps1`" @args }`r`n"
+    Add-Content -LiteralPath $profilePath -Value $entry
+    Write-Step "Added 'ccs' function to $profilePath (open a new shell)"
+}
+
+# ---------------------------------------------------------------------------
 # 7. Install manim-narration runtime deps (manim + edge-tts + ffmpeg)
 # ---------------------------------------------------------------------------
 function Install-ManimRuntime {
@@ -483,6 +520,7 @@ function Write-Summary {
     Write-Host "  1. Edit $ClaudeDir\config.json with your username, blog dir, etc."
     Write-Host '  2. Restart Claude Code to load skills, agents, and hooks.'
     Write-Host '  3. Re-run install.ps1 anytime to update - it''s idempotent.'
+    Write-Host "  4. Switch API provider: fill providers\zai.json (<ZAI_TOKEN>), then run: ccs zai"
 
     if ($script:FailedSteps.Count -gt 0) {
         Write-Host ''
@@ -508,6 +546,7 @@ function Invoke-Main {
     Invoke-Step 'node runtime'     { Test-NodeRuntime }
     Invoke-Step 'gstack + browser' { Install-Gstack }
     Invoke-Step 'rtk'              { Install-Rtk }
+    Invoke-Step 'providers'        { Set-Providers }
 
     if ($IsMinimal) {
         Write-Step 'Minimal mode - skipping manim, graphify, and upstream skill packs.'
