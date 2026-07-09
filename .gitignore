@@ -3,6 +3,10 @@ config.json
 settings.json
 settings.json.bak
 settings.json.backup.*
+# Provider system (local-only; providers/*.json hold auth tokens; .example templates tracked)
+providers/*.json
+!providers/*.json.example
+providers/.active
 
 # Installed by RTK — not part of this repo
 RTK.md

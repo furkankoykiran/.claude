@@ -270,6 +270,41 @@ install_rtk() {
 }
 
 # ---------------------------------------------------------------------------
+# 6. Provider switcher (z.ai <-> Anthropic) — settings.json copy system
+# ---------------------------------------------------------------------------
+# settings.json is a COPY of providers/<active>.json (copy, not symlink, so it
+# also works on Windows where symlinks need admin/Developer Mode). Provider
+# files are local (gitignored, hold auth tokens); *.json.example templates are
+# tracked with a <ZAI_TOKEN>-style placeholder. `ccs` (-> bin/cc-provider on
+# Unix, bin/cc-provider.ps1 on Windows) copies the chosen provider to
+# settings.json and records it in providers/.active. Fresh installs opt in by
+# running `ccs <provider>` once after filling the token.
+setup_providers() {
+  local pdir="$CLAUDE_DIR/providers"
+  mkdir -p "$pdir"
+  local p
+  for p in zai anthropic; do
+    if [ ! -f "$pdir/$p.json" ] && [ -f "$pdir/$p.json.example" ]; then
+      cp "$pdir/$p.json.example" "$pdir/$p.json"
+      chmod 600 "$pdir/$p.json"
+      log "Seeded providers/$p.json from template (fill your token before switching to it)"
+    fi
+  done
+  install_ccs_alias
+}
+
+install_ccs_alias() {
+  local rc="$HOME/.bashrc"
+  touch "$rc"
+  if grep -q 'cc-provider' "$rc" 2>/dev/null; then return 0; fi
+  {
+    printf '\n# Claude Code provider switcher (managed by ~/.claude/install.sh)\n'
+    printf 'ccs() { "$HOME/.claude/bin/cc-provider" "$@"; }\n'
+  } >> "$rc"
+  log "Added 'ccs' shell function to ~/.bashrc (run: source ~/.bashrc)"
+}
+
+# ---------------------------------------------------------------------------
 # 6. Install Manim runtime deps (pip + system) for skills/manim-narration
 # ---------------------------------------------------------------------------
 ensure_manim_deps() {
@@ -666,6 +701,7 @@ main() {
   run_step "bun"              ensure_bun
   run_step "gstack + browser" install_gstack
   run_step "rtk"              install_rtk
+  run_step "providers"        setup_providers
 
   # Optional skill packs + heavy media deps. Skip in minimal mode (CI / lean).
   if [ "${CLAUDE_BOOTSTRAP_MINIMAL:-0}" = "1" ]; then

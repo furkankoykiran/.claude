@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# cc-provider — switch the Claude Code API provider by COPYING a provider
+# file to ~/.claude/settings.json. Copy (not symlink) so it works on every
+# platform, including Windows (symlinks need admin/Developer Mode there).
+#
+#   cc-provider zai          -> activate z.ai (GLM)
+#   cc-provider anthropic    -> activate official Anthropic
+#   cc-provider status       -> print the active provider
+#
+# Provider files (providers/<name>.json) are local and gitignored (auth
+# tokens live here). Templates (providers/<name>.json.example) are committed
+# with a <ZAI_TOKEN>-style placeholder. providers/.active records the choice.
+#
+# settings.json is a GENERATED copy: edit the provider file, then re-run
+# `ccs <provider>`, instead of editing settings.json directly.
+# Claude Code reads env at startup, so restart it after switching.
+set -euo pipefail
+
+CLAUDE_DIR="${CLAUDE_DIR:-$HOME/.claude}"
+PDIR="$CLAUDE_DIR/providers"
+SETTINGS="$CLAUDE_DIR/settings.json"
+PLACEHOLDER_RE='<[A-Z_]+>'
+
+die() { printf 'cc-provider: %s\n' "$*" >&2; exit 1; }
+
+ensure_provider_file() {
+  local p="$1"
+  if [ ! -f "$PDIR/$p.json" ]; then
+    if [ -f "$PDIR/$p.json.example" ]; then
+      cp "$PDIR/$p.json.example" "$PDIR/$p.json"
+      chmod 600 "$PDIR/$p.json"
+      printf 'Created providers/%s.json from template.\n' "$p" >&2
+    else
+      die "no providers/$p.json or $p.json.example to seed from"
+    fi
+  fi
+  if grep -qE "$PLACEHOLDER_RE" "$PDIR/$p.json" 2>/dev/null; then
+    printf 'WARNING: providers/%s.json still has placeholder values (<...>).\n' "$p" >&2
+    printf 'Edit it and fill your real token before relying on this provider.\n' >&2
+  fi
+}
+
+activate() {
+  local p="$1"
+  ensure_provider_file "$p"
+  mkdir -p "$PDIR"
+  printf '%s\n' "$p" > "$PDIR/.active"
+  rm -f "$SETTINGS"
+  cp "$PDIR/$p.json" "$SETTINGS"
+  chmod 600 "$SETTINGS"
+  printf 'Active provider: %s\n' "$p"
+  printf 'Restart Claude Code for the change to take effect (env is read at startup).\n'
+}
+
+status() {
+  if [ -f "$PDIR/.active" ]; then
+    cat "$PDIR/.active"
+  else
+    printf 'none (provider system not active; settings.json is whatever install.sh seeded)\n'
+  fi
+}
+
+usage() {
+  cat >&2 <<'EOF'
+usage: cc-provider [zai|anthropic|status]
+  zai         activate z.ai (GLM)
+  anthropic   activate official Anthropic
+  status      print the active provider (default)
+EOF
+}
+
+case "${1:-status}" in
+  zai|anthropic) activate "$1" ;;
+  status)        status ;;
+  -h|--help)     usage; exit 0 ;;
+  *)             usage; exit 1 ;;
+esac
