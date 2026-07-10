@@ -57,8 +57,23 @@ switch ($Command) {
   'zai'       { Activate 'zai' }
   'anthropic' { Activate 'anthropic' }
   'status'    {
-    if (Test-Path -LiteralPath $Active) { (Get-Content -LiteralPath $Active -Raw).Trim() }
-    else { 'none (provider system not active; settings.json is whatever install.sh seeded)' }
+    if (-not (Test-Path -LiteralPath $Active)) {
+        'none (provider system not active; settings.json is whatever install.sh seeded)'
+        return
+    }
+    $a = (Get-Content -LiteralPath $Active -Raw).Trim()
+    $a
+    # Surface the common footgun: settings.json is a COPY, so editing the
+    # provider file (or a stale switch) leaves it out of sync -> silent 401.
+    $pf = Join-Path $PDir "$a.json"
+    if (Test-Path -LiteralPath $pf) {
+        if ((Test-Path -LiteralPath $Settings) -and ((Get-Content -LiteralPath $pf -Raw) -ne (Get-Content -LiteralPath $Settings -Raw))) {
+            "WARNING: settings.json differs from providers/$a.json - re-run: ccs $a" | Write-Host
+        }
+        if ((Get-Content -LiteralPath $pf -Raw) -match '<[A-Z_]+>') {
+            "WARNING: providers/$a.json still has a placeholder (<...>) - fill your token, then: ccs $a" | Write-Host
+        }
+    }
   }
   default {
     "usage: cc-provider.ps1 [zai|anthropic|status]" | Write-Host

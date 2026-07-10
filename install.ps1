@@ -88,9 +88,10 @@ function Get-PythonCommand {
 }
 
 # Locate Git Bash (bash.exe) so we can run gstack's bash setup natively.
+# Check the known Git for Windows install locations FIRST. On machines with
+# WSL, `Get-Command bash` resolves to C:\WINDOWS\System32\bash.exe (the WSL
+# stub), which is NOT Git Bash and breaks gstack's setup - so never prefer it.
 function Find-GitBash {
-    $cmd = Get-Command bash -ErrorAction SilentlyContinue
-    if ($cmd) { return $cmd.Source }
     $candidates = @(
         (Join-Path $env:ProgramFiles 'Git\bin\bash.exe')
         (Join-Path ${env:ProgramFiles(x86)} 'Git\bin\bash.exe')
@@ -98,6 +99,11 @@ function Find-GitBash {
     )
     foreach ($path in $candidates) {
         if ($path -and (Test-Path $path)) { return $path }
+    }
+    # Last resort: PATH lookup, but never accept the WSL stub.
+    $cmd = Get-Command bash -ErrorAction SilentlyContinue
+    if ($cmd -and $cmd.Source -and ($cmd.Source -notmatch '\\Windows\\System32\\bash\.exe$')) {
+        return $cmd.Source
     }
     return $null
 }
@@ -169,10 +175,21 @@ function Install-Bun {
     Update-SessionPath
     if (Test-Command 'bun') { return }
     Write-Step 'Installing bun (required by gstack)'
-    Invoke-Expression (Invoke-RestMethod 'https://bun.sh/install.ps1')
+    try {
+        Invoke-Expression (Invoke-RestMethod 'https://bun.sh/install.ps1')
+    } catch {
+        Write-Warn "bun.sh installer failed: $($_.Exception.Message)"
+    }
     Update-SessionPath
+    # Fallback: winget (bundled on Windows 10+/11). The standalone installer
+    # can fail behind proxies/AV; winget's Oven-sh.Bun package is the same binary.
+    if (-not (Test-Command 'bun') -and (Test-Command 'winget')) {
+        Write-Step 'Trying bun via winget (Oven-sh.Bun)'
+        winget install --id Oven-sh.Bun -e --source winget --accept-package-agreements --accept-source-agreements
+        Update-SessionPath
+    }
     if (-not (Test-Command 'bun')) {
-        throw 'bun not on PATH after install - open a new terminal or install from https://bun.sh'
+        throw 'bun not on PATH after install. Try: winget install Oven-sh.Bun, then re-run.'
     }
 }
 
@@ -258,7 +275,7 @@ function Install-Rtk {
 }
 
 # ---------------------------------------------------------------------------
-# Provider switcher (z.ai <-> Anthropic) — settings.json copy system
+# Provider switcher (z.ai <-> Anthropic) - settings.json copy system
 # ---------------------------------------------------------------------------
 # settings.json is a COPY of providers/<active>.json (copy, not symlink, so it
 # works on Windows where symlinks need admin/Developer Mode). Provider files
@@ -266,7 +283,7 @@ function Install-Rtk {
 # tracked with a <ZAI_TOKEN>-style placeholder. `ccs` (-> bin/cc-provider.ps1)
 # copies the chosen provider to settings.json and records it in providers/.active.
 # Fresh installs opt in by running `ccs zai` once after filling the token.
-function Set-Providers {
+function Set-Provider {
     $pdir = Join-Path $ClaudeDir 'providers'
     if (-not (Test-Path $pdir)) { New-Item -ItemType Directory -Path $pdir -Force | Out-Null }
     foreach ($p in @('zai', 'anthropic')) {
@@ -546,7 +563,7 @@ function Invoke-Main {
     Invoke-Step 'node runtime'     { Test-NodeRuntime }
     Invoke-Step 'gstack + browser' { Install-Gstack }
     Invoke-Step 'rtk'              { Install-Rtk }
-    Invoke-Step 'providers'        { Set-Providers }
+    Invoke-Step 'providers'        { Set-Provider }
 
     if ($IsMinimal) {
         Write-Step 'Minimal mode - skipping manim, graphify, and upstream skill packs.'
