@@ -114,6 +114,38 @@ After install, edit:
 
 Both are git-ignored, so your edits never conflict with `git pull`.
 
+## API provider switching (z.ai and Anthropic)
+
+The installer seeds a provider-switching system so Claude Code can run against
+either [z.ai](https://z.ai) (GLM models) or the official Anthropic API, and you
+flip between them with one command.
+
+- `providers/zai.json` — z.ai credentials. The `ANTHROPIC_AUTH_TOKEN` lives here;
+  the file is mode `600` and git-ignored.
+- `providers/anthropic.json` — official Anthropic. Uses Claude Code's normal
+  login (`claude login`), so no token sits in this file.
+- `providers/<name>.json.example` — committed templates carrying a `<ZAI_TOKEN>`
+  placeholder. The real `*.json` files are local-only and never committed.
+
+`settings.json` is a **generated copy** of the active provider file (copied, not
+symlinked, so the same flow works on Windows). Edit the provider file, then
+re-switch; don't hand-edit `settings.json`.
+
+The `ccs` shell function (added to your shell profile by the installer) does the
+switch:
+
+```bash
+ccs zai          # route Claude Code through z.ai (GLM)
+ccs anthropic    # route through the official Anthropic API
+ccs status       # print the active provider
+```
+
+Restart Claude Code after switching; it reads provider env at startup. On a
+fresh install, fill your z.ai token in `providers/zai.json` (replace
+`<ZAI_TOKEN>`) before running `ccs zai`, or requests will 401. The same `ccs`
+command works identically on Windows (PowerShell); the installer adds it to your
+PowerShell profile there.
+
 ## MCP servers
 
 `scripts/setup-mcp.sh` configures the two portable ones:

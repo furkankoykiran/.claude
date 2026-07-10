@@ -731,6 +731,7 @@ Next steps:
   1. Edit $CLAUDE_DIR/config.json with your username, blog dir, etc.
   2. Restart Claude Code to load skills, agents, and hooks.
   3. Re-run ./install.sh anytime to update — it's idempotent.
+  4. Switch API provider: fill providers/zai.json (<ZAI_TOKEN>), then run: ccs zai
 EOF
 
   if [ ${#FAILED_STEPS[@]} -gt 0 ]; then
