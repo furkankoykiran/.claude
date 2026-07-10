@@ -117,15 +117,18 @@ Both are git-ignored, so your edits never conflict with `git pull`.
 ## API provider switching (z.ai and Anthropic)
 
 The installer seeds a provider-switching system so Claude Code can run against
-either [z.ai](https://z.ai) (GLM models) or the official Anthropic API, and you
-flip between them with one command.
+either [z.ai](https://z.ai/subscribe?ic=SNPFQIQ7BD) (GLM models) or the official
+Anthropic API, and you flip between them with one command. z.ai's GLM plans are a
+cheap way to run Claude Code all day; if you don't have a plan yet, this
+[z.ai subscription link](https://z.ai/subscribe?ic=SNPFQIQ7BD) is my referral.
 
-- `providers/zai.json` — z.ai credentials. The `ANTHROPIC_AUTH_TOKEN` lives here;
-  the file is mode `600` and git-ignored.
-- `providers/anthropic.json` — official Anthropic. Uses Claude Code's normal
-  login (`claude login`), so no token sits in this file.
-- `providers/<name>.json.example` — committed templates carrying a `<ZAI_TOKEN>`
-  placeholder. The real `*.json` files are local-only and never committed.
+- `~/.claude/providers/zai.json` — z.ai credentials. The `ANTHROPIC_AUTH_TOKEN`
+  lives here; the file is mode `600` and git-ignored.
+- `~/.claude/providers/anthropic.json` — official Anthropic. Uses Claude Code's
+  normal login (`claude login`), so no token sits in this file.
+- `~/.claude/providers/<name>.json.example` — committed templates carrying a
+  `<ZAI_TOKEN>` placeholder. The real `*.json` files are local-only and never
+  committed.
 
 `settings.json` is a **generated copy** of the active provider file (copied, not
 symlinked, so the same flow works on Windows). Edit the provider file, then
@@ -141,9 +144,10 @@ ccs status       # print the active provider
 ```
 
 Restart Claude Code after switching; it reads provider env at startup. On a
-fresh install, fill your z.ai token in `providers/zai.json` (replace
+fresh install, fill your z.ai token in `~/.claude/providers/zai.json` (replace
 `<ZAI_TOKEN>`) before running `ccs zai`, or requests will 401. The same `ccs`
-command works identically on Windows (PowerShell); the installer adds it to your
+command works identically on Windows (PowerShell, path
+`%USERPROFILE%\.claude\providers\zai.json`); the installer adds it to your
 PowerShell profile there.
 
 ## MCP servers
@@ -155,6 +159,35 @@ PowerShell profile there.
 
 Tokens are stored in `~/.claude.json` (mode `600`), never in this repo. For
 other MCP servers, use `claude mcp add` directly (or the `/add-mcp` skill).
+
+### MCP servers across a provider switch
+
+There are two kinds of MCP server, and only one kind survives a switch to z.ai:
+
+- **Local MCP servers** — the ones in `~/.claude.json` (`github`, `context7`,
+  anything you add with `claude mcp add`). These carry their own URL and auth, so
+  they work under **either** provider. Verified: `github` and `context7` respond
+  under both z.ai and Anthropic.
+- **claude.ai connectors** — servers you added at
+  [claude.ai/customize/connectors](https://claude.ai/customize/connectors)
+  (e.g. Fintables, Google Drive). Claude Code loads these **only while your active
+  auth is your claude.ai subscription**. The moment a provider sets
+  `ANTHROPIC_AUTH_TOKEN` (which `ccs zai` does), Claude Code stops fetching
+  claude.ai connectors — [by design, per Anthropic's MCP docs](https://code.claude.com/docs/en/mcp#use-mcp-servers-from-claude-ai),
+  not a bug. So `ccs anthropic` shows Fintables; `ccs zai` hides it.
+
+**To keep a connector like Fintables under z.ai, register it as a local MCP
+server** (they publish a remote HTTP endpoint), so it no longer depends on the
+claude.ai session:
+
+```bash
+claude mcp add --transport http fintables https://evo.fintables.com/mcp
+/mcp                     # then complete the OAuth sign-in once, in an interactive session
+```
+
+Now `fintables` lives in `~/.claude.json` and loads under both providers. Add
+only the connectors you actually use this way — each one is an extra startup
+handshake. (Fintables MCP is free on their PRO/EVO tiers.)
 
 ## Plugin marketplaces
 
