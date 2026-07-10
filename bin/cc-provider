@@ -53,10 +53,24 @@ activate() {
 }
 
 status() {
+  local active
   if [ -f "$PDIR/.active" ]; then
-    cat "$PDIR/.active"
+    active=$(cat "$PDIR/.active")
   else
     printf 'none (provider system not active; settings.json is whatever install.sh seeded)\n'
+    return
+  fi
+  printf '%s\n' "$active"
+  # Surface the common footgun: settings.json is a COPY, so editing the
+  # provider file (or a stale switch) leaves it out of sync and you get a
+  # silent 401. Warn on stderr so `ccs status` script output stays clean.
+  if [ -f "$PDIR/$active.json" ]; then
+    if [ -f "$SETTINGS" ] && ! cmp -s "$PDIR/$active.json" "$SETTINGS"; then
+      printf 'WARNING: settings.json differs from providers/%s.json - re-run: ccs %s\n' "$active" "$active" >&2
+    fi
+    if grep -qE "$PLACEHOLDER_RE" "$PDIR/$active.json" 2>/dev/null; then
+      printf 'WARNING: providers/%s.json still has a placeholder (<...>) - fill your token, then: ccs %s\n' "$active" "$active" >&2
+    fi
   fi
 }
 

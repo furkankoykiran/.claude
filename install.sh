@@ -297,10 +297,13 @@ install_ccs_alias() {
   local rc="$HOME/.bashrc"
   touch "$rc"
   if grep -q 'cc-provider' "$rc" 2>/dev/null; then return 0; fi
-  {
-    printf '\n# Claude Code provider switcher (managed by ~/.claude/install.sh)\n'
-    printf 'ccs() { "$HOME/.claude/bin/cc-provider" "$@"; }\n'
-  } >> "$rc"
+  # Quoted heredoc: $HOME and $@ must stay literal so the generated function
+  # resolves them at call time (not at install time).
+  cat >> "$rc" <<'EOF'
+
+# Claude Code provider switcher (managed by ~/.claude/install.sh)
+ccs() { "$HOME/.claude/bin/cc-provider" "$@"; }
+EOF
   log "Added 'ccs' shell function to ~/.bashrc (run: source ~/.bashrc)"
 }
 
