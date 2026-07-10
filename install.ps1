@@ -537,7 +537,7 @@ function Write-Summary {
     Write-Host "  1. Edit $ClaudeDir\config.json with your username, blog dir, etc."
     Write-Host '  2. Restart Claude Code to load skills, agents, and hooks.'
     Write-Host '  3. Re-run install.ps1 anytime to update - it''s idempotent.'
-    Write-Host "  4. Switch API provider: fill providers\zai.json (<ZAI_TOKEN>), then run: ccs zai"
+    Write-Host "  4. Switch API provider: fill $ClaudeDir\providers\zai.json (<ZAI_TOKEN>), then run: ccs zai"
 
     if ($script:FailedSteps.Count -gt 0) {
         Write-Host ''
