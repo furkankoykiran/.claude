@@ -67,6 +67,28 @@ for ex in "$REPO_DIR"/providers/*.json.example; do
   fi
 done
 
+# The gateway must strip Claude Code's non-OpenAI body fields. Without this NIM
+# hard-fails every request from a real client with
+# `Validation: Unsupported parameter(s): diagnostics` — and it cannot be caught
+# by hand-rolled curl tests, only by an actual Claude Code session.
+GW="$REPO_DIR/providers/nvidia-gateway.yaml.example"
+if grep -q 'additional_drop_params' "$GW"; then
+  ok "gateway template drops Claude Code's non-OpenAI body fields"
+else
+  bad "gateway template has no additional_drop_params (NIM will 400 on real requests)"
+fi
+if grep -q 'diagnostics' "$GW"; then
+  ok "gateway template drops the diagnostics field specifically"
+else
+  bad "gateway template no longer drops 'diagnostics'"
+fi
+# Belt to that braces: keep the client from sending pre-release fields at all.
+if grep -q 'CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS' "$REPO_DIR/providers/nvidia.json.example"; then
+  ok "nvidia provider suppresses pre-release capability fields"
+else
+  bad "nvidia provider does not set CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS"
+fi
+
 # --- discovery -------------------------------------------------------------
 head_ "Discovery (list)"
 listed=$(ccs list)
@@ -167,6 +189,17 @@ esac
 
 # A loopback provider with nothing listening is the NVIDIA-gateway footgun.
 head_ "Local gateway detection"
+
+# The real template points at :4000, and on a machine that is actually using the
+# nvidia provider that port IS listening — so asserting against it would pass or
+# fail depending on the developer's running gateway. Repoint the sandbox copy at
+# a port the kernel just told us is free to keep this hermetic.
+FREE_PORT=$(python3 -c "
+import socket
+s = socket.socket(); s.bind(('127.0.0.1', 0)); print(s.getsockname()[1]); s.close()")
+sed -i "s#http://127.0.0.1:4000#http://127.0.0.1:$FREE_PORT#" "$SANDBOX/providers/nvidia.json.example"
+rm -f "$SANDBOX/providers/nvidia.json"
+
 gw_out=$(say nvidia)
 case "$gw_out" in
   *"nothing is listening"*) ok "nvidia warns when its gateway is not running" ;;
@@ -176,6 +209,14 @@ case "$gw_out" in
   *"nim-gateway.sh start"*) ok "the warning names the command that fixes it" ;;
   *) bad "the warning does not say how to start the gateway" ;;
 esac
+# The check above only means anything while the shipped template really is
+# loopback; if it ever moves to a remote host, these assertions go quiet.
+if grep -qE '"ANTHROPIC_BASE_URL": "http://(127\.0\.0\.1|localhost):' \
+     "$REPO_DIR/providers/nvidia.json.example"; then
+  ok "shipped nvidia template is loopback, so the check applies to it"
+else
+  bad "shipped nvidia template is no longer loopback; the gateway check is dead code"
+fi
 # A remote provider must never trip the loopback check.
 case "$(say deepseek)" in
   *"nothing is listening"*) bad "a remote provider was wrongly checked for a local listener" ;;

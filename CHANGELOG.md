@@ -8,6 +8,34 @@ bootstrap rather than a published package.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Every real Claude Code request to the `nvidia` provider failed with `400
+  Validation: Unsupported parameter(s): diagnostics`.** Claude Code sends its
+  full Anthropic capability set to any `ANTHROPIC_BASE_URL` endpoint, and
+  LiteLLM's `drop_params` only removes params it recognises, so the
+  Claude-Code-specific `diagnostics` field reached NIM and it hard-failed the
+  request. The gateway config now drops it by name, and the provider sets
+  `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` to keep that surface small as
+  Claude Code adds capabilities.
+
+  This was invisible to the curl-based checks used when the provider landed,
+  because they only sent fields the Anthropic API documents. Only a real client
+  session surfaced it. `scripts/test-providers.sh` now asserts the gateway drops
+  those fields.
+
+### Changed
+
+- **NVIDIA model defaults are now chosen from benchmarks rather than by
+  availability.** The initial `gpt-oss-120b`/`20b` pair scored 24 on the
+  Artificial Analysis Intelligence Index v4.1 and measured ~38s per request
+  through the gateway. The slots now map to capability tiers, with intelligence
+  and price both descending like Anthropic's own ladder:
+  `opus` -> `minimaxai/minimax-m3` (44), `sonnet` ->
+  `deepseek-ai/deepseek-v4-flash` (40, ~3s), `haiku` ->
+  `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning` (15, ~1.1s). All three are
+  verified end-to-end through a real Claude Code session.
+
 ### Added
 
 - **NVIDIA NIM support**, both ways NVIDIA ships it:
