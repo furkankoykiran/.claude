@@ -23,10 +23,19 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y shellcheck
-          shellcheck install.sh hooks/*.sh scripts/*.sh
+          # bin/cc-provider has no .sh suffix but is bash — lint it explicitly.
+          shellcheck install.sh hooks/*.sh scripts/*.sh bin/cc-provider
+
+  providers:
+    name: Provider switcher tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run provider switcher tests
+        run: ./scripts/test-providers.sh
 
   powershell:
-    name: Lint install.ps1 (PSScriptAnalyzer)
+    name: Lint PowerShell (PSScriptAnalyzer)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -35,9 +44,12 @@ jobs:
         run: |
           Set-PSRepository PSGallery -InstallationPolicy Trusted
           Install-Module PSScriptAnalyzer -Force -Scope CurrentUser
-          $results = Invoke-ScriptAnalyzer -Path ./install.ps1 -Settings ./PSScriptAnalyzerSettings.psd1
+          $paths = @('./install.ps1', './bin/cc-provider.ps1', './scripts/nim-gateway.ps1')
+          $results = foreach ($p in $paths) {
+            Invoke-ScriptAnalyzer -Path $p -Settings ./PSScriptAnalyzerSettings.psd1
+          }
           if ($results) {
-            $results | Format-Table -AutoSize RuleName, Severity, Line, Message | Out-String | Write-Host
+            $results | Format-Table -AutoSize ScriptName, RuleName, Severity, Line, Message | Out-String | Write-Host
             Write-Error "PSScriptAnalyzer reported $($results.Count) issue(s)."
             exit 1
           }
