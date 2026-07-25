@@ -1,0 +1,28 @@
+# LiteLLM gateway config for the `nvidia` provider.
+#
+# Claude Code only speaks the Anthropic Messages API (`/v1/messages`). The
+# hosted NVIDIA catalog at integrate.api.nvidia.com is OpenAI-shaped
+# (`/v1/chat/completions`) and returns 404 on `/v1/messages`, so a translating
+# gateway sits between them. `scripts/nim-gateway.sh start` runs it on
+# 127.0.0.1:4000, which is what providers/nvidia.json points ANTHROPIC_BASE_URL at.
+#
+# Self-hosted NIM containers expose `/v1/messages` natively and need no gateway
+# at all — use the `nvidia-nim` provider for those.
+#
+# The `"*"` -> `nvidia_nim/*` wildcard forwards whatever model id Claude Code
+# asks for straight to NVIDIA, so you pick models in providers/nvidia.json
+# (ANTHROPIC_DEFAULT_*_MODEL) and never have to edit this file to switch.
+# Browse ids at https://build.nvidia.com/models — Claude Code needs tool
+# calling, so verify the model supports it.
+#
+# Get a key at https://build.nvidia.com (it starts with `nvapi-`).
+model_list:
+  - model_name: "*"
+    litellm_params:
+      model: nvidia_nim/*
+      api_key: <NVIDIA_NIM_API_KEY>
+
+litellm_settings:
+  # NIM rejects Anthropic-only sampling params that have no OpenAI equivalent;
+  # drop them instead of failing the request.
+  drop_params: true

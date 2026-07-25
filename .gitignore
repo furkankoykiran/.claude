@@ -7,6 +7,9 @@ settings.json.backup.*
 providers/*.json
 !providers/*.json.example
 providers/.active
+# NVIDIA gateway config holds the nvapi- key; only its template is tracked
+providers/*.yaml
+!providers/*.yaml.example
 
 # Installed by RTK — not part of this repo
 RTK.md

@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "rtk hook claude"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {},
+  "effortLevel": "xhigh",
+  "env": {
+    "ANTHROPIC_BASE_URL": "http://<NIM_HOST>:8000",
+    "ANTHROPIC_API_KEY": "not-used",
+    "ANTHROPIC_CUSTOM_MODEL_OPTION": "<NIM_MODEL>",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "<NIM_MODEL>",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "<NIM_MODEL>",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "<NIM_MODEL>",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "<NIM_MODEL>",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "API_TIMEOUT_MS": "3000000"
+  }
+}
