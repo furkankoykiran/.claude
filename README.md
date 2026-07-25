@@ -78,27 +78,30 @@ Both installers honour the same knobs:
    On Linux it first installs Chromium's system libraries so the headless
    browser actually launches (see [Troubleshooting](#troubleshooting)).
 5. Installs [rtk](https://github.com/rtk-ai/rtk) and wires its PreToolUse hook.
-6. Installs Python deps (`manim`, `edge-tts`) and `ffmpeg` for `manim-narration`.
-7. Clones five upstream skill packs into `~/.claude/skills/` (each git-ignored,
+6. Seeds `providers/*.json` from every committed template and adds the `ccs`
+   shell function, so [switching API providers](#api-provider-switching) works
+   out of the box. Nothing is activated until you run `ccs <name>` yourself.
+7. Installs Python deps (`manim`, `edge-tts`) and `ffmpeg` for `manim-narration`.
+8. Clones five upstream skill packs into `~/.claude/skills/` (each git-ignored,
    auto-discovered by Claude Code):
    [adithya-s-k/manim_skill](https://github.com/adithya-s-k/manim_skill),
    [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills),
    [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills),
    [pbakaus/impeccable](https://github.com/pbakaus/impeccable), and
    [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill).
-8. File-copies a curated, always-on subset of Anthropic's official
+9. File-copies a curated, always-on subset of Anthropic's official
    [anthropics/skills](https://github.com/anthropics/skills) — the
    office-document and authoring skills (`docx`, `pdf`, `pptx`, `xlsx`,
    `doc-coauthoring`) plus `mcp-builder`, `skill-creator`, and
    `web-artifacts-builder`. Overlapping skills and the name-colliding
    `claude-api` are skipped.
-9. Installs (or upgrades) [graphify](https://pypi.org/project/graphifyy/) and
-   wires its skill — re-running the bootstrap pulls the latest `graphifyy`, just
-   like the git skill packs above.
-10. Registers four [plugin marketplaces](#plugin-marketplaces) and installs a
+10. Installs (or upgrades) [graphify](https://pypi.org/project/graphifyy/) and
+    wires its skill — re-running the bootstrap pulls the latest `graphifyy`, just
+    like the git skill packs above.
+11. Registers four [plugin marketplaces](#plugin-marketplaces) and installs a
     curated set of workflow plugins (see below). Skipped if the `claude` CLI
     isn't on `PATH` yet.
-11. Optionally configures portable MCP servers (`github`, `context7`).
+12. Optionally configures portable MCP servers (`github`, `context7`).
 
 Every step except cloning the repo is **fail-soft**: a failure is recorded and
 printed in an end-of-run summary instead of aborting the bootstrap. Re-run
@@ -114,41 +117,99 @@ After install, edit:
 
 Both are git-ignored, so your edits never conflict with `git pull`.
 
-## API provider switching (z.ai and Anthropic)
+## API provider switching
 
 The installer seeds a provider-switching system so Claude Code can run against
-either [z.ai](https://z.ai/subscribe?ic=SNPFQIQ7BD) (GLM models) or the official
-Anthropic API, and you flip between them with one command. z.ai's GLM plans are a
-cheap way to run Claude Code all day; if you don't have a plan yet, this
-[z.ai subscription link](https://z.ai/subscribe?ic=SNPFQIQ7BD) is my referral.
-
-- `~/.claude/providers/zai.json` — z.ai credentials. The `ANTHROPIC_AUTH_TOKEN`
-  lives here; the file is mode `600` and git-ignored.
-- `~/.claude/providers/anthropic.json` — official Anthropic. Uses Claude Code's
-  normal login (`claude login`), so no token sits in this file.
-- `~/.claude/providers/<name>.json.example` — committed templates carrying a
-  `<ZAI_TOKEN>` placeholder. The real `*.json` files are local-only and never
-  committed.
-
-`settings.json` is a **generated copy** of the active provider file (copied, not
-symlinked, so the same flow works on Windows). Edit the provider file, then
-re-switch; don't hand-edit `settings.json`.
-
-The `ccs` shell function (added to your shell profile by the installer) does the
-switch:
+the official Anthropic API, a cheaper third-party model host, or a model you run
+yourself — and you flip between them with one command.
 
 ```bash
+ccs list         # every available provider
 ccs zai          # route Claude Code through z.ai (GLM)
 ccs anthropic    # route through the official Anthropic API
 ccs status       # print the active provider
 ```
 
-Restart Claude Code after switching; it reads provider env at startup. On a
-fresh install, fill your z.ai token in `~/.claude/providers/zai.json` (replace
-`<ZAI_TOKEN>`) before running `ccs zai`, or requests will 401. The same `ccs`
-command works identically on Windows (PowerShell, path
-`%USERPROFILE%\.claude\providers\zai.json`); the installer adds it to your
-PowerShell profile there.
+`ccs` is a shell function the installer adds to your shell profile (`~/.bashrc`
+on Unix, `$PROFILE` on Windows). It works identically on both.
+
+### Available providers
+
+| `ccs <name>` | Endpoint | You need | Notes |
+| --- | --- | --- | --- |
+| `anthropic` | `api.anthropic.com` | `claude login` | No token in the file; uses your normal claude.ai auth |
+| `zai` | `api.z.ai/api/anthropic` | z.ai API key | GLM models. [Subscription link](https://z.ai/subscribe?ic=SNPFQIQ7BD) (my referral) |
+| `nvidia` | `127.0.0.1:4000` -> `build.nvidia.com` | NVIDIA API key + local gateway | Hosted NVIDIA catalog. [See below](#nvidia-nim) |
+| `nvidia-nim` | your NIM container | a NIM deployment | Self-hosted NIM, no gateway. [See below](#nvidia-nim) |
+| `deepseek` | `api.deepseek.com/anthropic` | DeepSeek API key | `deepseek-v4-pro` / `-flash` |
+| `kimi` | `api.moonshot.ai/anthropic` | Moonshot API key | `kimi-k3[1m]` |
+| `minimax` | `api.minimax.io/anthropic` | MiniMax API key | `MiniMax-M3[1m]`. Use `api.minimaxi.com` in China |
+| `openrouter` | `openrouter.ai/api` | OpenRouter API key | Anthropic-format "skin"; any OpenRouter model slug |
+
+Every provider except `nvidia` talks to an endpoint that speaks the Anthropic
+Messages API directly, so there is nothing to run and nothing to translate.
+
+Claude Code only speaks the Anthropic Messages API. Endpoints and variables in
+the table follow each vendor's own Claude Code documentation. The `anthropic`,
+`zai`, and `nvidia` rows are verified end-to-end here; the rest are configured
+from vendor docs but not key-tested, so double-check the model id against your
+plan if a request comes back 404.
+
+### How it works
+
+`settings.json` is a **generated copy** of the active provider file (copied, not
+symlinked, so the same flow works on Windows). Edit the provider file, then
+re-switch; don't hand-edit `settings.json` — `ccs status` warns when the two
+drift apart, which is the usual cause of a mystery `401`.
+
+- `~/.claude/providers/<name>.json` — the live config, mode `600` and
+  git-ignored, because auth tokens live here.
+- `~/.claude/providers/<name>.json.example` — committed templates carrying a
+  `<ZAI_TOKEN>`-style placeholder. `ccs` warns while a placeholder is still in
+  place, so a half-configured provider fails loudly instead of at request time.
+
+Restart Claude Code after switching; it reads provider env at startup.
+
+**Adding a provider** means dropping `providers/<name>.json.example` into the
+repo. The provider list is discovered from whichever templates exist, so no code
+in `cc-provider`, `install.sh`, or `install.ps1` needs to change.
+
+### NVIDIA NIM
+
+NVIDIA has two paths, and they need different providers:
+
+**Self-hosted NIM container** (`ccs nvidia-nim`) — NIM serves `/v1/messages`
+natively, so Claude Code talks to it directly with no gateway. Fill in your host
+and deployed model in `providers/nvidia-nim.json`, then switch. This is
+[NVIDIA's documented integration](https://docs.nvidia.com/nim/large-language-models/latest/ai-assistant-integrations/claude-code.html).
+
+**Hosted catalog at [build.nvidia.com](https://build.nvidia.com)** (`ccs nvidia`)
+— the hosted API is OpenAI-shaped and returns `404` on `/v1/messages`, so a small
+local gateway translates between the two:
+
+```bash
+# 1. put your nvapi- key in the gateway config
+#    ~/.claude/providers/nvidia-gateway.yaml   (git-ignored)
+# 2. start the gateway (installs LiteLLM into its own venv on first run)
+~/.claude/scripts/nim-gateway.sh start
+# 3. switch
+ccs nvidia
+```
+
+`nim-gateway.sh` also takes `stop`, `restart`, `status`, and `logs`; on Windows
+use `pwsh ~\.claude\scripts\nim-gateway.ps1`. It binds loopback only and is
+installed **on demand**, not by `install.sh`, so you don't carry a Python
+dependency you never use. `ccs` warns if you switch to `nvidia` while the gateway
+is down, which otherwise surfaces as an opaque connection error inside Claude
+Code.
+
+Pick models in `providers/nvidia.json` (`ANTHROPIC_DEFAULT_*_MODEL`) using ids
+from [build.nvidia.com/models](https://build.nvidia.com/models) — the gateway
+forwards whatever you ask for, so you never edit its config to change models.
+**Claude Code requires tool calling**, and much of the catalog doesn't support
+it; the defaults (`openai/gpt-oss-120b`, `openai/gpt-oss-20b`) are verified
+working. Availability also varies by key, so a model that 404s is usually not
+enabled on your account rather than misconfigured.
 
 ## MCP servers
 
@@ -162,7 +223,8 @@ other MCP servers, use `claude mcp add` directly (or the `/add-mcp` skill).
 
 ### MCP servers across a provider switch
 
-There are two kinds of MCP server, and only one kind survives a switch to z.ai:
+There are two kinds of MCP server, and only one kind survives a switch away from
+`anthropic`:
 
 - **Local MCP servers** — the ones in `~/.claude.json` (`github`, `context7`,
   anything you add with `claude mcp add`). These carry their own URL and auth, so
@@ -171,14 +233,14 @@ There are two kinds of MCP server, and only one kind survives a switch to z.ai:
 - **claude.ai connectors** — servers you added at
   [claude.ai/customize/connectors](https://claude.ai/customize/connectors)
   (e.g. Fintables, Google Drive). Claude Code loads these **only while your active
-  auth is your claude.ai subscription**. The moment a provider sets
-  `ANTHROPIC_AUTH_TOKEN` (which `ccs zai` does), Claude Code stops fetching
-  claude.ai connectors — [by design, per Anthropic's MCP docs](https://code.claude.com/docs/en/mcp#use-mcp-servers-from-claude-ai),
-  not a bug. So `ccs anthropic` shows Fintables; `ccs zai` hides it.
+  auth is your claude.ai subscription**. The moment a provider sets a credential
+  of its own — which every provider except `anthropic` does — Claude Code stops
+  fetching claude.ai connectors — [by design, per Anthropic's MCP docs](https://code.claude.com/docs/en/mcp#use-mcp-servers-from-claude-ai),
+  not a bug. So `ccs anthropic` shows Fintables; every other provider hides it.
 
-**To keep a connector like Fintables under z.ai, register it as a local MCP
-server** (they publish a remote HTTP endpoint), so it no longer depends on the
-claude.ai session:
+**To keep a connector like Fintables under a non-Anthropic provider, register it
+as a local MCP server** (they publish a remote HTTP endpoint), so it no longer
+depends on the claude.ai session:
 
 ```bash
 claude mcp add --transport http fintables https://evo.fintables.com/mcp
