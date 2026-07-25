@@ -275,7 +275,7 @@ function Install-Rtk {
 }
 
 # ---------------------------------------------------------------------------
-# Provider switcher (z.ai <-> Anthropic) - settings.json copy system
+# Provider switcher (Anthropic, z.ai, NVIDIA, ...) - settings.json copy system
 # ---------------------------------------------------------------------------
 # settings.json is a COPY of providers/<active>.json (copy, not symlink, so it
 # works on Windows where symlinks need admin/Developer Mode). Provider files
@@ -283,14 +283,17 @@ function Install-Rtk {
 # tracked with a <ZAI_TOKEN>-style placeholder. `ccs` (-> bin/cc-provider.ps1)
 # copies the chosen provider to settings.json and records it in providers/.active.
 # Fresh installs opt in by running `ccs zai` once after filling the token.
+#
+# Seeding is driven by whichever templates exist, so a new provider is added by
+# committing providers/<name>.json.example and nothing else.
 function Set-Provider {
     $pdir = Join-Path $ClaudeDir 'providers'
     if (-not (Test-Path $pdir)) { New-Item -ItemType Directory -Path $pdir -Force | Out-Null }
-    foreach ($p in @('zai', 'anthropic')) {
-        $target  = Join-Path $pdir "$p.json"
-        $example = Join-Path $pdir "$p.json.example"
-        if ((-not (Test-Path $target)) -and (Test-Path $example)) {
-            Copy-Item $example $target
+    foreach ($example in Get-ChildItem -LiteralPath $pdir -Filter '*.json.example' -ErrorAction SilentlyContinue) {
+        $p      = $example.Name -replace '\.json\.example$', ''
+        $target = Join-Path $pdir "$p.json"
+        if (-not (Test-Path $target)) {
+            Copy-Item $example.FullName $target
             Write-Step "Seeded providers/$p.json from template (fill your token before switching to it)"
         }
     }
@@ -537,7 +540,10 @@ function Write-Summary {
     Write-Host "  1. Edit $ClaudeDir\config.json with your username, blog dir, etc."
     Write-Host '  2. Restart Claude Code to load skills, agents, and hooks.'
     Write-Host '  3. Re-run install.ps1 anytime to update - it''s idempotent.'
-    Write-Host "  4. Switch API provider: fill $ClaudeDir\providers\zai.json (<ZAI_TOKEN>), then run: ccs zai"
+    Write-Host "  4. Switch API provider: run 'ccs list' to see them all, fill the token in"
+    Write-Host "     $ClaudeDir\providers\<name>.json, then run: ccs <name>"
+    Write-Host '     For the hosted NVIDIA catalog, start its gateway first:'
+    Write-Host "     pwsh $ClaudeDir\scripts\nim-gateway.ps1 start; ccs nvidia"
 
     if ($script:FailedSteps.Count -gt 0) {
         Write-Host ''

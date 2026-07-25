@@ -3,9 +3,14 @@
 # file to ~/.claude/settings.json. Copy (not symlink) so it works on every
 # platform, including Windows (symlinks need admin/Developer Mode there).
 #
-#   cc-provider zai          -> activate z.ai (GLM)
 #   cc-provider anthropic    -> activate official Anthropic
+#   cc-provider zai          -> activate z.ai (GLM)
+#   cc-provider list         -> list every available provider
 #   cc-provider status       -> print the active provider
+#
+# The provider set is DATA, not code: whatever `providers/<name>.json.example`
+# templates exist are the valid names, so adding a provider means dropping in a
+# template — no edits here, in install.sh, or in install.ps1.
 #
 # Provider files (providers/<name>.json) are local and gitignored (auth
 # tokens live here). Templates (providers/<name>.json.example) are committed
@@ -22,6 +27,26 @@ SETTINGS="$CLAUDE_DIR/settings.json"
 PLACEHOLDER_RE='<[A-Z_]+>'
 
 die() { printf 'cc-provider: %s\n' "$*" >&2; exit 1; }
+
+# Provider names, one per line: every .json.example template, plus any local
+# .json a user added by hand. Sorted and de-duplicated.
+list_providers() {
+  local f name
+  {
+    for f in "$PDIR"/*.json.example; do
+      [ -e "$f" ] || continue
+      name=${f##*/}; printf '%s\n' "${name%.json.example}"
+    done
+    for f in "$PDIR"/*.json; do
+      [ -e "$f" ] || continue
+      name=${f##*/}; printf '%s\n' "${name%.json}"
+    done
+  } | sort -u
+}
+
+is_provider() {
+  list_providers | grep -qxF "$1"
+}
 
 ensure_provider_file() {
   local p="$1"
@@ -40,6 +65,30 @@ ensure_provider_file() {
   fi
 }
 
+# Providers that point at a loopback base URL (the NVIDIA gateway, a self-hosted
+# NIM container, a local Ollama) are dead until that listener is up, and the
+# symptom in Claude Code is an opaque connection error. Warn at switch time
+# instead. Best-effort: a parse miss just skips the check.
+warn_if_local_endpoint_down() {
+  local p="$1" url host port
+  url=$(sed -n 's/.*"ANTHROPIC_BASE_URL"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' \
+        "$PDIR/$p.json" 2>/dev/null | head -1)
+  case "$url" in
+    *//127.0.0.1:*|*//localhost:*|*//0.0.0.0:*) ;;
+    *) return 0 ;;
+  esac
+  host=${url#*//}; port=${host##*:}; host=${host%%:*}
+  port=${port%%/*}
+  case "$port" in ''|*[!0-9]*) return 0 ;; esac
+  if ! (exec 3<>"/dev/tcp/$host/$port") 2>/dev/null; then
+    printf 'WARNING: nothing is listening on %s:%s, which providers/%s.json points at.\n' \
+      "$host" "$port" "$p" >&2
+    if [ "$p" = "nvidia" ]; then
+      printf 'Start the gateway first: %s/scripts/nim-gateway.sh start\n' "$CLAUDE_DIR" >&2
+    fi
+  fi
+}
+
 activate() {
   local p="$1"
   ensure_provider_file "$p"
@@ -49,6 +98,7 @@ activate() {
   cp "$PDIR/$p.json" "$SETTINGS"
   chmod 600 "$SETTINGS"
   printf 'Active provider: %s\n' "$p"
+  warn_if_local_endpoint_down "$p"
   printf 'Restart Claude Code for the change to take effect (env is read at startup).\n'
 }
 
@@ -71,21 +121,32 @@ status() {
     if grep -qE "$PLACEHOLDER_RE" "$PDIR/$active.json" 2>/dev/null; then
       printf 'WARNING: providers/%s.json still has a placeholder (<...>) - fill your token, then: ccs %s\n' "$active" "$active" >&2
     fi
+    warn_if_local_endpoint_down "$active"
   fi
 }
 
 usage() {
-  cat >&2 <<'EOF'
-usage: cc-provider [zai|anthropic|status]
-  zai         activate z.ai (GLM)
-  anthropic   activate official Anthropic
-  status      print the active provider (default)
-EOF
+  printf 'usage: cc-provider [<provider>|list|status]\n' >&2
+  printf '  <provider>  activate it (copies providers/<provider>.json to settings.json)\n' >&2
+  printf '  list        list available providers\n' >&2
+  printf '  status      print the active provider (default)\n' >&2
+  printf '\navailable providers:\n' >&2
+  local p
+  for p in $(list_providers); do printf '  %s\n' "$p" >&2; done
 }
 
 case "${1:-status}" in
-  zai|anthropic) activate "$1" ;;
-  status)        status ;;
-  -h|--help)     usage; exit 0 ;;
-  *)             usage; exit 1 ;;
+  status)    status ;;
+  list)      list_providers ;;
+  -h|--help) usage; exit 0 ;;
+  '')        usage; exit 1 ;;
+  *)
+    if is_provider "$1"; then
+      activate "$1"
+    else
+      printf 'cc-provider: unknown provider: %s\n\n' "$1" >&2
+      usage
+      exit 1
+    fi
+    ;;
 esac

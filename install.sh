@@ -270,7 +270,7 @@ install_rtk() {
 }
 
 # ---------------------------------------------------------------------------
-# 6. Provider switcher (z.ai <-> Anthropic) — settings.json copy system
+# 6. Provider switcher (Anthropic, z.ai, NVIDIA, ...) — settings.json copy system
 # ---------------------------------------------------------------------------
 # settings.json is a COPY of providers/<active>.json (copy, not symlink, so it
 # also works on Windows where symlinks need admin/Developer Mode). Provider
@@ -279,13 +279,18 @@ install_rtk() {
 # Unix, bin/cc-provider.ps1 on Windows) copies the chosen provider to
 # settings.json and records it in providers/.active. Fresh installs opt in by
 # running `ccs <provider>` once after filling the token.
+#
+# Seeding is driven by whichever templates exist, so a new provider is added by
+# committing providers/<name>.json.example and nothing else.
 setup_providers() {
   local pdir="$CLAUDE_DIR/providers"
   mkdir -p "$pdir"
-  local p
-  for p in zai anthropic; do
-    if [ ! -f "$pdir/$p.json" ] && [ -f "$pdir/$p.json.example" ]; then
-      cp "$pdir/$p.json.example" "$pdir/$p.json"
+  local ex p
+  for ex in "$pdir"/*.json.example; do
+    [ -e "$ex" ] || continue
+    p=${ex##*/}; p=${p%.json.example}
+    if [ ! -f "$pdir/$p.json" ]; then
+      cp "$ex" "$pdir/$p.json"
       chmod 600 "$pdir/$p.json"
       log "Seeded providers/$p.json from template (fill your token before switching to it)"
     fi
@@ -731,7 +736,10 @@ Next steps:
   1. Edit $CLAUDE_DIR/config.json with your username, blog dir, etc.
   2. Restart Claude Code to load skills, agents, and hooks.
   3. Re-run ./install.sh anytime to update — it's idempotent.
-  4. Switch API provider: fill $CLAUDE_DIR/providers/zai.json (<ZAI_TOKEN>), then run: ccs zai
+  4. Switch API provider: run 'ccs list' to see them all, fill the token in
+     $CLAUDE_DIR/providers/<name>.json, then run: ccs <name>
+     For the hosted NVIDIA catalog, start its gateway first:
+     $CLAUDE_DIR/scripts/nim-gateway.sh start && ccs nvidia
 EOF
 
   if [ ${#FAILED_STEPS[@]} -gt 0 ]; then
