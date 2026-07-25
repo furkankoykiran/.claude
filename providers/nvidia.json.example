@@ -1,0 +1,27 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "rtk hook claude"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {},
+  "effortLevel": "xhigh",
+  "env": {
+    "ANTHROPIC_BASE_URL": "http://127.0.0.1:4000",
+    "ANTHROPIC_AUTH_TOKEN": "local-nim-gateway",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "openai/gpt-oss-20b",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "openai/gpt-oss-120b",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "openai/gpt-oss-120b",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "openai/gpt-oss-120b",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "API_TIMEOUT_MS": "3000000"
+  }
+}

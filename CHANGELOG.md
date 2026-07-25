@@ -8,6 +8,48 @@ bootstrap rather than a published package.
 
 ## [Unreleased]
 
+### Added
+
+- **NVIDIA NIM support**, both ways NVIDIA ships it:
+  - `ccs nvidia-nim` for a **self-hosted NIM container**, which serves
+    `/v1/messages` natively — no gateway, pure config.
+  - `ccs nvidia` for the **hosted catalog** at `build.nvidia.com`. That API is
+    OpenAI-shaped and `404`s on `/v1/messages`, so `scripts/nim-gateway.sh`
+    (`start`/`stop`/`restart`/`status`/`logs`, plus a `.ps1` twin) runs a
+    loopback-only LiteLLM translator on `127.0.0.1:4000`. LiteLLM installs into
+    its own venv **on demand**, not during bootstrap, so the dependency is only
+    paid for by people who use it. Its config wildcards every model id through
+    to NVIDIA, so models are chosen in `providers/nvidia.json` and the gateway
+    config never needs editing.
+- **Four more providers**, all speaking the Anthropic Messages API directly with
+  nothing to run: `deepseek`, `kimi` (Moonshot), `minimax`, and `openrouter`.
+  Endpoints and variables follow each vendor's own Claude Code documentation.
+- **`ccs list`** — prints every available provider, which matters now that there
+  are eight rather than two.
+- **`scripts/test-providers.sh`** — 47 assertions covering template validity,
+  discovery, activation, and the warning paths, run against a throwaway
+  `CLAUDE_DIR`. Wired into CI as its own job.
+
+### Changed
+
+- **The provider set is now data, not code.** `cc-provider` discovers providers
+  by globbing `providers/*.json.example` instead of matching a hardcoded
+  `zai|anthropic` case, and both installers seed whatever templates exist. Adding
+  a provider is now one committed template file, with no edits to
+  `bin/cc-provider`, `bin/cc-provider.ps1`, `install.sh`, or `install.ps1` — the
+  four places that previously had to agree.
+- **CI covers more of what ships.** `shellcheck` now lints `bin/cc-provider`,
+  which has no `.sh` suffix and so was silently excluded, and PSScriptAnalyzer
+  now lints `bin/cc-provider.ps1` and `scripts/nim-gateway.ps1` alongside
+  `install.ps1`.
+
+### Fixed
+
+- **Switching to a provider whose endpoint is local no longer fails silently.**
+  `ccs` now checks whether anything is listening on a loopback
+  `ANTHROPIC_BASE_URL` and names the command that starts it. Previously a
+  forgotten gateway surfaced as an opaque connection error inside Claude Code.
+
 ## [1.0.0] - 2026-06-12
 
 First hardening pass: a resilient cross-platform bootstrap and a professional

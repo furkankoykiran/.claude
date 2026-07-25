@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "rtk hook claude"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {},
+  "effortLevel": "xhigh",
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.moonshot.ai/anthropic",
+    "ANTHROPIC_AUTH_TOKEN": "<MOONSHOT_API_KEY>",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "kimi-k3[1m]",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "kimi-k3[1m]",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "kimi-k3[1m]",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "kimi-k3[1m]",
+    "ENABLE_TOOL_SEARCH": "false",
+    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "1048576",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "API_TIMEOUT_MS": "3000000"
+  }
+}
