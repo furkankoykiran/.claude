@@ -217,11 +217,11 @@ fastest. Scores are the
 [Artificial Analysis Intelligence Index v4.1](https://artificialanalysis.ai/);
 latency is measured through this gateway, not vendor-published:
 
-| Slot | Model | Index | Context | $/1M in | $/1M out | Latency |
+| Slot | Model | Index | $/1M in | $/1M out | Latency | Verified context |
 | --- | --- | --- | --- | --- | --- | --- |
-| `opus` | `minimaxai/minimax-m3` | 44 | 1M | $0.30 | $1.20 | ~11s |
-| `sonnet` | `deepseek-ai/deepseek-v4-flash` | 40 | 1M | $0.14 | $0.28 | ~3s |
-| `haiku` | `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning` | 15 | 256k | $0.07 | — | ~1.1s |
+| `opus` | `minimaxai/minimax-m3` | 44 | $0.30 | $1.20 | ~11s | 355k |
+| `sonnet` | `deepseek-ai/deepseek-v4-flash` | 40 | $0.14 | $0.28 | ~3s | 666k |
+| `haiku` | `openai/gpt-oss-20b` | — | cheapest | — | ~0.6s | 89k |
 
 Intelligence and price both descend across the three, which is the same shape as
 Anthropic's own ladder. Two notes on what got left out: the catalog's strongest
@@ -229,12 +229,24 @@ models on paper — `z-ai/glm-5.2` (51) and `deepseek-ai/deepseek-v4-pro` (44) �
 time out through the hosted API, and `nvidia/nemotron-3-ultra-550b-a55b` (38) is
 dominated by the `sonnet` pick on intelligence, price, and context at once.
 
-To change any of them, edit `providers/nvidia.json` and re-run `ccs nvidia`. The
-gateway forwards whatever id you ask for, so its own config never changes. Browse
-ids at [build.nvidia.com/models](https://build.nvidia.com/models), and note two
-things: **Claude Code requires tool calling** and much of the catalog lacks it,
-and availability varies by key — a model that `404`s is usually just not enabled
-on your account.
+"Verified context" is measured, not advertised, and it is worth measuring:
+`nvidia/nemotron-3-nano-omni-30b-a3b-reasoning` advertises 256k but **silently
+truncated** a 400KB prompt down to 1,869 counted tokens — it answers normally
+while having discarded the context, which is worse than an error. If you switch
+models, send one oversized prompt and check the reported `input_tokens` scales
+with what you sent.
+
+To change any model, edit `providers/nvidia.json` and re-run `ccs nvidia` — the
+wildcard in the gateway config forwards whatever id you name. One catch: if you
+**pin** a model with `/model opus` or `--model`, Claude Code sends the literal
+Anthropic id (`claude-opus-5`) rather than your mapping, so the gateway config
+also maps those ids onto the same three tiers. Change a tier and you want both
+files, which is why each says so.
+
+Browse ids at [build.nvidia.com/models](https://build.nvidia.com/models), and
+note that **Claude Code requires tool calling** while much of the catalog lacks
+it, and availability varies by key — a model that `404`s is usually just not
+enabled on your account.
 
 ## MCP servers
 

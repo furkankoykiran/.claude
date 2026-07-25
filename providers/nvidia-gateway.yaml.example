@@ -7,33 +7,82 @@
 # 127.0.0.1:4000, which is what providers/nvidia.json points ANTHROPIC_BASE_URL at.
 #
 # Self-hosted NIM containers expose `/v1/messages` natively and need no gateway
-# at all — use the `nvidia-nim` provider for those.
-#
-# The `"*"` -> `nvidia_nim/*` wildcard forwards whatever model id Claude Code
-# asks for straight to NVIDIA, so you pick models in providers/nvidia.json
-# (ANTHROPIC_DEFAULT_*_MODEL) and never have to edit this file to switch.
-# Browse ids at https://build.nvidia.com/models — Claude Code needs tool
-# calling, so verify the model supports it.
-#
-# Get a key at https://build.nvidia.com (it starts with `nvapi-`).
+# at all - use the `nvidia-nim` provider for those.
+
+# ---------------------------------------------------------------------------
+# YOUR API KEY GOES HERE, once. Get one at https://build.nvidia.com (`nvapi-...`).
+# Every model below references this anchor, so this is the only line to change
+# when you rotate the key. Re-run `scripts/nim-gateway.sh restart` afterwards.
+# ---------------------------------------------------------------------------
+nvidia_api_key: &nvidia_key <NVIDIA_NIM_API_KEY>
+
+# Shared per-model settings, kept in one place for the same reason.
+defaults: &nim_defaults
+  api_key: *nvidia_key
+  # Claude Code sends its full Anthropic capability set to any
+  # ANTHROPIC_BASE_URL endpoint, including fields that exist nowhere in the
+  # OpenAI schema. `drop_params` below only removes params LiteLLM recognises,
+  # so these reach NIM and it hard-fails with
+  # `Validation: Unsupported parameter(s)`. Drop them by name.
+  #
+  # If a future Claude Code release adds another such field, requests start
+  # returning 400 and the error names the field - append it here.
+  additional_drop_params: ["diagnostics"]
+  # NVIDIA's hosted tier caps concurrent requests per worker and answers
+  # `ResourceExhausted: Worker local total request limit reached (64/48)` once
+  # Claude Code's parallel subagents exceed it. Queue here rather than fail.
+  max_parallel_requests: 12
+
 model_list:
+  # Anthropic model ids arrive verbatim whenever a model is pinned rather than
+  # left on an alias - `/model opus`, `--model`, a resumed session that recorded
+  # its model, or a feature that hardcodes one. ANTHROPIC_DEFAULT_*_MODEL does
+  # NOT rewrite those, so without these rows the wildcard below hands
+  # `claude-opus-5` straight to NVIDIA and every request 404s.
+  #
+  # Keep these pointing at the same models as ANTHROPIC_DEFAULT_*_MODEL in
+  # providers/nvidia.json, so a pinned model behaves like the alias it shadows.
+  - model_name: claude-opus-5
+    litellm_params:
+      <<: *nim_defaults
+      model: nvidia_nim/minimaxai/minimax-m3
+  - model_name: claude-fable-5
+    litellm_params:
+      <<: *nim_defaults
+      model: nvidia_nim/minimaxai/minimax-m3
+
+  - model_name: claude-sonnet-5
+    litellm_params:
+      <<: *nim_defaults
+      model: nvidia_nim/deepseek-ai/deepseek-v4-flash
+  - model_name: claude-sonnet-4-5
+    litellm_params:
+      <<: *nim_defaults
+      model: nvidia_nim/deepseek-ai/deepseek-v4-flash
+
+  - model_name: claude-haiku-4-5
+    litellm_params:
+      <<: *nim_defaults
+      model: nvidia_nim/openai/gpt-oss-20b
+  - model_name: claude-3-5-haiku-20241022
+    litellm_params:
+      <<: *nim_defaults
+      model: nvidia_nim/openai/gpt-oss-20b
+
+  # Anything else is treated as a real NVIDIA model id and forwarded as-is, so
+  # the ANTHROPIC_DEFAULT_*_MODEL values in providers/nvidia.json work without
+  # this file needing to know them. Browse ids at
+  # https://build.nvidia.com/models - Claude Code needs tool calling, so check
+  # the model supports it before switching to it.
   - model_name: "*"
     litellm_params:
+      <<: *nim_defaults
       model: nvidia_nim/*
-      api_key: <NVIDIA_NIM_API_KEY>
-      # Claude Code sends its full Anthropic capability set to any
-      # ANTHROPIC_BASE_URL endpoint, including fields that exist nowhere in the
-      # OpenAI schema. `drop_params` below only removes params LiteLLM
-      # recognises, so these reach NIM and it hard-fails the request with
-      # `Validation: Unsupported parameter(s)`. Drop them by name here.
-      #
-      # If a future Claude Code release adds another such field, requests start
-      # returning 400 and the error message names the field — append it here.
-      # `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` in providers/nvidia.json
-      # keeps that surface small by suppressing pre-release capabilities.
-      additional_drop_params: ["diagnostics"]
 
 litellm_settings:
   # NIM rejects Anthropic-only sampling params that have no OpenAI equivalent;
   # drop them instead of failing the request.
   drop_params: true
+  # ResourceExhausted on the shared hosted tier is transient, so retry instead
+  # of surfacing it as a failed turn.
+  num_retries: 3
