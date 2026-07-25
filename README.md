@@ -149,6 +149,12 @@ on Unix, `$PROFILE` on Windows). It works identically on both.
 Every provider except `nvidia` talks to an endpoint that speaks the Anthropic
 Messages API directly, so there is nothing to run and nothing to translate.
 
+Third-party endpoints implement the Anthropic schema to varying depth. Claude
+Code sends its full capability set to any `ANTHROPIC_BASE_URL`, so if a provider
+starts returning `400 Unsupported parameter(s): <field>`, that's the cause —
+`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` in the provider file is the first
+thing to try.
+
 Claude Code only speaks the Anthropic Messages API. Endpoints and variables in
 the table follow each vendor's own Claude Code documentation. The `anthropic`,
 `zai`, and `nvidia` rows are verified end-to-end here; the rest are configured
@@ -203,13 +209,32 @@ dependency you never use. `ccs` warns if you switch to `nvidia` while the gatewa
 is down, which otherwise surfaces as an opaque connection error inside Claude
 Code.
 
-Pick models in `providers/nvidia.json` (`ANTHROPIC_DEFAULT_*_MODEL`) using ids
-from [build.nvidia.com/models](https://build.nvidia.com/models) — the gateway
-forwards whatever you ask for, so you never edit its config to change models.
-**Claude Code requires tool calling**, and much of the catalog doesn't support
-it; the defaults (`openai/gpt-oss-120b`, `openai/gpt-oss-20b`) are verified
-working. Availability also varies by key, so a model that 404s is usually not
-enabled on your account rather than misconfigured.
+#### Which models the slots map to
+
+Claude Code asks for three tiers, so the defaults mirror what each tier is for —
+`opus` = most capable, `sonnet` = the balanced workhorse, `haiku` = cheapest and
+fastest. Scores are the
+[Artificial Analysis Intelligence Index v4.1](https://artificialanalysis.ai/);
+latency is measured through this gateway, not vendor-published:
+
+| Slot | Model | Index | Context | $/1M in | $/1M out | Latency |
+| --- | --- | --- | --- | --- | --- | --- |
+| `opus` | `minimaxai/minimax-m3` | 44 | 1M | $0.30 | $1.20 | ~11s |
+| `sonnet` | `deepseek-ai/deepseek-v4-flash` | 40 | 1M | $0.14 | $0.28 | ~3s |
+| `haiku` | `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning` | 15 | 256k | $0.07 | — | ~1.1s |
+
+Intelligence and price both descend across the three, which is the same shape as
+Anthropic's own ladder. Two notes on what got left out: the catalog's strongest
+models on paper — `z-ai/glm-5.2` (51) and `deepseek-ai/deepseek-v4-pro` (44) —
+time out through the hosted API, and `nvidia/nemotron-3-ultra-550b-a55b` (38) is
+dominated by the `sonnet` pick on intelligence, price, and context at once.
+
+To change any of them, edit `providers/nvidia.json` and re-run `ccs nvidia`. The
+gateway forwards whatever id you ask for, so its own config never changes. Browse
+ids at [build.nvidia.com/models](https://build.nvidia.com/models), and note two
+things: **Claude Code requires tool calling** and much of the catalog lacks it,
+and availability varies by key — a model that `404`s is usually just not enabled
+on your account.
 
 ## MCP servers
 
