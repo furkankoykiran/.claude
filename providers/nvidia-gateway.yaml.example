@@ -21,6 +21,17 @@ model_list:
     litellm_params:
       model: nvidia_nim/*
       api_key: <NVIDIA_NIM_API_KEY>
+      # Claude Code sends its full Anthropic capability set to any
+      # ANTHROPIC_BASE_URL endpoint, including fields that exist nowhere in the
+      # OpenAI schema. `drop_params` below only removes params LiteLLM
+      # recognises, so these reach NIM and it hard-fails the request with
+      # `Validation: Unsupported parameter(s)`. Drop them by name here.
+      #
+      # If a future Claude Code release adds another such field, requests start
+      # returning 400 and the error message names the field — append it here.
+      # `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` in providers/nvidia.json
+      # keeps that surface small by suppressing pre-release capabilities.
+      additional_drop_params: ["diagnostics"]
 
 litellm_settings:
   # NIM rejects Anthropic-only sampling params that have no OpenAI equivalent;

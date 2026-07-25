@@ -17,10 +17,12 @@
   "env": {
     "ANTHROPIC_BASE_URL": "http://127.0.0.1:4000",
     "ANTHROPIC_AUTH_TOKEN": "local-nim-gateway",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "openai/gpt-oss-20b",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "openai/gpt-oss-120b",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "openai/gpt-oss-120b",
-    "CLAUDE_CODE_SUBAGENT_MODEL": "openai/gpt-oss-120b",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "minimaxai/minimax-m3",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-ai/deepseek-v4-flash",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "deepseek-ai/deepseek-v4-flash",
+    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "1000000",
+    "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "1",
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
     "API_TIMEOUT_MS": "3000000"
   }
