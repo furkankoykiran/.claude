@@ -10,6 +10,31 @@ bootstrap rather than a published package.
 
 ### Fixed
 
+- **Pinning a model broke the `nvidia` provider entirely.** `/model opus`,
+  `--model`, or a resumed session that recorded its model makes Claude Code send
+  the literal Anthropic id, and `ANTHROPIC_DEFAULT_*_MODEL` does not rewrite
+  those — so the gateway's wildcard handed `claude-opus-5` to NVIDIA and every
+  request came back `404 page not found. Received Model Group=claude-opus-5`.
+  The gateway now maps the Anthropic ids onto the same three tiers.
+- **NVIDIA's hosted tier rate-limited Claude Code's parallel subagents**, failing
+  turns mid-stream with `ResourceExhausted: Worker local total request limit
+  reached (64/48)`. The gateway now caps concurrency at 12 per model and retries
+  the transient rejections instead of surfacing them.
+- **The `haiku` model silently discarded context.**
+  `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning` advertises 256k but counted a
+  400KB prompt as 1,869 input tokens — answering normally on a prompt it had
+  thrown away. Replaced with `openai/gpt-oss-20b`, which accounts for tokens
+  honestly and is faster. The other four candidates tested all accounted
+  honestly; only the multimodal `omni` variant truncated.
+- **`CLAUDE_CODE_AUTO_COMPACT_WINDOW` was set to 1M on models that do not serve
+  1M.** `minimax-m3` and `deepseek-v4-flash` advertise 1M context, but measured
+  ceilings through the hosted API are lower, so auto-compaction never triggered
+  before the upstream started rejecting the conversation. Now 200k, comfortably
+  under every measured ceiling.
+- **The API key had to be edited in four places** in the gateway config once
+  per-tier model mappings were added. It is now declared once via a YAML anchor,
+  so rotating a key touches one line and cannot be half-applied.
+
 - **Every real Claude Code request to the `nvidia` provider failed with `400
   Validation: Unsupported parameter(s): diagnostics`.** Claude Code sends its
   full Anthropic capability set to any `ANTHROPIC_BASE_URL` endpoint, and

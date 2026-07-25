@@ -89,6 +89,38 @@ else
   bad "nvidia provider does not set CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS"
 fi
 
+# Claude Code sends a literal Anthropic model id whenever a model is pinned
+# instead of left on an alias (/model opus, --model, a resumed session).
+# ANTHROPIC_DEFAULT_*_MODEL does not rewrite those, so the gateway must resolve
+# them or every request 404s with `Received Model Group=claude-opus-5`.
+for alias in claude-opus-5 claude-sonnet-5 claude-haiku-4-5; do
+  if grep -q "model_name: $alias" "$GW"; then
+    ok "gateway resolves the pinned model id $alias"
+  else
+    bad "gateway has no mapping for $alias (a pinned model would 404)"
+  fi
+done
+# The wildcard must stay LAST so the explicit aliases above win over it.
+if [ "$(grep -n 'model_name:' "$GW" | tail -1 | grep -c '"\*"')" = "1" ]; then
+  ok "the catch-all wildcard is the last model_name entry"
+else
+  bad "the wildcard is not last; it would shadow the pinned-id mappings"
+fi
+# NVIDIA's hosted tier caps concurrency and Claude Code's parallel subagents
+# exceed it, which surfaced as ResourceExhausted mid-stream.
+if grep -q 'max_parallel_requests' "$GW" && grep -q 'num_retries' "$GW"; then
+  ok "gateway bounds concurrency and retries transient rate limits"
+else
+  bad "gateway does not bound concurrency / retry rate limits"
+fi
+# The key must be declarable once; four copies to edit is how a rotation gets
+# half-applied and leaves a live gateway on a revoked key.
+if [ "$(grep -c '<NVIDIA_NIM_API_KEY>' "$GW")" = "1" ]; then
+  ok "the API key placeholder appears exactly once"
+else
+  bad "the API key placeholder appears $(grep -c '<NVIDIA_NIM_API_KEY>' "$GW") times; rotation should touch one line"
+fi
+
 # --- discovery -------------------------------------------------------------
 head_ "Discovery (list)"
 listed=$(ccs list)
