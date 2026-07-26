@@ -15,8 +15,17 @@
 #                                skips the heavy upstream skill packs and manim.
 #                                Useful for CI and lean setups.
 #   CLAUDE_BOOTSTRAP_NO_SYNC=1   Use the working tree as-is; skip the git
-#                                fetch/reset. For testing local changes, CI, and
+#                                fetch/update. For testing local changes, CI, and
 #                                offline installs.
+#   CLAUDE_BOOTSTRAP_CHANNEL=    stable (default) tracks the highest v* release
+#     stable|edge                tag and installs third-party packs at the SHAs
+#                                reviewed in skills-source.lock.json. edge tracks
+#                                origin/main and upstream HEAD.
+#
+# This installer never discards your work. It fast-forwards, and refuses (with
+# an explanation) when the checkout has uncommitted changes or local commits.
+# Day-to-day updates should use `fkt update`, which is the same policy without
+# the heavyweight dependency bootstrap.
 #
 # Resilience: every step except the git/curl prerequisites is fail-soft. A
 # failing optional step (e.g. the headless browser) is reported at the end and
@@ -161,22 +170,96 @@ ensure_browser_deps() {
 # ---------------------------------------------------------------------------
 # 1. Sync ~/.claude with the remote repo
 # ---------------------------------------------------------------------------
+#
+# Update strategy: fast-forward only, never `reset --hard`.
+#
+# This directory is the user's ~/.claude. It holds their settings, their memory,
+# their provider tokens and whatever they have edited. The previous
+# `git reset --hard origin/main` discarded every tracked local change without
+# asking — a single re-run of the installer silently destroyed customisations.
+# Refusing is the correct behaviour: only the user can decide what happens to
+# their work.
+#
+# Channel selection matches `fkt`:
+#   stable (default)  the highest v* release tag
+#   edge              origin/main
 sync_repo() {
-  if [ -d "$CLAUDE_DIR/.git" ]; then
-    log "Updating existing repo at $CLAUDE_DIR"
-    git -C "$CLAUDE_DIR" fetch origin
-    git -C "$CLAUDE_DIR" reset --hard origin/main
-  elif [ -d "$CLAUDE_DIR" ]; then
+  local channel="${CLAUDE_BOOTSTRAP_CHANNEL:-stable}"
+
+  if [ ! -d "$CLAUDE_DIR" ]; then
+    log "Cloning $REPO_URL into $CLAUDE_DIR"
+    git clone "$REPO_URL" "$CLAUDE_DIR"
+    checkout_channel "$channel"
+    return 0
+  fi
+
+  if [ ! -d "$CLAUDE_DIR/.git" ]; then
     log "Initializing git in existing $CLAUDE_DIR"
     git -C "$CLAUDE_DIR" init -b main >/dev/null
     git -C "$CLAUDE_DIR" remote add origin "$REPO_URL" 2>/dev/null \
       || git -C "$CLAUDE_DIR" remote set-url origin "$REPO_URL"
     git -C "$CLAUDE_DIR" fetch origin
-    git -C "$CLAUDE_DIR" reset --hard origin/main
+    # A pre-existing, untracked ~/.claude may hold files that collide with the
+    # repository. Checking out reports those instead of overwriting them.
+    if ! git -C "$CLAUDE_DIR" checkout -B main origin/main; then
+      die "Existing files in $CLAUDE_DIR conflict with the repository (listed above).
+    Move or delete them, or install into a different CLAUDE_DIR, then re-run.
+    Nothing was overwritten."
+    fi
     git -C "$CLAUDE_DIR" branch --set-upstream-to=origin/main main 2>/dev/null || true
+    checkout_channel "$channel"
+    return 0
+  fi
+
+  log "Updating existing repo at $CLAUDE_DIR (channel: $channel)"
+
+  if [ -n "$(git -C "$CLAUDE_DIR" status --porcelain --untracked-files=no)" ]; then
+    warn "$CLAUDE_DIR has uncommitted changes to tracked files — NOT updating the repo."
+    warn "Nothing was discarded. Review with: git -C $CLAUDE_DIR status"
+    warn "Commit or stash them, then re-run. The rest of the bootstrap continues."
+    return 0
+  fi
+
+  git -C "$CLAUDE_DIR" fetch --tags --prune origin
+  checkout_channel "$channel"
+}
+
+# Fast-forward the checkout to the tip of the requested channel. Refuses, and
+# says why, rather than moving a checkout that carries local commits.
+checkout_channel() {
+  local channel="$1" target
+  case "$channel" in
+    stable)
+      target="$(git -C "$CLAUDE_DIR" tag --list 'v*' --sort=-v:refname | head -1)"
+      if [ -z "$target" ]; then
+        warn "no v* release tag found; staying on the current revision."
+        warn "Use CLAUDE_BOOTSTRAP_CHANNEL=edge to track origin/main."
+        return 0
+      fi
+      ;;
+    edge) target="origin/main" ;;
+    *) die "CLAUDE_BOOTSTRAP_CHANNEL must be 'stable' or 'edge' (got '$channel')" ;;
+  esac
+
+  local target_sha
+  target_sha="$(git -C "$CLAUDE_DIR" rev-parse --verify "$target^{commit}" 2>/dev/null)" || {
+    warn "could not resolve $target; leaving the checkout alone"
+    return 0
+  }
+  [ "$target_sha" = "$(git -C "$CLAUDE_DIR" rev-parse HEAD)" ] && { log "Already at $target"; return 0; }
+
+  if ! git -C "$CLAUDE_DIR" merge-base --is-ancestor HEAD "$target_sha" 2>/dev/null; then
+    warn "$CLAUDE_DIR has local commits that are not on $target — NOT updating."
+    warn "They would be lost. Inspect with: git -C $CLAUDE_DIR log --oneline $target_sha..HEAD"
+    return 0
+  fi
+
+  # Detached at a tag on the stable channel would leave the user unable to pull;
+  # merge into the current branch instead so `git status` stays meaningful.
+  if git -C "$CLAUDE_DIR" merge --ff-only --quiet "$target_sha"; then
+    log "Fast-forwarded to $target"
   else
-    log "Cloning $REPO_URL into $CLAUDE_DIR"
-    git clone "$REPO_URL" "$CLAUDE_DIR"
+    warn "fast-forward to $target failed; the checkout was left unchanged"
   fi
 }
 
@@ -207,6 +290,93 @@ migrate_skill_staging() {
   done
   [ "$moved" -gt 0 ] \
     && log "Moved $moved upstream staging clone(s) out of skills/ (they were loading as duplicate plugins)"
+  return 0
+}
+
+# ---------------------------------------------------------------------------
+# 1c. Deterministic third-party staging
+# ---------------------------------------------------------------------------
+# Every upstream pack used to be cloned at whatever HEAD happened to be, so two
+# machines bootstrapped an hour apart could get different skills, and the
+# reviewed content in skills-source.lock.json described neither of them.
+#
+# The lock records an immutable SHA per source, produced by `catalog:resolve`
+# and reviewed through the update PR. On the stable channel we check out exactly
+# that SHA. On edge we follow upstream HEAD, which is what edge is for.
+#
+# The lock is read with awk rather than a JSON parser because this runs before
+# bun is guaranteed to exist. That is only safe because the lock is generated
+# deterministically by JSON.stringify(_, null, 2); catalog/tests/lock-parse.test.ts
+# asserts this extraction agrees with a real JSON parse for every source.
+LOCK_FILE="$CLAUDE_DIR/skills-source.lock.json"
+
+locked_revision() {
+  local id="$1"
+  [ -f "$LOCK_FILE" ] || return 1
+  awk -v want="$id" '
+    $0 ~ "\"id\": \"" want "\"" { found = 1; next }
+    found && /"resolvedRevision":/ {
+      # ..."resolvedRevision": "<sha>",
+      line = $0
+      sub(/^.*"resolvedRevision"[[:space:]]*:[[:space:]]*"/, "", line)
+      sub(/".*$/, "", line)
+      print line
+      exit
+    }
+    # A new object started before any revision: this source has none.
+    found && /^    \}/ { exit }
+  ' "$LOCK_FILE"
+}
+
+# stage_source <lock-id> <repo-url> <stage-dir>
+# Leaves <stage-dir> checked out at the pinned revision (stable) or upstream
+# HEAD (edge). Never destroys anything outside the staging directory.
+stage_source() {
+  local id="$1" repo="$2" stage="$3"
+  local channel="${CLAUDE_BOOTSTRAP_CHANNEL:-stable}"
+  local sha=""
+
+  if [ "$channel" = "stable" ]; then
+    sha="$(locked_revision "$id" || true)"
+    if [ -z "$sha" ]; then
+      warn "no locked revision for '$id' in skills-source.lock.json — falling back to upstream HEAD."
+      warn "Run 'bun run catalog:resolve' and commit the lock to make this deterministic."
+    fi
+  fi
+
+  if [ ! -d "$stage/.git" ]; then
+    rm -rf "$stage"
+    mkdir -p "$(dirname "$stage")"
+    if [ -n "$sha" ]; then
+      log "Cloning $repo at $sha"
+      # No --depth: a shallow clone cannot check out an arbitrary older SHA.
+      git clone --quiet "$repo" "$stage" || return 1
+    else
+      log "Cloning $repo (HEAD)"
+      git clone --quiet --depth 1 "$repo" "$stage" || return 1
+    fi
+  else
+    log "Updating $repo"
+    git -C "$stage" fetch --quiet --tags origin || warn "fetch failed for $id — using the existing clone"
+  fi
+
+  if [ -n "$sha" ]; then
+    if ! git -C "$stage" cat-file -e "$sha^{commit}" 2>/dev/null; then
+      # The clone predates the pin (or was shallow). Deepen and retry once.
+      git -C "$stage" fetch --quiet --unshallow origin 2>/dev/null \
+        || git -C "$stage" fetch --quiet origin 2>/dev/null || true
+    fi
+    if git -C "$stage" checkout --quiet --detach "$sha" 2>/dev/null; then
+      log "  pinned $id at ${sha:0:12}"
+    else
+      warn "locked revision ${sha:0:12} for '$id' is not reachable upstream — it may have been"
+      warn "force-pushed away. Using upstream HEAD instead; re-resolve the lock to fix."
+      git -C "$stage" checkout --quiet --detach origin/HEAD 2>/dev/null || true
+    fi
+  else
+    git -C "$stage" checkout --quiet --detach origin/HEAD 2>/dev/null \
+      || warn "could not check out origin/HEAD for $id — using the clone as-is"
+  fi
   return 0
 }
 
@@ -250,13 +420,12 @@ ensure_bun() {
 # ---------------------------------------------------------------------------
 install_gstack() {
   local gstack_dir="$CLAUDE_DIR/skills/gstack"
-  if [ ! -d "$gstack_dir/.git" ]; then
-    log "Cloning gstack into $gstack_dir"
-    git clone --depth 1 "$GSTACK_REPO" "$gstack_dir"
-  else
-    log "Updating gstack"
-    git -C "$gstack_dir" pull --ff-only origin main || warn "gstack pull failed — continuing"
-  fi
+  # Pinned to the lock like every other upstream source. gstack also ships its
+  # own `/gstack-upgrade`; if a user runs that, gstack moves ahead of the pin and
+  # the next install.sh brings it back to the reviewed revision. That is the
+  # intended behaviour of the stable channel — use CLAUDE_BOOTSTRAP_CHANNEL=edge
+  # to track gstack's own HEAD instead.
+  stage_source "gstack" "$GSTACK_REPO" "$gstack_dir" || warn "gstack staging failed — continuing"
 
   # Make sure Chromium can actually launch BEFORE setup tries to use it. This is
   # the proactive half of the libatk fix; the retry below is the reactive half.
@@ -343,6 +512,56 @@ install_ccs_alias() {
 ccs() { "$HOME/.claude/bin/cc-provider" "$@"; }
 EOF
   log "Added 'ccs' shell function to ~/.bashrc (run: source ~/.bashrc)"
+}
+
+# ---------------------------------------------------------------------------
+# 5b. Updater (fkt) + versioned migrations
+# ---------------------------------------------------------------------------
+# `fkt` is how the bootstrap layer updates after this first install: a
+# fast-forward-only path that refuses rather than discards. Exposing it as a
+# shell function (not a PATH edit) keeps the change to ~/.bashrc to one line and
+# reversible, and matches how `ccs` is already wired.
+install_fkt() {
+  [ -x "$CLAUDE_DIR/bin/fkt" ] || { warn "bin/fkt missing — skipping updater setup"; return 1; }
+
+  local rc="$HOME/.bashrc"
+  touch "$rc"
+  if ! grep -q 'claude/bin/fkt' "$rc" 2>/dev/null; then
+    cat >> "$rc" <<'EOF'
+
+# FK Claude Toolkit updater (managed by ~/.claude/install.sh)
+fkt() { "$HOME/.claude/bin/fkt" "$@"; }
+EOF
+    log "Added 'fkt' shell function to ~/.bashrc (run: source ~/.bashrc)"
+  fi
+
+  # Run pending migrations now. On a first install every migration is a no-op,
+  # but recording them as applied means an upgrading user never replays a
+  # migration that was already true of their tree.
+  "$CLAUDE_DIR/bin/fkt" migrate || warn "some migrations did not apply — run 'fkt migrate' to retry"
+  return 0
+}
+
+# ---------------------------------------------------------------------------
+# 5c. Local override file
+# ---------------------------------------------------------------------------
+# CLAUDE.md is tracked and IS overwritten by updates. CLAUDE.local.md is
+# gitignored and is where machine-specific instructions belong, so an update can
+# never clobber them. Seeded once, never overwritten.
+seed_local_overrides() {
+  local target="$CLAUDE_DIR/CLAUDE.local.md"
+  [ -f "$target" ] && return 0
+  cat > "$target" <<'EOF'
+# Local instructions
+
+This file is yours. It is gitignored, so toolkit updates never touch it, and it
+is loaded alongside the tracked CLAUDE.md.
+
+Put machine-specific or private instructions here — paths that only exist on
+this box, an employer's conventions, personal preferences. Anything you put in
+the tracked CLAUDE.md instead will be overwritten by the next update.
+EOF
+  log "Seeded CLAUDE.local.md (gitignored — your instructions live here, not in CLAUDE.md)"
 }
 
 # ---------------------------------------------------------------------------
@@ -447,15 +666,7 @@ ensure_manim_deps() {
 # ---------------------------------------------------------------------------
 install_manim_upstream() {
   local stage="$SKILL_SRC_DIR/manim"
-  if [ ! -d "$stage/.git" ]; then
-    log "Cloning adithya-s-k/manim_skill into $stage"
-    git clone --depth 1 "$MANIM_UPSTREAM_REPO" "$stage"
-  else
-    log "Updating adithya-s-k/manim_skill"
-    git -C "$stage" fetch origin --depth 1 >/dev/null 2>&1 || true
-    git -C "$stage" reset --hard origin/HEAD >/dev/null 2>&1 \
-      || warn "manim_skill upstream pull failed — continuing"
-  fi
+  stage_source "manim" "$MANIM_UPSTREAM_REPO" "$stage" || warn "adithya-s-k/manim_skill staging failed — using whatever is on disk"
   for s in manimce-best-practices manimgl-best-practices manim-composer; do
     local target="$CLAUDE_DIR/skills/$s"
     if [ -d "$stage/skills/$s" ]; then
@@ -477,15 +688,7 @@ install_manim_upstream() {
 # ---------------------------------------------------------------------------
 install_karpathy_skill() {
   local stage="$SKILL_SRC_DIR/karpathy"
-  if [ ! -d "$stage/.git" ]; then
-    log "Cloning multica-ai/andrej-karpathy-skills into $stage"
-    git clone --depth 1 "$KARPATHY_REPO" "$stage"
-  else
-    log "Updating andrej-karpathy-skills"
-    git -C "$stage" fetch origin --depth 1 >/dev/null 2>&1 || true
-    git -C "$stage" reset --hard origin/HEAD >/dev/null 2>&1 \
-      || warn "karpathy upstream pull failed — continuing"
-  fi
+  stage_source "karpathy" "$KARPATHY_REPO" "$stage" || warn "multica-ai/andrej-karpathy-skills staging failed — using whatever is on disk"
   local target="$CLAUDE_DIR/skills/karpathy-guidelines"
   if [ -d "$stage/skills/karpathy-guidelines" ]; then
     mkdir -p "$target"
@@ -505,15 +708,7 @@ install_karpathy_skill() {
 # ---------------------------------------------------------------------------
 install_marketing_skills() {
   local stage="$SKILL_SRC_DIR/marketing"
-  if [ ! -d "$stage/.git" ]; then
-    log "Cloning coreyhaines31/marketingskills into $stage"
-    git clone --depth 1 "$MARKETING_REPO" "$stage"
-  else
-    log "Updating coreyhaines31/marketingskills"
-    git -C "$stage" fetch origin --depth 1 >/dev/null 2>&1 || true
-    git -C "$stage" reset --hard origin/HEAD >/dev/null 2>&1 \
-      || warn "marketingskills upstream pull failed — continuing"
-  fi
+  stage_source "marketing" "$MARKETING_REPO" "$stage" || warn "coreyhaines31/marketingskills staging failed — using whatever is on disk"
   local count=0
   local sd name target
   for sd in "$stage"/skills/*/; do
@@ -538,15 +733,7 @@ install_marketing_skills() {
 # ---------------------------------------------------------------------------
 install_impeccable_skill() {
   local stage="$SKILL_SRC_DIR/impeccable"
-  if [ ! -d "$stage/.git" ]; then
-    log "Cloning pbakaus/impeccable into $stage"
-    git clone --depth 1 "$IMPECCABLE_REPO" "$stage"
-  else
-    log "Updating pbakaus/impeccable"
-    git -C "$stage" fetch origin --depth 1 >/dev/null 2>&1 || true
-    git -C "$stage" reset --hard origin/HEAD >/dev/null 2>&1 \
-      || warn "impeccable upstream pull failed — continuing"
-  fi
+  stage_source "impeccable" "$IMPECCABLE_REPO" "$stage" || warn "pbakaus/impeccable staging failed — using whatever is on disk"
   local src="$stage/.claude/skills/impeccable"
   local target="$CLAUDE_DIR/skills/impeccable"
   if [ -d "$src" ]; then
@@ -568,15 +755,7 @@ install_impeccable_skill() {
 # ---------------------------------------------------------------------------
 install_taste_skills() {
   local stage="$SKILL_SRC_DIR/taste"
-  if [ ! -d "$stage/.git" ]; then
-    log "Cloning Leonxlnx/taste-skill into $stage"
-    git clone --depth 1 "$TASTE_REPO" "$stage"
-  else
-    log "Updating Leonxlnx/taste-skill"
-    git -C "$stage" fetch origin --depth 1 >/dev/null 2>&1 || true
-    git -C "$stage" reset --hard origin/HEAD >/dev/null 2>&1 \
-      || warn "taste-skill upstream pull failed — continuing"
-  fi
+  stage_source "taste" "$TASTE_REPO" "$stage" || warn "Leonxlnx/taste-skill staging failed — using whatever is on disk"
   local count=0
   local sd name target
   for sd in "$stage"/skills/*/; do
@@ -640,15 +819,7 @@ install_graphify() {
 # ---------------------------------------------------------------------------
 install_anthropic_skills() {
   local stage="$SKILL_SRC_DIR/anthropic"
-  if [ ! -d "$stage/.git" ]; then
-    log "Cloning anthropics/skills into $stage"
-    git clone --depth 1 "$ANTHROPIC_SKILLS_REPO" "$stage"
-  else
-    log "Updating anthropics/skills"
-    git -C "$stage" fetch origin --depth 1 >/dev/null 2>&1 || true
-    git -C "$stage" reset --hard origin/HEAD >/dev/null 2>&1 \
-      || warn "anthropics/skills upstream pull failed — continuing"
-  fi
+  stage_source "anthropic" "$ANTHROPIC_SKILLS_REPO" "$stage" || warn "anthropics/skills staging failed — using whatever is on disk"
   local curated="docx pdf pptx xlsx mcp-builder skill-creator web-artifacts-builder doc-coauthoring"
   local count=0 name src target
   for name in $curated; do
@@ -739,6 +910,8 @@ main() {
     sync_repo
   fi
   run_step "config seeding"   seed_configs
+  run_step "local overrides"  seed_local_overrides
+  run_step "updater (fkt)"    install_fkt
   # Runs in minimal mode too: an install that once had the packs still carries
   # the misplaced clones, and leaving them behind keeps the duplicate plugins.
   run_step "staging migration" migrate_skill_staging

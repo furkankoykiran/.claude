@@ -57,8 +57,10 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y shellcheck
-          # bin/cc-provider has no .sh suffix but is bash — lint it explicitly.
-          shellcheck install.sh hooks/*.sh scripts/*.sh bin/cc-provider
+          # bin/cc-provider and bin/fkt have no .sh suffix but are bash — lint
+          # them explicitly.
+          shellcheck install.sh hooks/*.sh scripts/*.sh migrations/*.sh \
+            bin/cc-provider bin/fkt
 
   providers:
     name: Provider switcher tests
@@ -67,6 +69,21 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Run provider switcher tests
         run: ./scripts/test-providers.sh
+
+  # The updater is the one component that can destroy a user's work, so its
+  # refusal paths are tested as first-class behaviour. Everything runs against
+  # throwaway repositories and throwaway config/state dirs; the "remote" is a
+  # local bare repo, so this job needs no network.
+  updater:
+    name: Updater (fkt) behaviour tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Run fkt tests
+        run: ./scripts/test-fkt.sh
 
   powershell:
     name: Lint PowerShell (PSScriptAnalyzer)

@@ -33,6 +33,7 @@
 #   FKT_UPDATE_CHECK 0 disables update checks entirely
 #   FKT_SECURITY_NOTICES 0 disables the advisory fetch
 #   FKT_OFFLINE      1 forbids all network access
+#   FKT_ADVISORY_URL_BASE  base URL for the advisory feed (testing/air-gapped)
 #   FKT_CHECK_TTL_MINUTES, FKT_SNOOZE_HOURS  cache tuning (testing)
 
 set -euo pipefail
@@ -51,7 +52,10 @@ MIGRATION_DIR="$FKT_STATE_DIR/migrations"
 
 DEFAULT_CHANNEL="stable"
 DEFAULT_TTL_MINUTES=720            # 12h; a config repo does not move hourly
-ADVISORY_URL_BASE="https://raw.githubusercontent.com/furkankoykiran/.claude"
+# Overridable so tests (and air-gapped installs) can point the feed somewhere
+# local instead of reaching for the network. Any curl-supported URL works,
+# including file://.
+ADVISORY_URL_BASE="${FKT_ADVISORY_URL_BASE:-https://raw.githubusercontent.com/furkankoykiran/.claude}"
 
 # Exit codes as names, so callers and tests read clearly.
 EX_USAGE=2
@@ -229,12 +233,24 @@ fetch_advisories() {
   mkdir -p "$FKT_STATE_DIR"
   tmp="$(mktemp "$FKT_STATE_DIR/.advisories.XXXXXX")"
   if curl -fsSL --max-time 8 --retry 1 \
-       "$ADVISORY_URL_BASE/main/security-advisories.tsv" -o "$tmp" 2>/dev/null; then
+       "$ADVISORY_URL_BASE/main/security-advisories.tsv" -o "$tmp" 2>/dev/null \
+     && looks_like_advisory_feed "$tmp"; then
     mv -f "$tmp" "$ADVISORY_CACHE"
   else
     rm -f "$tmp"
   fi
   return 0
+}
+
+# Only replace the cache with something that is actually an advisory feed. A
+# captive portal, a proxy error page or a repository rename can all answer 200
+# with HTML; installing that would silently blind the advisory check.
+looks_like_advisory_feed() {
+  local file="$1"
+  [ -s "$file" ] || return 1
+  head -1 "$file" | grep -q '^#' || return 1
+  # Every non-comment line must have the six tab-separated columns.
+  ! awk -F'\t' '!/^#/ && NF > 0 && NF != 6 { found = 1 } END { exit !found }' "$file"
 }
 
 # Print advisories that apply to $1 (the installed version).
@@ -256,6 +272,10 @@ applicable_advisories() {
 
 print_advisories() {
   local current="$1" out
+  # Gate on the setting here, not only in fetch_advisories: turning notices off
+  # must silence the cached file too, otherwise `security_notices = false` only
+  # stops future downloads and keeps printing whatever was already on disk.
+  advisories_enabled || return 0
   out="$(applicable_advisories "$current")" || return 0
   [ -n "$out" ] || return 0
   printf '\n'
