@@ -78,11 +78,14 @@ selection.root = "skills"
     const diff = diffCatalogs(buildCatalogJson(resolved), null, null);
     await generateAll(resolved, { outDir, lock: resolved.lock, diff });
 
-    expect(existsSync(join(outDir, "SKILLS_CATALOG.md"))).toBe(true);
-    expect(existsSync(join(outDir, "claude_code_skills.md"))).toBe(true);
-    expect(existsSync(join(outDir, "skills-catalog.json"))).toBe(true);
+    // generateAll swaps generated artifacts under catalog/generated/; the lock
+    // stays at the root next to the manifest it locks.
+    expect(existsSync(join(outDir, "catalog", "generated", "SKILLS_CATALOG.md"))).toBe(true);
+    expect(existsSync(join(outDir, "catalog", "generated", "claude_code_skills.md"))).toBe(true);
+    expect(existsSync(join(outDir, "catalog", "generated", "skills-catalog.json"))).toBe(true);
+    expect(existsSync(join(outDir, "skills-source.lock.json"))).toBe(true);
     expect(existsSync(join(outDir, "docs", "skills", "fixture", "alpha.md"))).toBe(true);
-    expect(existsSync(join(outDir, "SHA256SUMS"))).toBe(true);
+    expect(existsSync(join(outDir, "catalog", "generated", "SHA256SUMS"))).toBe(true);
 
     const h1 = hashDir(outDir);
     // Re-generate from cache (offline) — must be byte-identical.

@@ -152,9 +152,7 @@ jobs:
         run: |
           git add -A
           if ! git diff --cached --exit-code -- \
-              SKILLS_CATALOG.md claude_code_skills.md skills-catalog.json \
-              skills-source.lock.json skills-catalog-diff.json \
-              catalog-change-report.md SHA256SUMS docs/skills; then
+              catalog/generated skills-source.lock.json docs/skills; then
             echo "::error::Generated catalog files are stale. Run 'bun run catalog:generate' and commit the result."
             git diff --cached --stat
             exit 1
@@ -162,7 +160,7 @@ jobs:
       - name: Job summary
         if: always()
         run: |
-          if [ -f skills-catalog.json ]; then
+          if [ -f catalog/generated/skills-catalog.json ]; then
             bun run catalog/src/summary.ts >> "$GITHUB_STEP_SUMMARY"
           fi
       - name: Upload diagnostics on failure
@@ -171,9 +169,9 @@ jobs:
         with:
           name: catalog-diagnostics-${{ github.run_id }}
           path: |
-            skills-catalog.json
+            catalog/generated/skills-catalog.json
             skills-source.lock.json
-            catalog-change-report.md
-            skills-catalog-diff.json
+            catalog/generated/catalog-change-report.md
+            catalog/generated/skills-catalog-diff.json
           retention-days: 7
           if-no-files-found: ignore

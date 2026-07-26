@@ -42,8 +42,8 @@ token, commits, pushes, opens a PR, or merges.
 
 ### What forces manual review
 
-Classification runs against `HEAD:skills-catalog.json` — the catalog as it
-stands on `main` — not against the committed `skills-catalog-diff.json`, which
+Classification runs against `HEAD:catalog/generated/skills-catalog.json` — the catalog as it
+stands on `main` — not against the committed `catalog/generated/skills-catalog-diff.json`, which
 is generated against an empty base and would mark everything as new. The
 verdict, the PR body, and the merge decision all read that one diff.
 
@@ -142,7 +142,7 @@ Source of truth is **git tags** (there is no tracked version file). Rules:
 - Updated body/metadata/sha/doc/resolver fix → **patch**.
 - No catalog change → no release.
 
-The release workflow reads the previous tag's `skills-catalog.json` as the diff
+The release workflow reads the previous tag's `catalog/generated/skills-catalog.json` as the diff
 base, infers the bump, computes the next tag, and tags the **exact** main commit.
 
 ## Release assets
@@ -150,7 +150,9 @@ base, infers the bump, computes the next tag, and tags the **exact** main commit
 Every release attaches: `claude_code_skills.md`, `SKILLS_CATALOG.md`,
 `skills-catalog.json`, `skills-source.lock.json`, `skills-catalog-diff.json`,
 `catalog-change-report.md`, `SHA256SUMS`, and a `docs-skills.tar.gz` bundle of
-the full per-skill pages. `claude_code_skills.md` is directly downloadable from
+the full per-skill pages. Asset **names** are a compatibility contract and do
+not change when the source files move in the tree; the release workflow stages
+them under their public names before uploading. `claude_code_skills.md` is directly downloadable from
 every release. Verify locally:
 
 ```bash

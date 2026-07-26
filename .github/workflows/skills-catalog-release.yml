@@ -61,9 +61,7 @@ jobs:
           bun run catalog:generate
           git add -A
           if ! git diff --cached --exit-code -- \
-              SKILLS_CATALOG.md claude_code_skills.md skills-catalog.json \
-              skills-source.lock.json skills-catalog-diff.json \
-              catalog-change-report.md SHA256SUMS docs/skills; then
+              catalog/generated skills-source.lock.json docs/skills; then
             echo "::error::Generated catalog is stale or non-reproducible at release time. Open a recovery PR."
             git diff --cached --stat
             exit 1
@@ -90,7 +88,7 @@ jobs:
           echo "latest_tag=$LATEST" >> "$GITHUB_ENV"
           echo "Latest published release: ${LATEST:-<none>}"
           if [ -n "$LATEST" ]; then
-            git show "$LATEST:skills-catalog.json" > /tmp/base-catalog.json 2>/dev/null || rm -f /tmp/base-catalog.json
+            git show "$LATEST:catalog/generated/skills-catalog.json" > /tmp/base-catalog.json 2>/dev/null || rm -f /tmp/base-catalog.json
           fi
           if [ -f /tmp/base-catalog.json ]; then
             bun run catalog:generate --base /tmp/base-catalog.json
@@ -143,7 +141,7 @@ jobs:
           LABELS=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${SHA}/pulls" \
                      --jq '[.[].labels[].name] | join(",")' 2>/dev/null || echo "")
           echo "Labels on the originating PR: ${LABELS:-<none>}"
-          NEXT=$(bun run catalog/src/release-tag.ts "${{ env.latest_tag }}" skills-catalog-diff.json "$LABELS" | tail -1)
+          NEXT=$(bun run catalog/src/release-tag.ts "${{ env.latest_tag }}" catalog/generated/skills-catalog-diff.json "$LABELS" | tail -1)
           echo "next_tag=$NEXT" >> "$GITHUB_ENV"
           echo "Computed next tag: $NEXT"
 
@@ -172,33 +170,49 @@ jobs:
           git tag "$TAG" "$SHA"
           git push origin "$TAG"
 
-          # Build the compressed full-page documentation bundle.
-          tar -C docs -czf docs-skills.tar.gz skills
+          # Assemble the release in a staging directory using the PUBLIC asset
+          # names. The generated files live under catalog/generated/ and the
+          # lock at the repository root, but the published asset names are a
+          # compatibility contract — staging keeps them stable regardless of
+          # where the sources sit in the tree. SHA256SUMS is computed inside the
+          # staging dir so it records bare names and `sha256sum -c` works
+          # against a plain `gh release download`.
+          STAGE=/tmp/release-assets
+          rm -rf "$STAGE" && mkdir -p "$STAGE"
+          cp catalog/generated/claude_code_skills.md \
+             catalog/generated/SKILLS_CATALOG.md \
+             catalog/generated/skills-catalog.json \
+             catalog/generated/skills-catalog-diff.json \
+             catalog/generated/catalog-change-report.md \
+             "$STAGE/"
+          cp skills-source.lock.json "$STAGE/"
+          tar -C docs -czf "$STAGE/docs-skills.tar.gz" skills
+
+          ASSETS="claude_code_skills.md SKILLS_CATALOG.md skills-catalog.json skills-source.lock.json skills-catalog-diff.json catalog-change-report.md docs-skills.tar.gz"
+          # shellcheck disable=SC2086
+          ( cd "$STAGE" && sha256sum $ASSETS > SHA256SUMS )
 
           # Release notes: version + source revisions + change counts + checksums.
           TAG="$TAG" SHA="$SHA" bun run catalog/src/summary.ts --release-notes > /tmp/release-notes.md
           {
             echo ""
             echo "### Checksums (release assets)"
-            sha256sum claude_code_skills.md SKILLS_CATALOG.md skills-catalog.json skills-source.lock.json skills-catalog-diff.json catalog-change-report.md docs-skills.tar.gz
+            cat "$STAGE/SHA256SUMS"
           } >> /tmp/release-notes.md
           cat /tmp/release-notes.md >> "$GITHUB_STEP_SUMMARY"
-
-          # Canonical release SHA256SUMS covers every attached asset.
-          sha256sum claude_code_skills.md SKILLS_CATALOG.md skills-catalog.json skills-source.lock.json skills-catalog-diff.json catalog-change-report.md docs-skills.tar.gz > SHA256SUMS
 
           gh release create "$TAG" \
             --target "$SHA" \
             --title "$TAG" \
             --notes-file /tmp/release-notes.md \
-            claude_code_skills.md \
-            SKILLS_CATALOG.md \
-            skills-catalog.json \
-            skills-source.lock.json \
-            skills-catalog-diff.json \
-            catalog-change-report.md \
-            SHA256SUMS \
-            docs-skills.tar.gz
+            "$STAGE/claude_code_skills.md" \
+            "$STAGE/SKILLS_CATALOG.md" \
+            "$STAGE/skills-catalog.json" \
+            "$STAGE/skills-source.lock.json" \
+            "$STAGE/skills-catalog-diff.json" \
+            "$STAGE/catalog-change-report.md" \
+            "$STAGE/SHA256SUMS" \
+            "$STAGE/docs-skills.tar.gz"
 
       # Idempotent path: HEAD is already tagged, so this run must PROVE the
       # existing release is complete and uncorrupted rather than assume it.

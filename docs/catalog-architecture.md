@@ -16,8 +16,8 @@ The catalog is a **pure function of committed inputs**:
 
 ```
 skills-sources.toml  ─┐
-skills-source.lock.json ─┼─► resolver ─► generator ─► SKILLS_CATALOG.md, claude_code_skills.md,
-catalog/cache/        ─┤                  skills-catalog.json, docs/skills/*, SHA256SUMS, …
+skills-source.lock.json ─┼─► resolver ─► generator ─► catalog/generated/{SKILLS_CATALOG.md,
+catalog/cache/        ─┤                  claude_code_skills.md, skills-catalog.json, SHA256SUMS}, docs/skills/*
 skills/ (repo-owned)  ─┘
 ```
 
