@@ -48,18 +48,12 @@ jobs:
           bun test catalog
           bun run catalog:check
 
+      # Reproducibility check. Must use the same plain regeneration the CI
+      # catalog job asserts on main (diff base: empty), or the committed
+      # diff-derived files can never match and every push to main fails here.
       - name: Regenerate (verification mode) and refuse stale output
         run: |
-          LATEST=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          echo "latest_tag=$LATEST" >> "$GITHUB_ENV"
-          if [ -n "$LATEST" ]; then
-            git show "$LATEST:skills-catalog.json" > /tmp/base-catalog.json 2>/dev/null || rm -f /tmp/base-catalog.json
-          fi
-          if [ -f /tmp/base-catalog.json ]; then
-            bun run catalog:generate --base /tmp/base-catalog.json
-          else
-            bun run catalog:generate
-          fi
+          bun run catalog:generate
           git add -A
           if ! git diff --cached --exit-code -- \
               SKILLS_CATALOG.md claude_code_skills.md skills-catalog.json \
@@ -68,6 +62,20 @@ jobs:
             echo "::error::Generated catalog is stale or non-reproducible at release time. Open a recovery PR."
             git diff --cached --stat
             exit 1
+          fi
+
+      # Separate concern: what this release actually changed, i.e. the diff
+      # against the PREVIOUS RELEASE rather than against an empty base. Drives
+      # the SemVer bump, the release notes, and the attached diff assets.
+      - name: Rebuild the diff against the previous release
+        run: |
+          LATEST=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          echo "latest_tag=$LATEST" >> "$GITHUB_ENV"
+          if [ -n "$LATEST" ]; then
+            git show "$LATEST:skills-catalog.json" > /tmp/base-catalog.json 2>/dev/null || rm -f /tmp/base-catalog.json
+          fi
+          if [ -f /tmp/base-catalog.json ]; then
+            bun run catalog:generate --base /tmp/base-catalog.json
           fi
 
       - name: Idempotency check
