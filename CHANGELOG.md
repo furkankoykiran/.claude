@@ -27,6 +27,11 @@ bootstrap rather than a published package.
 - **Automated commits were attributed to a generic actor.** They now carry the
   App's real `<app-slug>[bot]` name and no-reply email, resolved from the token
   step at run time.
+- **The App token was ignored on push.** `actions/checkout` persists
+  `GITHUB_TOKEN` as `http.https://github.com/.extraheader`, which outranks the
+  credentials in a push URL, so the push authenticated as `github-actions[bot]`
+  and was rejected with `403 Permission denied`. Checkout now runs with
+  `persist-credentials: false`.
 - **`release:*` label overrides never applied.** The release workflow declared
   only `contents: write`, so its best-effort PR-label lookup was silently denied.
   It now also requests `pull-requests: read`.
