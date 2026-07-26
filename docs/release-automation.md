@@ -2,15 +2,15 @@
 
 How the Skills Catalog is updated, merged, versioned, and released. The
 implementation reference for the three workflows under
-[`.github/workflows/`](.github/workflows/).
+[`.github/workflows/`](../.github/workflows/).
 
 ## Workflows
 
 | workflow | trigger | purpose |
 | --- | --- | --- |
-| [`ci.yml`](.github/workflows/ci.yml) (`catalog` job) | `push: main`, `pull_request`, `workflow_dispatch` | offline validation: typecheck, tests, parity, consistency, determinism, staleness guard |
-| [`skills-catalog-update.yml`](.github/workflows/skills-catalog-update.yml) | daily cron `17 6 * * *` + `workflow_dispatch` | network: advance upstream refs, regenerate, validate, open/update one automation PR, (auto-)merge |
-| [`skills-catalog-release.yml`](.github/workflows/skills-catalog-release.yml) | `push: main` (never tags) | re-validate, compute next SemVer, tag the commit, publish the GitHub Release with assets |
+| [`ci.yml`](../.github/workflows/ci.yml) (`catalog` job) | `push: main`, `pull_request`, `workflow_dispatch` | offline validation: typecheck, tests, parity, consistency, determinism, staleness guard |
+| [`skills-catalog-update.yml`](../.github/workflows/skills-catalog-update.yml) | daily cron `17 6 * * *` + `workflow_dispatch` | network: advance upstream refs, regenerate, validate, open/update one automation PR, (auto-)merge |
+| [`skills-catalog-release.yml`](../.github/workflows/skills-catalog-release.yml) | `push: main` (never tags) | re-validate, compute next SemVer, tag the commit, publish the GitHub Release with assets |
 
 ## Update policy (the automation PR)
 

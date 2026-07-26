@@ -85,7 +85,7 @@ parsed frontmatter (always) and the skill body (only when redistribution is
 `full`), plus the upstream `LICENSE`/`NOTICE` verbatim for attribution.
 
 - Release installs use **locked immutable revisions**.
-- The scheduled updater ([`skills-catalog-update.yml`](.github/workflows/skills-catalog-update.yml)) is the only process that advances tracked refs.
+- The scheduled updater ([`skills-catalog-update.yml`](../.github/workflows/skills-catalog-update.yml)) is the only process that advances tracked refs.
 
 ## Parser
 

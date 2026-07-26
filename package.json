@@ -16,7 +16,8 @@
     "catalog:check": "bun run catalog/src/cli.ts check",
     "catalog:diff": "bun run catalog/src/cli.ts diff",
     "catalog:coverage": "bun run catalog/src/cli.ts coverage",
-    "gen:skill-docs": "bun run catalog/src/cli.ts generate"
+    "gen:skill-docs": "bun run catalog/src/cli.ts generate",
+    "docs:check": "bun run catalog/src/docs-check.ts"
   },
   "dependencies": {
     "smol-toml": "1.3.0",

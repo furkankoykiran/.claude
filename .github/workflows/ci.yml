@@ -144,6 +144,10 @@ jobs:
         run: bun test catalog
       - name: Catalog check (parity + consistency + policy + determinism)
         run: bun run catalog:check
+      # Deterministic and offline: validates links, documented scripts, the
+      # documented root layout, and that no doc references a moved path.
+      - name: Documentation check
+        run: bun run docs:check
       # Regenerate offline from the committed lock + cache; the committed
       # generated files must already be current (main-branch invariant).
       - name: Regenerate catalog
