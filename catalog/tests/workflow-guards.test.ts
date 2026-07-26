@@ -74,9 +74,9 @@ const MUTATING = [
   "Preflight App token permissions",
   "Commit + push the automation branch",
   "Open or update the automation PR",
+  "Reset PR merge state (fail-closed)",
   "Flag PR for manual review",
-  "Clear manual-review label (routine change)",
-  "Enable squash auto-merge (routine change)",
+  "Enable protected squash auto-merge (routine change)",
 ];
 
 function runsUnder(ctx: Ctx): string[] {
@@ -89,12 +89,16 @@ const scenario = (o: {
   enabled?: string;
   token?: string;
   manual?: string;
+  /** '' models the reset step failing or being skipped. */
+  verifiedSha?: string;
 }): Ctx => ({
   steps: {
     detect: { outputs: { changed: o.changed } },
     classify: { outputs: { manual_review: o.manual ?? "" } },
     "app-token": { outputs: { token: o.token ?? "" } },
     pr: { outputs: { number: "1" } },
+    push: { outputs: { sha: "cafe1234" } },
+    reset: { outputs: { verified_sha: o.verifiedSha ?? (o.token ? "cafe1234" : "") } },
   },
   inputs: { dry_run: o.dryRun ?? null },
   vars: { ENABLE_SKILLS_AUTOMATION: o.enabled ?? "" },
@@ -174,18 +178,15 @@ describe("update workflow: routine change", () => {
     changed: "true", dryRun: false, enabled: "true", token: "ghs_x", manual: "false",
   }));
 
-  it("pushes, opens the PR, and enables auto-merge", () => {
+  it("pushes, opens the PR, resets state, and enables auto-merge", () => {
     expect(ran).toContain("Commit + push the automation branch");
     expect(ran).toContain("Open or update the automation PR");
-    expect(ran).toContain("Enable squash auto-merge (routine change)");
+    expect(ran).toContain("Reset PR merge state (fail-closed)");
+    expect(ran).toContain("Enable protected squash auto-merge (routine change)");
   });
 
   it("does not flag it for manual review", () => {
     expect(ran).not.toContain("Flag PR for manual review");
-  });
-
-  it("clears any stale manual-review label", () => {
-    expect(ran).toContain("Clear manual-review label (routine change)");
   });
 });
 
@@ -195,7 +196,7 @@ describe("update workflow: manual-review change", () => {
   }));
 
   it("NEVER enables auto-merge", () => {
-    expect(ran).not.toContain("Enable squash auto-merge (routine change)");
+    expect(ran).not.toContain("Enable protected squash auto-merge (routine change)");
   });
 
   it("opens the PR and labels it for a human", () => {
@@ -203,8 +204,8 @@ describe("update workflow: manual-review change", () => {
     expect(ran).toContain("Flag PR for manual review");
   });
 
-  it("does not clear the manual-review label", () => {
-    expect(ran).not.toContain("Clear manual-review label (routine change)");
+  it("always resets inherited merge state first", () => {
+    expect(ran).toContain("Reset PR merge state (fail-closed)");
   });
 });
 
@@ -223,8 +224,13 @@ describe("update workflow: merge safety invariants", () => {
     expect(code).toMatch(/gh pr merge "\$PR_NUMBER" --squash --auto/);
   });
 
-  it("has exactly one merge invocation, so there is no fallback path", () => {
-    expect(code.match(/gh pr merge/g)?.length).toBe(1);
+  it("has exactly one MERGING invocation, so there is no fallback path", () => {
+    // Join shell line-continuations so a multi-line invocation is one string.
+    const joined = code.replace(/\\\n\s*/g, " ");
+    const calls = joined.match(/gh pr merge[^\n]*/g) ?? [];
+    const merging = calls.filter((c) => !c.includes("--disable-auto"));
+    expect(merging.length).toBe(1);
+    expect(merging[0]).toContain("--match-head-commit");
   });
 
   it("refuses to create an empty commit", () => {
