@@ -8,7 +8,7 @@
 - renamed: 0
 - license-restricted: 10
 - runtime-only: 3
-- security-sensitive: 14
+- security-sensitive: 64
 - **manual-review-required: true**
 
 ## Added (141)
@@ -155,37 +155,137 @@
 - `/web-artifacts-builder`
 - `/xlsx`
 
-## Security-sensitive (14)
+## Security-sensitive (64)
 
+- `/autoplan`
+- `/benchmark`
+- `/benchmark-models`
 - `/browse`
+- `/canary`
 - `/careful`
+- `/codex`
+- `/context-restore`
+- `/context-save`
+- `/cso`
+- `/design-consultation`
+- `/design-html`
+- `/design-review`
+- `/design-shotgun`
+- `/devex-review`
+- `/diagram`
+- `/directory-submissions`
 - `/document-generate`
+- `/document-release`
 - `/docx`
 - `/freeze`
+- `/github-comment`
 - `/gstack-upgrade`
 - `/guard`
+- `/health`
+- `/image`
 - `/investigate`
+- `/ios-clean`
+- `/ios-design-review`
+- `/ios-fix`
+- `/ios-qa`
+- `/ios-sync`
+- `/land-and-deploy`
+- `/landing-report`
+- `/learn`
 - `/make-pdf`
+- `/office-hours`
+- `/open-gstack-browser`
+- `/pair-agent`
 - `/pdf`
+- `/plan-ceo-review`
+- `/plan-design-review`
+- `/plan-devex-review`
+- `/plan-eng-review`
+- `/plan-tune`
 - `/pptx`
+- `/qa`
+- `/qa-only`
+- `/retro`
+- `/review`
+- `/scrape`
+- `/seo-audit`
+- `/setup-browser-cookies`
+- `/setup-deploy`
+- `/setup-gbrain`
+- `/ship`
 - `/skill-creator`
+- `/skillify`
+- `/social`
+- `/spec`
+- `/sync-gbrain`
+- `/unfreeze`
 - `/web-artifacts-builder`
 - `/xlsx`
 
-## Manual-review-required (14)
+## Manual-review-required (64)
 
+- `/autoplan`
+- `/benchmark`
+- `/benchmark-models`
 - `/browse`
+- `/canary`
 - `/careful`
+- `/codex`
+- `/context-restore`
+- `/context-save`
+- `/cso`
+- `/design-consultation`
+- `/design-html`
+- `/design-review`
+- `/design-shotgun`
+- `/devex-review`
+- `/diagram`
+- `/directory-submissions`
 - `/document-generate`
+- `/document-release`
 - `/docx`
 - `/freeze`
+- `/github-comment`
 - `/gstack-upgrade`
 - `/guard`
+- `/health`
+- `/image`
 - `/investigate`
+- `/ios-clean`
+- `/ios-design-review`
+- `/ios-fix`
+- `/ios-qa`
+- `/ios-sync`
+- `/land-and-deploy`
+- `/landing-report`
+- `/learn`
 - `/make-pdf`
+- `/office-hours`
+- `/open-gstack-browser`
+- `/pair-agent`
 - `/pdf`
+- `/plan-ceo-review`
+- `/plan-design-review`
+- `/plan-devex-review`
+- `/plan-eng-review`
+- `/plan-tune`
 - `/pptx`
+- `/qa`
+- `/qa-only`
+- `/retro`
+- `/review`
+- `/scrape`
+- `/seo-audit`
+- `/setup-browser-cookies`
+- `/setup-deploy`
+- `/setup-gbrain`
+- `/ship`
 - `/skill-creator`
+- `/skillify`
+- `/social`
+- `/spec`
+- `/sync-gbrain`
+- `/unfreeze`
 - `/web-artifacts-builder`
 - `/xlsx`
 

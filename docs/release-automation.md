@@ -37,10 +37,38 @@ token, commits, pushes, opens a PR, or merges.
   pass (`gh pr merge --squash --auto`). Never `--admin`, never a ruleset bypass,
   and no direct-merge fallback — if auto-merge cannot be enabled the step fails
   and the PR stays open.
-- **`manual-review-required`** changes (new source, source-URL change, license
-  downgrade, executable/binary/secret/hook/MCP introduction, significant
-  permission expansion): the PR is labeled `manual-review-required` and left
-  open; **never** auto-merged.
+- **`manual-review-required`** changes: the PR is labeled and left open;
+  **never** auto-merged.
+
+### What forces manual review
+
+Classification runs against `HEAD:skills-catalog.json` — the catalog as it
+stands on `main` — not against the committed `skills-catalog-diff.json`, which
+is generated against an empty base and would mark everything as new. The
+verdict, the PR body, and the merge decision all read that one diff.
+
+| change | requires review when |
+| --- | --- |
+| **added** skill | it carries *any* capability: credential reference, executable/binary, hooks, MCP/LSP, agents, dynamic shell, Bash/PowerShell, network access, hidden files |
+| **updated** skill | a capability was **absent before and present now**, the allowed-tools surface grew, redistribution was downgraded, the detected license changed, or the source repository changed (including appearing/disappearing) |
+| **removed** skill | always |
+| **renamed** skill | always — the public invocation changed |
+| any batch | more than `MASS_CHANGE_THRESHOLD` (25) changed entries |
+
+Escalation compares against the **persisted** previous `security` profile. It
+used to rebuild that profile from frontmatter with an empty body and empty file
+list, which made every body-derived capability (network, dynamic shell,
+executables) look newly introduced on every edit — so every PR was
+manual-review and the signal was worthless. A capability that was already
+present is not an escalation; only `false -> true` counts.
+
+For catalogs written before `security` was persisted there is a documented
+fallback that reconstructs a partial profile from frontmatter. It under-reports,
+so it over-escalates — it fails safe.
+
+The gate is covered by `catalog/tests/review-policy.test.ts`, which asserts both
+directions: every capability escalates when newly introduced, and no capability
+re-escalates when it was already there.
 
 Auto-merge only *waits* for checks that `main` actually requires. With no
 required status checks configured, GitHub reports the PR as immediately
