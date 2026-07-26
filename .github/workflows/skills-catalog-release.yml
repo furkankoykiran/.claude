@@ -96,13 +96,38 @@ jobs:
             bun run catalog:generate --base /tmp/base-catalog.json
           fi
 
-      - name: Idempotency check
+      # Is this commit already released? Only a single, well-formed project
+      # SemVer tag counts. `git tag --points-at HEAD | head -1` accepted any
+      # tag (a stray `latest` would read as a release) and picked arbitrarily
+      # when several existed.
+      - name: Identify an existing release tag on HEAD
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          if git tag --points-at HEAD | grep -q .; then
-            TAG=$(git tag --points-at HEAD | head -1)
-            echo "HEAD already tagged as $TAG; verifying release assets."
-            echo "existing_tag=$TAG" >> "$GITHUB_ENV"
+          set -euo pipefail
+          mapfile -t TAGS < <(git tag --points-at HEAD)
+          echo "Tags on HEAD: ${TAGS[*]:-<none>}"
+
+          if ! TAG=$(bun run catalog/src/tag-policy.ts "${TAGS[@]}" 2>/tmp/tag-policy.err); then
+            echo "::error::$(cat /tmp/tag-policy.err)"
+            exit 1
           fi
+
+          if [ "$TAG" = "none" ]; then
+            echo "HEAD carries no project release tag; a new release may be warranted."
+            exit 0
+          fi
+
+          # A tag without a Release is a partial publish, not an idempotent
+          # re-run. Fail loudly with the recovery command rather than silently
+          # treating the commit as released.
+          if ! gh release view "$TAG" --json tagName >/dev/null 2>&1; then
+            echo "::error::Tag $TAG exists on this commit but has no GitHub Release — a previous run published the tag and then failed. Recover by publishing the release for $TAG, or delete the orphan tag with: git push origin :refs/tags/$TAG"
+            exit 1
+          fi
+
+          echo "HEAD already released as $TAG; verifying its assets."
+          echo "existing_tag=$TAG" >> "$GITHUB_ENV"
 
       - name: Compute next SemVer tag
         if: ${{ env.existing_tag == '' }}

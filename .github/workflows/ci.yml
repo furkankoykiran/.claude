@@ -24,12 +24,27 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Run actionlint
         env:
+          # Pinned release + its SHA-256. Downloading a linter and executing it
+          # unverified in a repo whose other workflows handle an App private
+          # key is not acceptable, so the archive is checksummed before it runs.
+          #
+          # To upgrade: bump both values together.
+          #   V=<new-version>
+          #   curl -fsSLO "https://github.com/rhysd/actionlint/releases/download/v$V/actionlint_${V}_linux_amd64.tar.gz"
+          #   sha256sum "actionlint_${V}_linux_amd64.tar.gz"
           ACTIONLINT_VERSION: 1.7.12
+          ACTIONLINT_SHA256: 8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8
         run: |
           set -euo pipefail
-          curl -fsSL -o /tmp/actionlint.tar.gz \
-            "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
-          tar -C /tmp -xzf /tmp/actionlint.tar.gz actionlint
+          ARCHIVE="actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          curl -fsSL --retry 3 -o "/tmp/${ARCHIVE}" \
+            "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/${ARCHIVE}"
+          echo "${ACTIONLINT_SHA256}  /tmp/${ARCHIVE}" > /tmp/actionlint.sha256
+          if ! sha256sum -c /tmp/actionlint.sha256; then
+            echo "::error::actionlint ${ACTIONLINT_VERSION} archive failed checksum verification. Refusing to execute it."
+            exit 1
+          fi
+          tar -C /tmp -xzf "/tmp/${ARCHIVE}" actionlint
           # ubuntu-latest ships shellcheck, which actionlint uses for run: blocks.
           /tmp/actionlint -color -verbose .github/workflows/*.yml
 
