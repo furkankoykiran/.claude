@@ -1,12 +1,19 @@
-# Changelog
+# Changelog archive
 
-All notable changes to this project are documented here.
+The hand-maintained changelog, preserved verbatim as it stood when the project
+moved to generated release notes. Nothing here has been edited or reordered, so
+historical release information stays readable and linkable.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
-This is a rolling configuration repo, so versions mark notable milestones of the
-bootstrap rather than a published package.
+**It is no longer updated.** Release notes are now generated from the commits
+and published as [GitHub Releases](https://github.com/furkankoykiran/.claude/releases).
+See [the release process](release-process.md) for how that works and what a
+contributor is expected to do instead.
 
-## [Unreleased]
+---
+
+## Unreleased at the time of archiving
+
+_These changes shipped but were never cut as a tagged release._
 
 ### Fixed
 

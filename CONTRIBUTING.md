@@ -30,14 +30,23 @@ Run the same checks CI runs. All you need is Docker.
 
 ```bash
 # 1. Lint shell scripts
-docker run --rm -v "$PWD:/mnt" -w /mnt koalaman/shellcheck:stable install.sh hooks/*.sh scripts/*.sh
+docker run --rm -v "$PWD:/mnt" -w /mnt koalaman/shellcheck:stable \
+  install.sh hooks/*.sh scripts/*.sh migrations/*.sh bin/cc-provider bin/fkt
 
 # 2. Lint the PowerShell installer
 docker run --rm -v "$PWD:/mnt" -w /mnt mcr.microsoft.com/powershell:latest \
   pwsh -NoProfile -Command 'Install-Module PSScriptAnalyzer -Force -Scope CurrentUser; \
   Invoke-ScriptAnalyzer -Path ./install.ps1 -Settings ./PSScriptAnalyzerSettings.psd1'
 
-# 3. Smoke-test the installer end-to-end on a clean Ubuntu (proves the bootstrap works)
+# 3. Catalog, marketplace, listing budget and docs (needs bun, not Docker)
+bun install --frozen-lockfile
+bun run typecheck && bun test catalog && bun run catalog:check \
+  && bun run marketplace:check && bun run catalog:budget && bun run docs:check
+
+# 4. Updater behaviour (hermetic: throwaway repos, no network)
+./scripts/test-fkt.sh
+
+# 5. Smoke-test the installer end-to-end on a clean Ubuntu (proves the bootstrap works)
 docker run --rm -v "$PWD:/repo:ro" ubuntu:24.04 bash -c '
   apt-get update && apt-get install -y git curl unzip ca-certificates &&
   cp -r /repo /root/.claude && cd /root/.claude &&
@@ -47,8 +56,18 @@ docker run --rm -v "$PWD:/repo:ro" ubuntu:24.04 bash -c '
 ## Style and conventions
 
 - **Commits**: `<type>(<scope>): <description>` (Conventional Commits). Types:
-  `feat`, `fix`, `refactor`, `docs`, `test`, `chore`. Explain *why* in the body,
-  not just what. One logical change per commit.
+  `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `security`. Explain *why*
+  in the body, not just what. One logical change per commit.
+
+  This is not a style preference: the commit subject IS the release note. Mark a
+  breaking change with `!` after the type/scope, or a `BREAKING CHANGE:` footer,
+  or it will be filed under the wrong heading and the release will be versioned
+  too low. See [the release process](docs/release-process.md).
+- **Versions**: bump `VERSION` when your change is user-facing. That one file
+  feeds every `plugin.json`, every marketplace entry and the release tag. If you
+  bump it too little, CI prints the exact value to write. There is **no
+  CHANGELOG to edit** — the old one is archived at
+  [docs/changelog-archive.md](docs/changelog-archive.md).
 - **Shell**: keep `install.sh` POSIX-friendly bash, `shellcheck`-clean, and
   idempotent (safe to re-run). Optional steps must be fail-soft — never let one
   failed tool abort the whole bootstrap.

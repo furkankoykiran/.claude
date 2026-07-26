@@ -181,7 +181,7 @@ tsconfig.json    TypeScript configuration
 bun.lock         dependency lock
 CLAUDE.md        repository instructions for Claude Code
 README.md        this file
-CHANGELOG.md     notable changes
+docs/            documentation, including the release process and archive
 CONTRIBUTING.md  contribution guide
 CODE_OF_CONDUCT.md  community standards
 SECURITY.md      vulnerability reporting

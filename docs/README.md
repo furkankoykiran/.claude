@@ -9,7 +9,9 @@
 | [FAQ](faq.md) | Short answers to common questions |
 | [Catalog architecture](catalog-architecture.md) | How the resolver, generator and lock produce a deterministic catalog |
 | [Catalog coverage](catalog-coverage.md) | What "all skills" means per source, and what is deliberately curated out |
-| [Release automation](release-automation.md) | Update PR lifecycle, the manual-review policy, SemVer and release assets |
+| [Release process](release-process.md) | What a contributor does: Conventional Commits, `VERSION`, how notes are generated |
+| [Release automation](release-automation.md) | Update PR lifecycle, the manual-review policy, versioning and release assets |
+| [Changelog archive](changelog-archive.md) | The hand-maintained changelog, preserved verbatim and no longer updated |
 | [Catalog research](catalog-research.md) | Background notes behind the catalog design |
 
 Contributing guidelines live in [CONTRIBUTING.md](../CONTRIBUTING.md);

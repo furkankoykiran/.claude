@@ -20,6 +20,8 @@
     "marketplace:generate": "bun run catalog/src/cli.ts marketplace",
     "marketplace:check": "bun run catalog/src/cli.ts marketplace --check",
     "marketplace:validate": "./scripts/validate-marketplace.sh",
+    "release:notes": "bun run catalog/src/release-notes.ts notes",
+    "release:check-version": "bun run catalog/src/release-notes.ts check-version",
     "gen:skill-docs": "bun run catalog/src/cli.ts generate",
     "docs:check": "bun run catalog/src/docs-check.ts"
   },
