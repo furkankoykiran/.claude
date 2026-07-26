@@ -4,9 +4,12 @@ import type { DiffReport } from "../src/diff.ts";
 import { CatalogError } from "../src/types.ts";
 
 const diff = (s: Partial<DiffReport["summary"]>): DiffReport => ({
-  schemaVersion: 1,
+  schemaVersion: 2,
   base: "base",
-  summary: { added: 0, updated: 0, removed: 0, renamed: 0, licenseRestricted: 0, runtimeOnly: 0, securitySensitive: 0, manualReviewRequired: false, ...s },
+  summary: {
+    added: 0, updated: 0, removed: 0, renamed: 0, licenseRestricted: 0, runtimeOnly: 0,
+    securitySensitive: 0, manualReviewRequired: false, massChange: false, reviewReasons: [], ...s,
+  } as DiffReport["summary"],
   changes: [],
 });
 
