@@ -2,16 +2,19 @@ name: Skills Catalog Update
 
 # Inspects every configured upstream source, advances the lock to current refs,
 # regenerates the catalog, validates, and opens/updates ONE automation PR.
-# Routine policy-compliant changes auto-merge (squash); exceptional supply-chain
-# changes are labeled manual-review-required and left for a human.
+# Routine policy-compliant changes get squash auto-merge (gated on the
+# repository's required checks); exceptional supply-chain changes are labeled
+# manual-review-required and left open for a human.
 #
-# Requires a GitHub App for full automation (PRs created with GITHUB_TOKEN do
-# not trigger required checks, and GITHUB_TOKEN merges do not trigger the
-# release workflow). Configure:
+# Every mutating step (commit, push, PR, labels, auto-merge) runs only with a
+# GitHub App installation token. GITHUB_TOKEN is deliberately not a fallback:
+# Actions is not permitted to create pull requests in this repo, and pushes or
+# merges made with GITHUB_TOKEN do not trigger the required checks or the
+# release workflow. Configure:
 #   Repository variable: ENABLE_SKILLS_AUTOMATION = true
 #   Repository secrets:  AUTOMATION_APP_ID, AUTOMATION_APP_PRIVATE_KEY
-# See docs/release-automation.md. Without these, the workflow still opens a PR
-# (using GITHUB_TOKEN) but will NOT auto-merge.
+# Without those the run still resolves, validates, and reports — it just makes
+# no changes. See docs/release-automation.md.
 
 on:
   schedule:
@@ -20,18 +23,34 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Resolve and report, but do not push, open a PR, or merge."
+        description: "Resolve and report only: no commit, push, PR, App token, or merge."
         type: boolean
         default: false
 
+# The job only reads with GITHUB_TOKEN; all writes go through the App token.
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 concurrency:
   group: update-skills-catalog
   # Never cancel an in-flight update mid-merge.
   cancel-in-progress: false
+
+env:
+  BRANCH: automation/skills-catalog
+  PR_TITLE: "chore(skills): update upstream catalog"
+  # Every path the resolver/generator is allowed to touch. Used both to detect
+  # changes and to stage them, so the two can never disagree.
+  CATALOG_PATHS: >-
+    skills-source.lock.json
+    catalog/cache
+    SKILLS_CATALOG.md
+    claude_code_skills.md
+    skills-catalog.json
+    catalog-change-report.md
+    skills-catalog-diff.json
+    SHA256SUMS
+    docs/skills
 
 jobs:
   update:
@@ -61,9 +80,27 @@ jobs:
           bun test catalog
           bun run catalog:check
 
-      - name: Classify change
-        id: classify
+      # Single source of truth for "is there anything to ship?". Every mutating
+      # step below is gated on this output, so a run with no upstream change
+      # simply stops having done nothing and reports success.
+      - name: Detect catalog changes
+        id: detect
         run: |
+          set -euo pipefail
+          read -ra paths <<< "$CATALOG_PATHS"
+          if [ -n "$(git status --porcelain -- "${paths[@]}")" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Upstream changes detected."
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No upstream changes detected."
+          fi
+
+      - name: Classify change + build PR body
+        id: classify
+        if: steps.detect.outputs.changed == 'true'
+        run: |
+          set -euo pipefail
           MANUAL="false"
           if [ -f skills-catalog-diff.json ]; then
             MANUAL=$(bun -e 'const d=JSON.parse(require("fs").readFileSync("skills-catalog-diff.json","utf8")); process.stdout.write(d.summary && d.summary.manualReviewRequired ? "true":"false")')
@@ -72,79 +109,161 @@ jobs:
           {
             echo "## Skills Catalog update"
             echo '```'
-            [ -f skills-catalog.json ] && bun run catalog/src/summary.ts --oneline
-            git diff --stat skills-source.lock.json | tail -20
+            if [ -f skills-catalog.json ]; then bun run catalog/src/summary.ts --oneline; fi
+            git --no-pager diff --stat skills-source.lock.json | tail -20
             echo '```'
           } > /tmp/pr-body.md
-          cat /tmp/pr-body.md >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Stop if nothing changed
+      # Dry run stops here: it has resolved, validated, classified, and
+      # reported, and reaches no step that mints a token or writes anything.
+      - name: Dry-run report (no mutations)
+        if: steps.detect.outputs.changed == 'true' && inputs.dry_run == true
         run: |
-          if [ -z "$(git status --porcelain -- skills-source.lock.json catalog/cache SKILLS_CATALOG.md claude_code_skills.md skills-catalog.json catalog-change-report.md skills-catalog-diff.json SHA256SUMS docs/skills)" ]; then
-            echo "No upstream changes detected."
-            echo "No upstream changes." >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
+          set -euo pipefail
+          read -ra paths <<< "$CATALOG_PATHS"
+          echo "Dry run: changes detected; nothing committed, pushed, opened, or merged."
+          git --no-pager diff --stat -- "${paths[@]}"
 
-      - name: Stop if dry-run
-        if: ${{ inputs.dry_run }}
-        run: |
-          echo "Dry-run requested; not pushing or opening a PR."
-          git diff --stat
-          exit 0
-
-      # GitHub App token so automation PRs trigger required checks and merges
-      # trigger the release workflow. Gated by a repo variable + secrets.
+      # Mints an installation token so the PR triggers required checks and the
+      # merge triggers the release workflow. Skipped on a dry run, skipped when
+      # there is nothing to ship, skipped when automation is switched off.
       - name: Automation token (GitHub App)
         id: app-token
-        if: ${{ vars.ENABLE_SKILLS_AUTOMATION == 'true' }}
-        uses: actions/create-github-app-token@v2 # first-party; mints an installation token
+        if: >-
+          steps.detect.outputs.changed == 'true'
+          && inputs.dry_run != true
+          && vars.ENABLE_SKILLS_AUTOMATION == 'true'
+        uses: actions/create-github-app-token@v3 # first-party; mints an installation token
         with:
           app-id: ${{ secrets.AUTOMATION_APP_ID }}
           private-key: ${{ secrets.AUTOMATION_APP_PRIVATE_KEY }}
 
-      - name: Push, open/update PR, (auto-)merge
+      - name: Report that automation is disabled
+        if: >-
+          steps.detect.outputs.changed == 'true'
+          && inputs.dry_run != true
+          && steps.app-token.outputs.token == ''
+        run: |
+          echo "::warning::Upstream changes detected but no App token was minted (ENABLE_SKILLS_AUTOMATION is not 'true'). No branch, PR, or merge was created. See docs/release-automation.md."
+
+      - name: Commit + push the automation branch
+        if: >-
+          steps.detect.outputs.changed == 'true'
+          && inputs.dry_run != true
+          && steps.app-token.outputs.token != ''
         env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token || github.token }}
-          BOT_MODE: ${{ (steps.app-token.outputs.token != '' && vars.ENABLE_SKILLS_AUTOMATION == 'true') && 'app' || 'default' }}
-          MANUAL_REVIEW: ${{ steps.classify.outputs.manual_review }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
         run: |
           set -euo pipefail
-          git config user.name "skills-catalog-bot"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -B automation/skills-catalog
-          git add -A
-          git commit -q -m "chore(skills): update upstream catalog" -m "Automated by skills-catalog-update workflow."
+          read -ra paths <<< "$CATALOG_PATHS"
+
+          # Commit as the App's real bot identity, so main's history attributes
+          # automated commits to <app-slug>[bot] rather than a generic actor.
+          BOT_ID=$(gh api "/users/${APP_SLUG}%5Bbot%5D" --jq .id)
+          git config user.name "${APP_SLUG}[bot]"
+          git config user.email "${BOT_ID}+${APP_SLUG}[bot]@users.noreply.github.com"
+
+          git checkout -B "$BRANCH"
+          git add -A -- "${paths[@]}"
+          if git diff --cached --quiet; then
+            echo "::error::Change detection reported a change but nothing is staged; refusing to create an empty commit."
+            exit 1
+          fi
+          git commit -q -m "$PR_TITLE" -m "Automated by the skills-catalog-update workflow."
 
           remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          # Dedicated bot branch rebuilt from main each run -> force-with-lease is safe here.
-          git push "$remote" automation/skills-catalog --force-with-lease
+          # The bot branch is rebuilt from main every run and written only by
+          # this workflow (serialized by the concurrency group). actions/checkout
+          # fetches just the triggering ref, so there is no remote-tracking ref
+          # for --force-with-lease to read and a bare lease would be rejected as
+          # stale. Fetch the branch and pass the expected value explicitly; an
+          # empty value means "the branch must not exist yet".
+          git fetch --no-tags "$remote" "+refs/heads/${BRANCH}:refs/remotes/origin/${BRANCH}" 2>/dev/null || true
+          EXPECT=$(git rev-parse --verify --quiet "refs/remotes/origin/${BRANCH}" || true)
+          git push "$remote" "HEAD:refs/heads/${BRANCH}" \
+            --force-with-lease="refs/heads/${BRANCH}:${EXPECT}"
 
-          # Ensure the manual-review label exists.
-          gh label create manual-review-required --description "Supply-chain change needs human review before merge" --color B60205 2>/dev/null || true
-
-          TITLE="chore(skills): update upstream catalog"
-          if gh pr view automation/skills-catalog --json number >/dev/null 2>&1; then
-            gh pr edit automation/skills-catalog --title "$TITLE" --body-file /tmp/pr-body.md
+      - name: Open or update the automation PR
+        id: pr
+        if: >-
+          steps.detect.outputs.changed == 'true'
+          && inputs.dry_run != true
+          && steps.app-token.outputs.token != ''
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          set -euo pipefail
+          # One branch, one open PR: reuse the open one if it exists, never
+          # resurrect a closed/merged PR for the same head.
+          PR=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')
+          if [ -n "$PR" ]; then
+            gh pr edit "$PR" --title "$PR_TITLE" --body-file /tmp/pr-body.md
           else
-            gh pr create --base main --head automation/skills-catalog --title "$TITLE" --body-file /tmp/pr-body.md
+            gh pr create --base main --head "$BRANCH" --title "$PR_TITLE" --body-file /tmp/pr-body.md
+            PR=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')
           fi
+          echo "number=$PR" >> "$GITHUB_OUTPUT"
+          echo "Automation PR: #$PR"
 
-          if [ "$MANUAL_REVIEW" = "true" ]; then
-            echo "Change is manual-review-required; leaving PR open for a human."
-            gh pr edit automation/skills-catalog --add-label manual-review-required
-            exit 0
-          fi
+      - name: Flag PR for manual review
+        if: >-
+          steps.detect.outputs.changed == 'true'
+          && inputs.dry_run != true
+          && steps.app-token.outputs.token != ''
+          && steps.classify.outputs.manual_review == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+        run: |
+          set -euo pipefail
+          gh label create manual-review-required \
+            --description "Supply-chain change needs human review before merge" \
+            --color B60205 2>/dev/null || true
+          gh pr edit "$PR_NUMBER" --add-label manual-review-required
+          echo "::warning::PR #${PR_NUMBER} is manual-review-required; auto-merge is not enabled and a human must merge it."
 
-          gh pr edit automation/skills-catalog --remove-label manual-review-required 2>/dev/null || true
+      - name: Clear manual-review label (routine change)
+        if: >-
+          steps.detect.outputs.changed == 'true'
+          && inputs.dry_run != true
+          && steps.app-token.outputs.token != ''
+          && steps.classify.outputs.manual_review != 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+        run: gh pr edit "$PR_NUMBER" --remove-label manual-review-required 2>/dev/null || true
 
-          if [ "$BOT_MODE" = "app" ]; then
-            # Routine + app token: enable squash auto-merge. With branch
-            # protection + required checks configured this merges once checks
-            # pass; otherwise it merges after the (already-validated) PR opens.
-            gh pr merge automation/skills-catalog --squash --auto --delete-branch || \
-              gh pr merge automation/skills-catalog --squash --delete-branch
-          else
-            echo "App token not configured (BOT_MODE=default). PR left open; auto-merge skipped." >&2
-            echo "See docs/release-automation.md (ENABLE_SKILLS_AUTOMATION / AUTOMATION_APP_ID)." >&2
-          fi
+      - name: Enable squash auto-merge (routine change)
+        if: >-
+          steps.detect.outputs.changed == 'true'
+          && inputs.dry_run != true
+          && steps.app-token.outputs.token != ''
+          && steps.classify.outputs.manual_review != 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+        run: |
+          set -euo pipefail
+          # Safe auto-merge only: GitHub merges the PR once the repository's
+          # required checks pass. No --admin, no ruleset bypass, and no
+          # direct-merge fallback — if auto-merge cannot be enabled this step
+          # fails loudly and the PR stays open.
+          gh pr merge "$PR_NUMBER" --squash --auto --delete-branch
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## Skills Catalog update"
+            echo ""
+            echo "- changed: \`${{ steps.detect.outputs.changed }}\`"
+            echo "- dry run: \`${{ inputs.dry_run == true }}\`"
+            echo "- manual review required: \`${{ steps.classify.outputs.manual_review || 'n/a' }}\`"
+            echo "- automation enabled: \`${{ vars.ENABLE_SKILLS_AUTOMATION == 'true' }}\`"
+            echo "- PR: \`${{ steps.pr.outputs.number && format('#{0}', steps.pr.outputs.number) || 'none' }}\`"
+            if [ -f /tmp/pr-body.md ]; then
+              echo ""
+              cat /tmp/pr-body.md
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
