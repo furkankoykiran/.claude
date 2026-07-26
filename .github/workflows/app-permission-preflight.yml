@@ -82,16 +82,20 @@ jobs:
           # the HTTP status and GitHub's own X-Accepted-GitHub-Permissions
           # header, which states exactly which permission each endpoint wants.
           # Only status lines and permission names are printed — never a token.
+          # Every extraction is tolerant: `set -e` would otherwise abort the
+          # whole step the moment a grep found nothing, which is exactly the
+          # case this function exists to report on.
           probe() {
             local label="$1"; shift
-            local out status accepted
+            local out status accepted msg
             out=$(gh api -i "$@" 2>&1 || true)
-            status=$(printf '%s\n' "$out" | grep -m1 -oE 'HTTP/[0-9.]+ [0-9]{3}' | grep -oE '[0-9]{3}$')
-            [ -z "$status" ] && status=$(printf '%s\n' "$out" | grep -m1 -oE '\(HTTP [0-9]{3}\)' | grep -oE '[0-9]{3}')
-            accepted=$(printf '%s\n' "$out" | grep -im1 '^x-accepted-github-permissions:' | cut -d: -f2- | tr -d '\r' | sed 's/^ *//')
-            local msg
-            msg=$(printf '%s\n' "$out" | grep -m1 -oE '"message":"[^"]*"' | cut -d'"' -f4)
-            note "  - \`${label}\` → HTTP \`${status:-?}\`${msg:+ — ${msg}}${accepted:+ (endpoint accepts: \`${accepted}\`)}"
+            status=$(printf '%s\n' "$out" | grep -m1 -oE 'HTTP/[0-9.]+ [0-9]{3}' | grep -oE '[0-9]{3}$' || true)
+            if [ -z "$status" ]; then
+              status=$(printf '%s\n' "$out" | grep -m1 -oE 'HTTP [0-9]{3}' | grep -oE '[0-9]{3}' || true)
+            fi
+            accepted=$(printf '%s\n' "$out" | grep -im1 '^x-accepted-github-permissions:' | cut -d: -f2- | tr -d '\r' | sed 's/^ *//' || true)
+            msg=$(printf '%s\n' "$out" | grep -m1 -oE '"message": *"[^"]*"' | sed 's/.*: *"//;s/"$//' || true)
+            note "  - \`${label}\` -> HTTP \`${status:-?}\`${msg:+ - ${msg}}${accepted:+ (endpoint accepts: \`${accepted}\`)}"
           }
 
           note ""
