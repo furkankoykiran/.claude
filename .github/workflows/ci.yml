@@ -14,11 +14,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Workflow files are supply-chain surface: a typo in an `if:` guard silently
+  # disables a safety gate. actionlint parses every workflow, type-checks the
+  # expression syntax, and runs shellcheck over each `run:` block.
+  actionlint:
+    name: Lint GitHub Actions workflows
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Run actionlint
+        env:
+          ACTIONLINT_VERSION: 1.7.12
+        run: |
+          set -euo pipefail
+          curl -fsSL -o /tmp/actionlint.tar.gz \
+            "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          tar -C /tmp -xzf /tmp/actionlint.tar.gz actionlint
+          # ubuntu-latest ships shellcheck, which actionlint uses for run: blocks.
+          /tmp/actionlint -color -verbose .github/workflows/*.yml
+
   shellcheck:
     name: Lint shell scripts
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Run shellcheck
         run: |
           sudo apt-get update
@@ -30,7 +49,7 @@ jobs:
     name: Provider switcher tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Run provider switcher tests
         run: ./scripts/test-providers.sh
 
@@ -38,7 +57,7 @@ jobs:
     name: Lint PowerShell (PSScriptAnalyzer)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Run PSScriptAnalyzer
         shell: pwsh
         run: |
@@ -66,7 +85,7 @@ jobs:
         run: |
           apt-get update
           apt-get install -y git
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install bootstrap prerequisites
         run: apt-get install -y curl unzip xz-utils ca-certificates
       # Use $GITHUB_WORKSPACE (the env var), not ${{ github.workspace }}: inside a
@@ -95,7 +114,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       # Third-party action pinned to a full commit SHA (oven-sh/setup-bun v2.2.0).
       # The SHA MUST match the v2.2.0 tag's commit; CI validates pin integrity.
       - name: Setup Bun
@@ -133,7 +152,7 @@ jobs:
           fi
       - name: Upload diagnostics on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: catalog-diagnostics-${{ github.run_id }}
           path: |
