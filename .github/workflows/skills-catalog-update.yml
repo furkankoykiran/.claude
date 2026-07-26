@@ -101,13 +101,21 @@ jobs:
         if: steps.detect.outputs.changed == 'true'
         run: |
           set -euo pipefail
-          MANUAL="false"
-          if [ -f skills-catalog-diff.json ]; then
-            MANUAL=$(bun -e 'const d=JSON.parse(require("fs").readFileSync("skills-catalog-diff.json","utf8")); process.stdout.write(d.summary && d.summary.manualReviewRequired ? "true":"false")')
-          fi
+          # Classify against main's catalog as it stood before this run.
+          # The committed skills-catalog-diff.json is deliberately generated
+          # against an empty base (that is the invariant the CI catalog job
+          # enforces), so every skill reads as newly added there and reusing it
+          # would mark every PR manual-review-required and never auto-merge.
+          git show HEAD:skills-catalog.json > /tmp/base-catalog.json
+          bun run catalog/src/cli.ts diff --base /tmp/base-catalog.json > /tmp/change-diff.json
+          MANUAL=$(bun -e 'const d=JSON.parse(require("fs").readFileSync("/tmp/change-diff.json","utf8")); process.stdout.write(d.summary && d.summary.manualReviewRequired ? "true":"false")')
+          COUNTS=$(bun -e 'const s=JSON.parse(require("fs").readFileSync("/tmp/change-diff.json","utf8")).summary; process.stdout.write("+"+s.added+" ~"+s.updated+" -"+s.removed+" >"+s.renamed)')
           echo "manual_review=$MANUAL" >> "$GITHUB_OUTPUT"
           {
             echo "## Skills Catalog update"
+            echo ""
+            echo "Change vs \`main\`: \`$COUNTS\` — manual review required: \`$MANUAL\`"
+            echo ""
             echo '```'
             if [ -f skills-catalog.json ]; then bun run catalog/src/summary.ts --oneline; fi
             git --no-pager diff --stat skills-source.lock.json | tail -20
