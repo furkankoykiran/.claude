@@ -3,124 +3,124 @@
   "schemaVersion": 1,
   "skills": [
     {
-      "canonicalInvocation": "/add-mcp",
-      "digest": "76a7fb8c025d7108856d48cc964c90b4848d15d06b00731f63aa02880c1023eb",
+      "canonicalInvocation": "/fk-gh-flow:find-issues",
+      "digest": "afacaa7337a7ac8790b578eb3306b62c0946de09e30488b123a55f0340eabdce",
       "license": {
         "declared": "repository-owned",
         "detected": "repository-owned"
       },
       "redistribution": "full",
-      "relativePath": "skills/add-mcp/SKILL.md",
+      "relativePath": "skills/fk-gh-flow/skills/find-issues/SKILL.md",
       "sourceId": "repository"
     },
     {
-      "canonicalInvocation": "/blog-from-chat",
-      "digest": "5dcb8490c7b71b59b7077d6b8063e84f2be169d155c4350558774a645decbf7b",
+      "canonicalInvocation": "/fk-gh-flow:find-repos",
+      "digest": "28654661833ec44c7d5f635f59c036143e8a474c324e4c27a99eb5f9692fae7a",
       "license": {
         "declared": "repository-owned",
         "detected": "repository-owned"
       },
       "redistribution": "full",
-      "relativePath": "skills/blog-from-chat/SKILL.md",
+      "relativePath": "skills/fk-gh-flow/skills/find-repos/SKILL.md",
       "sourceId": "repository"
     },
     {
-      "canonicalInvocation": "/find-issues",
-      "digest": "f925610d6287bbf92c3843b89de47584a83f812f9be487a345b5523973b4251c",
+      "canonicalInvocation": "/fk-gh-flow:github-comment",
+      "digest": "4884e5e87865ac81b5dd87a372da8efdf10ce572e0754a1c4d62c2eb30cdb219",
       "license": {
         "declared": "repository-owned",
         "detected": "repository-owned"
       },
       "redistribution": "full",
-      "relativePath": "skills/find-issues/SKILL.md",
+      "relativePath": "skills/fk-gh-flow/skills/github-comment/SKILL.md",
       "sourceId": "repository"
     },
     {
-      "canonicalInvocation": "/find-repos",
-      "digest": "a7c222de2656667e78c042e3cebf9a27413646d5dd6850560ef67afff89490b7",
+      "canonicalInvocation": "/fk-gh-flow:pr-followup",
+      "digest": "07b6ed2daaa879b502e1b72557b1ef013fe3cbd60e145d67784589fddc47d039",
       "license": {
         "declared": "repository-owned",
         "detected": "repository-owned"
       },
       "redistribution": "full",
-      "relativePath": "skills/find-repos/SKILL.md",
+      "relativePath": "skills/fk-gh-flow/skills/pr-followup/SKILL.md",
       "sourceId": "repository"
     },
     {
-      "canonicalInvocation": "/github-comment",
-      "digest": "3da3c3e85ade7fa5f1093bdcf1e9daa0f09a7c023f7b825505b4dc09a3907d7a",
-      "license": {
-        "declared": "repository-owned",
-        "detected": "repository-owned"
-      },
-      "redistribution": "full",
-      "relativePath": "skills/github-comment/SKILL.md",
-      "sourceId": "repository"
-    },
-    {
-      "canonicalInvocation": "/github-profile-blog",
-      "digest": "3d45aa52a1e068f52315b922a4a18dc45fb5f5afaa8f4738319c77ca3d6149a9",
-      "license": {
-        "declared": "repository-owned",
-        "detected": "repository-owned"
-      },
-      "redistribution": "full",
-      "relativePath": "skills/github-profile-blog/SKILL.md",
-      "sourceId": "repository"
-    },
-    {
-      "canonicalInvocation": "/humanizer",
-      "digest": "d95a15c60055997e7107022fe387bcb492d324ca3fcef867e9ff7957cfdcf43d",
-      "license": {
-        "declared": "repository-owned",
-        "detected": "repository-owned"
-      },
-      "redistribution": "full",
-      "relativePath": "skills/humanizer/SKILL.md",
-      "sourceId": "repository"
-    },
-    {
-      "canonicalInvocation": "/linkedin-post",
-      "digest": "6beb949420830a5531faa66c2c8c9d44fc34b447432d478cffdb77731df24af8",
-      "license": {
-        "declared": "repository-owned",
-        "detected": "repository-owned"
-      },
-      "redistribution": "full",
-      "relativePath": "skills/linkedin-post/SKILL.md",
-      "sourceId": "repository"
-    },
-    {
-      "canonicalInvocation": "/manim-narration",
-      "digest": "b2c7948afa3957493f39febce2891a1eb191f17036e953ddcbc9dd5b7774b71f",
-      "license": {
-        "declared": "repository-owned",
-        "detected": "repository-owned"
-      },
-      "redistribution": "full",
-      "relativePath": "skills/manim-narration/SKILL.md",
-      "sourceId": "repository"
-    },
-    {
-      "canonicalInvocation": "/pr-followup",
-      "digest": "fe973d47be47d831ad75718d26766c631f58d27e8dc37503569f121d52a2f89f",
-      "license": {
-        "declared": "repository-owned",
-        "detected": "repository-owned"
-      },
-      "redistribution": "full",
-      "relativePath": "skills/pr-followup/SKILL.md",
-      "sourceId": "repository"
-    },
-    {
-      "canonicalInvocation": "/solve-issue",
+      "canonicalInvocation": "/fk-gh-flow:solve-issue",
       "digest": "fe9c1eedf928f9630ae4797ee1ffc792129d3998a0f67adc65ce5a89b2f5dac3",
       "license": {
         "declared": "repository-owned",
         "detected": "repository-owned"
       },
       "redistribution": "full",
-      "relativePath": "skills/solve-issue/SKILL.md",
+      "relativePath": "skills/fk-gh-flow/skills/solve-issue/SKILL.md",
+      "sourceId": "repository"
+    },
+    {
+      "canonicalInvocation": "/fk-manim-video:manim-narration",
+      "digest": "182cc0fab9796bb08c3c33bd3f061423ebbe6727a59cf0fa81d125b453cdc0a0",
+      "license": {
+        "declared": "repository-owned",
+        "detected": "repository-owned"
+      },
+      "redistribution": "full",
+      "relativePath": "skills/fk-manim-video/skills/manim-narration/SKILL.md",
+      "sourceId": "repository"
+    },
+    {
+      "canonicalInvocation": "/fk-toolkit-ops:add-mcp",
+      "digest": "bb81b7ebbe818be98c03a6eebea6105f768848ff2d68873b82f46536194678e5",
+      "license": {
+        "declared": "repository-owned",
+        "detected": "repository-owned"
+      },
+      "redistribution": "full",
+      "relativePath": "skills/fk-toolkit-ops/skills/add-mcp/SKILL.md",
+      "sourceId": "repository"
+    },
+    {
+      "canonicalInvocation": "/fk-writing-kit:blog-from-chat",
+      "digest": "93b7a8d997f3002e5b782203a90817d21b2f35051006481b60a5ac8170ba958b",
+      "license": {
+        "declared": "repository-owned",
+        "detected": "repository-owned"
+      },
+      "redistribution": "full",
+      "relativePath": "skills/fk-writing-kit/skills/blog-from-chat/SKILL.md",
+      "sourceId": "repository"
+    },
+    {
+      "canonicalInvocation": "/fk-writing-kit:github-profile-blog",
+      "digest": "23b90f90339ff3b946d0571e3f02474b3eff1853181634c15a30f06398d0ca74",
+      "license": {
+        "declared": "repository-owned",
+        "detected": "repository-owned"
+      },
+      "redistribution": "full",
+      "relativePath": "skills/fk-writing-kit/skills/github-profile-blog/SKILL.md",
+      "sourceId": "repository"
+    },
+    {
+      "canonicalInvocation": "/fk-writing-kit:humanizer",
+      "digest": "a82dd3aae18736e9d67fa45f657bf86be24246373255e63725f794711b7bb621",
+      "license": {
+        "declared": "repository-owned",
+        "detected": "repository-owned"
+      },
+      "redistribution": "full",
+      "relativePath": "skills/fk-writing-kit/skills/humanizer/SKILL.md",
+      "sourceId": "repository"
+    },
+    {
+      "canonicalInvocation": "/fk-writing-kit:linkedin-post",
+      "digest": "47227dfc22aee9e7ec0381f7423f4d1c288b7311c608902991ab4665fa3e8d5a",
+      "license": {
+        "declared": "repository-owned",
+        "detected": "repository-owned"
+      },
+      "redistribution": "full",
+      "relativePath": "skills/fk-writing-kit/skills/linkedin-post/SKILL.md",
       "sourceId": "repository"
     },
     {
@@ -1651,17 +1651,17 @@
   "sources": [
     {
       "canonicalSkills": [
-        "/add-mcp",
-        "/blog-from-chat",
-        "/find-issues",
-        "/find-repos",
-        "/github-comment",
-        "/github-profile-blog",
-        "/humanizer",
-        "/linkedin-post",
-        "/manim-narration",
-        "/pr-followup",
-        "/solve-issue"
+        "/fk-gh-flow:find-issues",
+        "/fk-gh-flow:find-repos",
+        "/fk-gh-flow:github-comment",
+        "/fk-gh-flow:pr-followup",
+        "/fk-gh-flow:solve-issue",
+        "/fk-manim-video:manim-narration",
+        "/fk-toolkit-ops:add-mcp",
+        "/fk-writing-kit:blog-from-chat",
+        "/fk-writing-kit:github-profile-blog",
+        "/fk-writing-kit:humanizer",
+        "/fk-writing-kit:linkedin-post"
       ],
       "id": "repository",
       "license": {
@@ -1670,17 +1670,17 @@
       },
       "redistribution": "full",
       "selectedPaths": [
-        "skills/add-mcp",
-        "skills/blog-from-chat",
-        "skills/find-issues",
-        "skills/find-repos",
-        "skills/github-comment",
-        "skills/github-profile-blog",
-        "skills/humanizer",
-        "skills/linkedin-post",
-        "skills/manim-narration",
-        "skills/pr-followup",
-        "skills/solve-issue"
+        "skills/fk-gh-flow/skills/find-issues",
+        "skills/fk-gh-flow/skills/find-repos",
+        "skills/fk-gh-flow/skills/github-comment",
+        "skills/fk-gh-flow/skills/pr-followup",
+        "skills/fk-gh-flow/skills/solve-issue",
+        "skills/fk-manim-video/skills/manim-narration",
+        "skills/fk-toolkit-ops/skills/add-mcp",
+        "skills/fk-writing-kit/skills/blog-from-chat",
+        "skills/fk-writing-kit/skills/github-profile-blog",
+        "skills/fk-writing-kit/skills/humanizer",
+        "skills/fk-writing-kit/skills/linkedin-post"
       ],
       "type": "repo-owned"
     },

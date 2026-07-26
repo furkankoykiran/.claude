@@ -1,0 +1,674 @@
+#!/usr/bin/env bash
+# fkt — FK Claude Toolkit updater.
+#
+# The bootstrap layer (this repository checked out at ~/.claude) cannot be
+# managed by Claude Code's plugin auto-updater: it carries hooks, provider
+# scripts, global instructions and the installer itself. `fkt` is the safe
+# update path for exactly that layer. Everything under skills/fk-*/ is a plugin
+# and should be updated by Claude Code instead — see `fkt status`.
+#
+# Design rules this script obeys:
+#   * It never destroys local work. Updates are fast-forward-only and refuse to
+#     run against a dirty or diverged worktree.
+#   * It never touches the network unless asked, and never on a cached hit.
+#   * It collects nothing and reports nothing anywhere. The only outbound
+#     requests are `git ls-remote` against the repository and one static file
+#     fetch for security advisories.
+#   * It fails open. A broken check must never stop Claude Code from starting.
+#
+# Exit codes:
+#    0  success / already up to date
+#    2  usage error
+#   10  update available (check mode only)
+#   20  refused — local changes or diverged history would be lost
+#   30  offline or the remote could not be reached
+#   40  this is not a git checkout, so it cannot be updated in place
+#   50  a migration failed
+#
+# Environment overrides (all optional, all documented in docs/updates.md):
+#   FKT_HOME         toolkit checkout                (default ~/.claude)
+#   FKT_CONFIG_DIR   config dir                      (default XDG config/fk-toolkit)
+#   FKT_STATE_DIR    state dir                       (default XDG state/fk-toolkit)
+#   FKT_CHANNEL      stable | edge                   (overrides config)
+#   FKT_UPDATE_CHECK 0 disables update checks entirely
+#   FKT_SECURITY_NOTICES 0 disables the advisory fetch
+#   FKT_OFFLINE      1 forbids all network access
+#   FKT_CHECK_TTL_MINUTES, FKT_SNOOZE_HOURS  cache tuning (testing)
+
+set -euo pipefail
+
+FKT_VERSION_SCHEMA=1
+
+FKT_HOME="${FKT_HOME:-$HOME/.claude}"
+FKT_CONFIG_DIR="${FKT_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/fk-toolkit}"
+FKT_STATE_DIR="${FKT_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/fk-toolkit}"
+
+CONFIG_FILE="$FKT_CONFIG_DIR/config"
+CHECK_CACHE="$FKT_STATE_DIR/update-check"
+SNOOZE_FILE="$FKT_STATE_DIR/snooze"
+ADVISORY_CACHE="$FKT_STATE_DIR/advisories.tsv"
+MIGRATION_DIR="$FKT_STATE_DIR/migrations"
+
+DEFAULT_CHANNEL="stable"
+DEFAULT_TTL_MINUTES=720            # 12h; a config repo does not move hourly
+ADVISORY_URL_BASE="https://raw.githubusercontent.com/furkankoykiran/.claude"
+
+# Exit codes as names, so callers and tests read clearly.
+EX_USAGE=2
+EX_UPDATE_AVAILABLE=10
+EX_REFUSED=20
+EX_OFFLINE=30
+EX_NOT_GIT=40
+EX_MIGRATION=50
+
+say()  { printf '%s\n' "$*"; }
+info() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
+warn() { printf '\033[1;33m!!\033[0m %s\n' "$*" >&2; }
+err()  { printf '\033[1;31mxx\033[0m %s\n' "$*" >&2; }
+
+# ---------------------------------------------------------------------------
+# Config
+# ---------------------------------------------------------------------------
+# A flat key=value file rather than JSON: no parser dependency, greppable, and a
+# user can see at a glance what the updater will do. Unknown keys are ignored so
+# a newer toolkit can add keys without breaking an older fkt.
+config_get() {
+  local key="$1" default="${2-}" line
+  if [ -f "$CONFIG_FILE" ]; then
+    # Last assignment wins; tolerate whitespace and comments.
+    line="$(sed -n "s/^[[:space:]]*${key}[[:space:]]*=[[:space:]]*\(.*\)$/\1/p" "$CONFIG_FILE" | tail -1)"
+    line="${line%%#*}"
+    # Trim trailing whitespace.
+    line="${line%"${line##*[![:space:]]}"}"
+    if [ -n "$line" ]; then printf '%s\n' "$line"; return 0; fi
+  fi
+  printf '%s\n' "$default"
+}
+
+config_set() {
+  local key="$1" value="$2" tmp
+  mkdir -p "$FKT_CONFIG_DIR"
+  tmp="$(mktemp "$FKT_CONFIG_DIR/.config.XXXXXX")"
+  if [ -f "$CONFIG_FILE" ]; then
+    grep -v "^[[:space:]]*${key}[[:space:]]*=" "$CONFIG_FILE" > "$tmp" || true
+  else
+    {
+      say "# fk-toolkit updater configuration."
+      say "# Written by \`fkt\`; safe to edit by hand. See docs/updates.md."
+    } > "$tmp"
+  fi
+  printf '%s = %s\n' "$key" "$value" >> "$tmp"
+  chmod 600 "$tmp"
+  mv -f "$tmp" "$CONFIG_FILE"
+}
+
+channel() {
+  local c="${FKT_CHANNEL:-$(config_get channel "$DEFAULT_CHANNEL")}"
+  case "$c" in
+    stable|edge) printf '%s\n' "$c" ;;
+    *) warn "unknown channel \"$c\"; falling back to $DEFAULT_CHANNEL"; printf '%s\n' "$DEFAULT_CHANNEL" ;;
+  esac
+}
+
+ttl_minutes() {
+  local t="${FKT_CHECK_TTL_MINUTES:-$(config_get check_ttl_minutes "$DEFAULT_TTL_MINUTES")}"
+  case "$t" in (''|*[!0-9]*) t="$DEFAULT_TTL_MINUTES" ;; esac
+  printf '%s\n' "$t"
+}
+
+checks_enabled() {
+  [ "${FKT_UPDATE_CHECK:-1}" != "0" ] || return 1
+  [ "$(config_get update_check true)" != "false" ] || return 1
+  return 0
+}
+
+advisories_enabled() {
+  [ "${FKT_SECURITY_NOTICES:-1}" != "0" ] || return 1
+  [ "$(config_get security_notices true)" != "false" ] || return 1
+  return 0
+}
+
+offline() { [ "${FKT_OFFLINE:-0}" = "1" ]; }
+
+# ---------------------------------------------------------------------------
+# Repository facts
+# ---------------------------------------------------------------------------
+is_git_checkout() { [ -d "$FKT_HOME/.git" ]; }
+
+git_at() { git -C "$FKT_HOME" "$@"; }
+
+installed_version() {
+  if [ -f "$FKT_HOME/VERSION" ]; then
+    tr -d '[:space:]' < "$FKT_HOME/VERSION"
+  else
+    printf 'unknown\n'
+  fi
+}
+
+remote_url() {
+  git_at config --get remote.origin.url 2>/dev/null || printf '\n'
+}
+
+# Highest v-prefixed semver tag on the remote. Read with ls-remote so a check
+# never mutates the local repository.
+remote_latest_tag() {
+  local out
+  out="$(GIT_TERMINAL_PROMPT=0 git_at ls-remote --tags --refs origin 'v*' 2>/dev/null)" || return 1
+  printf '%s\n' "$out" \
+    | sed 's#.*refs/tags/##' \
+    | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' \
+    | sort -V \
+    | tail -1
+}
+
+remote_main_sha() {
+  GIT_TERMINAL_PROMPT=0 git_at ls-remote origin refs/heads/main 2>/dev/null | awk 'NR==1{print $1}'
+}
+
+# semver compare: prints "newer" if $2 > $1, else "same-or-older".
+version_newer() {
+  local have="$1" want="$2"
+  [ "$have" = "$want" ] && { printf 'same-or-older\n'; return 0; }
+  # sort -V puts the greater last; if that is $want, $want is newer.
+  if [ "$(printf '%s\n%s\n' "$have" "$want" | sort -V | tail -1)" = "$want" ]; then
+    printf 'newer\n'
+  else
+    printf 'same-or-older\n'
+  fi
+}
+
+# ---------------------------------------------------------------------------
+# Cache + snooze
+# ---------------------------------------------------------------------------
+# Cache line: "<status> <current> <latest> <epoch>"
+#   status: UP_TO_DATE | UPDATE_AVAILABLE | UNKNOWN
+write_cache() {
+  local status="$1" current="$2" latest="$3" tmp
+  mkdir -p "$FKT_STATE_DIR"
+  tmp="$(mktemp "$FKT_STATE_DIR/.update-check.XXXXXX")"
+  printf '%s %s %s %s\n' "$status" "$current" "$latest" "$(date +%s)" > "$tmp"
+  mv -f "$tmp" "$CHECK_CACHE"
+}
+
+cache_fresh() {
+  [ -f "$CHECK_CACHE" ] || return 1
+  [ -z "$(find "$CHECK_CACHE" -mmin "+$(ttl_minutes)" 2>/dev/null)" ]
+}
+
+cache_field() {
+  [ -f "$CHECK_CACHE" ] || return 1
+  awk -v n="$1" 'NR==1{print $n}' "$CHECK_CACHE"
+}
+
+snoozed_for() {
+  # Snooze is per target version: a newer release always breaks through.
+  local version="$1" until_epoch snoozed_version
+  [ -f "$SNOOZE_FILE" ] || return 1
+  snoozed_version="$(awk 'NR==1{print $1}' "$SNOOZE_FILE")"
+  until_epoch="$(awk 'NR==1{print $2}' "$SNOOZE_FILE")"
+  case "$until_epoch" in (''|*[!0-9]*) return 1 ;; esac
+  [ "$snoozed_version" = "$version" ] || return 1
+  [ "$(date +%s)" -lt "$until_epoch" ]
+}
+
+# ---------------------------------------------------------------------------
+# Security advisories
+# ---------------------------------------------------------------------------
+# A tab-separated file in the repository, fetched from the default branch so an
+# advisory reaches installs pinned to an old release. Deliberately not JSON: no
+# parser dependency, and a user can read it with `cat`.
+#
+#   id <TAB> severity <TAB> introduced <TAB> fixed <TAB> summary <TAB> url
+#
+# `fixed` may be "-" for an unfixed advisory. Lines starting with # are comments.
+fetch_advisories() {
+  advisories_enabled || return 0
+  offline && return 0
+  command -v curl >/dev/null 2>&1 || return 0
+  local tmp
+  mkdir -p "$FKT_STATE_DIR"
+  tmp="$(mktemp "$FKT_STATE_DIR/.advisories.XXXXXX")"
+  if curl -fsSL --max-time 8 --retry 1 \
+       "$ADVISORY_URL_BASE/main/security-advisories.tsv" -o "$tmp" 2>/dev/null; then
+    mv -f "$tmp" "$ADVISORY_CACHE"
+  else
+    rm -f "$tmp"
+  fi
+  return 0
+}
+
+# Print advisories that apply to $1 (the installed version).
+applicable_advisories() {
+  local current="$1"
+  [ -f "$ADVISORY_CACHE" ] || return 0
+  [ "$current" = "unknown" ] && return 0
+  awk -F'\t' -v cur="$current" '
+    function vnum(v,   a, n) { n = split(v, a, "."); return (a[1]*1000000) + (a[2]*1000) + a[3] }
+    /^#/ || NF < 5 { next }
+    {
+      intro = $3; fixed = $4
+      if (intro != "-" && vnum(cur) < vnum(intro)) next
+      if (fixed != "-" && vnum(cur) >= vnum(fixed)) next
+      printf "%s\t%s\t%s\t%s\n", $1, $2, $5, ($6 == "" ? "-" : $6)
+    }
+  ' "$ADVISORY_CACHE"
+}
+
+print_advisories() {
+  local current="$1" out
+  out="$(applicable_advisories "$current")" || return 0
+  [ -n "$out" ] || return 0
+  printf '\n'
+  warn "security advisories affecting $current:"
+  printf '%s\n' "$out" | while IFS=$'\t' read -r id severity summary url; do
+    warn "  [$severity] $id — $summary"
+    [ "$url" != "-" ] && warn "        $url"
+  done
+  warn "Run 'fkt update' to move to a fixed version."
+}
+
+# ---------------------------------------------------------------------------
+# check
+# ---------------------------------------------------------------------------
+do_check() {
+  local force=0 quiet=0
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --force) force=1 ;;
+      --quiet) quiet=1 ;;
+      *) err "unknown argument to check: $1"; return "$EX_USAGE" ;;
+    esac
+    shift
+  done
+
+  if ! checks_enabled && [ "$force" -eq 0 ]; then
+    [ "$quiet" -eq 1 ] || say "update checks are disabled (update_check = false)"
+    return 0
+  fi
+  if ! is_git_checkout; then
+    [ "$quiet" -eq 1 ] || err "$FKT_HOME is not a git checkout; nothing to check"
+    return "$EX_NOT_GIT"
+  fi
+
+  local current ch
+  current="$(installed_version)"
+  ch="$(channel)"
+
+  if [ "$force" -eq 0 ] && cache_fresh; then
+    local status latest
+    status="$(cache_field 1)"
+    latest="$(cache_field 3)"
+    if [ "$status" = "UPDATE_AVAILABLE" ]; then
+      if snoozed_for "$latest"; then
+        [ "$quiet" -eq 1 ] || say "update $latest available (snoozed)"
+        return 0
+      fi
+      [ "$quiet" -eq 1 ] || say "update available: $current -> $latest ($ch)"
+      return "$EX_UPDATE_AVAILABLE"
+    fi
+    [ "$quiet" -eq 1 ] || say "up to date ($current, $ch, cached)"
+    return 0
+  fi
+
+  if offline; then
+    [ "$quiet" -eq 1 ] || warn "offline (FKT_OFFLINE=1); keeping the cached result"
+    return "$EX_OFFLINE"
+  fi
+
+  local latest=""
+  if [ "$ch" = "stable" ]; then
+    latest="$(remote_latest_tag || true)"
+    latest="${latest#v}"
+  else
+    local sha
+    sha="$(remote_main_sha || true)"
+    [ -n "$sha" ] && latest="edge-${sha:0:12}"
+  fi
+
+  if [ -z "$latest" ]; then
+    write_cache UNKNOWN "$current" "-"
+    [ "$quiet" -eq 1 ] || warn "could not reach $(remote_url); leaving the cache marked unknown"
+    return "$EX_OFFLINE"
+  fi
+
+  fetch_advisories
+
+  local newer="same-or-older"
+  if [ "$ch" = "stable" ]; then
+    [ "$current" != "unknown" ] && newer="$(version_newer "$current" "$latest")"
+  else
+    # On edge the comparison is by commit: an update exists when the remote head
+    # is not already an ancestor of HEAD.
+    local sha="${latest#edge-}"
+    if git_at merge-base --is-ancestor "$sha" HEAD 2>/dev/null; then
+      newer="same-or-older"
+    else
+      newer="newer"
+    fi
+  fi
+
+  if [ "$newer" = "newer" ]; then
+    write_cache UPDATE_AVAILABLE "$current" "$latest"
+    if snoozed_for "$latest"; then
+      [ "$quiet" -eq 1 ] || say "update $latest available (snoozed)"
+      return 0
+    fi
+    [ "$quiet" -eq 1 ] || say "update available: $current -> $latest ($ch)"
+    [ "$quiet" -eq 1 ] || print_advisories "$current"
+    return "$EX_UPDATE_AVAILABLE"
+  fi
+
+  write_cache UP_TO_DATE "$current" "$latest"
+  [ "$quiet" -eq 1 ] || say "up to date ($current, $ch)"
+  [ "$quiet" -eq 1 ] || print_advisories "$current"
+  return 0
+}
+
+# ---------------------------------------------------------------------------
+# update
+# ---------------------------------------------------------------------------
+# Refuses rather than repairs. Every failure mode here (dirty tree, diverged
+# history, detached HEAD) means the user has work the updater must not touch.
+assert_updatable() {
+  is_git_checkout || { err "$FKT_HOME is not a git checkout; re-run install.sh instead"; return "$EX_NOT_GIT"; }
+
+  if [ -n "$(git_at status --porcelain --untracked-files=no 2>/dev/null)" ]; then
+    err "refusing to update: $FKT_HOME has uncommitted changes to tracked files."
+    err "Review them with 'git -C $FKT_HOME status', then commit or stash and re-run."
+    return "$EX_REFUSED"
+  fi
+
+  local branch
+  branch="$(git_at symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
+  if [ -z "$branch" ]; then
+    err "refusing to update: $FKT_HOME is on a detached HEAD."
+    err "Check out a branch first: git -C $FKT_HOME checkout main"
+    return "$EX_REFUSED"
+  fi
+  return 0
+}
+
+resolve_target() {
+  # Prints the ref to fast-forward to for the active channel.
+  local ch="$1"
+  if [ "$ch" = "stable" ]; then
+    local tag
+    tag="$(git_at tag --list 'v*' --sort=-v:refname 2>/dev/null | head -1)"
+    [ -n "$tag" ] || return 1
+    printf '%s\n' "$tag"
+  else
+    git_at rev-parse --verify --quiet origin/main >/dev/null 2>&1 || return 1
+    printf 'origin/main\n'
+  fi
+}
+
+do_update() {
+  local assume_yes=0 dry_run=0
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      -y|--yes) assume_yes=1 ;;
+      --dry-run) dry_run=1 ;;
+      *) err "unknown argument to update: $1"; return "$EX_USAGE" ;;
+    esac
+    shift
+  done
+
+  assert_updatable || return $?
+
+  if offline; then
+    err "offline (FKT_OFFLINE=1); cannot fetch an update"
+    return "$EX_OFFLINE"
+  fi
+
+  local ch before
+  ch="$(channel)"
+  before="$(installed_version)"
+
+  info "fetching $(remote_url) ($ch)"
+  if ! GIT_TERMINAL_PROMPT=0 git_at fetch --quiet --tags --prune origin; then
+    err "fetch failed; check the network and try again"
+    return "$EX_OFFLINE"
+  fi
+
+  local target
+  if ! target="$(resolve_target "$ch")"; then
+    err "no update target found on the $ch channel"
+    [ "$ch" = "stable" ] && err "The remote has no v* release tag yet; try 'fkt channel edge'."
+    return "$EX_OFFLINE"
+  fi
+
+  local target_sha head_sha
+  target_sha="$(git_at rev-parse --verify "$target^{commit}")"
+  head_sha="$(git_at rev-parse --verify HEAD)"
+
+  if [ "$target_sha" = "$head_sha" ]; then
+    say "already at $target ($before)"
+    write_cache UP_TO_DATE "$before" "$before"
+    do_migrate
+    return 0
+  fi
+
+  # Fast-forward only. If HEAD is not an ancestor of the target, the local
+  # checkout carries commits the update would discard.
+  if ! git_at merge-base --is-ancestor HEAD "$target_sha" 2>/dev/null; then
+    err "refusing to update: $FKT_HOME has local commits that are not on $target."
+    err "This update would discard them. Inspect with:"
+    err "  git -C $FKT_HOME log --oneline $target_sha..HEAD"
+    err "Then rebase or move them to a branch, and re-run 'fkt update'."
+    return "$EX_REFUSED"
+  fi
+
+  if [ "$dry_run" -eq 1 ]; then
+    say "would fast-forward $(git_at rev-parse --short HEAD) -> $(git_at rev-parse --short "$target_sha") ($target)"
+    git_at log --oneline "HEAD..$target_sha" | head -20
+    return 0
+  fi
+
+  if [ "$assume_yes" -eq 0 ] && [ -t 0 ]; then
+    say ""
+    say "About to fast-forward $FKT_HOME to $target:"
+    git_at log --oneline "HEAD..$target_sha" | head -20
+    say ""
+    printf 'Continue? [y/N] '
+    local reply=""
+    read -r reply || reply=""
+    case "$reply" in
+      y|Y|yes|YES) ;;
+      *) say "aborted"; return 0 ;;
+    esac
+  fi
+
+  if ! git_at merge --ff-only --quiet "$target_sha"; then
+    err "fast-forward failed; nothing was changed"
+    return "$EX_REFUSED"
+  fi
+
+  local after
+  after="$(installed_version)"
+  info "updated $before -> $after ($target)"
+  write_cache UP_TO_DATE "$after" "$after"
+  rm -f "$SNOOZE_FILE"
+
+  do_migrate || return $?
+
+  say ""
+  say "Bootstrap layer updated. Two follow-ups:"
+  say "  * Restart Claude Code so hooks and instructions reload."
+  say "  * Plugins update themselves — run '/plugin marketplace update fk-toolkit'"
+  say "    inside Claude Code, or wait for the background check."
+  return 0
+}
+
+# ---------------------------------------------------------------------------
+# migrations
+# ---------------------------------------------------------------------------
+# Filesystem/config changes that a plugin update cannot express. Each script is
+# run at most once, in lexical order, and must be idempotent anyway. A failure
+# stops the run and leaves no marker, so the next `fkt migrate` retries it.
+do_migrate() {
+  local dir="$FKT_HOME/migrations" script id ran=0
+  [ -d "$dir" ] || return 0
+  mkdir -p "$MIGRATION_DIR"
+
+  for script in "$dir"/[0-9][0-9][0-9][0-9]-*.sh; do
+    [ -f "$script" ] || continue
+    id="$(basename "$script" .sh)"
+    [ -f "$MIGRATION_DIR/$id.done" ] && continue
+
+    info "migration $id"
+    if FKT_HOME="$FKT_HOME" FKT_STATE_DIR="$FKT_STATE_DIR" FKT_CONFIG_DIR="$FKT_CONFIG_DIR" \
+        bash "$script"; then
+      : > "$MIGRATION_DIR/$id.done"
+      ran=$((ran + 1))
+    else
+      err "migration $id failed; no marker written, it will be retried."
+      err "Re-run with 'fkt migrate' once the cause is fixed."
+      return "$EX_MIGRATION"
+    fi
+  done
+
+  [ "$ran" -gt 0 ] && info "$ran migration(s) applied"
+  return 0
+}
+
+# ---------------------------------------------------------------------------
+# status / channel / snooze
+# ---------------------------------------------------------------------------
+do_status() {
+  local current ch
+  current="$(installed_version)"
+  ch="$(channel)"
+  say "fk-toolkit $current"
+  say "  checkout       $FKT_HOME$(is_git_checkout || printf ' (not a git checkout)')"
+  say "  channel        $ch"
+  say "  remote         $(remote_url)"
+  say "  config         $CONFIG_FILE"
+  say "  state          $FKT_STATE_DIR"
+  say "  update checks  $(checks_enabled && echo enabled || echo disabled)"
+  say "  advisories     $(advisories_enabled && echo enabled || echo disabled)"
+  if [ -f "$CHECK_CACHE" ]; then
+    say "  last check     $(cache_field 1) (latest: $(cache_field 3))"
+  else
+    say "  last check     never"
+  fi
+  if [ -f "$SNOOZE_FILE" ]; then
+    say "  snoozed        $(awk 'NR==1{print $1}' "$SNOOZE_FILE") until $(awk 'NR==1{print $2}' "$SNOOZE_FILE")"
+  fi
+  if is_git_checkout; then
+    local dirty
+    dirty="$(git_at status --porcelain --untracked-files=no 2>/dev/null | wc -l | tr -d ' ')"
+    say "  worktree       $([ "$dirty" = "0" ] && echo clean || echo "$dirty modified tracked file(s)")"
+  fi
+  say ""
+  say "Plugins (skills/fk-*) are managed by Claude Code, not by fkt:"
+  say "  /plugin marketplace update fk-toolkit"
+  print_advisories "$current"
+  return 0
+}
+
+do_channel() {
+  if [ $# -eq 0 ]; then
+    channel
+    return 0
+  fi
+  case "$1" in
+    stable|edge)
+      config_set channel "$1"
+      rm -f "$CHECK_CACHE" "$SNOOZE_FILE"
+      say "channel set to $1 (update cache cleared)"
+      ;;
+    *) err "channel must be 'stable' or 'edge'"; return "$EX_USAGE" ;;
+  esac
+}
+
+do_snooze() {
+  local hours="${1:-${FKT_SNOOZE_HOURS:-168}}"
+  case "$hours" in (''|*[!0-9]*) err "snooze takes a whole number of hours"; return "$EX_USAGE" ;; esac
+  local latest
+  latest="$(cache_field 3 2>/dev/null || true)"
+  if [ -z "$latest" ] || [ "$latest" = "-" ]; then
+    err "nothing to snooze; run 'fkt check' first"
+    return "$EX_USAGE"
+  fi
+  mkdir -p "$FKT_STATE_DIR"
+  printf '%s %s\n' "$latest" "$(( $(date +%s) + hours * 3600 ))" > "$SNOOZE_FILE"
+  say "snoozed $latest for ${hours}h (a newer release breaks through)"
+}
+
+do_disable() {
+  config_set update_check false
+  say "update checks disabled. Security advisories still apply; disable them with:"
+  say "  fkt config security_notices false"
+}
+
+do_enable() {
+  config_set update_check true
+  rm -f "$CHECK_CACHE"
+  say "update checks enabled"
+}
+
+do_config() {
+  if [ $# -eq 0 ]; then
+    if [ -f "$CONFIG_FILE" ]; then
+      cat "$CONFIG_FILE"
+    else
+      say "# no config yet ($CONFIG_FILE)"
+    fi
+    return 0
+  fi
+  [ $# -eq 2 ] || { err "usage: fkt config <key> <value>"; return "$EX_USAGE"; }
+  case "$1" in
+    channel|update_check|security_notices|check_ttl_minutes) config_set "$1" "$2" ;;
+    *) err "unknown config key \"$1\" (channel, update_check, security_notices, check_ttl_minutes)"; return "$EX_USAGE" ;;
+  esac
+  say "$1 = $2"
+}
+
+usage() {
+  cat <<'EOF'
+fkt — FK Claude Toolkit updater (bootstrap layer only)
+
+  fkt status                 what is installed, which channel, cached check state
+  fkt version                print the installed version
+  fkt check [--force] [--quiet]
+                             is an update available? (cached; exit 10 if yes)
+  fkt update [-y] [--dry-run]
+                             fast-forward the checkout, then run migrations
+  fkt migrate                run pending migrations only
+  fkt channel [stable|edge]  show or set the update channel
+  fkt snooze [HOURS]         hide the current update for a while (default 168)
+  fkt enable | disable       turn update checks on or off
+  fkt config [KEY VALUE]     show or set configuration
+
+Channels:
+  stable  latest v* release tag  (default)
+  edge    origin/main
+
+Exit codes: 0 ok · 2 usage · 10 update available · 20 refused (local work)
+            30 offline · 40 not a git checkout · 50 migration failed
+
+Plugins under skills/fk-* are updated by Claude Code, not by fkt.
+EOF
+}
+
+main() {
+  local cmd="${1:-status}"
+  [ $# -gt 0 ] && shift
+  case "$cmd" in
+    status)          do_status "$@" ;;
+    version)         installed_version ;;
+    schema-version)  printf '%s\n' "$FKT_VERSION_SCHEMA" ;;
+    check)           do_check "$@" ;;
+    update|upgrade)  do_update "$@" ;;
+    migrate)         do_migrate "$@" ;;
+    channel)         do_channel "$@" ;;
+    snooze)          do_snooze "$@" ;;
+    enable)          do_enable "$@" ;;
+    disable)         do_disable "$@" ;;
+    config)          do_config "$@" ;;
+    -h|--help|help)  usage ;;
+    *)               err "unknown command: $cmd"; usage >&2; return "$EX_USAGE" ;;
+  esac
+}
+
+main "$@"

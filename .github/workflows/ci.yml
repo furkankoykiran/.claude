@@ -123,6 +123,34 @@ jobs:
           cd "$GITHUB_WORKSPACE/skills/gstack"
           bun --eval 'import { chromium } from "playwright"; const b = await chromium.launch(); await b.close(); console.log("CHROMIUM_OK");'
 
+  # The marketplace and every plugin are validated by Claude Code's own strict
+  # validator, not by our schema guesses. It is the only thing that knows the
+  # current field set, and it is what the Community Marketplace review pipeline
+  # runs on submission.
+  marketplace-validate:
+    name: Plugin + marketplace strict validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.3.8
+      # Pinned: the validator's rule set changes between releases, and an
+      # unpinned install would turn an upstream change into a surprise red
+      # build. Bumping this version IS how we adopt new validation rules.
+      - name: Install the Claude Code CLI
+        env:
+          CLAUDE_CODE_VERSION: 2.1.220
+        run: npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
+      - name: Validate marketplace + every plugin (--strict)
+        env:
+          # Turn a missing CLI into a failure here; the script's default is to
+          # skip, which is right for a developer's machine but not for CI.
+          MARKETPLACE_VALIDATE_SKIP_CODE: 1
+        run: bun run marketplace:validate
+
   catalog:
     name: Skills catalog (generate + check)
     runs-on: ubuntu-latest
@@ -144,6 +172,15 @@ jobs:
         run: bun test catalog
       - name: Catalog check (parity + consistency + policy + determinism)
         run: bun run catalog:check
+      # The marketplace manifests are generated from marketplace.toml + VERSION.
+      # A stale manifest ships the wrong version to every installer, so this is
+      # a hard failure rather than a regeneration.
+      - name: Marketplace manifests are current
+        run: bun run marketplace:check
+      # Model-visible skill listing must stay inside the measured budget. See
+      # docs/skill-context-economy.md for where the number comes from.
+      - name: Skill listing budget
+        run: bun run catalog:budget
       # Deterministic and offline: validates links, documented scripts, the
       # documented root layout, and that no doc references a moved path.
       - name: Documentation check

@@ -16,6 +16,10 @@
     "catalog:check": "bun run catalog/src/cli.ts check",
     "catalog:diff": "bun run catalog/src/cli.ts diff",
     "catalog:coverage": "bun run catalog/src/cli.ts coverage",
+    "catalog:budget": "bun run catalog/src/cli.ts budget",
+    "marketplace:generate": "bun run catalog/src/cli.ts marketplace",
+    "marketplace:check": "bun run catalog/src/cli.ts marketplace --check",
+    "marketplace:validate": "./scripts/validate-marketplace.sh",
     "gen:skill-docs": "bun run catalog/src/cli.ts generate",
     "docs:check": "bun run catalog/src/docs-check.ts"
   },

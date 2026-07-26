@@ -74,9 +74,10 @@ are in [Getting started](docs/getting-started.md).
 
 | Component | Location | What it does |
 | --- | --- | --- |
-| **Skills** | `skills/` | Markdown capabilities Claude invokes as `/name` |
-| **Agents** | `agents/` | Focused sub-agents (`researcher`, `code-reviewer`, `debugger`, `planner`) |
-| **Hooks** | `hooks/` | Format on edit, secret scan on commit, pre-push verify, Docker volume protection |
+| **Plugins** | `skills/fk-*` | The `fk-toolkit` marketplace: `fk-gh-flow`, `fk-writing-kit`, `fk-manim-video`, `fk-eng-agents`, `fk-toolkit-ops` |
+| **Skill packs** | `skills/` | Installer-fetched upstream packs, pinned to reviewed commits |
+| **Hooks** | `hooks/` | Format on edit, secret scan on commit, pre-push verify, Docker volume protection, update notice |
+| **Updater** | `bin/fkt` | Fast-forward-only bootstrap updates on a `stable` or `edge` channel |
 | **Providers** | `providers/`, `bin/cc-provider` | Switch Claude Code between Anthropic, NVIDIA, DeepSeek, Kimi, MiniMax, OpenRouter, Z.ai |
 | **Utilities** | `utils/` | Shared Python helpers and profile-aware config |
 | **Catalog** | `catalog/` | Deterministic resolver + generator producing the verifiable skills catalog |
@@ -157,20 +158,24 @@ Full detail in [Security model](docs/security-model.md).
 
 <!-- root-layout:start -->
 ```text
-agents/          sub-agent definitions
-bin/             executables on PATH (cc-provider)
+.claude-plugin/  generated marketplace manifest
+bin/             executables on PATH (cc-provider, fkt)
 catalog/         catalog toolchain (src, tests, cache, generated)
 docs/            documentation — start at docs/README.md
 hooks/           git and Claude Code hooks
 memory/          persistent memory files
+migrations/      versioned bootstrap migrations run by `fkt`
 providers/       API provider definitions
 scripts/         maintenance and test scripts
-skills/          skills (repository-owned and vendored packs)
+skills/          repo-owned plugins (fk-*) and installer-fetched packs
 utils/           shared Python helpers
 install.sh       installer for Linux/macOS/WSL — public URL, do not move
 install.ps1      installer for native Windows — public URL, do not move
+marketplace.toml          plugin marketplace source of truth
 skills-sources.toml       declarative source manifest
 skills-source.lock.json   pinned revisions and digests
+security-advisories.tsv   advisory feed consumed by `fkt`
+VERSION          single version source of truth
 package.json     catalog toolchain scripts
 tsconfig.json    TypeScript configuration
 bun.lock         dependency lock

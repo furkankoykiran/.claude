@@ -53,21 +53,21 @@ history.jsonl
 .credentials.json
 sessions/
 
-# Skills: only personal skills are tracked.
-# Anything else under skills/ (gstack-installed, third-party plugins, etc.) is ignored.
-# When adding a new personal skill, append a `!skills/<name>/` line below.
+# Skills: only this repository's own plugins are tracked.
+# Anything else under skills/ (installer-fetched packs, third-party plugins that
+# Claude Code drops here, etc.) is ignored.
+#
+# Repo-owned content lives in skills/fk-*/ — each is a Claude Code plugin
+# (.claude-plugin/plugin.json + skills/ and/or agents/). Claude Code auto-loads
+# them as <name>@skills-dir, and marketplace.toml publishes the same directories
+# as marketplace entries. When adding a plugin, declare it in marketplace.toml
+# and append a `!skills/<name>/` line below.
 skills/*
-!skills/add-mcp/
-!skills/blog-from-chat/
-!skills/find-issues/
-!skills/find-repos/
-!skills/github-comment/
-!skills/github-profile-blog/
-!skills/humanizer/
-!skills/linkedin-post/
-!skills/manim-narration/
-!skills/pr-followup/
-!skills/solve-issue/
+!skills/fk-eng-agents/
+!skills/fk-gh-flow/
+!skills/fk-manim-video/
+!skills/fk-toolkit-ops/
+!skills/fk-writing-kit/
 
 # Node.js/Bun (inside gstack)
 node_modules/

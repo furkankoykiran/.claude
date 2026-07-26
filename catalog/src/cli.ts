@@ -6,10 +6,12 @@
  *   bun run catalog/src/cli.ts generate [--base path/to/skills-catalog.json]
  *   bun run catalog/src/cli.ts check
  *   bun run catalog/src/cli.ts diff    [--base path/to/skills-catalog.json]
+ *   bun run catalog/src/cli.ts marketplace [--check]
+ *   bun run catalog/src/cli.ts budget      [--json]
  *
  * `resolve` may touch the network (fetches pinned SHAs; `--update` advances
- * moving refs). `generate`, `check`, and `diff` run strictly offline from the
- * committed manifest + lock + cache.
+ * moving refs). Everything else runs strictly offline from the committed
+ * manifest + lock + cache + marketplace.toml.
  */
 import { readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
@@ -27,6 +29,7 @@ const MANIFEST_PATH = join(REPO_ROOT, "skills-sources.toml");
 const LOCK_PATH = join(REPO_ROOT, "skills-source.lock.json");
 const CACHE_DIR = join(REPO_ROOT, "catalog", "cache");
 const INSTALL_SH = join(REPO_ROOT, "install.sh");
+const MARKETPLACE_TOML = join(REPO_ROOT, "marketplace.toml");
 
 function arg(name: string): string | null {
   const i = process.argv.indexOf(name);
@@ -110,6 +113,38 @@ async function doCoverage(): Promise<void> {
   if (report.problems.length > 0) process.exitCode = 1;
 }
 
+async function doMarketplace(): Promise<void> {
+  const { writeAll, findStale } = await import("./marketplace.ts");
+  if (has("--check")) {
+    const stale = await findStale(REPO_ROOT, MARKETPLACE_TOML);
+    if (stale.length > 0) {
+      for (const p of stale) error(`stale or missing: ${p}`);
+      throw new Error(`${stale.length} marketplace manifest(s) out of date; run "bun run marketplace:generate"`);
+    }
+    info("marketplace: OK (manifests match marketplace.toml + VERSION)");
+    return;
+  }
+  const written = await writeAll(REPO_ROOT, MARKETPLACE_TOML);
+  for (const p of written) dim(`  ${p}`);
+  info(`generated ${written.length} manifest(s)`);
+}
+
+async function doBudget(): Promise<void> {
+  const { loadMarketplaceSpec } = await import("./marketplace.ts");
+  const { buildListingBudgetReport, renderListingBudgetReport } = await import("./listing-budget.ts");
+  const spec = await loadMarketplaceSpec(MARKETPLACE_TOML);
+  const report = await buildListingBudgetReport(REPO_ROOT, spec);
+  if (has("--json")) {
+    process.stdout.write(JSON.stringify(report, null, 2) + "\n");
+  } else {
+    process.stdout.write(renderListingBudgetReport(report) + "\n");
+  }
+  if (!report.withinBudget) {
+    error(`skill listing is ${report.overBy} char(s) over the ${report.budgetChars}-char budget`);
+    process.exitCode = 1;
+  }
+}
+
 async function doDiff(): Promise<void> {
   const manifest = await loadManifest(MANIFEST_PATH);
   const lock = await loadLock();
@@ -136,9 +171,13 @@ async function main(): Promise<void> {
         return await doDiff();
       case "coverage":
         return await doCoverage();
+      case "marketplace":
+        return await doMarketplace();
+      case "budget":
+        return await doBudget();
       default:
         process.stderr.write(
-          `usage: bun run catalog/src/cli.ts <resolve [--update] | generate [--base F] | check | diff [--base F] | coverage [--json]>\n`,
+          `usage: bun run catalog/src/cli.ts <resolve [--update] | generate [--base F] | check | diff [--base F] | coverage [--json] | marketplace [--check] | budget [--json]>\n`,
         );
         process.exit(cmd ? 1 : 0);
     }

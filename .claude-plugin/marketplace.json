@@ -1,0 +1,123 @@
+{
+  "name": "fk-toolkit",
+  "owner": {
+    "name": "Furkan Köykıran",
+    "url": "https://github.com/furkankoykiran"
+  },
+  "description": "Deterministic, provenance-audited Claude Code plugins: GitHub workflow automation, writing tools, narrated Manim video, engineering subagents, and the toolkit's own updater.",
+  "version": "0.2.0",
+  "metadata": {
+    "pluginRoot": "./skills"
+  },
+  "plugins": [
+    {
+      "name": "fk-eng-agents",
+      "source": "./skills/fk-eng-agents",
+      "displayName": "Engineering Subagents",
+      "description": "Four focused subagents — researcher, planner, code-reviewer, debugger — for deep codebase research, dependency-aware planning, pre-commit review, and root-cause debugging. Adds no skill-listing context cost.",
+      "version": "0.2.0",
+      "author": {
+        "name": "Furkan Köykıran",
+        "url": "https://github.com/furkankoykiran"
+      },
+      "homepage": "https://github.com/furkankoykiran/.claude",
+      "repository": "https://github.com/furkankoykiran/.claude",
+      "license": "MIT",
+      "category": "development",
+      "keywords": [
+        "subagents",
+        "code-review",
+        "debugging",
+        "planning",
+        "research"
+      ]
+    },
+    {
+      "name": "fk-gh-flow",
+      "source": "./skills/fk-gh-flow",
+      "displayName": "GitHub Flow",
+      "description": "End-to-end GitHub workflow: find issues worth working on, solve one into a pull request, follow up on review feedback, and write comments that read like a human wrote them.",
+      "version": "0.2.0",
+      "author": {
+        "name": "Furkan Köykıran",
+        "url": "https://github.com/furkankoykiran"
+      },
+      "homepage": "https://github.com/furkankoykiran/.claude",
+      "repository": "https://github.com/furkankoykiran/.claude",
+      "license": "MIT",
+      "category": "productivity",
+      "keywords": [
+        "github",
+        "issues",
+        "pull-requests",
+        "code-review",
+        "open-source"
+      ]
+    },
+    {
+      "name": "fk-manim-video",
+      "source": "./skills/fk-manim-video",
+      "displayName": "Narrated Manim Video",
+      "description": "Build Manim animations with synced spoken narration using edge-tts and ffmpeg. Ships a NarratedScene base class, reusable visuals, and a screenshot-asset pipeline.",
+      "version": "0.2.0",
+      "author": {
+        "name": "Furkan Köykıran",
+        "url": "https://github.com/furkankoykiran"
+      },
+      "homepage": "https://github.com/furkankoykiran/.claude",
+      "repository": "https://github.com/furkankoykiran/.claude",
+      "license": "MIT",
+      "category": "media",
+      "keywords": [
+        "manim",
+        "video",
+        "narration",
+        "tts",
+        "animation"
+      ]
+    },
+    {
+      "name": "fk-toolkit-ops",
+      "source": "./skills/fk-toolkit-ops",
+      "displayName": "Toolkit Ops",
+      "description": "Operate the toolkit itself: check for and apply toolkit updates on the stable or edge channel, and wire an MCP server into Claude Code from a pasted config block.",
+      "version": "0.2.0",
+      "author": {
+        "name": "Furkan Köykıran",
+        "url": "https://github.com/furkankoykiran"
+      },
+      "homepage": "https://github.com/furkankoykiran/.claude",
+      "repository": "https://github.com/furkankoykiran/.claude",
+      "license": "MIT",
+      "category": "development",
+      "keywords": [
+        "mcp",
+        "updates",
+        "maintenance",
+        "bootstrap"
+      ]
+    },
+    {
+      "name": "fk-writing-kit",
+      "source": "./skills/fk-writing-kit",
+      "displayName": "Writing Kit",
+      "description": "Turn raw material into publishable writing: strip AI tells from drafts, and build blog posts or LinkedIn copy from a chat, a URL, or a GitHub profile.",
+      "version": "0.2.0",
+      "author": {
+        "name": "Furkan Köykıran",
+        "url": "https://github.com/furkankoykiran"
+      },
+      "homepage": "https://github.com/furkankoykiran/.claude",
+      "repository": "https://github.com/furkankoykiran/.claude",
+      "license": "MIT",
+      "category": "content",
+      "keywords": [
+        "writing",
+        "blogging",
+        "editing",
+        "linkedin",
+        "content"
+      ]
+    }
+  ]
+}

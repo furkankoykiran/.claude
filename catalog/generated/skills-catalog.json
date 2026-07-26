@@ -6927,94 +6927,14 @@
       "warnings": []
     },
     {
-      "canonicalInvocation": "/add-mcp",
-      "description": "Provision an MCP server from a JSON `mcpServers` block. Use when the user pastes an MCP config snippet (e.g. from a server's README) and wants it wired into Claude Code via `claude mcp add` instead of editing config files by hand.",
-      "digest": "76a7fb8c025d7108856d48cc964c90b4848d15d06b00731f63aa02880c1023eb",
+      "canonicalInvocation": "/fk-gh-flow:find-issues",
+      "description": "Find open issues in ONE GitHub repository that fit the user's contribution profile. Use for \"what can I contribute to <repo>\" or good-first-issue hunting in a single repo.",
+      "digest": "afacaa7337a7ac8790b578eb3306b62c0946de09e30488b123a55f0340eabdce",
       "frontmatter": {
-        "description": "Provision an MCP server from a JSON `mcpServers` block. Use when the user pastes an MCP config snippet (e.g. from a server's README) and wants it wired into Claude Code via `claude mcp add` instead of editing config files by hand.",
-        "name": "add-mcp"
-      },
-      "fullPagePath": "docs/skills/repository/add-mcp.md",
-      "generated": true,
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT",
-        "matchesDeclaration": true,
-        "redistribution": "full"
-      },
-      "namespacedInvocations": [
-        "/add-mcp"
-      ],
-      "pack": "repository",
-      "redistribution": "full",
-      "relativePath": "skills/add-mcp/SKILL.md",
-      "security": {
-        "flags": [],
-        "hasAgents": false,
-        "hasBashOrPowershell": false,
-        "hasCredentialRef": false,
-        "hasDynamicShell": false,
-        "hasExecutable": false,
-        "hasHiddenFiles": false,
-        "hasHooks": false,
-        "hasMcpOrLsp": false,
-        "hasNetworkRef": false,
-        "toolCount": 0
-      },
-      "skillName": "add-mcp",
-      "sourceId": "repository",
-      "sourceType": "repo-owned",
-      "warnings": []
-    },
-    {
-      "canonicalInvocation": "/blog-from-chat",
-      "description": "Write a polished blog post from a chat or conversation summary, with multi-language output. Use when the user wants to turn a Claude conversation, chat log, or discussion into a publishable blog article, or mentions \"blog from this chat\" or \"write up our conversation\".",
-      "digest": "5dcb8490c7b71b59b7077d6b8063e84f2be169d155c4350558774a645decbf7b",
-      "frontmatter": {
-        "description": "Write a polished blog post from a chat or conversation summary, with multi-language output. Use when the user wants to turn a Claude conversation, chat log, or discussion into a publishable blog article, or mentions \"blog from this chat\" or \"write up our conversation\".",
-        "name": "blog-from-chat"
-      },
-      "fullPagePath": "docs/skills/repository/blog-from-chat.md",
-      "generated": true,
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT",
-        "matchesDeclaration": true,
-        "redistribution": "full"
-      },
-      "namespacedInvocations": [
-        "/blog-from-chat"
-      ],
-      "pack": "repository",
-      "redistribution": "full",
-      "relativePath": "skills/blog-from-chat/SKILL.md",
-      "security": {
-        "flags": [],
-        "hasAgents": false,
-        "hasBashOrPowershell": false,
-        "hasCredentialRef": false,
-        "hasDynamicShell": false,
-        "hasExecutable": false,
-        "hasHiddenFiles": false,
-        "hasHooks": false,
-        "hasMcpOrLsp": false,
-        "hasNetworkRef": false,
-        "toolCount": 0
-      },
-      "skillName": "blog-from-chat",
-      "sourceId": "repository",
-      "sourceType": "repo-owned",
-      "warnings": []
-    },
-    {
-      "canonicalInvocation": "/find-issues",
-      "description": "Search a specific GitHub repository for open issues that fit the user's contribution profile. Use when the user wants issues to work on in one repo, asks \"what can I contribute to <repo>\", or wants good-first-issue or help-wanted matches in a single repository.",
-      "digest": "f925610d6287bbf92c3843b89de47584a83f812f9be487a345b5523973b4251c",
-      "frontmatter": {
-        "description": "Search a specific GitHub repository for open issues that fit the user's contribution profile. Use when the user wants issues to work on in one repo, asks \"what can I contribute to <repo>\", or wants good-first-issue or help-wanted matches in a single repository.",
+        "description": "Find open issues in ONE GitHub repository that fit the user's contribution profile. Use for \"what can I contribute to <repo>\" or good-first-issue hunting in a single repo.",
         "name": "find-issues"
       },
-      "fullPagePath": "docs/skills/repository/find-issues.md",
+      "fullPagePath": "docs/skills/repository/fk-gh-flow-find-issues.md",
       "generated": true,
       "license": {
         "declared": "MIT",
@@ -7023,11 +6943,11 @@
         "redistribution": "full"
       },
       "namespacedInvocations": [
-        "/find-issues"
+        "/fk-gh-flow:find-issues"
       ],
       "pack": "repository",
       "redistribution": "full",
-      "relativePath": "skills/find-issues/SKILL.md",
+      "relativePath": "skills/fk-gh-flow/skills/find-issues/SKILL.md",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7041,20 +6961,20 @@
         "hasNetworkRef": false,
         "toolCount": 0
       },
-      "skillName": "find-issues",
+      "skillName": "fk-gh-flow:find-issues",
       "sourceId": "repository",
       "sourceType": "repo-owned",
       "warnings": []
     },
     {
-      "canonicalInvocation": "/find-repos",
-      "description": "Discover open-source contribution opportunities across an entire GitHub organization. Use when the user wants to find suitable issues across all repos in a given org (e.g. `microsoft`, `vercel`) and have them ranked by fit against the profile in `~/.claude/config.json`.",
-      "digest": "a7c222de2656667e78c042e3cebf9a27413646d5dd6850560ef67afff89490b7",
+      "canonicalInvocation": "/fk-gh-flow:find-repos",
+      "description": "Find contribution opportunities across an entire GitHub organisation, ranked by fit against the profile in ~/.claude/config.json. Use when no single repo is named.",
+      "digest": "28654661833ec44c7d5f635f59c036143e8a474c324e4c27a99eb5f9692fae7a",
       "frontmatter": {
-        "description": "Discover open-source contribution opportunities across an entire GitHub organization. Use when the user wants to find suitable issues across all repos in a given org (e.g. `microsoft`, `vercel`) and have them ranked by fit against the profile in `~/.claude/config.json`.",
+        "description": "Find contribution opportunities across an entire GitHub organisation, ranked by fit against the profile in ~/.claude/config.json. Use when no single repo is named.",
         "name": "find-repos"
       },
-      "fullPagePath": "docs/skills/repository/find-repos.md",
+      "fullPagePath": "docs/skills/repository/fk-gh-flow-find-repos.md",
       "generated": true,
       "license": {
         "declared": "MIT",
@@ -7063,11 +6983,11 @@
         "redistribution": "full"
       },
       "namespacedInvocations": [
-        "/find-repos"
+        "/fk-gh-flow:find-repos"
       ],
       "pack": "repository",
       "redistribution": "full",
-      "relativePath": "skills/find-repos/SKILL.md",
+      "relativePath": "skills/fk-gh-flow/skills/find-repos/SKILL.md",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7081,7 +7001,7 @@
         "hasNetworkRef": false,
         "toolCount": 0
       },
-      "skillName": "find-repos",
+      "skillName": "fk-gh-flow:find-repos",
       "sourceId": "repository",
       "sourceType": "repo-owned",
       "warnings": []
@@ -7097,9 +7017,9 @@
         "mcp__github__issue_read",
         "mcp__github__pull_request_read"
       ],
-      "canonicalInvocation": "/github-comment",
-      "description": "Write natural, warm GitHub comments that sound like a real developer wrote them.\nReads the issue/PR conversation history to pick up context, inside jokes, tone,\nand timeline. Use when posting issue comments, PR descriptions, or review replies\nthat should feel genuine rather than bot-generated.\n",
-      "digest": "3da3c3e85ade7fa5f1093bdcf1e9daa0f09a7c023f7b825505b4dc09a3907d7a",
+      "canonicalInvocation": "/fk-gh-flow:github-comment",
+      "description": "Write GitHub issue comments, PR descriptions and review replies that read like a real developer wrote them, matching the thread's existing tone. Use before posting anything to a GitHub conversation.",
+      "digest": "4884e5e87865ac81b5dd87a372da8efdf10ce572e0754a1c4d62c2eb30cdb219",
       "frontmatter": {
         "allowed-tools": [
           "Read",
@@ -7111,11 +7031,11 @@
           "mcp__github__issue_read",
           "mcp__github__pull_request_read"
         ],
-        "description": "Write natural, warm GitHub comments that sound like a real developer wrote them.\nReads the issue/PR conversation history to pick up context, inside jokes, tone,\nand timeline. Use when posting issue comments, PR descriptions, or review replies\nthat should feel genuine rather than bot-generated.\n",
+        "description": "Write GitHub issue comments, PR descriptions and review replies that read like a real developer wrote them, matching the thread's existing tone. Use before posting anything to a GitHub conversation.",
         "name": "github-comment",
         "version": "1.0.0"
       },
-      "fullPagePath": "docs/skills/repository/github-comment.md",
+      "fullPagePath": "docs/skills/repository/fk-gh-flow-github-comment.md",
       "generated": true,
       "license": {
         "declared": "MIT",
@@ -7124,11 +7044,11 @@
         "redistribution": "full"
       },
       "namespacedInvocations": [
-        "/github-comment"
+        "/fk-gh-flow:github-comment"
       ],
       "pack": "repository",
       "redistribution": "full",
-      "relativePath": "skills/github-comment/SKILL.md",
+      "relativePath": "skills/fk-gh-flow/skills/github-comment/SKILL.md",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -7144,21 +7064,21 @@
         "hasNetworkRef": false,
         "toolCount": 8
       },
-      "skillName": "github-comment",
+      "skillName": "fk-gh-flow:github-comment",
       "sourceId": "repository",
       "sourceType": "repo-owned",
       "version": "1.0.0",
       "warnings": []
     },
     {
-      "canonicalInvocation": "/github-profile-blog",
-      "description": "Write an educational blog post analyzing a GitHub profile's public activity. Use when the user wants to turn their GitHub activity, contributions, or projects into a blog article, or mentions \"blog about my GitHub\" or a writeup of their open-source work.",
-      "digest": "3d45aa52a1e068f52315b922a4a18dc45fb5f5afaa8f4738319c77ca3d6149a9",
+      "canonicalInvocation": "/fk-gh-flow:pr-followup",
+      "description": "Read a pull request's latest review discussion and act on the pending feedback. Use for \"follow up on PR",
+      "digest": "07b6ed2daaa879b502e1b72557b1ef013fe3cbd60e145d67784589fddc47d039",
       "frontmatter": {
-        "description": "Write an educational blog post analyzing a GitHub profile's public activity. Use when the user wants to turn their GitHub activity, contributions, or projects into a blog article, or mentions \"blog about my GitHub\" or a writeup of their open-source work.",
-        "name": "github-profile-blog"
+        "description": "Read a pull request's latest review discussion and act on the pending feedback. Use for \"follow up on PR",
+        "name": "pr-followup"
       },
-      "fullPagePath": "docs/skills/repository/github-profile-blog.md",
+      "fullPagePath": "docs/skills/repository/fk-gh-flow-pr-followup.md",
       "generated": true,
       "license": {
         "declared": "MIT",
@@ -7167,11 +7087,11 @@
         "redistribution": "full"
       },
       "namespacedInvocations": [
-        "/github-profile-blog"
+        "/fk-gh-flow:pr-followup"
       ],
       "pack": "repository",
       "redistribution": "full",
-      "relativePath": "skills/github-profile-blog/SKILL.md",
+      "relativePath": "skills/fk-gh-flow/skills/pr-followup/SKILL.md",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7185,7 +7105,208 @@
         "hasNetworkRef": false,
         "toolCount": 0
       },
-      "skillName": "github-profile-blog",
+      "skillName": "fk-gh-flow:pr-followup",
+      "sourceId": "repository",
+      "sourceType": "repo-owned",
+      "warnings": []
+    },
+    {
+      "canonicalInvocation": "/fk-gh-flow:solve-issue",
+      "description": "Solve a GitHub issue end-to-end and open a pull request. Use when the user wants to fix or resolve a specific GitHub issue (often by number or URL), or says \"solve issue",
+      "digest": "fe9c1eedf928f9630ae4797ee1ffc792129d3998a0f67adc65ce5a89b2f5dac3",
+      "frontmatter": {
+        "description": "Solve a GitHub issue end-to-end and open a pull request. Use when the user wants to fix or resolve a specific GitHub issue (often by number or URL), or says \"solve issue",
+        "disable-model-invocation": true,
+        "name": "solve-issue"
+      },
+      "fullPagePath": "docs/skills/repository/fk-gh-flow-solve-issue.md",
+      "generated": true,
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT",
+        "matchesDeclaration": true,
+        "redistribution": "full"
+      },
+      "namespacedInvocations": [
+        "/fk-gh-flow:solve-issue"
+      ],
+      "pack": "repository",
+      "redistribution": "full",
+      "relativePath": "skills/fk-gh-flow/skills/solve-issue/SKILL.md",
+      "security": {
+        "flags": [],
+        "hasAgents": false,
+        "hasBashOrPowershell": false,
+        "hasCredentialRef": false,
+        "hasDynamicShell": false,
+        "hasExecutable": false,
+        "hasHiddenFiles": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasNetworkRef": false,
+        "toolCount": 0
+      },
+      "skillName": "fk-gh-flow:solve-issue",
+      "sourceId": "repository",
+      "sourceType": "repo-owned",
+      "warnings": []
+    },
+    {
+      "canonicalInvocation": "/fk-manim-video:manim-narration",
+      "description": "Build a Manim video with spoken narration synced to the animation. Use for a \"narrated Manim video\", \"anlatımlı manim\", \"manim with voice\", a PR walkthrough video, or code that imports NarratedScene. ManimCE only.",
+      "digest": "182cc0fab9796bb08c3c33bd3f061423ebbe6727a59cf0fa81d125b453cdc0a0",
+      "frontmatter": {
+        "description": "Build a Manim video with spoken narration synced to the animation. Use for a \"narrated Manim video\", \"anlatımlı manim\", \"manim with voice\", a PR walkthrough video, or code that imports NarratedScene. ManimCE only.",
+        "name": "manim-narration"
+      },
+      "fullPagePath": "docs/skills/repository/fk-manim-video-manim-narration.md",
+      "generated": true,
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT",
+        "matchesDeclaration": true,
+        "redistribution": "full"
+      },
+      "namespacedInvocations": [
+        "/fk-manim-video:manim-narration"
+      ],
+      "pack": "repository",
+      "redistribution": "full",
+      "relativePath": "skills/fk-manim-video/skills/manim-narration/SKILL.md",
+      "security": {
+        "flags": [],
+        "hasAgents": false,
+        "hasBashOrPowershell": false,
+        "hasCredentialRef": false,
+        "hasDynamicShell": false,
+        "hasExecutable": false,
+        "hasHiddenFiles": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasNetworkRef": false,
+        "toolCount": 0
+      },
+      "skillName": "fk-manim-video:manim-narration",
+      "sourceId": "repository",
+      "sourceType": "repo-owned",
+      "warnings": []
+    },
+    {
+      "canonicalInvocation": "/fk-toolkit-ops:add-mcp",
+      "description": "Wire an MCP server into Claude Code from a pasted JSON `mcpServers` block, via `claude mcp add` rather than hand-editing config files.",
+      "digest": "bb81b7ebbe818be98c03a6eebea6105f768848ff2d68873b82f46536194678e5",
+      "frontmatter": {
+        "description": "Wire an MCP server into Claude Code from a pasted JSON `mcpServers` block, via `claude mcp add` rather than hand-editing config files.",
+        "name": "add-mcp"
+      },
+      "fullPagePath": "docs/skills/repository/fk-toolkit-ops-add-mcp.md",
+      "generated": true,
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT",
+        "matchesDeclaration": true,
+        "redistribution": "full"
+      },
+      "namespacedInvocations": [
+        "/fk-toolkit-ops:add-mcp"
+      ],
+      "pack": "repository",
+      "redistribution": "full",
+      "relativePath": "skills/fk-toolkit-ops/skills/add-mcp/SKILL.md",
+      "security": {
+        "flags": [],
+        "hasAgents": false,
+        "hasBashOrPowershell": false,
+        "hasCredentialRef": false,
+        "hasDynamicShell": false,
+        "hasExecutable": false,
+        "hasHiddenFiles": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasNetworkRef": false,
+        "toolCount": 0
+      },
+      "skillName": "fk-toolkit-ops:add-mcp",
+      "sourceId": "repository",
+      "sourceType": "repo-owned",
+      "warnings": []
+    },
+    {
+      "canonicalInvocation": "/fk-writing-kit:blog-from-chat",
+      "description": "Turn a chat log, conversation or discussion summary into a publishable blog post, in one or more languages. Use for \"blog from this chat\" or \"write up our conversation\".",
+      "digest": "93b7a8d997f3002e5b782203a90817d21b2f35051006481b60a5ac8170ba958b",
+      "frontmatter": {
+        "description": "Turn a chat log, conversation or discussion summary into a publishable blog post, in one or more languages. Use for \"blog from this chat\" or \"write up our conversation\".",
+        "name": "blog-from-chat"
+      },
+      "fullPagePath": "docs/skills/repository/fk-writing-kit-blog-from-chat.md",
+      "generated": true,
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT",
+        "matchesDeclaration": true,
+        "redistribution": "full"
+      },
+      "namespacedInvocations": [
+        "/fk-writing-kit:blog-from-chat"
+      ],
+      "pack": "repository",
+      "redistribution": "full",
+      "relativePath": "skills/fk-writing-kit/skills/blog-from-chat/SKILL.md",
+      "security": {
+        "flags": [],
+        "hasAgents": false,
+        "hasBashOrPowershell": false,
+        "hasCredentialRef": false,
+        "hasDynamicShell": false,
+        "hasExecutable": false,
+        "hasHiddenFiles": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasNetworkRef": false,
+        "toolCount": 0
+      },
+      "skillName": "fk-writing-kit:blog-from-chat",
+      "sourceId": "repository",
+      "sourceType": "repo-owned",
+      "warnings": []
+    },
+    {
+      "canonicalInvocation": "/fk-writing-kit:github-profile-blog",
+      "description": "Write an educational blog post analysing a GitHub profile's public activity. Use for \"blog about my GitHub\" or a write-up of someone's open-source work.",
+      "digest": "23b90f90339ff3b946d0571e3f02474b3eff1853181634c15a30f06398d0ca74",
+      "frontmatter": {
+        "description": "Write an educational blog post analysing a GitHub profile's public activity. Use for \"blog about my GitHub\" or a write-up of someone's open-source work.",
+        "name": "github-profile-blog"
+      },
+      "fullPagePath": "docs/skills/repository/fk-writing-kit-github-profile-blog.md",
+      "generated": true,
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT",
+        "matchesDeclaration": true,
+        "redistribution": "full"
+      },
+      "namespacedInvocations": [
+        "/fk-writing-kit:github-profile-blog"
+      ],
+      "pack": "repository",
+      "redistribution": "full",
+      "relativePath": "skills/fk-writing-kit/skills/github-profile-blog/SKILL.md",
+      "security": {
+        "flags": [],
+        "hasAgents": false,
+        "hasBashOrPowershell": false,
+        "hasCredentialRef": false,
+        "hasDynamicShell": false,
+        "hasExecutable": false,
+        "hasHiddenFiles": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasNetworkRef": false,
+        "toolCount": 0
+      },
+      "skillName": "fk-writing-kit:github-profile-blog",
       "sourceId": "repository",
       "sourceType": "repo-owned",
       "warnings": []
@@ -7199,9 +7320,9 @@
         "Glob",
         "AskUserQuestion"
       ],
-      "canonicalInvocation": "/humanizer",
-      "description": "Remove signs of AI-generated writing from text. Use when editing or reviewing\ntext to make it sound more natural and human-written. Based on Wikipedia's\ncomprehensive \"Signs of AI writing\" guide. Detects and fixes patterns including:\ninflated symbolism, promotional language, superficial -ing analyses, vague\nattributions, em dash overuse, rule of three, AI vocabulary words, negative\nparallelisms, and excessive conjunctive phrases.\n",
-      "digest": "d95a15c60055997e7107022fe387bcb492d324ca3fcef867e9ff7957cfdcf43d",
+      "canonicalInvocation": "/fk-writing-kit:humanizer",
+      "description": "Strip the tells of AI-generated writing — inflated symbolism, promotional phrasing, vague attribution, em-dash and rule-of-three overuse. Use when text should read as human-written, or the user says it \"sounds like AI\".",
+      "digest": "a82dd3aae18736e9d67fa45f657bf86be24246373255e63725f794711b7bb621",
       "frontmatter": {
         "allowed-tools": [
           "Read",
@@ -7211,11 +7332,11 @@
           "Glob",
           "AskUserQuestion"
         ],
-        "description": "Remove signs of AI-generated writing from text. Use when editing or reviewing\ntext to make it sound more natural and human-written. Based on Wikipedia's\ncomprehensive \"Signs of AI writing\" guide. Detects and fixes patterns including:\ninflated symbolism, promotional language, superficial -ing analyses, vague\nattributions, em dash overuse, rule of three, AI vocabulary words, negative\nparallelisms, and excessive conjunctive phrases.\n",
+        "description": "Strip the tells of AI-generated writing — inflated symbolism, promotional phrasing, vague attribution, em-dash and rule-of-three overuse. Use when text should read as human-written, or the user says it \"sounds like AI\".",
         "name": "humanizer",
         "version": "2.3.0"
       },
-      "fullPagePath": "docs/skills/repository/humanizer.md",
+      "fullPagePath": "docs/skills/repository/fk-writing-kit-humanizer.md",
       "generated": true,
       "license": {
         "declared": "MIT",
@@ -7224,11 +7345,11 @@
         "redistribution": "full"
       },
       "namespacedInvocations": [
-        "/humanizer"
+        "/fk-writing-kit:humanizer"
       ],
       "pack": "repository",
       "redistribution": "full",
-      "relativePath": "skills/humanizer/SKILL.md",
+      "relativePath": "skills/fk-writing-kit/skills/humanizer/SKILL.md",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7242,21 +7363,21 @@
         "hasNetworkRef": false,
         "toolCount": 6
       },
-      "skillName": "humanizer",
+      "skillName": "fk-writing-kit:humanizer",
       "sourceId": "repository",
       "sourceType": "repo-owned",
       "version": "2.3.0",
       "warnings": []
     },
     {
-      "canonicalInvocation": "/linkedin-post",
-      "description": "Generate professionally formatted LinkedIn posts from a blog post, URL, or chat context. Use when the user wants a LinkedIn post, to share an article on LinkedIn, or to repurpose content as LinkedIn social copy.",
-      "digest": "6beb949420830a5531faa66c2c8c9d44fc34b447432d478cffdb77731df24af8",
+      "canonicalInvocation": "/fk-writing-kit:linkedin-post",
+      "description": "Turn a blog post, URL or chat context into a formatted LinkedIn post. Use to share an article on LinkedIn or repurpose content as LinkedIn copy.",
+      "digest": "47227dfc22aee9e7ec0381f7423f4d1c288b7311c608902991ab4665fa3e8d5a",
       "frontmatter": {
-        "description": "Generate professionally formatted LinkedIn posts from a blog post, URL, or chat context. Use when the user wants a LinkedIn post, to share an article on LinkedIn, or to repurpose content as LinkedIn social copy.",
+        "description": "Turn a blog post, URL or chat context into a formatted LinkedIn post. Use to share an article on LinkedIn or repurpose content as LinkedIn copy.",
         "name": "linkedin-post"
       },
-      "fullPagePath": "docs/skills/repository/linkedin-post.md",
+      "fullPagePath": "docs/skills/repository/fk-writing-kit-linkedin-post.md",
       "generated": true,
       "license": {
         "declared": "MIT",
@@ -7265,11 +7386,11 @@
         "redistribution": "full"
       },
       "namespacedInvocations": [
-        "/linkedin-post"
+        "/fk-writing-kit:linkedin-post"
       ],
       "pack": "repository",
       "redistribution": "full",
-      "relativePath": "skills/linkedin-post/SKILL.md",
+      "relativePath": "skills/fk-writing-kit/skills/linkedin-post/SKILL.md",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7283,128 +7404,7 @@
         "hasNetworkRef": false,
         "toolCount": 0
       },
-      "skillName": "linkedin-post",
-      "sourceId": "repository",
-      "sourceType": "repo-owned",
-      "warnings": []
-    },
-    {
-      "canonicalInvocation": "/manim-narration",
-      "description": "Trigger when: (1) User asks for a \"narrated Manim video\", \"anlatımlı manim\",\n\"manim with voice\", \"manim video with audio narration\", or\n\"PR walkthrough video\"; (2) Code imports from manim_narration.lib.* or uses\nNarratedScene; (3) User wants Manim output that includes spoken narration\nsynced to animations.\n\nBuilds narrated Manim videos using Microsoft edge-tts (free, no API key) for\nvoice synthesis and ffmpeg for proper audio re-encoding so MP4s play\nreliably in VSCode, Chromium, and Electron previews. Includes a NarratedScene\nbase class that exposes a `narrate(text)` context manager paced to real\naudio duration. Optionally uses gstack /browse to pre-fetch live screenshots\ndeclared via `# ASSET:` manifest comments — so the video can showcase real\nwebsites, GitHub PRs, dashboards, IDE views, etc., without manual capture.\n\nComposes with manimce-best-practices for animation idioms.\nNOT for ManimGL — use manimgl-best-practices there (no narration support).\n\nDependencies: installed automatically by ~/.claude/install.sh.\n- pip: manim, edge-tts\n- system: ffmpeg, ffprobe\n- optional: gstack (already installed by ~/.claude/install.sh)\n",
-      "digest": "b2c7948afa3957493f39febce2891a1eb191f17036e953ddcbc9dd5b7774b71f",
-      "frontmatter": {
-        "description": "Trigger when: (1) User asks for a \"narrated Manim video\", \"anlatımlı manim\",\n\"manim with voice\", \"manim video with audio narration\", or\n\"PR walkthrough video\"; (2) Code imports from manim_narration.lib.* or uses\nNarratedScene; (3) User wants Manim output that includes spoken narration\nsynced to animations.\n\nBuilds narrated Manim videos using Microsoft edge-tts (free, no API key) for\nvoice synthesis and ffmpeg for proper audio re-encoding so MP4s play\nreliably in VSCode, Chromium, and Electron previews. Includes a NarratedScene\nbase class that exposes a `narrate(text)` context manager paced to real\naudio duration. Optionally uses gstack /browse to pre-fetch live screenshots\ndeclared via `# ASSET:` manifest comments — so the video can showcase real\nwebsites, GitHub PRs, dashboards, IDE views, etc., without manual capture.\n\nComposes with manimce-best-practices for animation idioms.\nNOT for ManimGL — use manimgl-best-practices there (no narration support).\n\nDependencies: installed automatically by ~/.claude/install.sh.\n- pip: manim, edge-tts\n- system: ffmpeg, ffprobe\n- optional: gstack (already installed by ~/.claude/install.sh)\n",
-        "name": "manim-narration"
-      },
-      "fullPagePath": "docs/skills/repository/manim-narration.md",
-      "generated": true,
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT",
-        "matchesDeclaration": true,
-        "redistribution": "full"
-      },
-      "namespacedInvocations": [
-        "/manim-narration"
-      ],
-      "pack": "repository",
-      "redistribution": "full",
-      "relativePath": "skills/manim-narration/SKILL.md",
-      "security": {
-        "flags": [],
-        "hasAgents": false,
-        "hasBashOrPowershell": false,
-        "hasCredentialRef": false,
-        "hasDynamicShell": false,
-        "hasExecutable": false,
-        "hasHiddenFiles": false,
-        "hasHooks": false,
-        "hasMcpOrLsp": false,
-        "hasNetworkRef": false,
-        "toolCount": 0
-      },
-      "skillName": "manim-narration",
-      "sourceId": "repository",
-      "sourceType": "repo-owned",
-      "warnings": []
-    },
-    {
-      "canonicalInvocation": "/pr-followup",
-      "description": "Analyze a GitHub pull request's latest discussion and act on pending review feedback or requested changes. Use when the user wants to address PR review comments, respond to reviewer feedback, or asks to \"follow up on PR",
-      "digest": "fe973d47be47d831ad75718d26766c631f58d27e8dc37503569f121d52a2f89f",
-      "frontmatter": {
-        "description": "Analyze a GitHub pull request's latest discussion and act on pending review feedback or requested changes. Use when the user wants to address PR review comments, respond to reviewer feedback, or asks to \"follow up on PR",
-        "name": "pr-followup"
-      },
-      "fullPagePath": "docs/skills/repository/pr-followup.md",
-      "generated": true,
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT",
-        "matchesDeclaration": true,
-        "redistribution": "full"
-      },
-      "namespacedInvocations": [
-        "/pr-followup"
-      ],
-      "pack": "repository",
-      "redistribution": "full",
-      "relativePath": "skills/pr-followup/SKILL.md",
-      "security": {
-        "flags": [],
-        "hasAgents": false,
-        "hasBashOrPowershell": false,
-        "hasCredentialRef": false,
-        "hasDynamicShell": false,
-        "hasExecutable": false,
-        "hasHiddenFiles": false,
-        "hasHooks": false,
-        "hasMcpOrLsp": false,
-        "hasNetworkRef": false,
-        "toolCount": 0
-      },
-      "skillName": "pr-followup",
-      "sourceId": "repository",
-      "sourceType": "repo-owned",
-      "warnings": []
-    },
-    {
-      "canonicalInvocation": "/solve-issue",
-      "description": "Solve a GitHub issue end-to-end and open a pull request. Use when the user wants to fix or resolve a specific GitHub issue (often by number or URL), or says \"solve issue",
-      "digest": "fe9c1eedf928f9630ae4797ee1ffc792129d3998a0f67adc65ce5a89b2f5dac3",
-      "frontmatter": {
-        "description": "Solve a GitHub issue end-to-end and open a pull request. Use when the user wants to fix or resolve a specific GitHub issue (often by number or URL), or says \"solve issue",
-        "disable-model-invocation": true,
-        "name": "solve-issue"
-      },
-      "fullPagePath": "docs/skills/repository/solve-issue.md",
-      "generated": true,
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT",
-        "matchesDeclaration": true,
-        "redistribution": "full"
-      },
-      "namespacedInvocations": [
-        "/solve-issue"
-      ],
-      "pack": "repository",
-      "redistribution": "full",
-      "relativePath": "skills/solve-issue/SKILL.md",
-      "security": {
-        "flags": [],
-        "hasAgents": false,
-        "hasBashOrPowershell": false,
-        "hasCredentialRef": false,
-        "hasDynamicShell": false,
-        "hasExecutable": false,
-        "hasHiddenFiles": false,
-        "hasHooks": false,
-        "hasMcpOrLsp": false,
-        "hasNetworkRef": false,
-        "toolCount": 0
-      },
-      "skillName": "solve-issue",
+      "skillName": "fk-writing-kit:linkedin-post",
       "sourceId": "repository",
       "sourceType": "repo-owned",
       "warnings": []

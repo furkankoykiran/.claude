@@ -1,0 +1,113 @@
+---
+name: toolkit-update
+description: Check for and apply FK Claude Toolkit updates, or switch the stable/edge channel.
+# User-invocable only. Updating is always a deliberate act, and the SessionStart
+# hook already hands Claude the exact command when one is available — so paying
+# listing budget for automatic discovery here buys nothing.
+disable-model-invocation: true
+allowed-tools:
+  - Bash
+  - Read
+  - AskUserQuestion
+---
+
+# Toolkit update
+
+The toolkit ships in two layers, and they update through different mechanisms.
+Getting this wrong is the most common source of confusion, so establish which
+layer the user means before doing anything.
+
+| Layer | What it holds | How it updates |
+| --- | --- | --- |
+| **Plugins** (`skills/fk-*`) | skills, agents | Claude Code's own plugin updater |
+| **Bootstrap** (`~/.claude`) | hooks, installer, provider scripts, global instructions, the plugins' source of truth | `fkt` |
+
+## 1. Establish the current state
+
+```bash
+~/.claude/bin/fkt status
+```
+
+This is offline and instant. It prints the installed version, the channel, the
+cached check result, whether the worktree is clean, and any security advisories
+that apply to the installed version.
+
+## 2. Check for an update
+
+```bash
+~/.claude/bin/fkt check
+```
+
+Exit codes matter here — read them, do not parse the prose:
+
+| Exit | Meaning |
+| --- | --- |
+| `0` | up to date, or an available update is snoozed |
+| `10` | an update is available |
+| `30` | offline, or the remote was unreachable |
+| `40` | `~/.claude` is not a git checkout — it must be reinstalled, not updated |
+
+Results are cached for 12 hours. Pass `--force` only when the user explicitly
+wants a fresh network check; otherwise the cache is the right answer.
+
+## 3. Apply it
+
+```bash
+~/.claude/bin/fkt update
+```
+
+Fast-forward only. It **refuses** (exit `20`) rather than destroying work when:
+
+- tracked files are modified — report `git -C ~/.claude status` to the user and
+  stop; do not stash or discard on their behalf;
+- the checkout carries local commits that are not on the target — show
+  `git -C ~/.claude log --oneline <target>..HEAD` and stop.
+
+In both cases the fix is the user's decision. Never pass `--force` to git, never
+`reset --hard`, never `clean`.
+
+Add `-y` only when the user has already said to go ahead. `--dry-run` shows the
+commits an update would bring in without touching anything.
+
+After a successful update the toolkit runs any pending migrations, then asks for
+a Claude Code restart. Tell the user that, and mention that the plugin half
+updates separately:
+
+```
+/plugin marketplace update fk-toolkit
+```
+
+## 4. Channels
+
+```bash
+~/.claude/bin/fkt channel          # show
+~/.claude/bin/fkt channel stable   # latest v* release tag (default)
+~/.claude/bin/fkt channel edge     # origin/main
+```
+
+`stable` only moves to validated, tagged releases. `edge` tracks the development
+branch and will occasionally be broken. Switching clears the update cache.
+
+## 5. Turning it down or off
+
+```bash
+~/.claude/bin/fkt snooze 168   # hide this update for a week
+~/.claude/bin/fkt disable      # stop update checks entirely
+~/.claude/bin/fkt enable       # turn them back on
+```
+
+A newer release always breaks through a snooze. `disable` stops update checks
+but **not** security advisories — that is deliberate. Turn those off separately,
+and only if the user asks:
+
+```bash
+~/.claude/bin/fkt config security_notices false
+```
+
+## What this skill must never do
+
+- Run `fkt update -y` without the user having agreed to the update.
+- Work around a refusal (exit `20`). The refusal is the feature.
+- Edit the user's `settings.json`, `config.json`, or any `*.local.md`.
+- Reinstall via `install.sh` to "fix" a failed update — that is a much heavier
+  operation with different side effects. Report the failure instead.
