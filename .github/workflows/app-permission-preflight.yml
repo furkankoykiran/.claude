@@ -52,6 +52,11 @@ jobs:
           echo "::error::No App token minted (ENABLE_SKILLS_AUTOMATION is not 'true'). Nothing was tested."
           exit 1
 
+      # NOTE: this workflow deliberately performs no checkout — it tests
+      # permissions, not code. The `gh` CLI resolves the target repository from
+      # the git remote, so without a checkout every subcommand fails with
+      # "not a git repository" and the failure is indistinguishable from a
+      # permission denial. Every gh subcommand therefore passes --repo.
       - name: Exercise the label path
         if: ${{ steps.app-token.outputs.token != '' }}
         env:
@@ -110,9 +115,9 @@ jobs:
           note ""
 
           # 1. Create the temporary label (idempotent).
-          if gh label create "$TEMP_LABEL" --description "Temporary; created by the App permission preflight" --color ededed 2>/dev/null; then
+          if gh label create "$TEMP_LABEL" --repo "$GITHUB_REPOSITORY" --description "Temporary; created by the App permission preflight" --color ededed 2>/dev/null; then
             note "- create label: \`ok\`"
-          elif gh label list --search "$TEMP_LABEL" --json name --jq '.[].name' | grep -qx "$TEMP_LABEL"; then
+          elif gh label list --repo "$GITHUB_REPOSITORY" --search "$TEMP_LABEL" --json name --jq '.[].name' | grep -qx "$TEMP_LABEL"; then
             note "- create label: \`already existed\`"
           else
             note "- create label: \`DENIED\`"
@@ -120,7 +125,7 @@ jobs:
           fi
 
           # 2. Assign it to the nominated PR — the operation actually in question.
-          if gh pr edit "$PR_NUMBER" --add-label "$TEMP_LABEL" >/dev/null 2>&1; then
+          if gh pr edit "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --add-label "$TEMP_LABEL" >/dev/null 2>&1; then
             note "- assign label to PR: \`ok\`"
           else
             note "- assign label to PR: \`DENIED\`"
@@ -128,7 +133,7 @@ jobs:
           fi
 
           # 3. Read it back. A silent no-op must not read as success.
-          if [ "$(gh pr view "$PR_NUMBER" --json labels --jq "[.labels[].name] | index(\"$TEMP_LABEL\") != null")" = "true" ]; then
+          if [ "$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json labels --jq "[.labels[].name] | index(\"$TEMP_LABEL\") != null")" = "true" ]; then
             note "- verify assignment: \`present\`"
           else
             note "- verify assignment: \`NOT PRESENT\`"
@@ -136,21 +141,21 @@ jobs:
           fi
 
           # 4. Clean up: remove from the PR and delete the label.
-          if gh pr edit "$PR_NUMBER" --remove-label "$TEMP_LABEL" >/dev/null 2>&1; then
+          if gh pr edit "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --remove-label "$TEMP_LABEL" >/dev/null 2>&1; then
             note "- remove label from PR: \`ok\`"
           else
             note "- remove label from PR: \`FAILED\`"
             FAIL=1
           fi
 
-          if [ "$(gh pr view "$PR_NUMBER" --json labels --jq "[.labels[].name] | index(\"$TEMP_LABEL\") != null")" = "false" ]; then
+          if [ "$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json labels --jq "[.labels[].name] | index(\"$TEMP_LABEL\") != null")" = "false" ]; then
             note "- verify cleanup: \`removed\`"
           else
             note "- verify cleanup: \`STILL PRESENT\`"
             FAIL=1
           fi
 
-          if gh label delete "$TEMP_LABEL" --yes >/dev/null 2>&1; then
+          if gh label delete "$TEMP_LABEL" --repo "$GITHUB_REPOSITORY" --yes >/dev/null 2>&1; then
             note "- delete temporary label: \`ok\`"
           else
             note "- delete temporary label: \`left in place (harmless)\`"
