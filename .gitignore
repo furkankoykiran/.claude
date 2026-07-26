@@ -79,6 +79,8 @@ catalog/.tmp/
 
 # Claude Code runtime telemetry (local-only, not catalog work)
 telemetry/
+# Written by `claude update` into the working dir — runtime state, not repo content
+.last-update-result.json
 
 # Usage Data
 usage-data/
