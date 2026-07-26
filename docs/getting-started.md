@@ -37,10 +37,10 @@ Both installers honour the same knobs:
 4. Clones [gstack](https://github.com/garrytan/gstack) and runs its setup,
    linking its slash commands (`/qa`, `/review`, `/ship`, `/browse`, `/retro`, …).
    On Linux it first installs Chromium's system libraries so the headless
-   browser actually launches (see [Troubleshooting](#troubleshooting)).
+   browser actually launches (see [Troubleshooting](troubleshooting.md)).
 5. Installs [rtk](https://github.com/rtk-ai/rtk) and wires its PreToolUse hook.
 6. Seeds `providers/*.json` from every committed template and adds the `ccs`
-   shell function, so [switching API providers](#api-provider-switching) works
+   shell function, so [switching API providers](configuration.md#api-provider-switching) works
    out of the box. Nothing is activated until you run `ccs <name>` yourself.
 7. Installs Python deps (`manim`, `edge-tts`) and `ffmpeg` for `manim-narration`.
 8. Clones five upstream skill packs into `~/.claude/skills/` (each git-ignored,
@@ -59,7 +59,7 @@ Both installers honour the same knobs:
 10. Installs (or upgrades) [graphify](https://pypi.org/project/graphifyy/) and
     wires its skill — re-running the bootstrap pulls the latest `graphifyy`, just
     like the git skill packs above.
-11. Registers four [plugin marketplaces](#plugin-marketplaces) and installs a
+11. Registers four [plugin marketplaces](configuration.md#plugin-marketplaces) and installs a
     curated set of workflow plugins (see below). Skipped if the `claude` CLI
     isn't on `PATH` yet.
 12. Optionally configures portable MCP servers (`github`, `context7`).

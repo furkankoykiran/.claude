@@ -32,6 +32,20 @@ function trackedFiles(): string[] {
     .filter(Boolean);
 }
 
+/**
+ * Tracked files PLUS untracked-but-not-ignored ones.
+ *
+ * Checking only tracked files means a brand-new document passes locally and
+ * fails in CI the moment it is staged — which is exactly what happened when
+ * docs/ was first split out.
+ */
+function candidateFiles(): string[] {
+  const untracked = execFileSync("git", ["ls-files", "--others", "--exclude-standard"], {
+    cwd: ROOT, encoding: "utf8",
+  }).split("\n").filter(Boolean);
+  return [...new Set([...trackedFiles(), ...untracked])].sort();
+}
+
 /** Markdown we author. Generated pages and vendored packs are not ours to lint. */
 function docFiles(all: string[]): string[] {
   return all.filter(
@@ -219,7 +233,7 @@ function checkTone(): void {
 }
 
 function main(): void {
-  const all = trackedFiles();
+  const all = candidateFiles();
   const docs = docFiles(all);
   checkLinks(all, docs);
   checkScripts(docs);
