@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # Do not leave GITHUB_TOKEN in .git/config. checkout stores it as
           # http.https://github.com/.extraheader, and that header outranks the
@@ -117,15 +117,29 @@ jobs:
           MANUAL=$(bun -e 'const d=JSON.parse(require("fs").readFileSync("/tmp/change-diff.json","utf8")); process.stdout.write(d.summary && d.summary.manualReviewRequired ? "true":"false")')
           COUNTS=$(bun -e 'const s=JSON.parse(require("fs").readFileSync("/tmp/change-diff.json","utf8")).summary; process.stdout.write("+"+s.added+" ~"+s.updated+" -"+s.removed+" >"+s.renamed)')
           echo "manual_review=$MANUAL" >> "$GITHUB_OUTPUT"
+          echo "counts=$COUNTS" >> "$GITHUB_OUTPUT"
+
+          # Body renders from /tmp/change-diff.json ONLY — the same diff the
+          # auto-merge gate reads — so a displayed count can never contradict
+          # the merge decision.
           {
             echo "## Skills Catalog update"
             echo ""
-            echo "Change vs \`main\`: \`$COUNTS\` — manual review required: \`$MANUAL\`"
+            bun run catalog/src/change-summary.ts /tmp/change-diff.json
+            echo ""
+            echo "<details><summary>Upstream revisions</summary>"
             echo ""
             echo '```'
-            if [ -f skills-catalog.json ]; then bun run catalog/src/summary.ts --oneline; fi
             git --no-pager diff --stat skills-source.lock.json | tail -20
             echo '```'
+            echo ""
+            echo "</details>"
+            echo ""
+            echo "<details><summary>Source coverage</summary>"
+            echo ""
+            bun run catalog:coverage
+            echo ""
+            echo "</details>"
           } > /tmp/pr-body.md
 
       # Dry run stops here: it has resolved, validated, classified, and
@@ -147,10 +161,60 @@ jobs:
           steps.detect.outputs.changed == 'true'
           && inputs.dry_run != true
           && vars.ENABLE_SKILLS_AUTOMATION == 'true'
-        uses: actions/create-github-app-token@v3 # first-party; mints an installation token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
           app-id: ${{ secrets.AUTOMATION_APP_ID }}
           private-key: ${{ secrets.AUTOMATION_APP_PRIVATE_KEY }}
+
+      # Non-destructive preflight for the two writes the automation depends on.
+      # `gh label create` is idempotent (the label either gets created once or
+      # already exists), so this proves the token's label-write path without
+      # mutating anything a rerun would notice. GitHub accepts either
+      # Issues: write or Pull requests: write for label endpoints depending on
+      # the App's grant, so probing beats assuming.
+      - name: Preflight App token permissions
+        id: preflight
+        if: >-
+          steps.detect.outputs.changed == 'true'
+          && inputs.dry_run != true
+          && steps.app-token.outputs.token != ''
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+        run: |
+          set -euo pipefail
+
+          # Installation coverage: does this App installation include this repo?
+          if gh api /installation/repositories --jq '.repositories[].full_name' 2>/dev/null \
+              | grep -qx "$GITHUB_REPOSITORY"; then
+            COVERED=true
+          else
+            COVERED=false
+          fi
+
+          set +e
+          OUT=$(gh label create manual-review-required \
+                  --description "Supply-chain change needs human review before merge" \
+                  --color B60205 2>&1)
+          RC=$?
+          set -e
+          if [ "$RC" -eq 0 ]; then
+            LABELS=writable
+          elif printf '%s' "$OUT" | grep -qiE "already exists|name already"; then
+            LABELS=writable
+          else
+            LABELS=denied
+            echo "::warning::Label write denied for ${APP_SLUG}[bot]. Grant the App 'Issues: read & write' (label endpoints are issue endpoints). A manual-review change will fail loudly rather than merge."
+          fi
+          echo "labels=$LABELS" >> "$GITHUB_OUTPUT"
+          echo "installation_covers_repo=$COVERED" >> "$GITHUB_OUTPUT"
+          {
+            echo "### App token preflight"
+            echo ""
+            echo "- app: \`${APP_SLUG}[bot]\`"
+            echo "- installation covers \`$GITHUB_REPOSITORY\`: \`$COVERED\`"
+            echo "- label writes: \`$LABELS\`"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Report that automation is disabled
         if: >-
@@ -231,10 +295,14 @@ jobs:
           PR_NUMBER: ${{ steps.pr.outputs.number }}
         run: |
           set -euo pipefail
-          gh label create manual-review-required \
-            --description "Supply-chain change needs human review before merge" \
-            --color B60205 2>/dev/null || true
-          gh pr edit "$PR_NUMBER" --add-label manual-review-required
+          # The label is how a human SEES the verdict; the auto-merge step is
+          # gated independently, so a failure here can never cause a merge.
+          # It still fails the run: an unlabelled manual-review PR is a silent
+          # safety regression.
+          if ! gh pr edit "$PR_NUMBER" --add-label manual-review-required; then
+            echo "::error::Could not label PR #${PR_NUMBER} manual-review-required. Auto-merge was NOT enabled and the PR is open for review. Grant the App 'Issues: read & write' and re-run."
+            exit 1
+          fi
           echo "::warning::PR #${PR_NUMBER} is manual-review-required; auto-merge is not enabled and a human must merge it."
 
       - name: Clear manual-review label (routine change)
