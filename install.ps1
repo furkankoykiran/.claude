@@ -394,8 +394,39 @@ function Install-Graphify {
 # ---------------------------------------------------------------------------
 # 9. Upstream skill packs (parity with install.sh)
 # ---------------------------------------------------------------------------
-# Each pack is cloned into a gitignored staging dir under skills/ and its skill
+# Each pack is cloned into a gitignored staging dir OUTSIDE skills/ and its skill
 # subdirectories are copied to the top level so Claude Code auto-discovers them.
+#
+# The staging dir must stay outside skills/: four of these upstream repos ship a
+# .claude-plugin\plugin.json at their root, and Claude Code loads any directory
+# under ~/.claude/skills/ carrying one as a skills-dir plugin (dot-prefixed
+# included). That made every skill in those packs load twice — once as the copied
+# top-level skill, once namespaced by the accidental plugin — and put the clone's
+# bin\ on the Bash tool's PATH.
+$SkillSrcDir = Join-Path $ClaudeDir '.cache\skill-src'
+
+# Move any pre-existing clone from the old skills\.<pack>_upstream_src location
+# so upgrading installs stop double-loading without manual cleanup.
+function Move-LegacySkillStage {
+    New-Item -ItemType Directory -Force -Path $SkillSrcDir | Out-Null
+    $skillsDir = Join-Path $ClaudeDir 'skills'
+    if (-not (Test-Path $skillsDir)) { return }
+    $moved = 0
+    foreach ($legacy in Get-ChildItem -Path $skillsDir -Directory -Force -Filter '.*_upstream_src') {
+        $pack = $legacy.Name -replace '^\.', '' -replace '_upstream_src$', ''
+        $dest = Join-Path $SkillSrcDir $pack
+        if (Test-Path $dest) {
+            Remove-Item -Recurse -Force $legacy.FullName   # already migrated
+        }
+        else {
+            Move-Item -Force -Path $legacy.FullName -Destination $dest
+        }
+        $moved++
+    }
+    if ($moved -gt 0) {
+        Write-Step "Moved $moved upstream staging clone(s) out of skills\ (they were loading as duplicate plugins)"
+    }
+}
 
 function Update-SkillStage {
     param([Parameter(Mandatory)][string]$Repo, [Parameter(Mandatory)][string]$StageDir)
@@ -417,7 +448,7 @@ function Copy-SkillDir {
 }
 
 function Install-ManimUpstream {
-    $stage = Join-Path $ClaudeDir 'skills\.manim_upstream_src'
+    $stage = Join-Path $SkillSrcDir 'manim'
     Update-SkillStage 'https://github.com/adithya-s-k/manim_skill.git' $stage
     foreach ($s in @('manimce-best-practices', 'manimgl-best-practices', 'manim-composer')) {
         $src = Join-Path $stage "skills\$s"
@@ -431,7 +462,7 @@ function Install-ManimUpstream {
 }
 
 function Install-KarpathySkill {
-    $stage = Join-Path $ClaudeDir 'skills\.karpathy_upstream_src'
+    $stage = Join-Path $SkillSrcDir 'karpathy'
     Update-SkillStage 'https://github.com/multica-ai/andrej-karpathy-skills.git' $stage
     $src = Join-Path $stage 'skills\karpathy-guidelines'
     if (Test-Path $src) {
@@ -468,7 +499,7 @@ function Install-SkillCollection {
 }
 
 function Install-ImpeccableSkill {
-    $stage = Join-Path $ClaudeDir 'skills\.impeccable_upstream_src'
+    $stage = Join-Path $SkillSrcDir 'impeccable'
     Update-SkillStage 'https://github.com/pbakaus/impeccable.git' $stage
     $src = Join-Path $stage '.claude\skills\impeccable'
     if (Test-Path $src) {
@@ -485,7 +516,7 @@ function Install-ImpeccableSkill {
 # `claude-api` (name-collides with an existing skill) and skills that overlap
 # existing packs (frontend-design, webapp-testing, canvas-design, algorithmic-art).
 function Install-AnthropicSkill {
-    $stage = Join-Path $ClaudeDir 'skills\.anthropic_upstream_src'
+    $stage = Join-Path $SkillSrcDir 'anthropic'
     Update-SkillStage 'https://github.com/anthropics/skills.git' $stage
     $count = 0
     foreach ($name in @('docx', 'pdf', 'pptx', 'xlsx', 'mcp-builder', 'skill-creator', 'web-artifacts-builder', 'doc-coauthoring')) {
@@ -565,6 +596,9 @@ function Invoke-Main {
     # Core
     Initialize-Repo
     Invoke-Step 'config seeding'   { Set-SeedConfig }
+    # Runs in minimal mode too: an install that once had the packs still carries
+    # the misplaced clones, and leaving them behind keeps the duplicate plugins.
+    Invoke-Step 'staging migration' { Move-LegacySkillStage }
     Invoke-Step 'bun'              { Install-Bun }
     Invoke-Step 'node runtime'     { Test-NodeRuntime }
     Invoke-Step 'gstack + browser' { Install-Gstack }
@@ -581,14 +615,14 @@ function Invoke-Main {
         Invoke-Step 'marketing skills' {
             Install-SkillCollection `
                 -Repo 'https://github.com/coreyhaines31/marketingskills.git' `
-                -StageDir (Join-Path $ClaudeDir 'skills\.marketing_upstream_src') `
+                -StageDir (Join-Path $SkillSrcDir 'marketing') `
                 -Marker '.from_marketing'
         }
         Invoke-Step 'impeccable skill' { Install-ImpeccableSkill }
         Invoke-Step 'taste skills' {
             Install-SkillCollection `
                 -Repo 'https://github.com/Leonxlnx/taste-skill.git' `
-                -StageDir (Join-Path $ClaudeDir 'skills\.taste_upstream_src') `
+                -StageDir (Join-Path $SkillSrcDir 'taste') `
                 -Marker '.from_taste' -RequireSkillMd
         }
         Invoke-Step 'anthropic skills' { Install-AnthropicSkill }

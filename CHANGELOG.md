@@ -10,6 +10,17 @@ bootstrap rather than a published package.
 
 ### Fixed
 
+- **Every skill from four upstream packs was loaded twice.** The installers
+  cloned each pack into `skills/.<pack>_upstream_src` and copied its skills to
+  the top level. But `marketingskills`, `taste-skill`, `andrej-karpathy-skills`
+  and `impeccable` each ship a `.claude-plugin/plugin.json` at their root, and
+  Claude Code loads *any* directory under `~/.claude/skills/` carrying one as a
+  skills-dir plugin — dot-prefixed included. So 63 skills appeared both bare
+  (`/cro`) and namespaced (`/marketing-skills:cro`), competing for the same
+  routing decision, and each clone's `bin/` was injected into the Bash tool's
+  `PATH`. Staging now lives in `.cache/skill-src/`, which Claude Code never
+  scans; both installers migrate an existing clone across on the next run, so no
+  manual cleanup is needed.
 - **The Skills Catalog update workflow could not finish a run.** Its
   no-change and dry-run guards used `exit 0`, which ends only the *step*, so
   every later step still ran: a scheduled run with nothing to update went on to

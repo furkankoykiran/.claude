@@ -26,6 +26,9 @@ set -euo pipefail
 
 REPO_URL="https://github.com/furkankoykiran/.claude.git"
 CLAUDE_DIR="${CLAUDE_DIR:-$HOME/.claude}"
+# Upstream packs are cloned here and their skills copied into skills/. This dir
+# MUST stay outside skills/ — see migrate_skill_staging for why.
+SKILL_SRC_DIR="$CLAUDE_DIR/.cache/skill-src"
 GSTACK_REPO="https://github.com/garrytan/gstack.git"
 RTK_INSTALLER="https://raw.githubusercontent.com/rtk-ai/rtk/master/install.sh"
 MANIM_UPSTREAM_REPO="https://github.com/adithya-s-k/manim_skill.git"
@@ -175,6 +178,36 @@ sync_repo() {
     log "Cloning $REPO_URL into $CLAUDE_DIR"
     git clone "$REPO_URL" "$CLAUDE_DIR"
   fi
+}
+
+# ---------------------------------------------------------------------------
+# 1b. Keep upstream staging clones out of skills/
+# ---------------------------------------------------------------------------
+# Upstream packs used to be cloned into ~/.claude/skills/.<pack>_upstream_src.
+# Four of those repos ship a .claude-plugin/plugin.json at their root, and
+# Claude Code loads ANY directory under ~/.claude/skills/ carrying one as a
+# skills-dir plugin — including dot-prefixed ones. So each pack was loaded
+# twice: once as the copied top-level skills (/cro), once namespaced by the
+# accidental plugin (/marketing-skills:cro), and the clone's bin/ was injected
+# into the Bash tool's PATH. Staging now lives under .cache/ (gitignored), which
+# Claude Code never scans. This moves any pre-existing clone across so upgrading
+# installs stop double-loading without a manual cleanup.
+migrate_skill_staging() {
+  mkdir -p "$SKILL_SRC_DIR"
+  local legacy pack moved=0
+  for legacy in "$CLAUDE_DIR"/skills/.*_upstream_src; do
+    [ -d "$legacy" ] || continue
+    pack=${legacy##*/}; pack=${pack#.}; pack=${pack%_upstream_src}
+    if [ -d "$SKILL_SRC_DIR/$pack" ]; then
+      rm -rf "$legacy"          # already migrated; drop the stale copy
+    else
+      mv "$legacy" "$SKILL_SRC_DIR/$pack"
+    fi
+    moved=$((moved+1))
+  done
+  [ "$moved" -gt 0 ] \
+    && log "Moved $moved upstream staging clone(s) out of skills/ (they were loading as duplicate plugins)"
+  return 0
 }
 
 # ---------------------------------------------------------------------------
@@ -413,7 +446,7 @@ ensure_manim_deps() {
 #    pattern as gstack: cloned into skills/, ignored by parent .gitignore.
 # ---------------------------------------------------------------------------
 install_manim_upstream() {
-  local stage="$CLAUDE_DIR/skills/.manim_upstream_src"
+  local stage="$SKILL_SRC_DIR/manim"
   if [ ! -d "$stage/.git" ]; then
     log "Cloning adithya-s-k/manim_skill into $stage"
     git clone --depth 1 "$MANIM_UPSTREAM_REPO" "$stage"
@@ -443,7 +476,7 @@ install_manim_upstream() {
 #     stay in sync with upstream edits.
 # ---------------------------------------------------------------------------
 install_karpathy_skill() {
-  local stage="$CLAUDE_DIR/skills/.karpathy_upstream_src"
+  local stage="$SKILL_SRC_DIR/karpathy"
   if [ ! -d "$stage/.git" ]; then
     log "Cloning multica-ai/andrej-karpathy-skills into $stage"
     git clone --depth 1 "$KARPATHY_REPO" "$stage"
@@ -471,7 +504,7 @@ install_karpathy_skill() {
 #     overwrite their own dirs but never clobber unrelated user skills.
 # ---------------------------------------------------------------------------
 install_marketing_skills() {
-  local stage="$CLAUDE_DIR/skills/.marketing_upstream_src"
+  local stage="$SKILL_SRC_DIR/marketing"
   if [ ! -d "$stage/.git" ]; then
     log "Cloning coreyhaines31/marketingskills into $stage"
     git clone --depth 1 "$MARKETING_REPO" "$stage"
@@ -504,7 +537,7 @@ install_marketing_skills() {
 #     Repo bundles a ready Claude-Code distribution at .claude/skills/impeccable
 # ---------------------------------------------------------------------------
 install_impeccable_skill() {
-  local stage="$CLAUDE_DIR/skills/.impeccable_upstream_src"
+  local stage="$SKILL_SRC_DIR/impeccable"
   if [ ! -d "$stage/.git" ]; then
     log "Cloning pbakaus/impeccable into $stage"
     git clone --depth 1 "$IMPECCABLE_REPO" "$stage"
@@ -534,7 +567,7 @@ install_impeccable_skill() {
 #     output-skill, brandkit, stitch-skill, imagegen-frontend-{web,mobile}.
 # ---------------------------------------------------------------------------
 install_taste_skills() {
-  local stage="$CLAUDE_DIR/skills/.taste_upstream_src"
+  local stage="$SKILL_SRC_DIR/taste"
   if [ ! -d "$stage/.git" ]; then
     log "Cloning Leonxlnx/taste-skill into $stage"
     git clone --depth 1 "$TASTE_REPO" "$stage"
@@ -606,7 +639,7 @@ install_graphify() {
 #     intentionally skipped to keep the always-loaded catalog clean.
 # ---------------------------------------------------------------------------
 install_anthropic_skills() {
-  local stage="$CLAUDE_DIR/skills/.anthropic_upstream_src"
+  local stage="$SKILL_SRC_DIR/anthropic"
   if [ ! -d "$stage/.git" ]; then
     log "Cloning anthropics/skills into $stage"
     git clone --depth 1 "$ANTHROPIC_SKILLS_REPO" "$stage"
@@ -706,6 +739,9 @@ main() {
     sync_repo
   fi
   run_step "config seeding"   seed_configs
+  # Runs in minimal mode too: an install that once had the packs still carries
+  # the misplaced clones, and leaving them behind keeps the duplicate plugins.
+  run_step "staging migration" migrate_skill_staging
   run_step "bun"              ensure_bun
   run_step "gstack + browser" install_gstack
   run_step "rtk"              install_rtk
