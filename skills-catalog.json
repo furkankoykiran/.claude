@@ -4443,7 +4443,7 @@
       ],
       "canonicalInvocation": "/impeccable",
       "description": "Use when the user wants to design, redesign, shape, critique, audit, polish, clarify, distill, harden, optimize, adapt, animate, colorize, extract, or otherwise improve a frontend interface. Covers websites, landing pages, dashboards, product UI, app shells, components, forms, settings, onboarding, and empty states. Handles UX review, visual hierarchy, information architecture, cognitive load, accessibility, performance, responsive behavior, theming, anti-patterns, typography, fonts, spacing, layout, alignment, color, motion, micro-interactions, UX copy, error states, edge cases, i18n, and reusable design systems or tokens. Also use for bland designs that need to become bolder or more delightful, loud designs that should become quieter, live browser iteration on UI elements, or ambitious visual effects that should feel technically extraordinary. Not for backend-only or non-UI tasks.",
-      "digest": "2ef091bbac46b573bef1c8bca0eed3ba1f5a54b76988e475249194bab16ef20c",
+      "digest": "73c764804fcbd076e82bfdeffd275213b1178a28d97e0dffdaed96708eee68b4",
       "frontmatter": {
         "allowed-tools": [
           "Bash(npx impeccable *)",
@@ -4472,7 +4472,7 @@
       "ref": "origin/HEAD",
       "relativePath": ".claude/skills/impeccable/SKILL.md",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "af78b1e512148e2a2f2d2ded6786d265ea420191",
+      "resolvedRevision": "d272b9bd5dcfcb52d32482d192d06045ca31c503",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8047,7 +8047,7 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "af78b1e512148e2a2f2d2ded6786d265ea420191",
+      "resolvedRevision": "d272b9bd5dcfcb52d32482d192d06045ca31c503",
       "runtimeOnly": false,
       "skillCount": 1,
       "type": "git"
