@@ -166,12 +166,15 @@ jobs:
           app-id: ${{ secrets.AUTOMATION_APP_ID }}
           private-key: ${{ secrets.AUTOMATION_APP_PRIVATE_KEY }}
 
-      # Non-destructive preflight for the two writes the automation depends on.
+      # Non-destructive preflight for the writes the automation depends on.
       # `gh label create` is idempotent (the label either gets created once or
       # already exists), so this proves the token's label-write path without
-      # mutating anything a rerun would notice. GitHub accepts either
-      # Issues: write or Pull requests: write for label endpoints depending on
-      # the App's grant, so probing beats assuming.
+      # mutating anything a rerun would notice.
+      #
+      # Label endpoints do NOT necessarily need Issues: write. Run 30195036275
+      # created this repo's manual-review-required label using GITHUB_TOKEN
+      # whose permissions block was contents+pull-requests only, with no issues
+      # scope at all. So we probe rather than assume a permission is required.
       - name: Preflight App token permissions
         id: preflight
         if: >-
@@ -204,7 +207,7 @@ jobs:
             LABELS=writable
           else
             LABELS=denied
-            echo "::warning::Label write denied for ${APP_SLUG}[bot]. Grant the App 'Issues: read & write' (label endpoints are issue endpoints). A manual-review change will fail loudly rather than merge."
+            echo "::warning::Label write denied for ${APP_SLUG}[bot]. Pull requests: write normally covers label endpoints; if it does not here, grant Issues: read & write. A manual-review change will fail loudly rather than merge."
           fi
           echo "labels=$LABELS" >> "$GITHUB_OUTPUT"
           echo "installation_covers_repo=$COVERED" >> "$GITHUB_OUTPUT"
@@ -300,7 +303,7 @@ jobs:
           # It still fails the run: an unlabelled manual-review PR is a silent
           # safety regression.
           if ! gh pr edit "$PR_NUMBER" --add-label manual-review-required; then
-            echo "::error::Could not label PR #${PR_NUMBER} manual-review-required. Auto-merge was NOT enabled and the PR is open for review. Grant the App 'Issues: read & write' and re-run."
+            echo "::error::Could not label PR #${PR_NUMBER} manual-review-required. Auto-merge was NOT enabled and the PR is open for review. Check the preflight step output, then widen the App grant (Pull requests: write usually suffices; otherwise Issues: read & write) and re-run."
             exit 1
           fi
           echo "::warning::PR #${PR_NUMBER} is manual-review-required; auto-merge is not enabled and a human must merge it."

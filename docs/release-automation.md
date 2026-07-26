@@ -90,9 +90,16 @@ Configure (repo Settings → Secrets and variables → Actions):
 | `AUTOMATION_APP_ID` | repository **secret** | the GitHub App ID |
 | `AUTOMATION_APP_PRIVATE_KEY` | repository **secret** | the App's private key |
 
-The App needs **Contents: read/write**, **Pull requests: read/write**, and
-**Issues: read/write** (label writes go through the issues API) on this repo
-(fine-grained, scoped to `furkankoykiran/.claude`).
+The App needs **Contents: read/write** and **Pull requests: read/write** on
+this repo (fine-grained, scoped to `furkankoykiran/.claude`).
+
+**Issues: write is not automatically required for labels.** Label endpoints are
+issue endpoints, but run `30195036275` created this repo's
+`manual-review-required` label using `GITHUB_TOKEN` whose `permissions:` block
+was `contents` + `pull-requests` only, with no `issues` scope. The update
+workflow therefore *probes* the label-write path in its preflight step and
+reports the result in the job summary rather than assuming. Grant
+**Issues: read/write** only if that preflight reports `denied`.
 
 Also enable, in repo Settings → General → Pull Requests:
 
