@@ -147,3 +147,77 @@ describe("changedPolicyFields", () => {
     expect(changedPolicyFields(sk(), sk())).toEqual([]);
   });
 });
+describe("reviewer findings: rewrite and companion-file gaps", () => {
+  const withFlags = (o: Partial<SecurityProfile>, flags: string[]) => S({ ...o, flags });
+
+  it("a body REWRITE of a skill already carrying severe capability requires review", () => {
+    // No capability goes false -> true, so boolean escalation alone calls this
+    // routine. The content changed on a skill that already ships an executable.
+    const prof = withFlags({ hasExecutable: true, hasBashOrPowershell: true }, ["executables:1"]);
+    const d = diffCatalogs(
+      cat([sk({ digest: "b".repeat(64), security: prof })]),
+      cat([sk({ digest: "a".repeat(64), security: prof })]),
+      "base",
+    );
+    expect(d.summary.updated).toBe(1);
+    expect(d.summary.manualReviewRequired).toBe(true);
+    expect(d.changes[0]!.reasons.join(",")).toContain("content-changed-with-capability:executable/binary");
+  });
+
+  for (const [label, prof] of [
+    ["credential-reference", S({ hasCredentialRef: true })],
+    ["hooks", S({ hasHooks: true })],
+    ["mcp/lsp", S({ hasMcpOrLsp: true })],
+    ["agents", S({ hasAgents: true })],
+  ] as Array<[string, SecurityProfile]>) {
+    it(`a body rewrite of a skill carrying ${label} requires review`, () => {
+      const d = diffCatalogs(
+        cat([sk({ digest: "b".repeat(64), security: prof })]),
+        cat([sk({ digest: "a".repeat(64), security: prof })]),
+        "base",
+      );
+      expect(d.summary.manualReviewRequired).toBe(true);
+    });
+  }
+
+  it("a body rewrite of a skill with NO severe capability stays routine", () => {
+    // Bounded noise: network/bash alone do not make every upstream edit manual.
+    const prof = S({ hasNetworkRef: true, hasBashOrPowershell: true });
+    const d = diffCatalogs(
+      cat([sk({ digest: "b".repeat(64), security: prof })]),
+      cat([sk({ digest: "a".repeat(64), security: prof })]),
+      "base",
+    );
+    expect(d.summary.updated).toBe(1);
+    expect(d.summary.manualReviewRequired).toBe(false);
+  });
+
+  it("a SECOND executable appearing beside SKILL.md is visible and reviewed", () => {
+    // The digest covers only SKILL.md, and hasExecutable stays true, so this
+    // was previously invisible to the diff entirely.
+    const before = withFlags({ hasExecutable: true }, ["executables:1"]);
+    const after = withFlags({ hasExecutable: true }, ["executables:2"]);
+    const d = diffCatalogs(
+      cat([sk({ security: after })]),
+      cat([sk({ security: before })]),
+      "base",
+    );
+    expect(d.summary.updated, "companion-file change was invisible").toBe(1);
+    expect(d.changes[0]!.detail).toContain("digest unchanged");
+    expect(d.summary.manualReviewRequired).toBe(true);
+    expect(d.changes[0]!.reasons).toContain("security-flags-changed");
+  });
+
+  it("a hidden file appearing beside SKILL.md is visible", () => {
+    const before = withFlags({ hasHiddenFiles: true }, ["hidden-files:1"]);
+    const after = withFlags({ hasHiddenFiles: true }, ["hidden-files:2"]);
+    const d = diffCatalogs(cat([sk({ security: after })]), cat([sk({ security: before })]), "base");
+    expect(d.summary.updated).toBe(1);
+    expect(d.summary.manualReviewRequired).toBe(true);
+  });
+
+  it("identical flags produce no change", () => {
+    const prof = withFlags({ hasExecutable: true }, ["executables:1"]);
+    expect(diffCatalogs(cat([sk({ security: prof })]), cat([sk({ security: prof })]), "base").changes).toEqual([]);
+  });
+});

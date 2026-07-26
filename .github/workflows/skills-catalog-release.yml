@@ -87,8 +87,23 @@ jobs:
           fi
           echo "latest_tag=$LATEST" >> "$GITHUB_ENV"
           echo "Latest published release: ${LATEST:-<none>}"
+          # The catalog moved from the repository root into catalog/generated/,
+          # so releases cut BEFORE that move hold it at the old path. Try the
+          # current location first, then the historical one. Silently failing
+          # here is the dangerous case: the base would be empty, every skill
+          # would read as newly added, and a removal that should force a major
+          # bump would be invisible.
+          rm -f /tmp/base-catalog.json
           if [ -n "$LATEST" ]; then
-            git show "$LATEST:catalog/generated/skills-catalog.json" > /tmp/base-catalog.json 2>/dev/null || rm -f /tmp/base-catalog.json
+            if git show "$LATEST:catalog/generated/skills-catalog.json" > /tmp/base-catalog.json 2>/dev/null; then
+              echo "Base catalog: $LATEST:catalog/generated/skills-catalog.json"
+            elif git show "$LATEST:skills-catalog.json" > /tmp/base-catalog.json 2>/dev/null; then
+              echo "::notice::Base catalog read from the pre-restructure path $LATEST:skills-catalog.json"
+            else
+              rm -f /tmp/base-catalog.json
+              echo "::error::Could not read a base catalog from release $LATEST at either catalog/generated/skills-catalog.json or skills-catalog.json. Refusing to compute a release diff against an empty base, which would report every skill as newly added and hide removals."
+              exit 1
+            fi
           fi
           if [ -f /tmp/base-catalog.json ]; then
             bun run catalog:generate --base /tmp/base-catalog.json
@@ -164,7 +179,7 @@ jobs:
           # which previously left the run "green" having released nothing.
           git fetch --tags --force
           if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
-            echo "::error::Tag $TAG already exists but does not point at $SHA. A concurrent release computed the same version. Re-run this workflow: it will recompute against the now-published tag."
+            echo "::error::Tag $TAG already exists. If it points at another commit and has a published Release, a concurrent run won the race — re-running recomputes against it. If it is an ORPHAN tag (no Release), re-running will collide identically forever: delete it first with 'git push origin :refs/tags/$TAG', then re-run."
             exit 1
           fi
           git tag "$TAG" "$SHA"

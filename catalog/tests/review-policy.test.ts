@@ -81,12 +81,25 @@ describe("review policy — every tracked capability escalates on a new skill", 
 
 describe("review policy — escalation only on false -> true (no false positives)", () => {
   for (const cap of ESCALATION_CAPABILITIES) {
-    it(`pre-existing "${cap.name}" is NOT re-flagged when the body merely changes`, () => {
+    it(`pre-existing "${cap.name}" is not re-flagged as an ESCALATION`, () => {
       const on = only(cap.name);
       const d = update(on, on);
       expect(d.summary.updated).toBe(1);
-      expect(d.summary.manualReviewRequired).toBe(false);
-      expect(d.changes[0]!.reasons).toEqual([]);
+      // The capability was already there, so nothing went false -> true.
+      expect(d.changes[0]!.reasons.filter((r) => r.startsWith("capability-introduced:"))).toEqual([]);
+
+      // Severe capabilities are the exception: a content rewrite of a skill
+      // that already ships an executable, hooks, MCP config, an agent or a
+      // credential reference still needs a human, because no boolean moves.
+      const severe = ["credential-reference", "executable/binary", "hooks", "mcp/lsp", "agents"];
+      if (severe.includes(cap.name)) {
+        expect(d.summary.manualReviewRequired, `${cap.name} rewrite must be reviewed`).toBe(true);
+        expect(d.changes[0]!.reasons.join(",")).toContain(`content-changed-with-capability:${cap.name}`);
+      } else {
+        // Bounded noise: the common capabilities do not make every edit manual.
+        expect(d.summary.manualReviewRequired, `${cap.name} rewrite should stay routine`).toBe(false);
+        expect(d.changes[0]!.reasons).toEqual([]);
+      }
     });
 
     it(`newly introduced "${cap.name}" IS flagged`, () => {

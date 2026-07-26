@@ -148,14 +148,50 @@ export function changedPolicyFields(prev: CatalogSkillEntry, cur: CatalogSkillEn
   return out.sort();
 }
 
-/** True when any security-profile field differs at all (not only escalations). */
+/**
+ * Capabilities severe enough that ANY content change to a skill already
+ * carrying one deserves human eyes.
+ *
+ * Boolean escalation alone is not sufficient: a skill that already ships an
+ * executable, hooks, MCP config, an agent or a credential reference can have
+ * its body rewritten entirely without any capability going false -> true, and
+ * that rewrite would classify as routine. Restricting this to the severe
+ * capabilities keeps the noise bounded (14 of 141 catalog skills today) while
+ * closing the rewrite path on exactly the skills where it matters.
+ */
+export const HIGH_RISK_CAPABILITIES: ReadonlyArray<{ name: string; read: (p: SecurityProfile) => boolean }> = [
+  { name: "credential-reference", read: (p) => p.hasCredentialRef },
+  { name: "executable/binary", read: (p) => p.hasExecutable },
+  { name: "hooks", read: (p) => p.hasHooks },
+  { name: "mcp/lsp", read: (p) => p.hasMcpOrLsp },
+  { name: "agents", read: (p) => p.hasAgents },
+];
+
+/**
+ * True when any security-profile field differs at all (not only escalations).
+ *
+ * Compares `flags` as well as the booleans. The booleans cannot see a COUNT
+ * change: a skill directory going from one executable to two keeps
+ * `hasExecutable: true`, and because the content digest covers only SKILL.md,
+ * a companion file appearing beside it would otherwise be invisible to the
+ * diff entirely — not merely classified as routine.
+ */
 export function securityProfileChanged(prev: CatalogSkillEntry, cur: CatalogSkillEntry): boolean {
   const a = previousSecurityProfile(prev);
   const b = cur.security;
   if (!a || !b) return false;
+  const flagsA = [...(a.flags ?? [])].sort().join("|");
+  const flagsB = [...(b.flags ?? [])].sort().join("|");
   return (
-    ESCALATION_CAPABILITIES.some((c) => c.read(a) !== c.read(b)) || a.toolCount !== b.toolCount
+    ESCALATION_CAPABILITIES.some((c) => c.read(a) !== c.read(b)) ||
+    a.toolCount !== b.toolCount ||
+    flagsA !== flagsB
   );
+}
+
+/** Severe capabilities present on a profile, sorted. */
+export function highRiskCapabilities(p: SecurityProfile): string[] {
+  return HIGH_RISK_CAPABILITIES.filter((c) => c.read(p)).map((c) => c.name).sort();
 }
 
 function indexBy(catalog: Catalog | null): Map<string, CatalogSkillEntry> {
@@ -185,6 +221,7 @@ function reviewReasonsFor(
   cur: CatalogSkillEntry | undefined,
   prev: CatalogSkillEntry | undefined,
   kind: ChangeKind,
+  contentChanged = false,
 ): string[] {
   if (kind === "removed") return ["skill-removed"];
   if (kind === "renamed") return ["skill-renamed"];
@@ -198,6 +235,23 @@ function reviewReasonsFor(
   const reasons = capabilityEscalations(previousSecurityProfile(prev), cur.security).map(
     (c) => `capability-introduced:${c}`,
   );
+
+  // A body rewrite of a skill that ALREADY carries severe capability needs a
+  // human. No capability goes false -> true in that case, so escalation alone
+  // would call it routine.
+  if (contentChanged) {
+    for (const c of highRiskCapabilities(cur.security)) {
+      reasons.push(`content-changed-with-capability:${c}`);
+    }
+  }
+
+  // A companion file appearing or disappearing beside SKILL.md changes the
+  // profile flags without changing the digest.
+  const prevFlags = [...(previousSecurityProfile(prev).flags ?? [])].sort().join("|");
+  const curFlags = [...(cur.security?.flags ?? [])].sort().join("|");
+  if (prevFlags !== curFlags && !reasons.some((r) => r.startsWith("capability-introduced:"))) {
+    reasons.push("security-flags-changed");
+  }
 
   // One authoritative policy comparison drives the diff JSON, the markdown
   // report, the PR summary, the release bump, and the merge decision.
@@ -256,7 +310,7 @@ export function diffCatalogs(current: Catalog, base: Catalog | null, baseName: s
     const policyFields = changedPolicyFields(prev, cur);
     const securityChanged = securityProfileChanged(prev, cur);
     if (contentChanged || policyFields.length > 0 || securityChanged) {
-      const reasons = reviewReasonsFor(cur, prev, "updated");
+      const reasons = reviewReasonsFor(cur, prev, "updated", contentChanged);
       const detail = contentChanged
         ? `digest ${prev.digest.slice(0, 10)} -> ${cur.digest.slice(0, 10)}`
         : `metadata-only change (digest unchanged): ${[...policyFields, ...(securityChanged ? ["security"] : [])].join(", ")}`;

@@ -48,9 +48,21 @@ one, when the tool surface grows, when redistribution or licence changes, when
 the source repository changes, when a skill is removed or renamed, or when the
 batch exceeds a documented threshold.
 
+It also fires when a skill that already carries a severe capability
+(credential reference, executable, hooks, MCP/LSP, agents) has its **content
+rewritten** — no capability goes false-to-true in that case, so escalation alone
+would call it routine — and when files appear or disappear beside `SKILL.md`,
+which the content digest does not cover.
+
 Detection does not depend on the content digest: the same bytes re-pointed at a
 different repository, relocated, or re-licensed is still a change. See
 [Release automation](release-automation.md#what-forces-manual-review).
+
+**What this gate is not.** It reasons about capability surface and provenance,
+not intent. A rewritten body in a skill carrying no severe capability merges as
+routine, and heuristic secret detection can miss things. It raises the cost of a
+supply-chain attack and makes provenance auditable; it is not a guarantee that
+merged content is safe.
 
 Auto-merge state is torn down and re-proven on every run, so a merge request
 enabled by an earlier routine update cannot survive into a later

@@ -135,9 +135,15 @@ a supply-chain decision, so the automation treats it as one.
 A change is held for human review when it introduces a credential reference,
 executable or binary, hooks, MCP/LSP config, agents, dynamic shell, Bash or
 PowerShell, network access or hidden files — or when an existing skill *gains*
-any of those, the tool surface grows, redistribution or licence changes, the
-source repository changes, a skill is removed or renamed, or the batch is
+any of those, when a skill that already carries a severe capability has its
+content rewritten, when files appear or disappear beside `SKILL.md`, when the
+tool surface grows, when redistribution or licence changes, when the source
+repository changes, when a skill is removed or renamed, or when the batch is
 unusually large.
+
+The gate is a strong filter, not a proof of safety: it reasons about capability
+surface and provenance, not intent. A rewrite of a skill carrying no severe
+capability still merges as routine. Read the diff on anything you care about.
 
 Detection does not rely on the content digest: the same bytes re-pointed at a
 different repository or re-licensed is still a change. Auto-merge state is torn
