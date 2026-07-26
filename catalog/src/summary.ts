@@ -22,8 +22,8 @@ async function readJson(p: string): Promise<any | null> {
 const args = new Set(process.argv.slice(2));
 
 async function main() {
-  const catalog = await readJson("skills-catalog.json");
-  const diff = await readJson("skills-catalog-diff.json");
+  const catalog = await readJson("catalog/generated/skills-catalog.json");
+  const diff = await readJson("catalog/generated/skills-catalog-diff.json");
 
   if (args.has("--oneline")) {
     const t = catalog?.totals ?? {};

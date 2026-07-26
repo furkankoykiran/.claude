@@ -14,7 +14,7 @@
  */
 import { mkdir, writeFile, rm, cp, readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { join, relative } from "node:path";
+import { join, relative, dirname } from "node:path";
 import { createHash } from "node:crypto";
 import type {
   Catalog,
@@ -198,7 +198,11 @@ export function renderIndex(resolved: ResolvedCatalog): string {
     lines.push("| --- | --- | --- |");
     for (const s of arr) {
       const desc = (s.description ?? "").replace(/\|/g, "\\|").replace(/\n/g, " ").slice(0, 120);
-      const link = `[${s.canonicalInvocation}](${relative("SKILLS_CATALOG.md", skillPagePath(s))})`;
+      // relative() from the CONTAINING DIRECTORY. Passing the file path
+      // itself treats the filename as a directory and emits one extra "..",
+      // which is why every link in the published SKILLS_CATALOG.md pointed
+      // above the repository root.
+      const link = `[${s.canonicalInvocation}](${relative(dirname(`${GENERATED_DIR}/SKILLS_CATALOG.md`), skillPagePath(s))})`;
       lines.push(`| ${link} | ${desc} | ${s.license.redistribution} |`);
     }
     lines.push("");
@@ -337,6 +341,16 @@ export interface GenerateOptions {
   diff?: DiffReport | null;
 }
 
+/**
+ * Where the generated catalog artifacts live in the repository.
+ *
+ * Staging stays FLAT (bare filenames) because SHA256SUMS records bare names and
+ * those names are the public GitHub Release asset names. Only the swap step
+ * places them under this directory, so the release contract is unaffected by
+ * where they sit in the tree.
+ */
+export const GENERATED_DIR = "catalog/generated";
+
 const TOP_LEVEL_OUTPUTS = [
   "SKILLS_CATALOG.md",
   "claude_code_skills.md",
@@ -416,9 +430,13 @@ export async function generateAll(
     await mkdir(join(realDocsSkills, ".."), { recursive: true });
     await cp(join(staging, "docs", "skills"), realDocsSkills, { recursive: true });
   }
-  for (const f of [...TOP_LEVEL_OUTPUTS, "skills-source.lock.json", "SHA256SUMS"]) {
-    await cp(join(staging, f), join(opts.outDir, f));
+  // Generated artifacts land under catalog/generated/; the lock stays at the
+  // repository root next to the manifest it locks.
+  await mkdir(join(opts.outDir, GENERATED_DIR), { recursive: true });
+  for (const f of [...TOP_LEVEL_OUTPUTS, "SHA256SUMS"]) {
+    await cp(join(staging, f), join(opts.outDir, GENERATED_DIR, f));
   }
+  await cp(join(staging, "skills-source.lock.json"), join(opts.outDir, "skills-source.lock.json"));
 
   await rm(staging, { recursive: true, force: true });
   return { written };

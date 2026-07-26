@@ -2,15 +2,15 @@
 
 How the Skills Catalog is updated, merged, versioned, and released. The
 implementation reference for the three workflows under
-[`.github/workflows/`](.github/workflows/).
+[`.github/workflows/`](../.github/workflows/).
 
 ## Workflows
 
 | workflow | trigger | purpose |
 | --- | --- | --- |
-| [`ci.yml`](.github/workflows/ci.yml) (`catalog` job) | `push: main`, `pull_request`, `workflow_dispatch` | offline validation: typecheck, tests, parity, consistency, determinism, staleness guard |
-| [`skills-catalog-update.yml`](.github/workflows/skills-catalog-update.yml) | daily cron `17 6 * * *` + `workflow_dispatch` | network: advance upstream refs, regenerate, validate, open/update one automation PR, (auto-)merge |
-| [`skills-catalog-release.yml`](.github/workflows/skills-catalog-release.yml) | `push: main` (never tags) | re-validate, compute next SemVer, tag the commit, publish the GitHub Release with assets |
+| [`ci.yml`](../.github/workflows/ci.yml) (`catalog` job) | `push: main`, `pull_request`, `workflow_dispatch` | offline validation: typecheck, tests, parity, consistency, determinism, staleness guard |
+| [`skills-catalog-update.yml`](../.github/workflows/skills-catalog-update.yml) | daily cron `17 6 * * *` + `workflow_dispatch` | network: advance upstream refs, regenerate, validate, open/update one automation PR, (auto-)merge |
+| [`skills-catalog-release.yml`](../.github/workflows/skills-catalog-release.yml) | `push: main` (never tags) | re-validate, compute next SemVer, tag the commit, publish the GitHub Release with assets |
 
 ## Update policy (the automation PR)
 
@@ -37,10 +37,38 @@ token, commits, pushes, opens a PR, or merges.
   pass (`gh pr merge --squash --auto`). Never `--admin`, never a ruleset bypass,
   and no direct-merge fallback — if auto-merge cannot be enabled the step fails
   and the PR stays open.
-- **`manual-review-required`** changes (new source, source-URL change, license
-  downgrade, executable/binary/secret/hook/MCP introduction, significant
-  permission expansion): the PR is labeled `manual-review-required` and left
-  open; **never** auto-merged.
+- **`manual-review-required`** changes: the PR is labeled and left open;
+  **never** auto-merged.
+
+### What forces manual review
+
+Classification runs against `HEAD:catalog/generated/skills-catalog.json` — the catalog as it
+stands on `main` — not against the committed `catalog/generated/skills-catalog-diff.json`, which
+is generated against an empty base and would mark everything as new. The
+verdict, the PR body, and the merge decision all read that one diff.
+
+| change | requires review when |
+| --- | --- |
+| **added** skill | it carries *any* capability: credential reference, executable/binary, hooks, MCP/LSP, agents, dynamic shell, Bash/PowerShell, network access, hidden files |
+| **updated** skill | a capability was **absent before and present now**, the allowed-tools surface grew, redistribution was downgraded, the detected license changed, or the source repository changed (including appearing/disappearing) |
+| **removed** skill | always |
+| **renamed** skill | always — the public invocation changed |
+| any batch | more than `MASS_CHANGE_THRESHOLD` (25) changed entries |
+
+Escalation compares against the **persisted** previous `security` profile. It
+used to rebuild that profile from frontmatter with an empty body and empty file
+list, which made every body-derived capability (network, dynamic shell,
+executables) look newly introduced on every edit — so every PR was
+manual-review and the signal was worthless. A capability that was already
+present is not an escalation; only `false -> true` counts.
+
+For catalogs written before `security` was persisted there is a documented
+fallback that reconstructs a partial profile from frontmatter. It under-reports,
+so it over-escalates — it fails safe.
+
+The gate is covered by `catalog/tests/review-policy.test.ts`, which asserts both
+directions: every capability escalates when newly introduced, and no capability
+re-escalates when it was already there.
 
 Auto-merge only *waits* for checks that `main` actually requires. With no
 required status checks configured, GitHub reports the PR as immediately
@@ -62,9 +90,16 @@ Configure (repo Settings → Secrets and variables → Actions):
 | `AUTOMATION_APP_ID` | repository **secret** | the GitHub App ID |
 | `AUTOMATION_APP_PRIVATE_KEY` | repository **secret** | the App's private key |
 
-The App needs **Contents: read/write**, **Pull requests: read/write**, and
-**Issues: read/write** (label writes go through the issues API) on this repo
-(fine-grained, scoped to `furkankoykiran/.claude`).
+The App needs **Contents: read/write** and **Pull requests: read/write** on
+this repo (fine-grained, scoped to `furkankoykiran/.claude`).
+
+**Issues: write is not automatically required for labels.** Label endpoints are
+issue endpoints, but run `30195036275` created this repo's
+`manual-review-required` label using `GITHUB_TOKEN` whose `permissions:` block
+was `contents` + `pull-requests` only, with no `issues` scope. The update
+workflow therefore *probes* the label-write path in its preflight step and
+reports the result in the job summary rather than assuming. Grant
+**Issues: read/write** only if that preflight reports `denied`.
 
 Also enable, in repo Settings → General → Pull Requests:
 
@@ -107,7 +142,7 @@ Source of truth is **git tags** (there is no tracked version file). Rules:
 - Updated body/metadata/sha/doc/resolver fix → **patch**.
 - No catalog change → no release.
 
-The release workflow reads the previous tag's `skills-catalog.json` as the diff
+The release workflow reads the previous tag's `catalog/generated/skills-catalog.json` as the diff
 base, infers the bump, computes the next tag, and tags the **exact** main commit.
 
 ## Release assets
@@ -115,7 +150,9 @@ base, infers the bump, computes the next tag, and tags the **exact** main commit
 Every release attaches: `claude_code_skills.md`, `SKILLS_CATALOG.md`,
 `skills-catalog.json`, `skills-source.lock.json`, `skills-catalog-diff.json`,
 `catalog-change-report.md`, `SHA256SUMS`, and a `docs-skills.tar.gz` bundle of
-the full per-skill pages. `claude_code_skills.md` is directly downloadable from
+the full per-skill pages. Asset **names** are a compatibility contract and do
+not change when the source files move in the tree; the release workflow stages
+them under their public names before uploading. `claude_code_skills.md` is directly downloadable from
 every release. Verify locally:
 
 ```bash

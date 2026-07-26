@@ -88,6 +88,15 @@ interface Snapshot {
   licenseDetected: string;
   redistribution: "full" | "metadata-only";
   entries: SnapshotEntry[];
+  /**
+   * Every skill directory that EXISTS upstream under the selection root,
+   * whether or not the selection picked it. Lets the coverage report name
+   * upstream skills we have not opted into, instead of them being invisible.
+   *
+   * Optional: snapshots written before this field existed simply omit it, and
+   * the coverage report reports "not recorded" rather than guessing.
+   */
+  availableSkillDirs?: string[];
 }
 
 // ---------------------------------------------------------------------------
@@ -175,6 +184,36 @@ async function listFiles(dir: string, root: string, depthLimit = 8, visited = ne
     }
   }
   return out;
+}
+
+/**
+ * Every directory containing a SKILL.md that the selection COULD have picked,
+ * i.e. the upstream candidate set before the selection filter is applied.
+ * Used only for the coverage report; never affects what is cataloged.
+ */
+async function findAvailableSkillDirs(workRoot: string, cfg: GitSourceConfig): Promise<string[]> {
+  const sel = cfg.selection;
+  if (sel.kind === "subpath") {
+    // The candidate set is the parent directory of the selected subpath.
+    const parent = sel.path.split("/").slice(0, -1).join("/");
+    const base = join(workRoot, parent);
+    if (!existsSync(base)) return [];
+    const names: string[] = [];
+    for (const name of (await readdir(base).catch(() => [] as string[])).sort()) {
+      if (existsSync(join(base, name, "SKILL.md"))) names.push(name);
+    }
+    return names;
+  }
+  if (sel.kind === "whole-repo") {
+    return uniqueSorted((await scanForSkills(workRoot, workRoot)).map((d) => d.dirName));
+  }
+  const skillsRoot = join(workRoot, sel.root);
+  if (!existsSync(skillsRoot)) return [];
+  const names: string[] = [];
+  for (const name of (await readdir(skillsRoot).catch(() => [] as string[])).sort()) {
+    if (existsSync(join(skillsRoot, name, "SKILL.md"))) names.push(name);
+  }
+  return names;
 }
 
 /** Find skill directories under `rootDir/<selectionRoot>` matching the selection. */
@@ -385,6 +424,8 @@ async function buildSnapshotFromWorkdir(cfg: GitSourceConfig, sha: string, workR
   if (skillDirs.length === 0) {
     warn(`${cfg.id}: no skills found under selection ${cfg.selection.kind}`);
   }
+  // Candidate set before the selection filter — drives the coverage report.
+  const availableSkillDirs = await findAvailableSkillDirs(workRoot, cfg);
 
   const entries: SnapshotEntry[] = [];
   for (const sd of skillDirs.sort((a, b) => a.rel.localeCompare(b.rel))) {
@@ -447,6 +488,7 @@ async function buildSnapshotFromWorkdir(cfg: GitSourceConfig, sha: string, workR
     licenseDetected: rootDetected,
     redistribution: sourceEffective,
     entries,
+    availableSkillDirs,
   };
 }
 
@@ -644,6 +686,7 @@ export async function resolveCatalog(manifest: Manifest, opts: ResolveOptions): 
         license: { declared: snap.licenseDeclared, detected: snap.licenseDetected },
         redistribution: snap.redistribution,
         notes: cfg.notes,
+        availableSkillDirs: snap.availableSkillDirs,
       });
       for (const entry of snap.entries) {
         lockSkills.push({

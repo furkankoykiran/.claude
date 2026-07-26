@@ -44,12 +44,7 @@ env:
   CATALOG_PATHS: >-
     skills-source.lock.json
     catalog/cache
-    SKILLS_CATALOG.md
-    claude_code_skills.md
-    skills-catalog.json
-    catalog-change-report.md
-    skills-catalog-diff.json
-    SHA256SUMS
+    catalog/generated
     docs/skills
 
 jobs:
@@ -58,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # Do not leave GITHUB_TOKEN in .git/config. checkout stores it as
           # http.https://github.com/.extraheader, and that header outranks the
@@ -112,20 +107,34 @@ jobs:
           # against an empty base (that is the invariant the CI catalog job
           # enforces), so every skill reads as newly added there and reusing it
           # would mark every PR manual-review-required and never auto-merge.
-          git show HEAD:skills-catalog.json > /tmp/base-catalog.json
+          git show HEAD:catalog/generated/skills-catalog.json > /tmp/base-catalog.json
           bun run catalog/src/cli.ts diff --base /tmp/base-catalog.json > /tmp/change-diff.json
           MANUAL=$(bun -e 'const d=JSON.parse(require("fs").readFileSync("/tmp/change-diff.json","utf8")); process.stdout.write(d.summary && d.summary.manualReviewRequired ? "true":"false")')
           COUNTS=$(bun -e 'const s=JSON.parse(require("fs").readFileSync("/tmp/change-diff.json","utf8")).summary; process.stdout.write("+"+s.added+" ~"+s.updated+" -"+s.removed+" >"+s.renamed)')
           echo "manual_review=$MANUAL" >> "$GITHUB_OUTPUT"
+          echo "counts=$COUNTS" >> "$GITHUB_OUTPUT"
+
+          # Body renders from /tmp/change-diff.json ONLY — the same diff the
+          # auto-merge gate reads — so a displayed count can never contradict
+          # the merge decision.
           {
             echo "## Skills Catalog update"
             echo ""
-            echo "Change vs \`main\`: \`$COUNTS\` — manual review required: \`$MANUAL\`"
+            bun run catalog/src/change-summary.ts /tmp/change-diff.json
+            echo ""
+            echo "<details><summary>Upstream revisions</summary>"
             echo ""
             echo '```'
-            if [ -f skills-catalog.json ]; then bun run catalog/src/summary.ts --oneline; fi
             git --no-pager diff --stat skills-source.lock.json | tail -20
             echo '```'
+            echo ""
+            echo "</details>"
+            echo ""
+            echo "<details><summary>Source coverage</summary>"
+            echo ""
+            bun run catalog:coverage
+            echo ""
+            echo "</details>"
           } > /tmp/pr-body.md
 
       # Dry run stops here: it has resolved, validated, classified, and
@@ -147,10 +156,63 @@ jobs:
           steps.detect.outputs.changed == 'true'
           && inputs.dry_run != true
           && vars.ENABLE_SKILLS_AUTOMATION == 'true'
-        uses: actions/create-github-app-token@v3 # first-party; mints an installation token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
           app-id: ${{ secrets.AUTOMATION_APP_ID }}
           private-key: ${{ secrets.AUTOMATION_APP_PRIVATE_KEY }}
+
+      # Non-destructive preflight for the writes the automation depends on.
+      # `gh label create` is idempotent (the label either gets created once or
+      # already exists), so this proves the token's label-write path without
+      # mutating anything a rerun would notice.
+      #
+      # Label endpoints do NOT necessarily need Issues: write. Run 30195036275
+      # created this repo's manual-review-required label using GITHUB_TOKEN
+      # whose permissions block was contents+pull-requests only, with no issues
+      # scope at all. So we probe rather than assume a permission is required.
+      - name: Preflight App token permissions
+        id: preflight
+        if: >-
+          steps.detect.outputs.changed == 'true'
+          && inputs.dry_run != true
+          && steps.app-token.outputs.token != ''
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+        run: |
+          set -euo pipefail
+
+          # Installation coverage: does this App installation include this repo?
+          if gh api /installation/repositories --jq '.repositories[].full_name' 2>/dev/null \
+              | grep -qx "$GITHUB_REPOSITORY"; then
+            COVERED=true
+          else
+            COVERED=false
+          fi
+
+          set +e
+          OUT=$(gh label create manual-review-required \
+                  --description "Supply-chain change needs human review before merge" \
+                  --color B60205 2>&1)
+          RC=$?
+          set -e
+          if [ "$RC" -eq 0 ]; then
+            LABELS=writable
+          elif printf '%s' "$OUT" | grep -qiE "already exists|name already"; then
+            LABELS=writable
+          else
+            LABELS=denied
+            echo "::warning::Label write denied for ${APP_SLUG}[bot]. Pull requests: write normally covers label endpoints; if it does not here, grant Issues: read & write. A manual-review change will fail loudly rather than merge."
+          fi
+          echo "labels=$LABELS" >> "$GITHUB_OUTPUT"
+          echo "installation_covers_repo=$COVERED" >> "$GITHUB_OUTPUT"
+          {
+            echo "### App token preflight"
+            echo ""
+            echo "- app: \`${APP_SLUG}[bot]\`"
+            echo "- installation covers \`$GITHUB_REPOSITORY\`: \`$COVERED\`"
+            echo "- label writes: \`$LABELS\`"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Report that automation is disabled
         if: >-
@@ -161,6 +223,7 @@ jobs:
           echo "::warning::Upstream changes detected but no App token was minted (ENABLE_SKILLS_AUTOMATION is not 'true'). No branch, PR, or merge was created. See docs/release-automation.md."
 
       - name: Commit + push the automation branch
+        id: push
         if: >-
           steps.detect.outputs.changed == 'true'
           && inputs.dry_run != true
@@ -198,6 +261,11 @@ jobs:
           git push "$remote" "HEAD:refs/heads/${BRANCH}" \
             --force-with-lease="refs/heads/${BRANCH}:${EXPECT}"
 
+          # The exact commit this run published. Every later step re-checks the
+          # PR head against it, so a concurrent run that force-pushed a
+          # different commit can never be merged under this run's verdict.
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Open or update the automation PR
         id: pr
         if: >-
@@ -220,6 +288,85 @@ jobs:
           echo "number=$PR" >> "$GITHUB_OUTPUT"
           echo "Automation PR: #$PR"
 
+      # ---------------------------------------------------------------------
+      # Merge-state reset. THE critical step.
+      #
+      # One branch and one PR are reused across runs, and a GitHub auto-merge
+      # request SURVIVES new pushes to the head branch. So a routine run that
+      # enabled auto-merge leaves a live merge request that a later
+      # security-sensitive run would inherit: its content lands unattended the
+      # moment checks go green, under the previous run's verdict.
+      #
+      # Every run therefore tears the state down before applying policy:
+      # cancel any auto-merge, PROVE it is gone, strip automation-owned labels,
+      # and confirm the PR head is exactly the commit this run pushed. Any
+      # failure here aborts before a merge can be enabled.
+      # ---------------------------------------------------------------------
+      - name: Reset PR merge state (fail-closed)
+        id: reset
+        if: >-
+          steps.detect.outputs.changed == 'true'
+          && inputs.dry_run != true
+          && steps.app-token.outputs.token != ''
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          PUSHED_SHA: ${{ steps.push.outputs.sha }}
+        run: |
+          set -euo pipefail
+
+          read_state() {
+            gh pr view "$PR_NUMBER" --json number,headRefName,headRefOid,autoMergeRequest,labels
+          }
+
+          BEFORE=$(read_state)
+          HEAD_REF=$(printf '%s' "$BEFORE" | jq -r '.headRefName')
+          HEAD_OID=$(printf '%s' "$BEFORE" | jq -r '.headRefOid')
+          AUTO=$(printf '%s' "$BEFORE" | jq -r '.autoMergeRequest.mergeMethod // "none"')
+          LABELS=$(printf '%s' "$BEFORE" | jq -r '[.labels[].name] | join(",")')
+          echo "PR #$PR_NUMBER head=$HEAD_REF@${HEAD_OID:0:10} auto-merge=$AUTO labels=[${LABELS}]"
+
+          # The PR must point at this repository's automation branch.
+          if [ "$HEAD_REF" != "$BRANCH" ]; then
+            echo "::error::PR #${PR_NUMBER} head is '$HEAD_REF', expected '$BRANCH'. Refusing to touch it."
+            exit 1
+          fi
+
+          # 1. Cancel any inherited auto-merge request.
+          if [ "$AUTO" != "none" ]; then
+            echo "Disabling inherited auto-merge ($AUTO) on PR #$PR_NUMBER."
+            if ! gh pr merge "$PR_NUMBER" --disable-auto; then
+              echo "::error::Could not disable the existing auto-merge request on PR #${PR_NUMBER}. A previous run's merge request is still live and would merge this run's content unattended. Disable it manually before re-running."
+              exit 1
+            fi
+          fi
+
+          # 2. PROVE it is gone. Never infer from the command's exit status.
+          AFTER_AUTO=$(read_state | jq -r '.autoMergeRequest.mergeMethod // "none"')
+          if [ "$AFTER_AUTO" != "none" ]; then
+            echo "::error::Auto-merge is STILL enabled ($AFTER_AUTO) on PR #${PR_NUMBER} after attempting to disable it. Failing closed."
+            exit 1
+          fi
+          echo "Verified: auto-merge disabled."
+
+          # 3. Strip automation-owned policy labels so this run's verdict is
+          #    applied from a clean slate rather than inheriting a stale one.
+          if printf '%s' "$LABELS" | tr ',' '\n' | grep -qx "manual-review-required"; then
+            if ! gh pr edit "$PR_NUMBER" --remove-label manual-review-required; then
+              echo "::error::Could not remove the stale manual-review-required label from PR #${PR_NUMBER}."
+              exit 1
+            fi
+            echo "Removed stale manual-review-required label."
+          fi
+
+          # 4. The PR must be showing exactly what this run pushed.
+          if [ "$HEAD_OID" != "$PUSHED_SHA" ]; then
+            echo "::error::PR #${PR_NUMBER} head is ${HEAD_OID} but this run pushed ${PUSHED_SHA}. Another run updated the branch concurrently; refusing to apply this run's merge policy to someone else's commit."
+            exit 1
+          fi
+          echo "Verified: PR head matches this run's commit ${PUSHED_SHA}."
+          echo "verified_sha=$PUSHED_SHA" >> "$GITHUB_OUTPUT"
+
       - name: Flag PR for manual review
         if: >-
           steps.detect.outputs.changed == 'true'
@@ -231,39 +378,59 @@ jobs:
           PR_NUMBER: ${{ steps.pr.outputs.number }}
         run: |
           set -euo pipefail
-          gh label create manual-review-required \
-            --description "Supply-chain change needs human review before merge" \
-            --color B60205 2>/dev/null || true
-          gh pr edit "$PR_NUMBER" --add-label manual-review-required
-          echo "::warning::PR #${PR_NUMBER} is manual-review-required; auto-merge is not enabled and a human must merge it."
+          # Auto-merge is already proven disabled by the reset step, so this
+          # cannot cause a merge. It still fails closed: an unlabelled
+          # manual-review PR is a silent safety regression.
+          if ! gh pr edit "$PR_NUMBER" --add-label manual-review-required; then
+            echo "::error::Could not label PR #${PR_NUMBER} manual-review-required. Auto-merge is disabled and the PR is open for review. Check the preflight output, then widen the App grant (Pull requests: write usually suffices; otherwise Issues: read & write) and re-run."
+            exit 1
+          fi
+          # Read it back: a silent no-op would be indistinguishable from success.
+          PRESENT=$(gh pr view "$PR_NUMBER" --json labels --jq '[.labels[].name] | index("manual-review-required") != null')
+          if [ "$PRESENT" != "true" ]; then
+            echo "::error::manual-review-required was not present on PR #${PR_NUMBER} after adding it. Failing closed."
+            exit 1
+          fi
+          echo "::warning::PR #${PR_NUMBER} is manual-review-required; auto-merge is disabled and a human must merge it."
 
-      - name: Clear manual-review label (routine change)
+      - name: Enable protected squash auto-merge (routine change)
         if: >-
           steps.detect.outputs.changed == 'true'
           && inputs.dry_run != true
           && steps.app-token.outputs.token != ''
           && steps.classify.outputs.manual_review != 'true'
+          && steps.reset.outputs.verified_sha != ''
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           PR_NUMBER: ${{ steps.pr.outputs.number }}
-        run: gh pr edit "$PR_NUMBER" --remove-label manual-review-required 2>/dev/null || true
-
-      - name: Enable squash auto-merge (routine change)
-        if: >-
-          steps.detect.outputs.changed == 'true'
-          && inputs.dry_run != true
-          && steps.app-token.outputs.token != ''
-          && steps.classify.outputs.manual_review != 'true'
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          VERIFIED_SHA: ${{ steps.reset.outputs.verified_sha }}
+          MANUAL_REVIEW: ${{ steps.classify.outputs.manual_review }}
         run: |
           set -euo pipefail
-          # Safe auto-merge only: GitHub merges the PR once the repository's
-          # required checks pass. No --admin, no ruleset bypass, and no
-          # direct-merge fallback — if auto-merge cannot be enabled this step
-          # fails loudly and the PR stays open.
-          gh pr merge "$PR_NUMBER" --squash --auto --delete-branch
+
+          # Belt and braces: the step condition already excludes manual review,
+          # but re-assert it here so a future condition edit cannot silently
+          # widen what auto-merges.
+          if [ "$MANUAL_REVIEW" != "false" ]; then
+            echo "::error::Refusing to enable auto-merge: classification is '${MANUAL_REVIEW}', expected 'false'."
+            exit 1
+          fi
+
+          # --match-head-commit binds the request to this exact commit, so if
+          # anything lands on the branch between now and the checks going
+          # green, GitHub refuses the merge instead of shipping unreviewed
+          # content. Safe auto-merge only: no --admin, no bypass, no fallback.
+          gh pr merge "$PR_NUMBER" --squash --auto --delete-branch \
+            --match-head-commit "$VERIFIED_SHA"
+
+          # Verify the request actually exists rather than trusting exit 0.
+          ENABLED=$(gh pr view "$PR_NUMBER" --json autoMergeRequest \
+            --jq '.autoMergeRequest.mergeMethod // "none"')
+          if [ "$ENABLED" != "SQUASH" ]; then
+            echo "::error::Auto-merge was not enabled on PR #${PR_NUMBER} (state: ${ENABLED}). The PR stays open."
+            exit 1
+          fi
+          echo "Protected squash auto-merge enabled for ${VERIFIED_SHA}."
 
       - name: Summary
         if: always()

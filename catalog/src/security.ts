@@ -103,19 +103,51 @@ export function buildSecurityProfile(
 }
 
 /**
- * Whether a change from old -> new security profile is an escalation (new
- * capability surface introduced). Used by the auto-merge gate: escalations of
- * certain kinds force manual review.
+ * Every capability tracked by the escalation gate, as (name, reader) pairs.
+ * Adding a boolean to SecurityProfile and forgetting to list it here is the
+ * failure mode this table exists to prevent — `security.test.ts` asserts that
+ * every boolean field of SecurityProfile appears below.
+ */
+export const ESCALATION_CAPABILITIES: ReadonlyArray<{
+  name: string;
+  read: (p: SecurityProfile) => boolean;
+}> = [
+  { name: "hooks", read: (p) => p.hasHooks },
+  { name: "mcp/lsp", read: (p) => p.hasMcpOrLsp },
+  { name: "agents", read: (p) => p.hasAgents },
+  { name: "dynamic-shell", read: (p) => p.hasDynamicShell },
+  { name: "credential-reference", read: (p) => p.hasCredentialRef },
+  { name: "executable/binary", read: (p) => p.hasExecutable },
+  { name: "bash/powershell", read: (p) => p.hasBashOrPowershell },
+  { name: "network-access", read: (p) => p.hasNetworkRef },
+  { name: "hidden-files", read: (p) => p.hasHiddenFiles },
+];
+
+/**
+ * Capabilities newly introduced going from `oldP` to `newP`, plus a
+ * tool-surface expansion. Returns stable, sorted, human-readable names.
+ *
+ * Only false -> true transitions count. A capability that was already present
+ * is NOT an escalation: re-flagging it on every content edit is what made the
+ * old gate fire on every update and drown real escalations in noise.
+ */
+export function capabilityEscalations(oldP: SecurityProfile, newP: SecurityProfile): string[] {
+  const out = ESCALATION_CAPABILITIES.filter((c) => !c.read(oldP) && c.read(newP)).map((c) => c.name);
+  if (newP.toolCount > oldP.toolCount) {
+    out.push(`tool-surface(${oldP.toolCount}->${newP.toolCount})`);
+  }
+  return out.sort();
+}
+
+/**
+ * Whether a change from old -> new security profile introduces new capability
+ * surface. Used by the auto-merge gate: escalations force manual review.
  */
 export function isCapabilityEscalation(oldP: SecurityProfile, newP: SecurityProfile): boolean {
-  const grew = (a: boolean, b: boolean) => !a && b;
-  return (
-    grew(oldP.hasHooks, newP.hasHooks) ||
-    grew(oldP.hasMcpOrLsp, newP.hasMcpOrLsp) ||
-    grew(oldP.hasAgents, newP.hasAgents) ||
-    grew(oldP.hasDynamicShell, newP.hasDynamicShell) ||
-    grew(oldP.hasCredentialRef, newP.hasCredentialRef) ||
-    newP.toolCount - oldP.toolCount > 0 ||
-    grew(oldP.hasExecutable, newP.hasExecutable)
-  );
+  return capabilityEscalations(oldP, newP).length > 0;
+}
+
+/** Capabilities present on a profile at all (used to gate newly added skills). */
+export function presentCapabilities(p: SecurityProfile): string[] {
+  return ESCALATION_CAPABILITIES.filter((c) => c.read(p)).map((c) => c.name).sort();
 }

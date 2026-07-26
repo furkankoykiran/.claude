@@ -96,6 +96,20 @@ async function doCheck(): Promise<void> {
   info(`check: OK (${result.skillsChecked} skills, ${result.sourcesChecked} sources, deterministic=${result.deterministic})`);
 }
 
+async function doCoverage(): Promise<void> {
+  const { buildCoverageReport, renderCoverageMarkdown } = await import("./coverage.ts");
+  const manifest = await loadManifest(MANIFEST_PATH);
+  const lock = await loadLock();
+  if (!lock) throw new Error("no skills-source.lock.json; run `bun run catalog:resolve` first");
+  const report = buildCoverageReport(manifest, lock);
+  if (has("--json")) {
+    process.stdout.write(JSON.stringify(report, null, 2) + "\n");
+  } else {
+    process.stdout.write(renderCoverageMarkdown(report) + "\n");
+  }
+  if (report.problems.length > 0) process.exitCode = 1;
+}
+
 async function doDiff(): Promise<void> {
   const manifest = await loadManifest(MANIFEST_PATH);
   const lock = await loadLock();
@@ -120,9 +134,11 @@ async function main(): Promise<void> {
         return await doCheck();
       case "diff":
         return await doDiff();
+      case "coverage":
+        return await doCoverage();
       default:
         process.stderr.write(
-          `usage: bun run catalog/src/cli.ts <resolve [--update] | generate [--base F] | check | diff [--base F]>\n`,
+          `usage: bun run catalog/src/cli.ts <resolve [--update] | generate [--base F] | check | diff [--base F] | coverage [--json]>\n`,
         );
         process.exit(cmd ? 1 : 0);
     }
