@@ -15,6 +15,9 @@ on:
 
 permissions:
   contents: write
+  # Read-only: the SemVer step looks up release:* override labels on the merged
+  # PR. Without this the lookup is silently denied and overrides never apply.
+  pull-requests: read
 
 concurrency:
   group: release-${{ github.sha }}
