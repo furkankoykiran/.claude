@@ -1,0 +1,128 @@
+name: App Permission Preflight
+
+# Proves — rather than assumes — that the automation's GitHub App token can
+# actually assign and remove a label on a pull request.
+#
+# Label endpoints are issue endpoints, which is usually read as "the App needs
+# Issues: write". That is not necessarily true here: run 30195036275 created
+# this repository's manual-review-required label using GITHUB_TOKEN whose
+# permissions block was contents + pull-requests only, with no issues scope.
+# Rather than granting a broader permission on a guess, this exercises the real
+# path with the real token.
+#
+# Non-mutating by design: it creates an automation-owned temporary label, adds
+# it to a PR you nominate, reads it back, removes it, verifies removal, and
+# deletes the label again. It touches no catalog content and merges nothing.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "Pull request number to exercise the label path against."
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: app-permission-preflight
+  cancel-in-progress: false
+
+env:
+  TEMP_LABEL: automation-preflight
+
+jobs:
+  preflight:
+    name: Prove App label permissions
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Automation token (GitHub App)
+        id: app-token
+        if: ${{ vars.ENABLE_SKILLS_AUTOMATION == 'true' }}
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          app-id: ${{ secrets.AUTOMATION_APP_ID }}
+          private-key: ${{ secrets.AUTOMATION_APP_PRIVATE_KEY }}
+
+      - name: Report that automation is disabled
+        if: ${{ steps.app-token.outputs.token == '' }}
+        run: |
+          echo "::error::No App token minted (ENABLE_SKILLS_AUTOMATION is not 'true'). Nothing was tested."
+          exit 1
+
+      - name: Exercise the label path
+        if: ${{ steps.app-token.outputs.token != '' }}
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+        run: |
+          set -euo pipefail
+          FAIL=0
+          note() { echo "$1" | tee -a "$GITHUB_STEP_SUMMARY"; }
+
+          note "### App label permission preflight"
+          note ""
+          note "- app: \`${APP_SLUG}[bot]\`"
+          note "- target: PR #${PR_NUMBER}"
+
+          # Installation coverage.
+          if gh api /installation/repositories --jq '.repositories[].full_name' 2>/dev/null \
+              | grep -qx "$GITHUB_REPOSITORY"; then
+            note "- installation covers \`$GITHUB_REPOSITORY\`: \`yes\`"
+          else
+            note "- installation covers \`$GITHUB_REPOSITORY\`: \`NO\`"
+            FAIL=1
+          fi
+
+          # 1. Create the temporary label (idempotent).
+          if gh label create "$TEMP_LABEL" --description "Temporary; created by the App permission preflight" --color ededed 2>/dev/null; then
+            note "- create label: \`ok\`"
+          elif gh label list --search "$TEMP_LABEL" --json name --jq '.[].name' | grep -qx "$TEMP_LABEL"; then
+            note "- create label: \`already existed\`"
+          else
+            note "- create label: \`DENIED\`"
+            FAIL=1
+          fi
+
+          # 2. Assign it to the nominated PR — the operation actually in question.
+          if gh pr edit "$PR_NUMBER" --add-label "$TEMP_LABEL" >/dev/null 2>&1; then
+            note "- assign label to PR: \`ok\`"
+          else
+            note "- assign label to PR: \`DENIED\`"
+            FAIL=1
+          fi
+
+          # 3. Read it back. A silent no-op must not read as success.
+          if [ "$(gh pr view "$PR_NUMBER" --json labels --jq "[.labels[].name] | index(\"$TEMP_LABEL\") != null")" = "true" ]; then
+            note "- verify assignment: \`present\`"
+          else
+            note "- verify assignment: \`NOT PRESENT\`"
+            FAIL=1
+          fi
+
+          # 4. Clean up: remove from the PR and delete the label.
+          gh pr edit "$PR_NUMBER" --remove-label "$TEMP_LABEL" >/dev/null 2>&1 \
+            && note "- remove label from PR: \`ok\`" \
+            || { note "- remove label from PR: \`FAILED\`"; FAIL=1; }
+
+          if [ "$(gh pr view "$PR_NUMBER" --json labels --jq "[.labels[].name] | index(\"$TEMP_LABEL\") != null")" = "false" ]; then
+            note "- verify cleanup: \`removed\`"
+          else
+            note "- verify cleanup: \`STILL PRESENT\`"
+            FAIL=1
+          fi
+
+          gh label delete "$TEMP_LABEL" --yes >/dev/null 2>&1 \
+            && note "- delete temporary label: \`ok\`" \
+            || note "- delete temporary label: \`left in place (harmless)\`"
+
+          note ""
+          if [ "$FAIL" -eq 0 ]; then
+            note "**Result: the App's existing grant is sufficient. No permission expansion required.**"
+          else
+            note "**Result: FAILED — see the denied step above. Widen the App grant minimally (Pull requests: write usually covers labels; otherwise Issues: read & write) and re-run.**"
+            exit 1
+          fi
