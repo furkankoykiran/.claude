@@ -10,6 +10,40 @@ bootstrap rather than a published package.
 
 ### Fixed
 
+- **The Skills Catalog update workflow could not finish a run.** Its
+  no-change and dry-run guards used `exit 0`, which ends only the *step*, so
+  every later step still ran: a scheduled run with nothing to update went on to
+  `git commit` an empty tree and failed, and `dry_run=true` would still have
+  pushed, opened a PR, minted an App token, and merged. Both guards are now a
+  single `changed=true|false` step output that every mutating step is gated on.
+- **The update workflow's auto-merge had an unsafe fallback.** When
+  `gh pr merge --auto` failed it fell through to a direct `gh pr merge --squash`,
+  merging without waiting for checks. Removed; auto-merge is now `--auto` only,
+  never `--admin`, with no fallback.
+- **The second and later update runs would have failed to push.**
+  `--force-with-lease` with no remote-tracking ref is rejected as `stale info`
+  once `automation/skills-catalog` exists on the remote. The branch is now
+  fetched first and the expected value passed explicitly.
+- **Automated commits were attributed to a generic actor.** They now carry the
+  App's real `<app-slug>[bot]` name and no-reply email, resolved from the token
+  step at run time.
+- **`release:*` label overrides never applied.** The release workflow declared
+  only `contents: write`, so its best-effort PR-label lookup was silently denied.
+  It now also requests `pull-requests: read`.
+- **Every automation PR was classified `manual-review-required`, so auto-merge
+  could never fire.** The update workflow read the committed
+  `skills-catalog-diff.json`, which `catalog:generate` writes against an *empty*
+  base — the invariant CI enforces on `main`. All 141 skills therefore read as
+  newly added with 14 security-sensitive entries on every run. Classification
+  now uses `catalog diff --base HEAD:skills-catalog.json`, i.e. what this run
+  actually changed relative to `main`. No committed artifact changes.
+- **The release workflow would have failed on every push to `main` once a tag
+  existed.** Its staleness guard regenerated the catalog against the previous
+  *tag* and then compared the result to the committed files, which are generated
+  against an empty base — so the two diff-derived artifacts could never match.
+  The reproducibility guard now uses the same plain regeneration CI asserts, and
+  the release-relative diff is rebuilt in a separate step for the SemVer bump and
+  release notes.
 - **Pinning a model broke the `nvidia` provider entirely.** `/model opus`,
   `--model`, or a resumed session that recorded its model makes Claude Code send
   the literal Anthropic id, and `ANTHROPIC_DEFAULT_*_MODEL` does not rewrite
