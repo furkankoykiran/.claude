@@ -59,6 +59,12 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Do not leave GITHUB_TOKEN in .git/config. checkout stores it as
+          # http.https://github.com/.extraheader, and that header outranks the
+          # credentials embedded in a push URL — so the App token would be
+          # ignored and the push rejected as github-actions[bot].
+          persist-credentials: false
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
