@@ -10,7 +10,7 @@
  * fail — that is the point.
  */
 import { describe, it, expect } from "bun:test";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { parse } from "yaml";
 
@@ -294,7 +294,16 @@ describe("release workflow: race and completeness invariants", () => {
 });
 
 describe("supply chain: actions are pinned to immutable SHAs", () => {
-  const files = ["ci.yml", "skills-catalog-update.yml", "skills-catalog-release.yml"];
+  // Enumerate the directory rather than hardcoding a list: a workflow added
+  // later must be covered automatically, or the guarantee quietly stops
+  // applying to the newest file.
+  const wfDir = join(import.meta.dir, "..", "..", ".github", "workflows");
+  const files = readdirSync(wfDir).filter((f) => f.endsWith(".yml")).sort();
+
+  it("covers every workflow file in .github/workflows", () => {
+    expect(files.length).toBeGreaterThanOrEqual(4);
+  });
+
   for (const f of files) {
     it(`${f} pins every third-party action to a 40-char commit SHA`, () => {
       const raw = readFileSync(join(import.meta.dir, "..", "..", ".github", "workflows", f), "utf8");
