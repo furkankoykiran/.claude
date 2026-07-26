@@ -1,0 +1,32 @@
+# Normalize to LF in the repository; check out platform-native where it matters.
+* text=auto eol=lf
+
+# Shell scripts and hooks must keep LF even on Windows checkouts, or bash
+# refuses them with "bad interpreter: /bin/bash^M".
+*.sh        text eol=lf
+*.bash      text eol=lf
+bin/cc-provider text eol=lf
+hooks/*     text eol=lf
+
+# PowerShell is happiest with CRLF on Windows.
+*.ps1       text eol=crlf
+*.psd1      text eol=crlf
+*.psm1      text eol=crlf
+
+# Generated catalog artifacts: keep them out of diffs and language stats. They
+# are reproducible from skills-sources.toml + the lock + catalog/cache.
+catalog/generated/**   linguist-generated=true -diff
+docs/skills/**         linguist-generated=true -diff
+claude_code_skills.md  linguist-generated=true -diff
+
+# Vendored upstream skill packs are not this project's own code.
+skills/gstack/**       linguist-vendored=true
+
+# Binary-ish assets should never be line-ending mangled.
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.gz  binary
+*.zip binary

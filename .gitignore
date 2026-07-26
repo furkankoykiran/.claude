@@ -91,3 +91,62 @@ graphify-out/
 # Local-only state we never want committed
 .last-cleanup
 .contextify/
+
+# ---------------------------------------------------------------------------
+# Build / test / release transients
+# ---------------------------------------------------------------------------
+# Release assembly staging (assets are built here under their public names).
+/release-staging/
+release-assets/
+
+# Coverage and test output
+coverage/
+.nyc_output/
+*.lcov
+test-results/
+
+# TypeScript / bundler caches
+*.tsbuildinfo
+.cache/
+dist/
+build/
+
+# ---------------------------------------------------------------------------
+# Local Claude Code overrides (never committed; the tracked files are the
+# shared defaults, these are each machine's private layer)
+# ---------------------------------------------------------------------------
+CLAUDE.local.md
+settings.local.json
+.claude.local/
+
+# ---------------------------------------------------------------------------
+# Secrets and environment. Committed *.example templates stay tracked.
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+!**/*.pub
+
+# ---------------------------------------------------------------------------
+# OS and editor state
+# ---------------------------------------------------------------------------
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+!.vscode/extensions.json
+
+# ---------------------------------------------------------------------------
+# Logs
+# ---------------------------------------------------------------------------
+*.log
+logs/
+npm-debug.log*
+bun-debug.log*
