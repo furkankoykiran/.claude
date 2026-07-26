@@ -152,6 +152,13 @@ export interface LockedSource {
   license: { declared: LicenseId; detected: LicenseId };
   redistribution: "full" | "metadata-only";
   notes?: string;
+  /**
+   * Every skill directory that exists upstream under the selection root,
+   * selected or not. Populated by `catalog:resolve`; absent in locks written
+   * before this field existed, in which case the coverage report says so
+   * rather than guessing.
+   */
+  availableSkillDirs?: string[];
 }
 
 /** Per-skill lock entry (digests + metadata for reproducibility). */

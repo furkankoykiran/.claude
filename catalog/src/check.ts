@@ -18,7 +18,8 @@ import { CatalogError } from "./types.ts";
 import type { ResolvedCatalog } from "./resolver.ts";
 import { checkParityFiles } from "./parity.ts";
 import { stageOutputs } from "./generate.ts";
-import { info, dim } from "./log.ts";
+import { buildCoverageReport } from "./coverage.ts";
+import { info, dim, warn } from "./log.ts";
 
 export interface CheckOptions {
   repoRoot: string;
@@ -93,6 +94,18 @@ export async function runCheck(
     throw new CatalogError(`${consistencyErrors} lock/snapshot consistency error(s); run "bun run catalog:resolve"`, "skills-source.lock.json");
   }
   dim(`consistency: OK (${lock.sources.length} sources, ${lock.skills.length} skill digests verified)`);
+
+  // 2b. Coverage contract: a selected skill must never silently disappear, and
+  // no two sources may claim the same canonical invocation.
+  const coverage = buildCoverageReport(manifest, lock);
+  for (const o of coverage.observations) warn(`coverage: ${o}`);
+  if (coverage.problems.length > 0) {
+    throw new CatalogError(`coverage contract violated:\n  - ${coverage.problems.join("\n  - ")}`, "skills-sources.toml");
+  }
+  dim(
+    `coverage: OK (${coverage.totals.sources} sources, ${coverage.totals.catalogedSkills} skills, ` +
+      `${coverage.totals.curatedOut} upstream skill(s) not selected)`,
+  );
 
   // 3. Policy scan.
   const policyFindings: string[] = [];
