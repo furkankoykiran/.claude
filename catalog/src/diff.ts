@@ -7,7 +7,12 @@
  * matches an added invocation is a rename, not an add+remove.
  */
 import type { Catalog, CatalogSkillEntry, SecurityProfile } from "./types.ts";
-import { capabilityEscalations, presentCapabilities, buildSecurityProfile } from "./security.ts";
+import {
+  capabilityEscalations,
+  presentCapabilities,
+  buildSecurityProfile,
+  ESCALATION_CAPABILITIES,
+} from "./security.ts";
 
 export type ChangeKind = "added" | "updated" | "removed" | "renamed";
 
@@ -72,8 +77,85 @@ export function previousSecurityProfile(prev: CatalogSkillEntry): SecurityProfil
 }
 
 /** Normalize a repo URL so trivial formatting differences are not "identity changes". */
-function normalizeRepo(r: string | undefined): string {
-  return (r ?? "").trim().replace(/\.git$/, "").replace(/\/+$/, "").toLowerCase();
+export function normalizeRepo(r: string | undefined): string {
+  return (r ?? "")
+    .trim()
+    .replace(/^git\+/, "")
+    .replace(/^ssh:\/\/git@/, "https://")
+    .replace(/^git@([^:]+):/, "https://$1/")
+    .replace(/\.git$/, "")
+    .replace(/\/+$/, "")
+    .toLowerCase();
+}
+
+const normList = (v: string[] | undefined): string => [...(v ?? [])].map((s) => s.trim()).sort().join(",");
+
+/**
+ * The policy-relevant projection of a catalog entry.
+ *
+ * A skill is NOT unchanged merely because its content digest is unchanged: the
+ * same bytes can be re-pointed at a different repository, relocated, downgraded
+ * to metadata-only, or have its detected license change underneath it. Every
+ * field here is compared independently of the digest.
+ *
+ * `resolvedRevision` is deliberately absent. Advancing a pinned SHA while
+ * content and every policy field stay identical is a bookkeeping change, not a
+ * supply-chain event, and gating on it would make every upstream bump require
+ * review.
+ */
+export interface PolicyView {
+  repo: string;
+  sourceId: string;
+  sourceType: string;
+  relativePath: string;
+  redistribution: string;
+  licenseDeclared: string;
+  licenseDetected: string;
+  licenseMatchesDeclaration: boolean;
+  allowedTools: string;
+  disallowedTools: string;
+  security: SecurityProfile;
+}
+
+export function policyView(e: CatalogSkillEntry): PolicyView {
+  return {
+    repo: normalizeRepo(e.repo),
+    sourceId: e.sourceId ?? "",
+    sourceType: e.sourceType ?? "",
+    relativePath: (e.relativePath ?? "").trim(),
+    redistribution: e.redistribution ?? "",
+    licenseDeclared: e.license?.declared ?? "",
+    licenseDetected: e.license?.detected ?? "",
+    licenseMatchesDeclaration: e.license?.matchesDeclaration ?? false,
+    allowedTools: normList(e.allowedTools),
+    disallowedTools: normList(e.disallowedTools),
+    security: e.security,
+  };
+}
+
+/**
+ * Policy fields that differ between two entries, excluding the security
+ * profile (which has its own capability-aware comparison). Sorted and stable.
+ */
+export function changedPolicyFields(prev: CatalogSkillEntry, cur: CatalogSkillEntry): string[] {
+  const a = policyView(prev);
+  const b = policyView(cur);
+  const out: string[] = [];
+  for (const k of Object.keys(a) as Array<keyof PolicyView>) {
+    if (k === "security") continue;
+    if (a[k] !== b[k]) out.push(k);
+  }
+  return out.sort();
+}
+
+/** True when any security-profile field differs at all (not only escalations). */
+export function securityProfileChanged(prev: CatalogSkillEntry, cur: CatalogSkillEntry): boolean {
+  const a = previousSecurityProfile(prev);
+  const b = cur.security;
+  if (!a || !b) return false;
+  return (
+    ESCALATION_CAPABILITIES.some((c) => c.read(a) !== c.read(b)) || a.toolCount !== b.toolCount
+  );
 }
 
 function indexBy(catalog: Catalog | null): Map<string, CatalogSkillEntry> {
@@ -116,18 +198,38 @@ function reviewReasonsFor(
   const reasons = capabilityEscalations(previousSecurityProfile(prev), cur.security).map(
     (c) => `capability-introduced:${c}`,
   );
+
+  // One authoritative policy comparison drives the diff JSON, the markdown
+  // report, the PR summary, the release bump, and the merge decision.
+  const changed = new Set(changedPolicyFields(prev, cur));
+
   if (prev.redistribution === "full" && cur.redistribution === "metadata-only") {
     reasons.push("redistribution-downgraded");
+  } else if (changed.has("redistribution")) {
+    reasons.push(`redistribution-changed:${prev.redistribution}->${cur.redistribution}`);
   }
-  const prevDetected = prev.license?.detected;
-  const curDetected = cur.license?.detected;
-  if (prevDetected !== undefined && curDetected !== undefined && prevDetected !== curDetected) {
-    reasons.push(`license-changed:${prevDetected}->${curDetected}`);
+  if (changed.has("licenseDetected")) {
+    reasons.push(`license-changed:${prev.license?.detected}->${cur.license?.detected}`);
   }
-  if (normalizeRepo(prev.repo) !== normalizeRepo(cur.repo)) {
-    reasons.push("source-identity-changed");
+  if (changed.has("licenseDeclared")) {
+    reasons.push(`license-declaration-changed:${prev.license?.declared}->${cur.license?.declared}`);
   }
-  return reasons.sort();
+  if (changed.has("licenseMatchesDeclaration")) {
+    reasons.push("license-declaration-match-changed");
+  }
+  if (changed.has("repo")) reasons.push("source-identity-changed");
+  // Ownership/location moves: same bytes, different provenance.
+  for (const f of ["sourceId", "sourceType", "relativePath"] as const) {
+    if (changed.has(f)) reasons.push(`policy-changed:${f}`);
+  }
+  // Tool surface can shrink (routine) or change composition (reviewable) with
+  // an unchanged count, which the capability check alone would miss.
+  for (const f of ["allowedTools", "disallowedTools"] as const) {
+    if (changed.has(f) && !reasons.some((r) => r.startsWith("tool-surface"))) {
+      reasons.push(`policy-changed:${f}`);
+    }
+  }
+  return [...new Set(reasons)].sort();
 }
 
 export function diffCatalogs(current: Catalog, base: Catalog | null, baseName: string | null): DiffReport {
@@ -146,13 +248,23 @@ export function diffCatalogs(current: Catalog, base: Catalog | null, baseName: s
       // Could be a rename (digest exists in a removed entry).
       continue; // handled below
     }
-    if (prev.digest !== cur.digest) {
+    // An entry is "updated" when its CONTENT changed OR any policy-relevant
+    // field changed. Digest equality alone is not evidence of no change: the
+    // same bytes can be re-pointed at a different repository, relocated,
+    // downgraded to metadata-only, or have their licence change underneath.
+    const contentChanged = prev.digest !== cur.digest;
+    const policyFields = changedPolicyFields(prev, cur);
+    const securityChanged = securityProfileChanged(prev, cur);
+    if (contentChanged || policyFields.length > 0 || securityChanged) {
       const reasons = reviewReasonsFor(cur, prev, "updated");
+      const detail = contentChanged
+        ? `digest ${prev.digest.slice(0, 10)} -> ${cur.digest.slice(0, 10)}`
+        : `metadata-only change (digest unchanged): ${[...policyFields, ...(securityChanged ? ["security"] : [])].join(", ")}`;
       changes.push({
         key: cur.canonicalInvocation,
         kind: "updated",
         sourceId: cur.sourceId,
-        detail: `digest ${prev.digest.slice(0, 10)} -> ${cur.digest.slice(0, 10)}`,
+        detail,
         securitySensitive: reasons.some((r) => r.startsWith("capability-introduced:")),
         manualReviewRequired: reasons.length > 0,
         reasons,
