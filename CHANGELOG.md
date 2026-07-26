@@ -30,6 +30,20 @@ bootstrap rather than a published package.
 - **`release:*` label overrides never applied.** The release workflow declared
   only `contents: write`, so its best-effort PR-label lookup was silently denied.
   It now also requests `pull-requests: read`.
+- **Every automation PR was classified `manual-review-required`, so auto-merge
+  could never fire.** The update workflow read the committed
+  `skills-catalog-diff.json`, which `catalog:generate` writes against an *empty*
+  base — the invariant CI enforces on `main`. All 141 skills therefore read as
+  newly added with 14 security-sensitive entries on every run. Classification
+  now uses `catalog diff --base HEAD:skills-catalog.json`, i.e. what this run
+  actually changed relative to `main`. No committed artifact changes.
+- **The release workflow would have failed on every push to `main` once a tag
+  existed.** Its staleness guard regenerated the catalog against the previous
+  *tag* and then compared the result to the committed files, which are generated
+  against an empty base — so the two diff-derived artifacts could never match.
+  The reproducibility guard now uses the same plain regeneration CI asserts, and
+  the release-relative diff is rebuilt in a separate step for the SemVer bump and
+  release notes.
 - **Pinning a model broke the `nvidia` provider entirely.** `/model opus`,
   `--model`, or a resumed session that recorded its model makes Claude Code send
   the literal Anthropic id, and `ANTHROPIC_DEFAULT_*_MODEL` does not rewrite
