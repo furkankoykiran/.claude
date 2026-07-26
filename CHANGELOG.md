@@ -10,6 +10,26 @@ bootstrap rather than a published package.
 
 ### Fixed
 
+- **The Skills Catalog update workflow could not finish a run.** Its
+  no-change and dry-run guards used `exit 0`, which ends only the *step*, so
+  every later step still ran: a scheduled run with nothing to update went on to
+  `git commit` an empty tree and failed, and `dry_run=true` would still have
+  pushed, opened a PR, minted an App token, and merged. Both guards are now a
+  single `changed=true|false` step output that every mutating step is gated on.
+- **The update workflow's auto-merge had an unsafe fallback.** When
+  `gh pr merge --auto` failed it fell through to a direct `gh pr merge --squash`,
+  merging without waiting for checks. Removed; auto-merge is now `--auto` only,
+  never `--admin`, with no fallback.
+- **The second and later update runs would have failed to push.**
+  `--force-with-lease` with no remote-tracking ref is rejected as `stale info`
+  once `automation/skills-catalog` exists on the remote. The branch is now
+  fetched first and the expected value passed explicitly.
+- **Automated commits were attributed to a generic actor.** They now carry the
+  App's real `<app-slug>[bot]` name and no-reply email, resolved from the token
+  step at run time.
+- **`release:*` label overrides never applied.** The release workflow declared
+  only `contents: write`, so its best-effort PR-label lookup was silently denied.
+  It now also requests `pull-requests: read`.
 - **Pinning a model broke the `nvidia` provider entirely.** `/model opus`,
   `--model`, or a resumed session that recorded its model makes Claude Code send
   the literal Anthropic id, and `ANTHROPIC_DEFAULT_*_MODEL` does not rewrite

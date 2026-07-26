@@ -19,20 +19,33 @@ implementation reference for the three workflows under
    SHAs into isolated worktrees.
 2. `catalog:generate` regenerates the catalog, lock, cache, and diff.
 3. Full validation runs (typecheck, tests, `catalog:check`).
-4. If nothing changed → exit 0 (no PR, no branch, no comment, no release).
+4. A single change-detection step records `changed=true|false`; every mutating
+   step is gated on it, so a run with nothing to ship ends as a successful
+   no-op (no branch, no PR, no token, no release).
 5. Otherwise commit to the dedicated bot branch
    `automation/skills-catalog` (rebuilt from `main` each run; `--force-with-lease`
    is safe on that branch) and open or update **one** PR titled
    `chore(skills): update upstream catalog`.
 
+`workflow_dispatch` with `dry_run=true` stops after step 4: it resolves,
+validates, classifies, and reports, and never reaches a step that mints an App
+token, commits, pushes, opens a PR, or merges.
+
 ## Auto-merge policy
 
 - **Routine** policy-compliant changes: squash auto-merge after required checks
-  pass.
+  pass (`gh pr merge --squash --auto`). Never `--admin`, never a ruleset bypass,
+  and no direct-merge fallback — if auto-merge cannot be enabled the step fails
+  and the PR stays open.
 - **`manual-review-required`** changes (new source, source-URL change, license
   downgrade, executable/binary/secret/hook/MCP introduction, significant
   permission expansion): the PR is labeled `manual-review-required` and left
   open; **never** auto-merged.
+
+Auto-merge only *waits* for checks that `main` actually requires. With no
+required status checks configured, GitHub reports the PR as immediately
+mergeable and `--auto` merges it straight away. Configure required checks (see
+below) if the CI gate is meant to be binding.
 
 ## Authentication — one-time setup (requires the repository owner)
 
@@ -49,12 +62,22 @@ Configure (repo Settings → Secrets and variables → Actions):
 | `AUTOMATION_APP_ID` | repository **secret** | the GitHub App ID |
 | `AUTOMATION_APP_PRIVATE_KEY` | repository **secret** | the App's private key |
 
-The App needs **Contents: read/write** and **Pull requests: read/write** on this
-repo (fine-grained, scoped to `furkankoykiran/.claude`).
+The App needs **Contents: read/write**, **Pull requests: read/write**, and
+**Issues: read/write** (label writes go through the issues API) on this repo
+(fine-grained, scoped to `furkankoykiran/.claude`).
 
-**Without** these, the update workflow still opens a PR using `GITHUB_TOKEN`,
-but will **not** auto-merge, and merging that PR will **not** trigger a release.
-Auto-merge has therefore not been verified until this is configured.
+Also enable, in repo Settings → General → Pull Requests:
+
+- **Allow squash merging**
+- **Allow auto-merge** — required for `gh pr merge --auto`; without it the
+  auto-merge step fails.
+
+**Without** the App credentials the update workflow still resolves, validates,
+and reports, but makes **no** changes: it does not commit, push, open a PR, or
+merge, and it logs a warning instead. `GITHUB_TOKEN` is deliberately not a
+fallback — Actions is not permitted to create pull requests in this repo, and
+pushes or merges made with `GITHUB_TOKEN` do not trigger the required checks or
+the release workflow.
 
 ### Recommended branch protection (owner action)
 
@@ -132,3 +155,6 @@ re-fetches tags immediately before writing and refuses collisions.
 | `generation is not deterministic` | a new nondeterministic input reached the generator; check for timestamps / unordered maps |
 | release workflow did not fire after merging the update PR | App credentials not configured; merges via `GITHUB_TOKEN` don't trigger workflows |
 | auto-merge did not fire | `ENABLE_SKILLS_AUTOMATION`/App not configured, or the change was `manual-review-required` |
+| `Auto-merge is not allowed for this repository` | enable **Allow auto-merge** in repo settings |
+| the PR merged before CI finished | `main` has no required status checks, so GitHub considered the PR immediately mergeable |
+| upstream changed but nothing was pushed | `ENABLE_SKILLS_AUTOMATION` is not `true`; the run logs a warning and exits successfully |
