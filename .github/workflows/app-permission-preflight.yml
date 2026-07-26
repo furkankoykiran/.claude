@@ -104,9 +104,12 @@ jobs:
           fi
 
           # 4. Clean up: remove from the PR and delete the label.
-          gh pr edit "$PR_NUMBER" --remove-label "$TEMP_LABEL" >/dev/null 2>&1 \
-            && note "- remove label from PR: \`ok\`" \
-            || { note "- remove label from PR: \`FAILED\`"; FAIL=1; }
+          if gh pr edit "$PR_NUMBER" --remove-label "$TEMP_LABEL" >/dev/null 2>&1; then
+            note "- remove label from PR: \`ok\`"
+          else
+            note "- remove label from PR: \`FAILED\`"
+            FAIL=1
+          fi
 
           if [ "$(gh pr view "$PR_NUMBER" --json labels --jq "[.labels[].name] | index(\"$TEMP_LABEL\") != null")" = "false" ]; then
             note "- verify cleanup: \`removed\`"
@@ -115,9 +118,11 @@ jobs:
             FAIL=1
           fi
 
-          gh label delete "$TEMP_LABEL" --yes >/dev/null 2>&1 \
-            && note "- delete temporary label: \`ok\`" \
-            || note "- delete temporary label: \`left in place (harmless)\`"
+          if gh label delete "$TEMP_LABEL" --yes >/dev/null 2>&1; then
+            note "- delete temporary label: \`ok\`"
+          else
+            note "- delete temporary label: \`left in place (harmless)\`"
+          fi
 
           note ""
           if [ "$FAIL" -eq 0 ]; then
