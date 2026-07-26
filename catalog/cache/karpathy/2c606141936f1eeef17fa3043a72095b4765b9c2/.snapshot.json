@@ -1,0 +1,45 @@
+{
+  "sourceId": "karpathy",
+  "sha": "2c606141936f1eeef17fa3043a72095b4765b9c2",
+  "repo": "https://github.com/multica-ai/andrej-karpathy-skills.git",
+  "ref": "origin/HEAD",
+  "licenseDeclared": "unknown",
+  "licenseDetected": "unknown",
+  "redistribution": "metadata-only",
+  "entries": [
+    {
+      "relPath": "skills/karpathy-guidelines/SKILL.md",
+      "dirName": "karpathy-guidelines",
+      "canonicalInvocation": "/karpathy-guidelines",
+      "namespacedInvocations": [
+        "/karpathy-guidelines"
+      ],
+      "digest": "33deac5b92dbc4f8671aac32fe71fada55d85ab826661627aa6313683a8f5017",
+      "redistribution": "metadata-only",
+      "licenseDeclared": "unknown",
+      "licenseDetected": "unknown",
+      "frontmatter": {
+        "name": "karpathy-guidelines",
+        "description": "Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria.",
+        "license": "MIT"
+      },
+      "rawFrontmatter": "name: karpathy-guidelines\ndescription: Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria.\nlicense: MIT",
+      "body": null,
+      "description": "Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria.",
+      "security": {
+        "hasBashOrPowershell": false,
+        "hasDynamicShell": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasAgents": false,
+        "hasCredentialRef": false,
+        "hasHiddenFiles": false,
+        "hasExecutable": false,
+        "hasNetworkRef": false,
+        "toolCount": 0,
+        "flags": []
+      },
+      "warnings": []
+    }
+  ]
+}

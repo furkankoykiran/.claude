@@ -88,3 +88,58 @@ jobs:
           export PATH="$HOME/.bun/bin:$PATH"
           cd "$GITHUB_WORKSPACE/skills/gstack"
           bun --eval 'import { chromium } from "playwright"; const b = await chromium.launch(); await b.close(); console.log("CHROMIUM_OK");'
+
+  catalog:
+    name: Skills catalog (generate + check)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      # Third-party action pinned to a full commit SHA (oven-sh/setup-bun v2.2.0).
+      # The SHA MUST match the v2.2.0 tag's commit; CI validates pin integrity.
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.3.8
+      - name: Install dependencies (frozen lockfile)
+        run: bun install --frozen-lockfile
+      - name: Typecheck
+        run: bun run typecheck
+      - name: Tests
+        run: bun test catalog
+      - name: Catalog check (parity + consistency + policy + determinism)
+        run: bun run catalog:check
+      # Regenerate offline from the committed lock + cache; the committed
+      # generated files must already be current (main-branch invariant).
+      - name: Regenerate catalog
+        run: bun run catalog:generate
+      - name: Fail if generated files are stale
+        run: |
+          git add -A
+          if ! git diff --cached --exit-code -- \
+              SKILLS_CATALOG.md claude_code_skills.md skills-catalog.json \
+              skills-source.lock.json skills-catalog-diff.json \
+              catalog-change-report.md SHA256SUMS docs/skills; then
+            echo "::error::Generated catalog files are stale. Run 'bun run catalog:generate' and commit the result."
+            git diff --cached --stat
+            exit 1
+          fi
+      - name: Job summary
+        if: always()
+        run: |
+          if [ -f skills-catalog.json ]; then
+            bun run catalog/src/summary.ts >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Upload diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: catalog-diagnostics-${{ github.run_id }}
+          path: |
+            skills-catalog.json
+            skills-source.lock.json
+            catalog-change-report.md
+            skills-catalog-diff.json
+          retention-days: 7
+          if-no-files-found: ignore

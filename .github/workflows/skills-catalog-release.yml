@@ -1,0 +1,157 @@
+name: Skills Catalog Release
+
+# Fires on every successful revision of main (merge or direct push), NOT on tag
+# pushes. It re-validates, computes the next SemVer tag deterministically, tags
+# the exact commit, and creates the GitHub Release with all catalog assets in a
+# single workflow (no second tag-triggered workflow -> no recursion).
+#
+# The App-merged update PR's push to main DOES trigger this workflow (intended).
+# This workflow never pushes to main and never commits generated files, so it
+# cannot recurse.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Tag + release
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history + existing tags for SemVer
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.3.8
+
+      - name: Install dependencies (frozen lockfile)
+        run: bun install --frozen-lockfile
+
+      # Re-run the full suite; refuse to release non-reproducible output.
+      - name: Validate
+        run: |
+          bun run typecheck
+          bun test catalog
+          bun run catalog:check
+
+      - name: Regenerate (verification mode) and refuse stale output
+        run: |
+          LATEST=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          echo "latest_tag=$LATEST" >> "$GITHUB_ENV"
+          if [ -n "$LATEST" ]; then
+            git show "$LATEST:skills-catalog.json" > /tmp/base-catalog.json 2>/dev/null || rm -f /tmp/base-catalog.json
+          fi
+          if [ -f /tmp/base-catalog.json ]; then
+            bun run catalog:generate --base /tmp/base-catalog.json
+          else
+            bun run catalog:generate
+          fi
+          git add -A
+          if ! git diff --cached --exit-code -- \
+              SKILLS_CATALOG.md claude_code_skills.md skills-catalog.json \
+              skills-source.lock.json skills-catalog-diff.json \
+              catalog-change-report.md SHA256SUMS docs/skills; then
+            echo "::error::Generated catalog is stale or non-reproducible at release time. Open a recovery PR."
+            git diff --cached --stat
+            exit 1
+          fi
+
+      - name: Idempotency check
+        run: |
+          if git tag --points-at HEAD | grep -q .; then
+            TAG=$(git tag --points-at HEAD | head -1)
+            echo "HEAD already tagged as $TAG; verifying release assets."
+            echo "existing_tag=$TAG" >> "$GITHUB_ENV"
+          fi
+
+      - name: Compute next SemVer tag
+        if: ${{ env.existing_tag == '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          SHA=$(git rev-parse HEAD)
+          # Best-effort: read release-override labels from the merged PR.
+          LABELS=$(gh pr list --state merged --limit 1 --search "$SHA" --json labels --jq '[.[].labels[].name] | join(",")' 2>/dev/null || echo "")
+          NEXT=$(bun run catalog/src/release-tag.ts "${{ env.latest_tag }}" skills-catalog-diff.json "$LABELS" | tail -1)
+          echo "next_tag=$NEXT" >> "$GITHUB_ENV"
+          echo "Computed next tag: $NEXT"
+
+      - name: Stop if no release is warranted
+        if: ${{ env.existing_tag == '' && env.next_tag == 'none' }}
+        run: echo "No catalog change to release; exiting."
+
+      - name: Create tag + GitHub Release
+        if: ${{ env.existing_tag == '' && env.next_tag != 'none' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG="${{ env.next_tag }}"
+          SHA=$(git rev-parse HEAD)
+
+          # Re-fetch tags immediately before creating, and refuse collision.
+          git fetch --tags --force
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "Tag $TAG already exists; skipping creation."
+            exit 0
+          fi
+          git tag "$TAG" "$SHA"
+          git push origin "$TAG"
+
+          # Build the compressed full-page documentation bundle.
+          tar -C docs -czf docs-skills.tar.gz skills
+
+          # Release notes: version + source revisions + change counts + checksums.
+          TAG="$TAG" SHA="$SHA" bun run catalog/src/summary.ts --release-notes > /tmp/release-notes.md
+          {
+            echo ""
+            echo "### Checksums (release assets)"
+            sha256sum claude_code_skills.md SKILLS_CATALOG.md skills-catalog.json skills-source.lock.json skills-catalog-diff.json catalog-change-report.md docs-skills.tar.gz
+          } >> /tmp/release-notes.md
+          cat /tmp/release-notes.md >> "$GITHUB_STEP_SUMMARY"
+
+          # Canonical release SHA256SUMS covers every attached asset.
+          sha256sum claude_code_skills.md SKILLS_CATALOG.md skills-catalog.json skills-source.lock.json skills-catalog-diff.json catalog-change-report.md docs-skills.tar.gz > SHA256SUMS
+
+          gh release create "$TAG" \
+            --target "$SHA" \
+            --title "$TAG" \
+            --notes-file /tmp/release-notes.md \
+            claude_code_skills.md \
+            SKILLS_CATALOG.md \
+            skills-catalog.json \
+            skills-source.lock.json \
+            skills-catalog-diff.json \
+            catalog-change-report.md \
+            SHA256SUMS \
+            docs-skills.tar.gz
+
+      - name: Verify existing release assets (idempotent path)
+        if: ${{ env.existing_tag != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ env.existing_tag }}"
+          echo "Verifying assets for $TAG"
+          for asset in claude_code_skills.md SKILLS_CATALOG.md skills-catalog.json skills-source.lock.json; do
+            gh release view "$TAG" --json assets --jq ".assets[].name" | grep -q "^${asset}$" \
+              || { echo "::error::Missing asset $asset on release $TAG"; exit 1; }
+          done
+          echo "All required assets present."
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Skills Catalog Release" >> "$GITHUB_STEP_SUMMARY"
+          echo "latest_tag=${{ env.latest_tag }} next_tag=${{ env.next_tag }} existing=${{ env.existing_tag }}" >> "$GITHUB_STEP_SUMMARY"

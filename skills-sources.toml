@@ -1,0 +1,210 @@
+# skills-sources.toml — declarative source-of-truth for the Skills Catalog.
+#
+# Every component the installer (install.sh) touches is declared here as pure
+# data: where it lives, which ref to track, how skills are selected, and the
+# license/redistribution policy. install.sh is NOT refactored to read this file
+# (that would be a disproportionate rewrite of a carefully-tuned fail-soft
+# script); instead catalog/src/parity.ts asserts install.sh and this manifest
+# never drift.
+#
+# Source types:
+#   git         — cloned upstream; resolved to an immutable SHA in the lock.
+#   runtime     — non-deterministic at catalog time (PyPI / marketplace / curl
+#                 installer); recorded honestly with a reason, metadata-only.
+#   repo-owned  — skills committed in THIS repository under skills/.
+
+schema_version = 1
+
+# ---------------------------------------------------------------------------
+# This repository's own skills (the allowlisted personal set; see .gitignore).
+# ---------------------------------------------------------------------------
+[sources.repository]
+type = "repo-owned"
+display_name = "furkankoykiran/.claude (personal skills)"
+root = "skills"
+
+# ---------------------------------------------------------------------------
+# gstack (garrytan/gstack) — MIT. Cloned whole into skills/gstack.
+# Skills are flat: each top-level <dir>/SKILL.md. The committed SKILL.md files
+# are template-rendered from SKILL.md.tmpl at the upstream repo, so they are
+# deterministic per SHA (we catalog the rendered output committed upstream).
+# ---------------------------------------------------------------------------
+[sources.gstack]
+type = "git"
+display_name = "gstack (garrytan/gstack)"
+repo = "https://github.com/garrytan/gstack.git"
+ref = "origin/HEAD"
+pack = "gstack"
+license = "MIT"
+redistribution = "full"
+license_notice_files = ["LICENSE"]
+install_step = "install_gstack"
+selection.kind = "all-skills"
+selection.root = ""
+notes = "Flat layout (top-level */SKILL.md). SKILL.md are rendered from SKILL.md.tmpl upstream; deterministic per SHA."
+
+# ---------------------------------------------------------------------------
+# Manim skills (adithya-s-k/manim_skill) — MIT. Three named skills.
+# ---------------------------------------------------------------------------
+[sources.manim]
+type = "git"
+display_name = "Manim skills (adithya-s-k/manim_skill)"
+repo = "https://github.com/adithya-s-k/manim_skill.git"
+ref = "origin/HEAD"
+pack = "manim"
+license = "MIT"
+redistribution = "full"
+license_notice_files = ["LICENSE"]
+install_step = "install_manim_upstream"
+selection.kind = "named"
+selection.root = "skills"
+selection.names = ["manimce-best-practices", "manimgl-best-practices", "manim-composer"]
+
+# ---------------------------------------------------------------------------
+# Karpathy coding-discipline skill (multica-ai/andrej-karpathy-skills).
+# NO upstream license -> metadata-only (digest + immutable link only; body
+# omitted from catalog and release assets).
+# ---------------------------------------------------------------------------
+[sources.karpathy]
+type = "git"
+display_name = "Karpathy guidelines (multica-ai/andrej-karpathy-skills)"
+repo = "https://github.com/multica-ai/andrej-karpathy-skills.git"
+ref = "origin/HEAD"
+pack = "karpathy"
+license = "unknown"
+redistribution = "metadata-only"
+license_notice_files = []
+install_step = "install_karpathy_skill"
+selection.kind = "named"
+selection.root = "skills"
+selection.names = ["karpathy-guidelines"]
+notes = "Upstream declares no license; full body withheld (metadata-only)."
+
+# ---------------------------------------------------------------------------
+# Marketing skills (coreyhaines31/marketingskills) — MIT. Entire skills/ tree.
+# ---------------------------------------------------------------------------
+[sources.marketing]
+type = "git"
+display_name = "Marketing skills (coreyhaines31/marketingskills)"
+repo = "https://github.com/coreyhaines31/marketingskills.git"
+ref = "origin/HEAD"
+pack = "marketing"
+license = "MIT"
+redistribution = "full"
+license_notice_files = ["LICENSE"]
+install_step = "install_marketing_skills"
+selection.kind = "all-skills"
+selection.root = "skills"
+
+# ---------------------------------------------------------------------------
+# Impeccable (pbakaus/impeccable) — Apache-2.0. Bundled at .claude/skills/.
+# Security-relevant: ships hooks, agents, and many scripts (surfaced in profile).
+# ---------------------------------------------------------------------------
+[sources.impeccable]
+type = "git"
+display_name = "Impeccable (pbakaus/impeccable)"
+repo = "https://github.com/pbakaus/impeccable.git"
+ref = "origin/HEAD"
+pack = "impeccable"
+license = "Apache-2.0"
+redistribution = "full"
+license_notice_files = ["LICENSE", "NOTICE.md"]
+install_step = "install_impeccable_skill"
+selection.kind = "subpath"
+selection.path = ".claude/skills/impeccable"
+selection.dest = "skills/impeccable"
+
+# ---------------------------------------------------------------------------
+# Taste skills (Leonxlnx/taste-skill) — MIT. Entire skills/ tree.
+# ---------------------------------------------------------------------------
+[sources.taste]
+type = "git"
+display_name = "Taste skills (Leonxlnx/taste-skill)"
+repo = "https://github.com/Leonxlnx/taste-skill.git"
+ref = "origin/HEAD"
+pack = "taste"
+license = "MIT"
+redistribution = "full"
+license_notice_files = ["LICENSE"]
+install_step = "install_taste_skills"
+selection.kind = "all-skills"
+selection.root = "skills"
+
+# ---------------------------------------------------------------------------
+# Anthropic official skills (anthropics/skills) — per-skill Apache-2.0
+# (LICENSE.txt in each skill dir; no repo-level license). Curated subset only.
+# claude-api is intentionally skipped upstream to avoid a name collision.
+# The resolver detects each skill's LICENSE.txt and downgrades any skill that
+# lacks a permissive license to metadata-only automatically.
+# ---------------------------------------------------------------------------
+[sources.anthropic]
+type = "git"
+display_name = "Anthropic skills (anthropics/skills)"
+repo = "https://github.com/anthropics/skills.git"
+ref = "origin/HEAD"
+pack = "anthropic"
+license = "Apache-2.0"
+redistribution = "full"
+license_notice_files = []
+install_step = "install_anthropic_skills"
+selection.kind = "named"
+selection.root = "skills"
+selection.names = [
+  "docx",
+  "pdf",
+  "pptx",
+  "xlsx",
+  "mcp-builder",
+  "skill-creator",
+  "web-artifacts-builder",
+  "doc-coauthoring",
+]
+notes = "Per-skill LICENSE.txt (Apache-2.0); claude-api skipped (name collision)."
+
+# ---------------------------------------------------------------------------
+# graphifyy (PyPI) — Apache-2.0. Runtime-only: the `graphify` CLI installs a
+# bundled skills/graphify/SKILL.md. Content is deterministic per package version
+# but resolving a PyPI tarball is out of scope for the git resolver, so it is
+# represented honestly as runtime metadata.
+# ---------------------------------------------------------------------------
+[sources.graphify]
+type = "runtime"
+display_name = "graphify (PyPI: graphifyy)"
+runtime_kind = "pypi-package"
+pypi_package = "graphifyy"
+reason = "PyPI package; the `graphify` CLI wires skills/graphify/SKILL.md. Content is bundled and deterministic per version, but PyPI tarball resolution is not implemented; recorded as runtime metadata."
+
+# ---------------------------------------------------------------------------
+# Plugin marketplaces — registered for on-demand use; only the 5 curated
+# wshobson plugins are eagerly installed. Runtime-only (depend on the `claude`
+# CLI and marketplace resolution). Marketplace.json names: anthropic-agent-skills,
+# claude-code-workflows, superpowers-dev, anthropic-cybersecurity-skills.
+# ---------------------------------------------------------------------------
+[sources.plugin-marketplaces]
+type = "runtime"
+display_name = "Claude Code plugin marketplaces"
+runtime_kind = "plugin-marketplace"
+marketplaces = [
+  "anthropics/skills",
+  "wshobson/agents",
+  "obra/superpowers",
+  "mukul975/Anthropic-Cybersecurity-Skills",
+]
+plugins = [
+  "backend-development@claude-code-workflows",
+  "data-engineering@claude-code-workflows",
+  "cloud-infrastructure@claude-code-workflows",
+  "cicd-automation@claude-code-workflows",
+  "database-design@claude-code-workflows",
+]
+reason = "Registered via `claude plugin marketplace add` + eager installs from claude-code-workflows. Skills are namespaced /<marketplace>:<plugin> and resolved at runtime by the claude CLI, not from a git ref."
+
+# ---------------------------------------------------------------------------
+# rtk (rtk-ai/rtk) — installed via curl|sh. Runtime-only CLI proxy + hooks.
+# ---------------------------------------------------------------------------
+[sources.rtk]
+type = "runtime"
+display_name = "rtk (rtk-ai/rtk)"
+runtime_kind = "installer-script"
+installer_url = "https://raw.githubusercontent.com/rtk-ai/rtk/master/install.sh"
+reason = "Installed via curl|sh from rtk-ai/rtk; a CLI proxy that wires a PreToolUse hook. Not a skill body; recorded as runtime metadata."

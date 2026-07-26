@@ -29,6 +29,9 @@ __pycache__/
 
 # Temporary/Working directories
 cache/
+# Exception: the skills-catalog content snapshot IS tracked (immutable, needed
+# for offline `catalog:generate`). Only the resolver temp area is ignored.
+!catalog/cache/
 backups/
 debug/
 file-history/
@@ -69,6 +72,13 @@ skills/*
 # Node.js/Bun (inside gstack)
 node_modules/
 .bun/
+
+# Catalog resolver working area (temp clones / scratch) — never tracked.
+# Note: catalog/cache/ IS tracked (it is the committed immutable content snapshot).
+catalog/.tmp/
+
+# Claude Code runtime telemetry (local-only, not catalog work)
+telemetry/
 
 # Usage Data
 usage-data/

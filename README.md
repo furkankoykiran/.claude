@@ -316,6 +316,35 @@ Browse and install more with `/plugin` (or
 not vet marketplace contents — only add sources you trust. Remove one with
 `claude plugin marketplace remove <name>`.
 
+## Skills Catalog
+
+Every skill this setup represents — repository-owned **and** the resolvable
+upstream packs (gstack, marketing, taste, manim, impeccable, anthropic, …) — is
+indexed in a **deterministic Skills Catalog**. The catalog is generated from a
+declarative source manifest ([`skills-sources.toml`](skills-sources.toml)) and
+an immutable lock ([`skills-source.lock.json`](skills-source.lock.json)); it is
+byte-for-byte reproducible and needs no LLM to build. See
+[`docs/catalog-architecture.md`](docs/catalog-architecture.md).
+
+```bash
+bun install                         # one-time
+bun run catalog:resolve             # fetch/verify pinned upstream revisions (network)
+bun run catalog:resolve --update    # advance tracked upstream refs (network)
+bun run catalog:generate            # regenerate all catalog outputs (offline)
+bun run catalog:check               # parity + consistency + policy + determinism
+bun run catalog:diff                # diff against a base catalog
+bun run typecheck && bun test catalog
+```
+
+Outputs include [`SKILLS_CATALOG.md`](SKILLS_CATALOG.md) (index),
+[`claude_code_skills.md`](claude_code_skills.md) (portable single-file export),
+[`skills-catalog.json`](skills-catalog.json) (machine-readable),
+[`docs/skills/`](docs/skills/) (per-skill pages), and
+[`SHA256SUMS`](SHA256SUMS). `claude_code_skills.md` is published as a
+downloadable asset on every [GitHub Release](https://github.com/furkankoykiran/.claude/releases);
+release/update automation is documented in
+[`docs/release-automation.md`](docs/release-automation.md).
+
 ## Updating
 
 ```bash
