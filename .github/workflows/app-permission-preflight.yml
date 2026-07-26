@@ -77,6 +77,34 @@ jobs:
             FAIL=1
           fi
 
+          # ---- Diagnostics -------------------------------------------------
+          # A preflight that hides the API error is not a diagnostic. Capture
+          # the HTTP status and GitHub's own X-Accepted-GitHub-Permissions
+          # header, which states exactly which permission each endpoint wants.
+          # Only status lines and permission names are printed — never a token.
+          probe() {
+            local label="$1"; shift
+            local out status accepted
+            out=$(gh api -i "$@" 2>&1 || true)
+            status=$(printf '%s\n' "$out" | grep -m1 -oE 'HTTP/[0-9.]+ [0-9]{3}' | grep -oE '[0-9]{3}$')
+            [ -z "$status" ] && status=$(printf '%s\n' "$out" | grep -m1 -oE '\(HTTP [0-9]{3}\)' | grep -oE '[0-9]{3}')
+            accepted=$(printf '%s\n' "$out" | grep -im1 '^x-accepted-github-permissions:' | cut -d: -f2- | tr -d '\r' | sed 's/^ *//')
+            local msg
+            msg=$(printf '%s\n' "$out" | grep -m1 -oE '"message":"[^"]*"' | cut -d'"' -f4)
+            note "  - \`${label}\` → HTTP \`${status:-?}\`${msg:+ — ${msg}}${accepted:+ (endpoint accepts: \`${accepted}\`)}"
+          }
+
+          note ""
+          note "**Diagnostics — exact operation, status, and required permission**"
+          probe "GET  /repos/:o/:r/labels"          "/repos/${GITHUB_REPOSITORY}/labels"
+          probe "POST /repos/:o/:r/labels"          -X POST "/repos/${GITHUB_REPOSITORY}/labels" -f name=preflight-probe -f color=ededed
+          probe "POST /repos/:o/:r/issues/N/labels" -X POST "/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels" -f "labels[]=preflight-probe"
+          probe "GET  /repos/:o/:r/pulls/N"         "/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}"
+          # Best effort: remove the probe label if POST unexpectedly succeeded.
+          gh api -X DELETE "/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/preflight-probe" >/dev/null 2>&1 || true
+          gh api -X DELETE "/repos/${GITHUB_REPOSITORY}/labels/preflight-probe" >/dev/null 2>&1 || true
+          note ""
+
           # 1. Create the temporary label (idempotent).
           if gh label create "$TEMP_LABEL" --description "Temporary; created by the App permission preflight" --color ededed 2>/dev/null; then
             note "- create label: \`ok\`"
