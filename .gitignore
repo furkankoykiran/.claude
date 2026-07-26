@@ -29,6 +29,9 @@ __pycache__/
 
 # Temporary/Working directories
 cache/
+# Exception: the skills-catalog content snapshot IS tracked (immutable, needed
+# for offline `catalog:generate`). Only the resolver temp area is ignored.
+!catalog/cache/
 backups/
 debug/
 file-history/
