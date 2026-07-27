@@ -406,6 +406,41 @@ else
   fail "a non-git install reports exit 40, not a bogus success"
 fi
 
+# --- large tag lists ------------------------------------------------------
+# `git tag --list ... | head -1` under `set -o pipefail` dies silently once the
+# tag list is big enough that head closes the pipe before git finishes writing:
+# git takes SIGPIPE, the pipeline reports 141, `set -e` aborts with no message.
+# This repository adds a tag on every release, so the list only grows.
+reset_state
+# The checkout must be CLEAN and on a branch, or update refuses (exit 20) before
+# it ever resolves a target — which would make this assertion prove nothing.
+git_q "$HOME_DIR" checkout main
+git_q "$HOME_DIR" reset --hard v0.1.0
+git_q "$HOME_DIR" clean -fd
+# Named v0.0.* so they sort BELOW the real releases: the update must still
+# resolve v0.2.0 and report a genuine fast-forward, not "already at" the bulk
+# tag, or the assertion would pass without ever exercising the long list.
+for i in $(seq 1 1200); do git -C "$HOME_DIR" tag "v0.0.$i" >/dev/null 2>&1; done
+
+BIG_FAILS=0
+BIG_LAST=""
+for _try in 1 2 3 4 5 6 7 8; do
+  BIG_LAST="$(run_fkt update --dry-run 2>&1)"
+  BIG_STATUS=$?
+  # Exit 0 AND a real answer. A silent death shows up as 141 and empty output.
+  if [ "$BIG_STATUS" -ne 0 ] || ! printf '%s' "$BIG_LAST" | grep -q "would fast-forward"; then
+    BIG_FAILS=$((BIG_FAILS + 1))
+  fi
+done
+if [ "$BIG_FAILS" -eq 0 ]; then
+  pass "resolving a target survives a 1,200-tag repository"
+else
+  fail "resolving a target survives a 1,200-tag repository" \
+    "$BIG_FAILS/8 runs failed; last: exit $BIG_STATUS, output '$(printf '%s' "$BIG_LAST" | head -c 120)'"
+fi
+for i in $(seq 1 1200); do git -C "$HOME_DIR" tag -d "v0.0.$i" >/dev/null 2>&1; done
+git_q "$HOME_DIR" reset --hard v0.1.0
+
 # --- SessionStart hook ----------------------------------------------------
 # The hook runs on every session. It must be fast, silent when there is nothing
 # to say, and incapable of failing the session.

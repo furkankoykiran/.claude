@@ -248,7 +248,9 @@ fetch_advisories() {
 looks_like_advisory_feed() {
   local file="$1"
   [ -s "$file" ] || return 1
-  head -1 "$file" | grep -q '^#' || return 1
+  local first
+  IFS= read -r first < "$file" || return 1
+  case "$first" in '#'*) ;; *) return 1 ;; esac
   # Every non-comment line must have the six tab-separated columns.
   ! awk -F'\t' '!/^#/ && NF > 0 && NF != 6 { found = 1 } END { exit !found }' "$file"
 }
@@ -408,12 +410,28 @@ assert_updatable() {
   return 0
 }
 
+# First 20 commits of HEAD..<sha>, without a pipe. `git log | head` is the same
+# SIGPIPE-under-pipefail trap as the tag list above, and here the left-hand side
+# can be arbitrarily long.
+log_range() {
+  local out
+  out="$(git_at log --oneline -n 20 "HEAD..$1" 2>/dev/null)" || return 0
+  [ -n "$out" ] && printf '%s\n' "$out"
+  return 0
+}
+
 resolve_target() {
   # Prints the ref to fast-forward to for the active channel.
   local ch="$1"
   if [ "$ch" = "stable" ]; then
-    local tag
-    tag="$(git_at tag --list 'v*' --sort=-v:refname 2>/dev/null | head -1)"
+    local tags tag
+  # Capture, then take the first line. `git tag --list ... | head -1` looks
+  # harmless but races under `set -o pipefail`: head exits after one line, git's
+  # next write takes SIGPIPE, the pipeline reports 141, and `set -e` kills the
+  # script with NO message. Reproduced at ~1,000 tags (8/10 runs) - and this
+  # repository grows a tag on every release.
+    tags="$(git_at tag --list 'v*' --sort=-v:refname 2>/dev/null)" || return 1
+    tag="${tags%%$'\n'*}"
     [ -n "$tag" ] || return 1
     printf '%s\n' "$tag"
   else
@@ -480,14 +498,14 @@ do_update() {
 
   if [ "$dry_run" -eq 1 ]; then
     say "would fast-forward $(git_at rev-parse --short HEAD) -> $(git_at rev-parse --short "$target_sha") ($target)"
-    git_at log --oneline "HEAD..$target_sha" | head -20
+    log_range "$target_sha"
     return 0
   fi
 
   if [ "$assume_yes" -eq 0 ] && [ -t 0 ]; then
     say ""
     say "About to fast-forward $FKT_HOME to $target:"
-    git_at log --oneline "HEAD..$target_sha" | head -20
+    log_range "$target_sha"
     say ""
     printf 'Continue? [y/N] '
     local reply=""

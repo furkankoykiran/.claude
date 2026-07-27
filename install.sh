@@ -232,7 +232,14 @@ checkout_channel() {
   local channel="$1" target
   case "$channel" in
     stable)
-      target="$(git -C "$CLAUDE_DIR" tag --list 'v*' --sort=-v:refname | head -1)"
+      local tags
+  # Capture, then take the first line. `git tag --list ... | head -1` looks
+  # harmless but races under `set -o pipefail`: head exits after one line, git's
+  # next write takes SIGPIPE, the pipeline reports 141, and `set -e` kills the
+  # script with NO message. Reproduced at ~1,000 tags (8/10 runs) - and this
+  # repository grows a tag on every release.
+      tags="$(git -C "$CLAUDE_DIR" tag --list 'v*' --sort=-v:refname)" || tags=""
+      target="${tags%%$'\n'*}"
       if [ -z "$target" ]; then
         warn "no v* release tag found; staying on the current revision."
         warn "Use CLAUDE_BOOTSTRAP_CHANNEL=edge to track origin/main."

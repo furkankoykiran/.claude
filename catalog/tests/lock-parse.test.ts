@@ -8,6 +8,7 @@ import type { Lockfile } from "../src/types.ts";
 const REPO_ROOT = join(import.meta.dirname, "..", "..");
 const LOCK_PATH = join(REPO_ROOT, "skills-source.lock.json");
 const INSTALL_SH = join(REPO_ROOT, "install.sh");
+const INSTALL_PS1 = join(REPO_ROOT, "install.ps1");
 
 /**
  * install.sh reads skills-source.lock.json with awk, because it runs before bun
@@ -100,14 +101,36 @@ describe("install.sh lock extraction", () => {
     expect(offenders).toEqual([]);
   });
 
-  it("never resets or cleans the user's checkout", async () => {
+  it("never resets or cleans the user's checkout — on EITHER installer", async () => {
     // The historical bug: `git reset --hard origin/main` on ~/.claude silently
     // destroyed every tracked local change on each re-run. Comments may still
     // describe it — code may not do it.
-    const offenders = codeLines(await readFile(INSTALL_SH, "utf8")).filter((l) =>
-      /\bgit\b.*\breset\s+--hard\b/.test(l) || /\bgit\b.*\bclean\s+-[a-z]*[fdx]/.test(l),
-    );
-    expect(offenders).toEqual([]);
+    // install.ps1 shipped the identical `git reset --hard origin/main` and was
+    // missed when install.sh was fixed, so Windows users kept losing every
+    // tracked local edit on each re-run while the docs promised they would not.
+    // Both installers are checked here; PowerShell comments start with # too.
+    for (const file of [INSTALL_SH, INSTALL_PS1]) {
+      const offenders = codeLines(await readFile(file, "utf8")).filter((l) =>
+        /\bgit\b.*\breset\s+--hard\b/.test(l) || /\bgit\b.*\bclean\s+-[a-z]*[fdx]/.test(l),
+      );
+      expect(offenders, `${file} still resets or cleans a checkout`).toEqual([]);
+    }
+  });
+
+  it("pipes no unbounded git output into head — the SIGPIPE trap", async () => {
+    // `git tag --list | head -1` under `set -o pipefail` reports 141 once the
+    // list outgrows what git can write before head exits, and `set -e` then
+    // kills the script with no message at all. Measured: 8/10 failures at 1,000
+    // tags. This repository adds a tag on every release.
+    for (const file of [INSTALL_SH, join(REPO_ROOT, "bin", "fkt")]) {
+      // `git_at` is fkt's wrapper for `git -C "$FKT_HOME"`; \bgit\b does NOT
+      // match it, because "_" is a word character. Missing that made the first
+      // version of this guard pass against the exact bug it was written for.
+      const offenders = codeLines(await readFile(file, "utf8")).filter((l) =>
+        /(?:^|[^\w])git(?:_at)?\b[^|]*\|\s*head\b/.test(l),
+      );
+      expect(offenders, `${file} pipes git output into head`).toEqual([]);
+    }
   });
 });
 
