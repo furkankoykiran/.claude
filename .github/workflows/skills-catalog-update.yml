@@ -46,6 +46,14 @@ env:
     catalog/cache
     catalog/generated
     docs/skills
+  # Everything that embeds VERSION. Rewritten by marketplace:generate when the
+  # bump step raises VERSION, and staged alongside the catalog. Deliberately
+  # NOT in CATALOG_PATHS: that set is the change-DETECTION set, and VERSION
+  # moves as a consequence of a catalog change, never as evidence of one.
+  VERSION_PATHS: >-
+    VERSION
+    .claude-plugin/marketplace.json
+    skills/*/.claude-plugin/plugin.json
 
 jobs:
   update:
@@ -60,6 +68,11 @@ jobs:
           # credentials embedded in a push URL — so the App token would be
           # ignored and the push rejected as github-actions[bot].
           persist-credentials: false
+          # The VERSION bump below classifies every commit since the last
+          # release tag, so it needs that tag and the history back to it. The
+          # default shallow, tagless fetch would make `git log <tag>..HEAD`
+          # fail outright rather than under-report.
+          fetch-depth: 0
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
@@ -137,15 +150,83 @@ jobs:
             echo "</details>"
           } > /tmp/pr-body.md
 
-      # Dry run stops here: it has resolved, validated, classified, and
-      # reported, and reaches no step that mints a token or writes anything.
+      # The release refuses to tag a commit whose VERSION is already released or
+      # is too low for what landed. That check runs AFTER the merge, so an
+      # automation PR that never touched VERSION lands fine and then leaves main
+      # un-releasable until a human bumps it by hand — run 30257252184, where the
+      # catalog update in #32 stranded main at the already-released 0.2.0.
+      #
+      # Compute the release's own minimum here, from the same two inputs it uses
+      # (commits since the last release + the catalog diff), and carry it in the
+      # PR. The release-time check stays exactly as strict; it just has nothing
+      # left to catch.
+      - name: Bump VERSION to cover the pending change
+        id: version
+        if: steps.detect.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Published releases, not `git describe`: describe only sees tags
+          # reachable from HEAD. Same source and same fallback as the release.
+          PREV=$(gh api "/repos/${GITHUB_REPOSITORY}/releases?per_page=100" \
+                   --jq '[.[] | select(.draft==false) | .tag_name] | .[0] // ""' 2>/dev/null || echo "")
+          if [ -z "$PREV" ]; then
+            PREV=$(git tag --list 'v*' --sort=-v:refname | head -1)
+          fi
+          echo "Previous release: ${PREV:-<none>}"
+
+          # /tmp/change-diff.json is the diff the classify step already built
+          # against main's catalog — the same one the auto-merge gate reads, so
+          # the version, the PR body, and the merge decision cannot disagree.
+          #
+          # --pending-commit is the one input the release has that this step
+          # does not: the automation commit itself, which does not exist yet.
+          # Without it a run whose catalog diff nets out to nothing (cache or
+          # lock churn only) plans "no bump", and the release then derives its
+          # patch floor from that very commit and refuses the tag. Same subject
+          # that is committed below, so the two agree by construction.
+          # shellcheck disable=SC2086
+          bun run catalog/src/release-notes.ts next-version \
+            ${PREV:+--previous "$PREV"} --diff /tmp/change-diff.json \
+            --pending-commit "$PR_TITLE" > /tmp/version-plan.json
+          cat /tmp/version-plan.json
+
+          NEXT=$(bun -e 'console.log(JSON.parse(await Bun.file("/tmp/version-plan.json").text()).next)')
+          RAISED=$(bun -e 'console.log(JSON.parse(await Bun.file("/tmp/version-plan.json").text()).raised)')
+          echo "version=$NEXT" >> "$GITHUB_OUTPUT"
+
+          if [ "$RAISED" = "true" ]; then
+            printf '%s\n' "$NEXT" > VERSION
+            bun run marketplace:generate
+            echo "VERSION raised to $NEXT."
+            echo "Release version: \`$NEXT\` (raised to cover this change)." >> /tmp/pr-body.md
+          else
+            echo "VERSION $NEXT already covers this change; left alone."
+            echo "Release version: \`$NEXT\` (already sufficient)." >> /tmp/pr-body.md
+          fi
+
+          # Prove the claim rather than trust it: run the release's own gate
+          # against what was just written. If these two ever disagree, it fails
+          # here, in the PR, instead of after the merge on an un-releasable main.
+          # shellcheck disable=SC2086
+          bun run catalog/src/release-notes.ts check-version \
+            ${PREV:+--previous "$PREV"} --diff /tmp/change-diff.json \
+            --pending-commit "$PR_TITLE" > /dev/null
+          # The manifests embed VERSION; this is the invariant just mutated.
+          bun run marketplace:check
+
+      # Dry run stops here: it has resolved, validated, classified, versioned,
+      # and reported, and reaches no step that mints a token or writes anything.
       - name: Dry-run report (no mutations)
         if: steps.detect.outputs.changed == 'true' && inputs.dry_run == true
         run: |
           set -euo pipefail
           read -ra paths <<< "$CATALOG_PATHS"
+          read -ra vpaths <<< "$VERSION_PATHS"
           echo "Dry run: changes detected; nothing committed, pushed, opened, or merged."
-          git --no-pager diff --stat -- "${paths[@]}"
+          echo "Would release as ${{ steps.version.outputs.version }}."
+          git --no-pager diff --stat -- "${paths[@]}" "${vpaths[@]}"
 
       # Mints an installation token so the PR triggers required checks and the
       # merge triggers the release workflow. Skipped on a dry run, skipped when
@@ -234,6 +315,12 @@ jobs:
         run: |
           set -euo pipefail
           read -ra paths <<< "$CATALOG_PATHS"
+          # read -ra splits on whitespace without globbing, and the expansion
+          # below is quoted, so git receives skills/*/... as a literal pathspec
+          # and matches it itself. An unmatched pathspec is fatal to `git add`,
+          # which is what we want here: manifests that carry VERSION going
+          # missing must stop the commit, not silently ship a partial bump.
+          read -ra vpaths <<< "$VERSION_PATHS"
 
           # Commit as the App's real bot identity, so main's history attributes
           # automated commits to <app-slug>[bot] rather than a generic actor.
@@ -242,7 +329,7 @@ jobs:
           git config user.email "${BOT_ID}+${APP_SLUG}[bot]@users.noreply.github.com"
 
           git checkout -B "$BRANCH"
-          git add -A -- "${paths[@]}"
+          git add -A -- "${paths[@]}" "${vpaths[@]}"
           if git diff --cached --quiet; then
             echo "::error::Change detection reported a change but nothing is staged; refusing to create an empty commit."
             exit 1

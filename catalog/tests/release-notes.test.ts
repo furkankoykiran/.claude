@@ -9,6 +9,7 @@ import {
   parseVersion,
   formatVersion,
   checkVersion,
+  nextVersion,
   renderNotes,
   type Commit,
 } from "../src/release-notes.ts";
@@ -205,6 +206,81 @@ describe("checkVersion", () => {
     const v = checkVersion("0.2.1", "v0.2.0", g(["chore: tidy"]), diff({ removed: 1 }));
     expect(v.ok).toBe(false);
     expect(v.minimum).toBe("0.3.0"); // pre-1.0: a break moves the minor
+  });
+});
+
+describe("nextVersion", () => {
+  const g = (subjects: string[]) => groupCommits(subjects.map((s) => commit(s)));
+
+  // The exact shape that broke the v0.2.0 -> v0.2.1 release: a catalog update
+  // landed on top of an already-released VERSION and nothing bumped it.
+  it("raises a VERSION that is still the last released one", () => {
+    const v = nextVersion("0.2.0", "v0.2.0", g([]), diff({ updated: 3 }));
+    expect(v.raised).toBe(true);
+    expect(v.next).toBe("0.2.1");
+    expect(v.bump).toBe("patch");
+  });
+
+  it("raises to a minor when the update adds a skill", () => {
+    const v = nextVersion("0.2.0", "v0.2.0", g([]), diff({ added: 1 }));
+    expect(v.next).toBe("0.3.0");
+  });
+
+  it("raises to a major-equivalent when the update removes a skill", () => {
+    const v = nextVersion("0.2.0", "v0.2.0", g([]), diff({ removed: 1 }));
+    expect(v.next).toBe("0.3.0"); // pre-1.0: a break moves the minor
+  });
+
+  it("never lowers a VERSION that is already ahead of the minimum", () => {
+    const v = nextVersion("0.5.0", "v0.2.0", g([]), diff({ updated: 1 }));
+    expect(v.raised).toBe(false);
+    expect(v.next).toBe("0.5.0");
+  });
+
+  it("leaves an already-sufficient VERSION untouched", () => {
+    const v = nextVersion("0.2.1", "v0.2.0", g([]), diff({ updated: 1 }));
+    expect(v.raised).toBe(false);
+    expect(v.next).toBe("0.2.1");
+  });
+
+  it("keeps the declared version as the first release", () => {
+    const v = nextVersion("0.1.0", null, g([]), diff({ added: 9 }));
+    expect(v.raised).toBe(false);
+    expect(v.next).toBe("0.1.0");
+  });
+
+  it("accounts for unreleased commits already on main, not just the diff", () => {
+    // A feature landed since the last release without a bump; a later
+    // catalog update must not settle for the patch its own diff implies.
+    const v = nextVersion("0.2.0", "v0.2.0", g(["feat: shipped earlier"]), diff({ updated: 1 }));
+    expect(v.next).toBe("0.3.0");
+  });
+
+  it("produces a VERSION that the release-time gate then accepts", () => {
+    const groups = g(["feat: big"]);
+    const d = diff({ added: 2 });
+    const plan = nextVersion("0.2.0", "v0.2.0", groups, d);
+    expect(checkVersion(plan.next, "v0.2.0", groups, d).ok).toBe(true);
+  });
+
+  it("refuses a VERSION that is not semver", () => {
+    expect(() => nextVersion("1.2", "v1.1.0", g([]), null)).toThrow(CatalogError);
+  });
+
+  // The automation plans its VERSION before making its commit. If that
+  // not-yet-existing commit is left out and the catalog diff nets to nothing
+  // (cache/lock churn only), the plan is "no bump" — and the release then
+  // derives a patch floor from that same commit and refuses to tag.
+  it("plans no bump when a net-zero change is judged without the pending commit", () => {
+    expect(nextVersion("0.2.0", "v0.2.0", g([]), diff({})).bump).toBe("none");
+  });
+
+  it("reaches the release's patch floor once the pending commit is counted", () => {
+    const v = nextVersion("0.2.0", "v0.2.0", g(["chore(skills): update upstream catalog"]), diff({}));
+    expect(v.bump).toBe("patch");
+    expect(v.next).toBe("0.2.1");
+    // What the release will compute after the merge, with that commit real.
+    expect(checkVersion("0.2.0", "v0.2.0", g(["chore(skills): update upstream catalog"]), diff({})).ok).toBe(false);
   });
 });
 

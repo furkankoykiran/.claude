@@ -156,6 +156,30 @@ There are no `release:*` PR labels any more. They existed to override an
 inferred tag; with `VERSION` as the source of truth, a maintainer who wants a
 larger bump simply writes a larger `VERSION` and every artefact follows.
 
+### Who writes `VERSION`
+
+`check-version` runs at release time, which is *after* the merge. That is fine
+for a human PR — the release fails loudly and names the value to write — but it
+is useless to the catalog automation, which cannot answer a question that is
+only asked once its change has already landed. A bot PR that never touched
+`VERSION` therefore left `main` un-releasable until somebody bumped it by hand.
+
+So the update workflow now writes `VERSION` itself. `bun run
+release:next-version` derives the same minimum from the same two inputs and
+returns the value to use; the workflow writes it, reruns `marketplace:generate`,
+and commits the manifests with the catalog. Two properties make this safe:
+
+- **It never lowers `VERSION`.** A value already past the minimum is a
+  deliberate bump for something unreleased, and clamping it would understate
+  the next release.
+- **It counts the commit it is about to make** (`--pending-commit`). That commit
+  does not exist while the workflow is planning, but the release will see it and
+  derive a patch floor from it — so a run whose catalog diff nets out to nothing
+  still bumps, instead of merging and stranding `main`.
+
+`check-version` is unchanged and still gates the release. It should now simply
+never have anything to catch on an automation PR.
+
 Full detail, including what a contributor has to do: [Release process](release-process.md).
 
 ## Release assets
