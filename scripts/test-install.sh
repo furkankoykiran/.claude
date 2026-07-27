@@ -328,5 +328,34 @@ FKT_HOME="$CLAUDE_DIR" bash "$REPO_ROOT/migrations/0001-plugin-layout.sh" >/dev/
 check "a git-tracked legacy copy is left in place" "tracked" \
   "$(cat "$CLAUDE_DIR/skills/add-mcp/SKILL.md" 2>/dev/null)"
 
+# ---------------------------------------------------------------------------
+# install_fkt: the shell function it writes must point at the real install
+# ---------------------------------------------------------------------------
+fkt_alias_for() {
+  local home="$1" dir="$2"
+  mkdir -p "$dir/bin"
+  cp "$REPO_ROOT/bin/fkt" "$dir/bin/fkt"
+  ( HOME="$home" CLAUDE_DIR="$dir" install_fkt >/dev/null 2>&1
+    grep -h '^fkt()' "$home/.bashrc" 2>/dev/null )
+}
+
+ALIAS_HOME="$WORK/alias-default"
+mkdir -p "$ALIAS_HOME"
+# shellcheck disable=SC2016  # the literal $HOME is exactly what we assert on
+check "a default install keeps \$HOME unexpanded, so the alias survives a home move" \
+  'fkt() { "$HOME/.claude/bin/fkt" "$@"; }' \
+  "$(fkt_alias_for "$ALIAS_HOME" "$ALIAS_HOME/.claude")"
+
+ALIAS_HOME2="$WORK/alias-custom"
+mkdir -p "$ALIAS_HOME2"
+check "a custom CLAUDE_DIR is written as the resolved path, not \$HOME/.claude" \
+  "fkt() { \"$ALIAS_HOME2/elsewhere/bin/fkt\" \"\$@\"; }" \
+  "$(fkt_alias_for "$ALIAS_HOME2" "$ALIAS_HOME2/elsewhere")"
+
+# Re-running must not append a second copy.
+fkt_alias_for "$ALIAS_HOME" "$ALIAS_HOME/.claude" >/dev/null
+check "install_fkt does not append a duplicate on re-run" "1" \
+  "$(grep -c '^fkt()' "$ALIAS_HOME/.bashrc")"
+
 printf '\n%s passed, %s failed\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]

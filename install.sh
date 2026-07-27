@@ -537,12 +537,19 @@ install_fkt() {
 
   local rc="$HOME/.bashrc"
   touch "$rc"
-  if ! grep -q 'claude/bin/fkt' "$rc" 2>/dev/null; then
-    cat >> "$rc" <<'EOF'
-
-# FK Claude Toolkit updater (managed by ~/.claude/install.sh)
-fkt() { "$HOME/.claude/bin/fkt" "$@"; }
-EOF
+  if ! grep -q 'bin/fkt' "$rc" 2>/dev/null; then
+    # Emit "$HOME/.claude" literally for a default install so the function keeps
+    # working if the home directory ever moves; use the resolved path when the
+    # user chose a different CLAUDE_DIR, where "$HOME/.claude" would be wrong.
+    # shellcheck disable=SC2016  # $HOME must reach .bashrc unexpanded
+    local target='"$HOME/.claude/bin/fkt"'
+    if [ "$CLAUDE_DIR" != "$HOME/.claude" ]; then
+      target="\"$CLAUDE_DIR/bin/fkt\""
+    fi
+    {
+      printf '\n# FK Claude Toolkit updater (managed by %s/install.sh)\n' "$CLAUDE_DIR"
+      printf 'fkt() { %s "$@"; }\n' "$target"
+    } >> "$rc"
     log "Added 'fkt' shell function to ~/.bashrc (run: source ~/.bashrc)"
   fi
 
