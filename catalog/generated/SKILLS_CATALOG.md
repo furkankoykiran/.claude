@@ -100,7 +100,7 @@ repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: 
 ## Impeccable (pbakaus/impeccable)
 
 type: `git` · pack: `impeccable` · skills: 1 · redistribution: full
-repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `d272b9bd5dcf`
+repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `5e572c8b8af3`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
