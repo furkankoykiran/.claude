@@ -7232,6 +7232,59 @@
       "warnings": []
     },
     {
+      "allowedTools": [
+        "Bash",
+        "Read",
+        "AskUserQuestion"
+      ],
+      "canonicalInvocation": "/fk-toolkit-ops:toolkit-update",
+      "description": "Check for and apply FK Claude Toolkit updates, or switch the stable/edge channel.",
+      "digest": "a32cb953de4a7a40e09e89c784cc99367f6c9146196ed61c20944b944bfec032",
+      "frontmatter": {
+        "allowed-tools": [
+          "Bash",
+          "Read",
+          "AskUserQuestion"
+        ],
+        "description": "Check for and apply FK Claude Toolkit updates, or switch the stable/edge channel.",
+        "disable-model-invocation": true,
+        "name": "toolkit-update"
+      },
+      "fullPagePath": "docs/skills/repository/fk-toolkit-ops-toolkit-update.md",
+      "generated": true,
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT",
+        "matchesDeclaration": true,
+        "redistribution": "full"
+      },
+      "namespacedInvocations": [
+        "/fk-toolkit-ops:toolkit-update"
+      ],
+      "pack": "repository",
+      "redistribution": "full",
+      "relativePath": "skills/fk-toolkit-ops/skills/toolkit-update/SKILL.md",
+      "security": {
+        "flags": [
+          "bash/powershell tool"
+        ],
+        "hasAgents": false,
+        "hasBashOrPowershell": true,
+        "hasCredentialRef": false,
+        "hasDynamicShell": false,
+        "hasExecutable": false,
+        "hasHiddenFiles": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasNetworkRef": false,
+        "toolCount": 3
+      },
+      "skillName": "fk-toolkit-ops:toolkit-update",
+      "sourceId": "repository",
+      "sourceType": "repo-owned",
+      "warnings": []
+    },
+    {
       "canonicalInvocation": "/fk-writing-kit:blog-from-chat",
       "description": "Turn a chat log, conversation or discussion summary into a publishable blog post, in one or more languages. Use for \"blog from this chat\" or \"write up our conversation\".",
       "digest": "93b7a8d997f3002e5b782203a90817d21b2f35051006481b60a5ac8170ba958b",
@@ -8103,7 +8156,7 @@
       "pack": "repository",
       "redistribution": "full",
       "runtimeOnly": false,
-      "skillCount": 11,
+      "skillCount": 12,
       "type": "repo-owned"
     },
     {
@@ -8130,9 +8183,9 @@
     }
   ],
   "totals": {
-    "redistributable": 131,
+    "redistributable": 132,
     "runtimeOnly": 3,
-    "skills": 141,
+    "skills": 142,
     "sources": 11,
     "warnings": 0
   }

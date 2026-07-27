@@ -75,7 +75,7 @@ jobs:
   # throwaway repositories and throwaway config/state dirs; the "remote" is a
   # local bare repo, so this job needs no network.
   updater:
-    name: Updater (fkt) behaviour tests
+    name: Updater and installer behaviour tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -84,6 +84,8 @@ jobs:
           fetch-depth: 0
       - name: Run fkt tests
         run: ./scripts/test-fkt.sh
+      - name: Run install.sh repository/staging tests
+        run: ./scripts/test-install.sh
 
   powershell:
     name: Lint PowerShell (PSScriptAnalyzer)

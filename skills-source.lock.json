@@ -80,6 +80,17 @@
       "sourceId": "repository"
     },
     {
+      "canonicalInvocation": "/fk-toolkit-ops:toolkit-update",
+      "digest": "a32cb953de4a7a40e09e89c784cc99367f6c9146196ed61c20944b944bfec032",
+      "license": {
+        "declared": "repository-owned",
+        "detected": "repository-owned"
+      },
+      "redistribution": "full",
+      "relativePath": "skills/fk-toolkit-ops/skills/toolkit-update/SKILL.md",
+      "sourceId": "repository"
+    },
+    {
       "canonicalInvocation": "/fk-writing-kit:blog-from-chat",
       "digest": "93b7a8d997f3002e5b782203a90817d21b2f35051006481b60a5ac8170ba958b",
       "license": {
@@ -1658,6 +1669,7 @@
         "/fk-gh-flow:solve-issue",
         "/fk-manim-video:manim-narration",
         "/fk-toolkit-ops:add-mcp",
+        "/fk-toolkit-ops:toolkit-update",
         "/fk-writing-kit:blog-from-chat",
         "/fk-writing-kit:github-profile-blog",
         "/fk-writing-kit:humanizer",
@@ -1677,6 +1689,7 @@
         "skills/fk-gh-flow/skills/solve-issue",
         "skills/fk-manim-video/skills/manim-narration",
         "skills/fk-toolkit-ops/skills/add-mcp",
+        "skills/fk-toolkit-ops/skills/toolkit-update",
         "skills/fk-writing-kit/skills/blog-from-chat",
         "skills/fk-writing-kit/skills/github-profile-blog",
         "skills/fk-writing-kit/skills/humanizer",

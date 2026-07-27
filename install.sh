@@ -17,6 +17,8 @@
 #   CLAUDE_BOOTSTRAP_NO_SYNC=1   Use the working tree as-is; skip the git
 #                                fetch/update. For testing local changes, CI, and
 #                                offline installs.
+#   CLAUDE_BOOTSTRAP_LIB_ONLY=1  Source the functions without running anything.
+#                                Used by scripts/test-install.sh.
 #   CLAUDE_BOOTSTRAP_CHANNEL=    stable (default) tracks the highest v* release
 #     stable|edge                tag and installs third-party packs at the SHAs
 #                                reviewed in skills-source.lock.json. edge tracks
@@ -963,4 +965,10 @@ EOF
   fi
 }
 
-main "$@"
+# Sourcing with CLAUDE_BOOTSTRAP_LIB_ONLY=1 loads the functions without running
+# the bootstrap, so scripts/test-install.sh can exercise sync_repo,
+# checkout_channel and stage_source directly against throwaway repositories.
+# Without this the only way to test them is a full 20-minute install.
+if [ "${CLAUDE_BOOTSTRAP_LIB_ONLY:-0}" != "1" ]; then
+  main "$@"
+fi

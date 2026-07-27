@@ -456,6 +456,16 @@
       "sourceId": "repository"
     },
     {
+      "key": "/fk-toolkit-ops:toolkit-update",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
+      "sourceId": "repository"
+    },
+    {
       "key": "/fk-writing-kit:blog-from-chat",
       "kind": "added",
       "manualReviewRequired": false,
@@ -1290,7 +1300,7 @@
   ],
   "schemaVersion": 2,
   "summary": {
-    "added": 141,
+    "added": 142,
     "licenseRestricted": 10,
     "manualReviewRequired": true,
     "massChange": false,
@@ -1304,7 +1314,7 @@
       "new-skill-capability:network-access"
     ],
     "runtimeOnly": 3,
-    "securitySensitive": 64,
+    "securitySensitive": 65,
     "updated": 0
   }
 }

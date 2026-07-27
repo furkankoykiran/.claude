@@ -2,16 +2,16 @@
 
 # Catalog change report
 
-- added: 141
+- added: 142
 - updated: 0
 - removed: 0
 - renamed: 0
 - license-restricted: 10
 - runtime-only: 3
-- security-sensitive: 64
+- security-sensitive: 65
 - **manual-review-required: true**
 
-## Added (141)
+## Added (142)
 
 - `/ab-testing`
 - `/ad-creative`
@@ -63,6 +63,7 @@
 - `/fk-gh-flow:solve-issue`
 - `/fk-manim-video:manim-narration`
 - `/fk-toolkit-ops:add-mcp`
+- `/fk-toolkit-ops:toolkit-update`
 - `/fk-writing-kit:blog-from-chat`
 - `/fk-writing-kit:github-profile-blog`
 - `/fk-writing-kit:humanizer`
@@ -155,7 +156,7 @@
 - `/web-artifacts-builder`
 - `/xlsx`
 
-## Security-sensitive (64)
+## Security-sensitive (65)
 
 - `/autoplan`
 - `/benchmark`
@@ -178,6 +179,7 @@
 - `/document-release`
 - `/docx`
 - `/fk-gh-flow:github-comment`
+- `/fk-toolkit-ops:toolkit-update`
 - `/freeze`
 - `/gstack-upgrade`
 - `/guard`
@@ -222,7 +224,7 @@
 - `/web-artifacts-builder`
 - `/xlsx`
 
-## Manual-review-required (64)
+## Manual-review-required (65)
 
 - `/autoplan`
 - `/benchmark`
@@ -245,6 +247,7 @@
 - `/document-release`
 - `/docx`
 - `/fk-gh-flow:github-comment`
+- `/fk-toolkit-ops:toolkit-update`
 - `/freeze`
 - `/gstack-upgrade`
 - `/guard`
