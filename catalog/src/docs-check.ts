@@ -153,8 +153,10 @@ const MOVED: Array<[RegExp, string]> = [
 
 function checkMovedPaths(docs: string[]): void {
   for (const doc of docs) {
-    // CHANGELOG records history; past entries legitimately name old paths.
-    if (doc === "CHANGELOG.md") continue;
+    // The changelog archive records history verbatim; its entries legitimately
+    // name paths that have since moved. Checking it would force us to rewrite
+    // history to keep a linter happy.
+    if (doc === "docs/changelog-archive.md") continue;
     let section = "";
     readFileSync(join(ROOT, doc), "utf8").split("\n").forEach((line, i) => {
       const h = /^#{1,6}\s+(.*)$/.exec(line);

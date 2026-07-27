@@ -65,9 +65,13 @@ an unusually large batch is left open for review. See
 
 <details><summary><b>How are releases versioned and verified?</b></summary>
 
-SemVer inferred from the catalog diff against the previous release, overridable
-with a `release:major|minor|patch` label. Every release ships `SHA256SUMS`
-covering all content assets — see
+The `VERSION` file is the single source of truth — it feeds every plugin
+manifest, every marketplace entry and the release tag. CI refuses a release
+whose `VERSION` understates what landed, deriving the minimum bump from the
+commits plus the catalog diff, and prints the exact value to write. Release
+notes are generated from the commits; there is no CHANGELOG. Every release ships
+`SHA256SUMS` covering all content assets — see
+[Release process](release-process.md) and
 [Getting started](getting-started.md#verifying-a-release).
 </details>
 

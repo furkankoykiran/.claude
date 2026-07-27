@@ -16,7 +16,7 @@ Please **do not open a public issue** for security problems.
   reproduce.
 
 You can expect an initial response within a few days. Once a fix is ready it
-will land on `main` and be credited in [CHANGELOG.md](CHANGELOG.md) (unless you
+will land on `main` and be credited in the release notes (unless you
 prefer to stay anonymous).
 
 ## Secrets never live in this repo

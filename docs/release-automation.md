@@ -131,19 +131,32 @@ workflows never weaken branch protection.
 
 ## Semantic versioning
 
-Source of truth is **git tags** (there is no tracked version file). Rules:
+Source of truth is the **`VERSION`** file at the repository root. It is what
+every `plugin.json` and every marketplace entry carries, so the release tag has
+to be the same value — otherwise installers and releases disagree about what
+shipped. The workflow tags `v$(cat VERSION)`.
 
-- No prior tags → **`v0.1.0`** (initial release).
-- `release:major` / `release:minor` / `release:patch` PR label overrides
-  inference (exactly one allowed; conflicting labels error).
-- Removed/renamed public invocation or schema break → **major** (collapses to
-  **minor** while below `1.0.0`).
-- Added public skill / new backward-compatible capability → **minor**.
-- Updated body/metadata/sha/doc/resolver fix → **patch**.
-- No catalog change → no release.
+The only judgement left to automation is whether that `VERSION` is *big enough*.
+`bun run release:check-version` derives the minimum from the commits in the
+range plus the catalog diff:
 
-The release workflow reads the previous tag's `catalog/generated/skills-catalog.json` as the diff
-base, infers the bump, computes the next tag, and tags the **exact** main commit.
+- a breaking commit (`!` or a `BREAKING CHANGE:` footer) → **major**
+- a removed or renamed public invocation → **major**
+- a `feat` commit, or an added skill → **minor**
+- anything else that landed → **patch**
+- nothing → no release
+
+Below `1.0.0` a "major" bump moves the minor instead, per SemVer §4.
+
+The catalog signals are not redundant with the commit subjects: a commit message
+cannot be trusted to notice that an invocation somebody depended on disappeared.
+The diff can.
+
+There are no `release:*` PR labels any more. They existed to override an
+inferred tag; with `VERSION` as the source of truth, a maintainer who wants a
+larger bump simply writes a larger `VERSION` and every artefact follows.
+
+Full detail, including what a contributor has to do: [Release process](release-process.md).
 
 ## Release assets
 

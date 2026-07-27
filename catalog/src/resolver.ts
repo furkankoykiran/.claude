@@ -29,7 +29,7 @@ import { CatalogError } from "./types.ts";
 import { runGit, resolveRef, fetchAtSha, revParseHead } from "./git.ts";
 import { parseSkillBytes, extractFields } from "./parser.ts";
 import { digestBytes } from "./digest.ts";
-import { finalSegment, personalInvocation, caseKey } from "./naming.ts";
+import { finalSegment, personalInvocation, pluginInvocation, caseKey } from "./naming.ts";
 import { detectLicense, verdict as licenseVerdict } from "./license.ts";
 import { buildSecurityProfile, type DirFile } from "./security.ts";
 import { info, warn } from "./log.ts";
@@ -505,20 +505,40 @@ async function resolveRepoOwned(
   // Repo-owned skills are this repository's own content (MIT): always full.
   const repoLicenseText = await readLicenseText(repoRoot, ["LICENSE", "LICENSE.md", "LICENSE.txt"]);
   const repoLicense = repoLicenseText.trim() ? detectLicense(repoLicenseText) : "MIT";
+  // Two shapes live under skills/ and both are this repository's own content:
+  //
+  //   skills/<name>/SKILL.md                  bare, personal scope   -> /<name>
+  //   skills/<plugin>/skills/<name>/SKILL.md  plugin scope           -> /<plugin>:<name>
+  //
+  // The plugin form is what marketplace.toml publishes; Claude Code also loads
+  // it directly as <plugin>@skills-dir when this repo IS ~/.claude. Both are
+  // enumerated so a half-migrated tree is described accurately rather than
+  // silently under-reported.
+  //
   // Use git to list TRACKED skills only (ignore a developer's locally-installed packs).
+  const globs = [`${cfg.root}/*/SKILL.md`, `${cfg.root}/*/skills/*/SKILL.md`];
   let tracked: string[];
   try {
-    const r = await runGit(["-C", repoRoot, "ls-files", "--", `${cfg.root}/*/SKILL.md`], {});
+    const r = await runGit(["-C", repoRoot, "ls-files", "--", ...globs], {});
     tracked = r.stdout.split("\n").map((s) => s.trim()).filter(Boolean);
   } catch {
-    // No git (tests): fall back to the directory.
+    // No git (tests): fall back to walking the directory.
     tracked = [];
     if (existsSync(skillsRoot)) {
       const names = await readdir(skillsRoot);
       for (const name of names.sort()) {
         const lst = await lstat(join(skillsRoot, name)).catch(() => null);
-        if (lst?.isDirectory() && existsSync(join(skillsRoot, name, "SKILL.md"))) {
+        if (!lst?.isDirectory()) continue;
+        if (existsSync(join(skillsRoot, name, "SKILL.md"))) {
           tracked.push(posix.join(cfg.root, name, "SKILL.md"));
+        }
+        const nested = join(skillsRoot, name, "skills");
+        if (existsSync(nested)) {
+          for (const inner of (await readdir(nested)).sort()) {
+            if (existsSync(join(nested, inner, "SKILL.md"))) {
+              tracked.push(posix.join(cfg.root, name, "skills", inner, "SKILL.md"));
+            }
+          }
         }
       }
     }
@@ -534,11 +554,14 @@ async function resolveRepoOwned(
     const file = `${repoRoot}/${rel}`;
     const parsed = parseSkillFromBytes(bytes, file);
     const { name: skillName } = finalSegment(parsed.fields.name, dirName, file);
+    // parts is [root, <plugin>, "skills", <name>, "SKILL.md"] for the plugin form.
+    const plugin = parts.length === 5 && parts[2] === "skills" ? parts[1]! : null;
+    const invocation = plugin ? pluginInvocation(plugin, skillName) : personalInvocation(skillName);
     entries.push({
       relPath: rel,
       dirName,
-      canonicalInvocation: personalInvocation(skillName),
-      namespacedInvocations: [personalInvocation(skillName)],
+      canonicalInvocation: invocation,
+      namespacedInvocations: [invocation],
       digest: digestBytes(bytes),
       redistribution: "full", // repo-owned: always redistributable (this repo's own content)
       licenseDeclared: repoLicense,

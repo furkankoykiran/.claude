@@ -1,0 +1,105 @@
+# marketplace.toml — authoritative source for the fk-toolkit plugin marketplace.
+#
+# `bun run marketplace:generate` reads this file, inspects each plugin directory
+# for the components it actually ships, and writes:
+#
+#   .claude-plugin/marketplace.json          (the marketplace manifest)
+#   skills/<plugin>/.claude-plugin/plugin.json  (one manifest per plugin)
+#
+# Nothing here is hand-maintained twice: descriptions, versions, licences and
+# component inventories all originate from this file plus the tree it describes.
+# `bun run marketplace:check` fails if the committed output drifts.
+#
+# WHY plugins live under skills/<name>/
+# -------------------------------------
+# This repository IS ~/.claude. Claude Code loads any directory under
+# ~/.claude/skills/ that carries .claude-plugin/plugin.json as a "skills-dir"
+# plugin (this is what `claude plugin init` scaffolds). Putting the plugins there
+# means one layout serves both consumers:
+#
+#   * clone-to-~/.claude users get them automatically as <name>@skills-dir;
+#   * marketplace users install them from the relative-path sources below.
+#
+# There is no second copy of any file.
+#
+# WHAT IS DELIBERATELY *NOT* HERE
+# -------------------------------
+# * Third-party skill packs (gstack, marketing, taste, impeccable, karpathy,
+#   manim, anthropic). We do not own them. Republishing them under this
+#   marketplace would be redistribution we have not cleared, and one of them
+#   declares no licence at all. They stay installer-fetched and lock-pinned;
+#   see skills-sources.toml and docs/provenance.md.
+# * hooks/. Existing installs reference ~/.claude/hooks/*.sh by absolute path
+#   from their own (user-owned, gitignored) settings.json. Moving those files
+#   into a plugin would break every one of those configs on update, so hooks
+#   stay bootstrap-managed. See docs/architecture-distribution.md.
+
+schema_version = 1
+
+[marketplace]
+name = "fk-toolkit"
+display_name = "FK Claude Toolkit"
+description = "Deterministic, provenance-audited Claude Code plugins: GitHub workflow automation, writing tools, narrated Manim video, engineering subagents, and the toolkit's own updater."
+owner_name = "Furkan Köykıran"
+owner_url = "https://github.com/furkankoykiran"
+homepage = "https://github.com/furkankoykiran/.claude"
+repository = "https://github.com/furkankoykiran/.claude"
+license = "MIT"
+# Plugin directories are resolved relative to the repository root.
+plugin_root = "skills"
+
+# Former plugin names, so existing installs migrate instead of breaking.
+# Map old name -> new name, or old name -> "" for a plugin that was removed.
+# (Empty string is written to marketplace.json as JSON null.)
+[marketplace.renames]
+
+# ---------------------------------------------------------------------------
+# Plugins. `dir` is relative to plugin_root; `skills` / `agents` list the
+# component directories that must exist (the generator fails if one is missing
+# or if the directory holds a component this file does not declare).
+# ---------------------------------------------------------------------------
+
+[[plugins]]
+name = "fk-gh-flow"
+dir = "fk-gh-flow"
+display_name = "GitHub Flow"
+description = "End-to-end GitHub workflow: find issues worth working on, solve one into a pull request, follow up on review feedback, and write comments that read like a human wrote them."
+category = "productivity"
+keywords = ["github", "issues", "pull-requests", "code-review", "open-source"]
+skills = ["find-issues", "find-repos", "github-comment", "pr-followup", "solve-issue"]
+
+[[plugins]]
+name = "fk-writing-kit"
+dir = "fk-writing-kit"
+display_name = "Writing Kit"
+description = "Turn raw material into publishable writing: strip AI tells from drafts, and build blog posts or LinkedIn copy from a chat, a URL, or a GitHub profile."
+category = "content"
+keywords = ["writing", "blogging", "editing", "linkedin", "content"]
+skills = ["blog-from-chat", "github-profile-blog", "humanizer", "linkedin-post"]
+
+[[plugins]]
+name = "fk-manim-video"
+dir = "fk-manim-video"
+display_name = "Narrated Manim Video"
+description = "Build Manim animations with synced spoken narration using edge-tts and ffmpeg. Ships a NarratedScene base class, reusable visuals, and a screenshot-asset pipeline."
+category = "media"
+keywords = ["manim", "video", "narration", "tts", "animation"]
+skills = ["manim-narration"]
+
+[[plugins]]
+name = "fk-eng-agents"
+dir = "fk-eng-agents"
+display_name = "Engineering Subagents"
+description = "Four focused subagents — researcher, planner, code-reviewer, debugger — for deep codebase research, dependency-aware planning, pre-commit review, and root-cause debugging. Adds no skill-listing context cost."
+category = "development"
+keywords = ["subagents", "code-review", "debugging", "planning", "research"]
+agents = ["code-reviewer", "debugger", "planner", "researcher"]
+
+[[plugins]]
+name = "fk-toolkit-ops"
+dir = "fk-toolkit-ops"
+display_name = "Toolkit Ops"
+description = "Operate the toolkit itself: check for and apply toolkit updates on the stable or edge channel, and wire an MCP server into Claude Code from a pasted config block."
+category = "development"
+keywords = ["mcp", "updates", "maintenance", "bootstrap"]
+skills = ["add-mcp", "toolkit-update"]

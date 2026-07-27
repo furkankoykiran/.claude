@@ -18,14 +18,6 @@
       "sourceId": "marketing"
     },
     {
-      "key": "/add-mcp",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "repository"
-    },
-    {
       "key": "/ads",
       "kind": "added",
       "manualReviewRequired": false,
@@ -95,14 +87,6 @@
       ],
       "securitySensitive": true,
       "sourceId": "gstack"
-    },
-    {
-      "key": "/blog-from-chat",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "repository"
     },
     {
       "key": "/brandkit",
@@ -414,7 +398,7 @@
       "sourceId": "marketing"
     },
     {
-      "key": "/find-issues",
+      "key": "/fk-gh-flow:find-issues",
       "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
@@ -422,7 +406,91 @@
       "sourceId": "repository"
     },
     {
-      "key": "/find-repos",
+      "key": "/fk-gh-flow:find-repos",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "repository"
+    },
+    {
+      "key": "/fk-gh-flow:github-comment",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
+      "sourceId": "repository"
+    },
+    {
+      "key": "/fk-gh-flow:pr-followup",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "repository"
+    },
+    {
+      "key": "/fk-gh-flow:solve-issue",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "repository"
+    },
+    {
+      "key": "/fk-manim-video:manim-narration",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "repository"
+    },
+    {
+      "key": "/fk-toolkit-ops:add-mcp",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "repository"
+    },
+    {
+      "key": "/fk-toolkit-ops:toolkit-update",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
+      "sourceId": "repository"
+    },
+    {
+      "key": "/fk-writing-kit:blog-from-chat",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "repository"
+    },
+    {
+      "key": "/fk-writing-kit:github-profile-blog",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "repository"
+    },
+    {
+      "key": "/fk-writing-kit:humanizer",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "repository"
+    },
+    {
+      "key": "/fk-writing-kit:linkedin-post",
       "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
@@ -456,24 +524,6 @@
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "taste"
-    },
-    {
-      "key": "/github-comment",
-      "kind": "added",
-      "manualReviewRequired": true,
-      "reasons": [
-        "new-skill-capability:bash/powershell"
-      ],
-      "securitySensitive": true,
-      "sourceId": "repository"
-    },
-    {
-      "key": "/github-profile-blog",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "repository"
     },
     {
       "key": "/gpt-taste",
@@ -530,14 +580,6 @@
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "taste"
-    },
-    {
-      "key": "/humanizer",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "repository"
     },
     {
       "key": "/image",
@@ -715,14 +757,6 @@
       "sourceId": "gstack"
     },
     {
-      "key": "/linkedin-post",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "repository"
-    },
-    {
       "key": "/make-pdf",
       "kind": "added",
       "manualReviewRequired": true,
@@ -740,14 +774,6 @@
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "manim"
-    },
-    {
-      "key": "/manim-narration",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "repository"
     },
     {
       "key": "/manimce-best-practices",
@@ -957,14 +983,6 @@
       ],
       "securitySensitive": true,
       "sourceId": "anthropic"
-    },
-    {
-      "key": "/pr-followup",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "repository"
     },
     {
       "key": "/pricing",
@@ -1214,14 +1232,6 @@
       "sourceId": "marketing"
     },
     {
-      "key": "/solve-issue",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "repository"
-    },
-    {
       "key": "/spec",
       "kind": "added",
       "manualReviewRequired": true,
@@ -1290,7 +1300,7 @@
   ],
   "schemaVersion": 2,
   "summary": {
-    "added": 141,
+    "added": 142,
     "licenseRestricted": 10,
     "manualReviewRequired": true,
     "massChange": false,
@@ -1304,7 +1314,7 @@
       "new-skill-capability:network-access"
     ],
     "runtimeOnly": 3,
-    "securitySensitive": 64,
+    "securitySensitive": 65,
     "updated": 0
   }
 }

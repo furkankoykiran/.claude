@@ -2,20 +2,19 @@
 
 # Catalog change report
 
-- added: 141
+- added: 142
 - updated: 0
 - removed: 0
 - renamed: 0
 - license-restricted: 10
 - runtime-only: 3
-- security-sensitive: 64
+- security-sensitive: 65
 - **manual-review-required: true**
 
-## Added (141)
+## Added (142)
 
 - `/ab-testing`
 - `/ad-creative`
-- `/add-mcp`
 - `/ads`
 - `/ai-seo`
 - `/analytics`
@@ -24,7 +23,6 @@
 - `/autoplan`
 - `/benchmark`
 - `/benchmark-models`
-- `/blog-from-chat`
 - `/brandkit`
 - `/browse`
 - `/canary`
@@ -58,20 +56,27 @@
 - `/document-release`
 - `/docx`
 - `/emails`
-- `/find-issues`
-- `/find-repos`
+- `/fk-gh-flow:find-issues`
+- `/fk-gh-flow:find-repos`
+- `/fk-gh-flow:github-comment`
+- `/fk-gh-flow:pr-followup`
+- `/fk-gh-flow:solve-issue`
+- `/fk-manim-video:manim-narration`
+- `/fk-toolkit-ops:add-mcp`
+- `/fk-toolkit-ops:toolkit-update`
+- `/fk-writing-kit:blog-from-chat`
+- `/fk-writing-kit:github-profile-blog`
+- `/fk-writing-kit:humanizer`
+- `/fk-writing-kit:linkedin-post`
 - `/free-tools`
 - `/freeze`
 - `/full-output-enforcement`
-- `/github-comment`
-- `/github-profile-blog`
 - `/gpt-taste`
 - `/graphifyy`
 - `/gstack-upgrade`
 - `/guard`
 - `/health`
 - `/high-end-visual-design`
-- `/humanizer`
 - `/image`
 - `/image-to-code`
 - `/imagegen-frontend-mobile`
@@ -91,10 +96,8 @@
 - `/launch`
 - `/lead-magnets`
 - `/learn`
-- `/linkedin-post`
 - `/make-pdf`
 - `/manim-composer`
-- `/manim-narration`
 - `/manimce-best-practices`
 - `/manimgl-best-practices`
 - `/marketing-council`
@@ -118,7 +121,6 @@
 - `/plan-tune`
 - `/popups`
 - `/pptx`
-- `/pr-followup`
 - `/pricing`
 - `/product-marketing`
 - `/programmatic-seo`
@@ -146,7 +148,6 @@
 - `/skillify`
 - `/sms`
 - `/social`
-- `/solve-issue`
 - `/spec`
 - `/stitch-design-taste`
 - `/sync-gbrain`
@@ -155,7 +156,7 @@
 - `/web-artifacts-builder`
 - `/xlsx`
 
-## Security-sensitive (64)
+## Security-sensitive (65)
 
 - `/autoplan`
 - `/benchmark`
@@ -177,8 +178,9 @@
 - `/document-generate`
 - `/document-release`
 - `/docx`
+- `/fk-gh-flow:github-comment`
+- `/fk-toolkit-ops:toolkit-update`
 - `/freeze`
-- `/github-comment`
 - `/gstack-upgrade`
 - `/guard`
 - `/health`
@@ -222,7 +224,7 @@
 - `/web-artifacts-builder`
 - `/xlsx`
 
-## Manual-review-required (64)
+## Manual-review-required (65)
 
 - `/autoplan`
 - `/benchmark`
@@ -244,8 +246,9 @@
 - `/document-generate`
 - `/document-release`
 - `/docx`
+- `/fk-gh-flow:github-comment`
+- `/fk-toolkit-ops:toolkit-update`
 - `/freeze`
-- `/github-comment`
 - `/gstack-upgrade`
 - `/guard`
 - `/health`

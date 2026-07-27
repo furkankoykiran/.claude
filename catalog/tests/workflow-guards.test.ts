@@ -282,9 +282,35 @@ describe("release workflow: race and completeness invariants", () => {
     expect(raw).toMatch(/is CORRUPT/);
   });
 
-  it("reads release-override labels by exact commit lookup", () => {
-    expect(raw).toMatch(/commits\/\$\{SHA\}\/pulls/);
-    expect(raw).not.toMatch(/gh pr list --state merged --limit 1 --search/);
+  it("tags the version the tree declares, not one it computed", () => {
+    // VERSION is the single source of truth: every plugin.json and marketplace
+    // entry already carries it. A tag derived from anything else would let
+    // installers and releases disagree about what shipped.
+    expect(raw).toMatch(/next_tag=v\$\{VERSION\}/);
+    expect(raw).toMatch(/tr -d '\[:space:\]' < VERSION/);
+    expect(raw).not.toMatch(/release-tag\.ts/);
+  });
+
+  it("refuses to release a VERSION that understates what landed", () => {
+    expect(raw).toContain("release-notes.ts check-version");
+    expect(raw).toMatch(/VERSION is too low/);
+  });
+
+  it("refuses to re-tag a VERSION that is already published", () => {
+    // Otherwise a forgotten bump silently produces a second release claiming to
+    // be a version that already exists.
+    expect(raw).toMatch(/is already released as v\$\{VERSION\}/);
+  });
+
+  it("builds release notes from the commits, not a hand-maintained changelog", () => {
+    expect(raw).toContain("release-notes.ts notes");
+    expect(raw).not.toMatch(/CHANGELOG/);
+  });
+
+  it("no longer requests permissions it stopped needing", () => {
+    // The label-override lookup is gone; leaving pull-requests: read behind
+    // would keep a token scope with no consumer.
+    expect(raw).not.toMatch(/pull-requests:\s*read/);
   });
 
   it("tags the exact released commit", () => {

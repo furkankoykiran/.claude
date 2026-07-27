@@ -45,6 +45,8 @@ $RepoUrl   = 'https://github.com/furkankoykiran/.claude.git'
 $GstackRepo = 'https://github.com/garrytan/gstack.git'
 $ClaudeDir = if ($env:CLAUDE_DIR) { $env:CLAUDE_DIR } else { Join-Path $HOME '.claude' }
 $IsMinimal = $Minimal.IsPresent -or ($env:CLAUDE_BOOTSTRAP_MINIMAL -eq '1')
+$Channel   = if ($env:CLAUDE_BOOTSTRAP_CHANNEL) { $env:CLAUDE_BOOTSTRAP_CHANNEL } else { 'stable' }
+$LockFile  = Join-Path $ClaudeDir 'skills-source.lock.json'
 
 $script:FailedSteps = @()
 
@@ -126,13 +128,25 @@ function Invoke-Step {
 # ---------------------------------------------------------------------------
 # 1. Sync the repo at $ClaudeDir
 # ---------------------------------------------------------------------------
+#
+# Update strategy: fast-forward only, never `reset --hard`. Identical policy to
+# install.sh -- see the long comment on sync_repo there for why. $ClaudeDir holds
+# the user's settings, memory and provider config; discarding their tracked edits
+# on every re-run is not an acceptable way to update.
+#
+# Channel selection matches install.sh and `fkt`:
+#   stable (default)  the highest v* release tag
+#   edge              origin/main
 function Initialize-Repo {
-    if (Test-Path (Join-Path $ClaudeDir '.git')) {
-        Write-Step "Updating existing repo at $ClaudeDir"
-        git -C $ClaudeDir fetch origin
-        git -C $ClaudeDir reset --hard origin/main
+    if (-not (Test-Path $ClaudeDir)) {
+        Write-Step "Cloning $RepoUrl into $ClaudeDir"
+        git clone $RepoUrl $ClaudeDir
+        if ($LASTEXITCODE -ne 0) { throw "git clone failed (exit $LASTEXITCODE)" }
+        Update-ToChannel
+        return
     }
-    elseif (Test-Path $ClaudeDir) {
+
+    if (-not (Test-Path (Join-Path $ClaudeDir '.git'))) {
         Write-Step "Initializing git in existing $ClaudeDir"
         git -C $ClaudeDir init -b main | Out-Null
         git -C $ClaudeDir remote add origin $RepoUrl 2>$null
@@ -140,19 +154,106 @@ function Initialize-Repo {
             git -C $ClaudeDir remote set-url origin $RepoUrl
         }
         git -C $ClaudeDir fetch origin
-        git -C $ClaudeDir reset --hard origin/main
+        if ($LASTEXITCODE -ne 0) { throw "git fetch failed (exit $LASTEXITCODE)" }
+        # Checking out REPORTS colliding pre-existing files instead of
+        # overwriting them, which `reset --hard` would do silently.
+        git -C $ClaudeDir checkout -B main origin/main
+        if ($LASTEXITCODE -ne 0) {
+            throw "Existing files in $ClaudeDir conflict with the repository (listed above). Move or delete them, or install into a different CLAUDE_DIR, then re-run. Nothing was overwritten."
+        }
         git -C $ClaudeDir branch --set-upstream-to=origin/main main 2>$null
+        Update-ToChannel
+        return
+    }
+
+    Write-Step "Updating existing repo at $ClaudeDir (channel: $Channel)"
+
+    $dirty = git -C $ClaudeDir status --porcelain --untracked-files=no
+    if ($dirty) {
+        Write-Warn "$ClaudeDir has uncommitted changes to tracked files - NOT updating the repo."
+        Write-Warn "Nothing was discarded. Review with: git -C $ClaudeDir status"
+        Write-Warn "Commit or stash them, then re-run. The rest of the bootstrap continues."
+        return
+    }
+
+    git -C $ClaudeDir fetch --tags --prune origin
+    if ($LASTEXITCODE -ne 0) { throw "git fetch failed (exit $LASTEXITCODE)" }
+    Update-ToChannel
+}
+
+# Fast-forward the checkout to the tip of the requested channel. Refuses, and
+# says why, rather than moving a checkout that carries local commits.
+function Update-ToChannel {
+    $target = ''
+    if ($Channel -eq 'stable') {
+        # Capture the whole list, then take the first line. Piping `git tag` into
+        # `Select-Object -First 1` would stop reading early, and the same shape in
+        # POSIX shell (`| head -1`) kills git with SIGPIPE once the tag list grows
+        # past a few hundred entries. Keep both installers structurally identical.
+        $tags = @(git -C $ClaudeDir tag --list 'v*' --sort=-v:refname)
+        if ($tags.Count -gt 0) { $target = $tags[0] }
+        if (-not $target) {
+            Write-Warn "no v* release tag found; staying on the current revision."
+            Write-Warn "Use CLAUDE_BOOTSTRAP_CHANNEL=edge to track origin/main."
+            return
+        }
+    }
+    elseif ($Channel -eq 'edge') {
+        $target = 'origin/main'
     }
     else {
-        Write-Step "Cloning $RepoUrl into $ClaudeDir"
-        git clone $RepoUrl $ClaudeDir
+        throw "CLAUDE_BOOTSTRAP_CHANNEL must be 'stable' or 'edge' (got '$Channel')"
     }
-    if ($LASTEXITCODE -ne 0) { throw "git sync failed (exit $LASTEXITCODE)" }
+
+    $targetSha = git -C $ClaudeDir rev-parse --verify "$target^{commit}" 2>$null
+    if ($LASTEXITCODE -ne 0 -or -not $targetSha) {
+        Write-Warn "could not resolve $target; leaving the checkout alone"
+        return
+    }
+    $headSha = git -C $ClaudeDir rev-parse HEAD
+    if ($targetSha -eq $headSha) {
+        Write-Step "Already at $target"
+        return
+    }
+
+    git -C $ClaudeDir merge-base --is-ancestor HEAD $targetSha 2>$null
+    if ($LASTEXITCODE -ne 0) {
+        Write-Warn "$ClaudeDir has local commits that are not on $target - NOT updating."
+        Write-Warn "They would be lost. Inspect with: git -C $ClaudeDir log --oneline $targetSha..HEAD"
+        return
+    }
+
+    git -C $ClaudeDir merge --ff-only --quiet $targetSha
+    if ($LASTEXITCODE -eq 0) {
+        Write-Step "Fast-forwarded to $target"
+    }
+    else {
+        Write-Warn "fast-forward to $target failed; the checkout was left unchanged"
+    }
 }
 
 # ---------------------------------------------------------------------------
 # 2. Seed personal config from the example templates (never overwrite)
 # ---------------------------------------------------------------------------
+# CLAUDE.md is tracked and IS overwritten by updates. CLAUDE.local.md is
+# gitignored and is where machine-specific instructions belong. Seeded once,
+# never overwritten. Mirrors seed_local_overrides in install.sh.
+function Set-SeedLocalOverride {
+    $target = Join-Path $ClaudeDir 'CLAUDE.local.md'
+    if (Test-Path $target) { return }
+    @(
+        '# Local instructions'
+        ''
+        'This file is yours. It is gitignored, so toolkit updates never touch it, and it'
+        'is loaded alongside the tracked CLAUDE.md.'
+        ''
+        'Put machine-specific or private instructions here - paths that only exist on'
+        'this box, an employer''s conventions, personal preferences. Anything you put in'
+        'the tracked CLAUDE.md instead will be overwritten by the next update.'
+    ) | Set-Content -Path $target -Encoding UTF8
+    Write-Step 'Seeded CLAUDE.local.md (gitignored - your instructions live here, not in CLAUDE.md)'
+}
+
 function Set-SeedConfig {
     foreach ($name in @('config.json', 'settings.json')) {
         $target  = Join-Path $ClaudeDir $name
@@ -215,15 +316,8 @@ function Test-NodeRuntime {
 # ---------------------------------------------------------------------------
 function Install-Gstack {
     $gstackDir = Join-Path $ClaudeDir 'skills\gstack'
-    if (Test-Path (Join-Path $gstackDir '.git')) {
-        Write-Step 'Updating gstack'
-        git -C $gstackDir pull --ff-only origin main 2>$null
-    }
-    else {
-        Write-Step "Cloning gstack into $gstackDir"
-        git clone --depth 1 $GstackRepo $gstackDir
-        if ($LASTEXITCODE -ne 0) { throw "gstack clone failed (exit $LASTEXITCODE)" }
-    }
+    # Pinned to the lock like every other upstream source, matching install.sh.
+    Update-SkillStage $GstackRepo $gstackDir -SourceId 'gstack'
 
     $bash = Find-GitBash
     if (-not $bash) {
@@ -394,19 +488,103 @@ function Install-Graphify {
 # ---------------------------------------------------------------------------
 # 9. Upstream skill packs (parity with install.sh)
 # ---------------------------------------------------------------------------
-# Each pack is cloned into a gitignored staging dir under skills/ and its skill
+# Each pack is cloned into a gitignored staging dir OUTSIDE skills/ and its skill
 # subdirectories are copied to the top level so Claude Code auto-discovers them.
+#
+# The staging dir must stay outside skills/: four of these upstream repos ship a
+# .claude-plugin\plugin.json at their root, and Claude Code loads any directory
+# under ~/.claude/skills/ carrying one as a skills-dir plugin (dot-prefixed
+# included). That made every skill in those packs load twice - once as the copied
+# top-level skill, once namespaced by the accidental plugin - and put the clone's
+# bin\ on the Bash tool's PATH.
+$SkillSrcDir = Join-Path $ClaudeDir '.cache\skill-src'
 
-function Update-SkillStage {
-    param([Parameter(Mandatory)][string]$Repo, [Parameter(Mandatory)][string]$StageDir)
-    if (Test-Path (Join-Path $StageDir '.git')) {
-        git -C $StageDir fetch origin --depth 1 2>$null
-        git -C $StageDir reset --hard origin/HEAD 2>$null
+# Move any pre-existing clone from the old skills\.<pack>_upstream_src location
+# so upgrading installs stop double-loading without manual cleanup.
+function Move-LegacySkillStage {
+    New-Item -ItemType Directory -Force -Path $SkillSrcDir | Out-Null
+    $skillsDir = Join-Path $ClaudeDir 'skills'
+    if (-not (Test-Path $skillsDir)) { return }
+    $moved = 0
+    foreach ($legacy in Get-ChildItem -Path $skillsDir -Directory -Force -Filter '.*_upstream_src') {
+        $pack = $legacy.Name -replace '^\.', '' -replace '_upstream_src$', ''
+        $dest = Join-Path $SkillSrcDir $pack
+        if (Test-Path $dest) {
+            Remove-Item -Recurse -Force $legacy.FullName   # already migrated
+        }
+        else {
+            Move-Item -Force -Path $legacy.FullName -Destination $dest
+        }
+        $moved++
     }
-    else {
-        git clone --depth 1 $Repo $StageDir
+    if ($moved -gt 0) {
+        Write-Step "Moved $moved upstream staging clone(s) out of skills\ (they were loading as duplicate plugins)"
+    }
+}
+
+# The immutable revision the lock records for a source, or '' when it has none.
+# PowerShell has a JSON parser, so unlike install.sh (which runs before bun is
+# guaranteed to exist and reads the lock with awk) this can just parse it.
+function Get-LockedRevision {
+    param([Parameter(Mandatory)][string]$SourceId)
+    if (-not (Test-Path $LockFile)) { return '' }
+    try {
+        $lock = Get-Content -Raw $LockFile | ConvertFrom-Json
+    }
+    catch {
+        Write-Warn "could not parse $LockFile - installing unpinned"
+        return ''
+    }
+    $src = $lock.sources | Where-Object { $_.id -eq $SourceId } | Select-Object -First 1
+    if ($src -and $src.resolvedRevision) { return [string]$src.resolvedRevision }
+    return ''
+}
+
+# Leave $StageDir checked out at the reviewed revision (stable) or upstream HEAD
+# (edge). Mirrors stage_source in install.sh, including its refusals.
+function Update-SkillStage {
+    param(
+        [Parameter(Mandatory)][string]$Repo,
+        [Parameter(Mandatory)][string]$StageDir,
+        [string]$SourceId = ''
+    )
+    $sha = ''
+    if ($Channel -eq 'stable' -and $SourceId) {
+        $sha = Get-LockedRevision $SourceId
+        if (-not $sha) {
+            Write-Warn "no locked revision for '$SourceId' - falling back to upstream HEAD."
+            Write-Warn "Run 'bun run catalog:resolve' and commit the lock to make this deterministic."
+        }
+    }
+
+    if (-not (Test-Path (Join-Path $StageDir '.git'))) {
+        # A non-empty directory that is NOT a checkout is not ours to delete.
+        if ((Test-Path $StageDir) -and (Get-ChildItem -Force $StageDir | Select-Object -First 1)) {
+            throw "$StageDir exists but is not a git checkout - refusing to replace it. Move it aside and re-run."
+        }
+        if (Test-Path $StageDir) { Remove-Item -Recurse -Force $StageDir }
+        # No --depth when pinning: a shallow clone cannot check out an older SHA.
+        if ($sha) { git clone --quiet $Repo $StageDir } else { git clone --quiet --depth 1 $Repo $StageDir }
         if ($LASTEXITCODE -ne 0) { throw "clone failed: $Repo" }
     }
+    else {
+        git -C $StageDir fetch --quiet --tags origin 2>$null
+    }
+
+    if ($sha) {
+        git -C $StageDir cat-file -e "$sha^{commit}" 2>$null
+        if ($LASTEXITCODE -ne 0) {
+            git -C $StageDir fetch --quiet --unshallow origin 2>$null
+            if ($LASTEXITCODE -ne 0) { git -C $StageDir fetch --quiet origin 2>$null }
+        }
+        git -C $StageDir checkout --quiet --detach $sha 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            Write-Step "  pinned $SourceId at $($sha.Substring(0, 12))"
+            return
+        }
+        Write-Warn "locked revision $($sha.Substring(0, 12)) for '$SourceId' is not reachable upstream - it may have been force-pushed away. Using upstream HEAD instead; re-resolve the lock to fix."
+    }
+    git -C $StageDir checkout --quiet --detach origin/HEAD 2>$null
 }
 
 function Copy-SkillDir {
@@ -417,8 +595,8 @@ function Copy-SkillDir {
 }
 
 function Install-ManimUpstream {
-    $stage = Join-Path $ClaudeDir 'skills\.manim_upstream_src'
-    Update-SkillStage 'https://github.com/adithya-s-k/manim_skill.git' $stage
+    $stage = Join-Path $SkillSrcDir 'manim'
+    Update-SkillStage 'https://github.com/adithya-s-k/manim_skill.git' $stage -SourceId 'manim'
     foreach ($s in @('manimce-best-practices', 'manimgl-best-practices', 'manim-composer')) {
         $src = Join-Path $stage "skills\$s"
         if (Test-Path $src) {
@@ -431,8 +609,8 @@ function Install-ManimUpstream {
 }
 
 function Install-KarpathySkill {
-    $stage = Join-Path $ClaudeDir 'skills\.karpathy_upstream_src'
-    Update-SkillStage 'https://github.com/multica-ai/andrej-karpathy-skills.git' $stage
+    $stage = Join-Path $SkillSrcDir 'karpathy'
+    Update-SkillStage 'https://github.com/multica-ai/andrej-karpathy-skills.git' $stage -SourceId 'karpathy'
     $src = Join-Path $stage 'skills\karpathy-guidelines'
     if (Test-Path $src) {
         Copy-SkillDir $src 'karpathy-guidelines'
@@ -447,9 +625,10 @@ function Install-SkillCollection {
         [Parameter(Mandatory)][string]$Repo,
         [Parameter(Mandatory)][string]$StageDir,
         [Parameter(Mandatory)][string]$Marker,
+        [string]$SourceId = '',
         [switch]$RequireSkillMd
     )
-    Update-SkillStage $Repo $StageDir
+    Update-SkillStage $Repo $StageDir -SourceId $SourceId
     $count = 0
     $skillsRoot = Join-Path $StageDir 'skills'
     if (-not (Test-Path $skillsRoot)) { return }
@@ -468,8 +647,8 @@ function Install-SkillCollection {
 }
 
 function Install-ImpeccableSkill {
-    $stage = Join-Path $ClaudeDir 'skills\.impeccable_upstream_src'
-    Update-SkillStage 'https://github.com/pbakaus/impeccable.git' $stage
+    $stage = Join-Path $SkillSrcDir 'impeccable'
+    Update-SkillStage 'https://github.com/pbakaus/impeccable.git' $stage -SourceId 'impeccable'
     $src = Join-Path $stage '.claude\skills\impeccable'
     if (Test-Path $src) {
         Copy-SkillDir $src 'impeccable'
@@ -485,8 +664,8 @@ function Install-ImpeccableSkill {
 # `claude-api` (name-collides with an existing skill) and skills that overlap
 # existing packs (frontend-design, webapp-testing, canvas-design, algorithmic-art).
 function Install-AnthropicSkill {
-    $stage = Join-Path $ClaudeDir 'skills\.anthropic_upstream_src'
-    Update-SkillStage 'https://github.com/anthropics/skills.git' $stage
+    $stage = Join-Path $SkillSrcDir 'anthropic'
+    Update-SkillStage 'https://github.com/anthropics/skills.git' $stage -SourceId 'anthropic'
     $count = 0
     foreach ($name in @('docx', 'pdf', 'pptx', 'xlsx', 'mcp-builder', 'skill-creator', 'web-artifacts-builder', 'doc-coauthoring')) {
         $src = Join-Path $stage "skills\$name"
@@ -565,6 +744,10 @@ function Invoke-Main {
     # Core
     Initialize-Repo
     Invoke-Step 'config seeding'   { Set-SeedConfig }
+    Invoke-Step 'local overrides'  { Set-SeedLocalOverride }
+    # Runs in minimal mode too: an install that once had the packs still carries
+    # the misplaced clones, and leaving them behind keeps the duplicate plugins.
+    Invoke-Step 'staging migration' { Move-LegacySkillStage }
     Invoke-Step 'bun'              { Install-Bun }
     Invoke-Step 'node runtime'     { Test-NodeRuntime }
     Invoke-Step 'gstack + browser' { Install-Gstack }
@@ -581,15 +764,15 @@ function Invoke-Main {
         Invoke-Step 'marketing skills' {
             Install-SkillCollection `
                 -Repo 'https://github.com/coreyhaines31/marketingskills.git' `
-                -StageDir (Join-Path $ClaudeDir 'skills\.marketing_upstream_src') `
-                -Marker '.from_marketing'
+                -StageDir (Join-Path $SkillSrcDir 'marketing') `
+                -SourceId 'marketing' -Marker '.from_marketing'
         }
         Invoke-Step 'impeccable skill' { Install-ImpeccableSkill }
         Invoke-Step 'taste skills' {
             Install-SkillCollection `
                 -Repo 'https://github.com/Leonxlnx/taste-skill.git' `
-                -StageDir (Join-Path $ClaudeDir 'skills\.taste_upstream_src') `
-                -Marker '.from_taste' -RequireSkillMd
+                -StageDir (Join-Path $SkillSrcDir 'taste') `
+                -SourceId 'taste' -Marker '.from_taste' -RequireSkillMd
         }
         Invoke-Step 'anthropic skills' { Install-AnthropicSkill }
         Invoke-Step 'graphify' { Install-Graphify }

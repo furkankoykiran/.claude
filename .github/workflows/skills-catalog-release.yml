@@ -15,9 +15,6 @@ on:
 
 permissions:
   contents: write
-  # Read-only: the SemVer step looks up release:* override labels on the merged
-  # PR. Without this the lookup is silently denied and overrides never apply.
-  pull-requests: read
 
 # Repository-wide lock, NOT per-SHA. Two main commits landing close together
 # would otherwise both read the same "latest tag" and race to create it: one
@@ -52,6 +49,8 @@ jobs:
           bun run typecheck
           bun test catalog
           bun run catalog:check
+          bun run marketplace:check
+          bun run catalog:budget
 
       # Reproducibility check. Must use the same plain regeneration the CI
       # catalog job asserts on main (diff base: empty), or the committed
@@ -142,23 +141,41 @@ jobs:
           echo "HEAD already released as $TAG; verifying its assets."
           echo "existing_tag=$TAG" >> "$GITHUB_ENV"
 
-      - name: Compute next SemVer tag
+      # VERSION is the single source of truth: it is what every plugin.json and
+      # every marketplace entry already carries, so the release tag has to be the
+      # same value or installers and releases disagree about what shipped.
+      #
+      # The only judgement left is whether that VERSION is BIG ENOUGH for what
+      # landed. check-version derives the minimum from the commits plus the
+      # catalog diff (a removed invocation is breaking even when no commit
+      # subject says so) and fails with the exact value to write.
+      - name: Verify VERSION covers what landed
         if: ${{ env.existing_tag == '' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          SHA=$(git rev-parse HEAD)
-          # Read release-override labels from the PR that produced THIS commit.
-          # The commits/pulls endpoint is an exact lookup; `gh pr list --search`
-          # went through the search index, which lags behind a fresh merge and
-          # silently returned nothing.
-          LABELS=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${SHA}/pulls" \
-                     --jq '[.[].labels[].name] | join(",")' 2>/dev/null || echo "")
-          echo "Labels on the originating PR: ${LABELS:-<none>}"
-          NEXT=$(bun run catalog/src/release-tag.ts "${{ env.latest_tag }}" catalog/generated/skills-catalog-diff.json "$LABELS" | tail -1)
-          echo "next_tag=$NEXT" >> "$GITHUB_ENV"
-          echo "Computed next tag: $NEXT"
+          VERSION=$(tr -d '[:space:]' < VERSION)
+          PREV="${{ env.latest_tag }}"
+          DIFF_ARG=""
+          if [ -f catalog/generated/skills-catalog-diff.json ]; then
+            DIFF_ARG="--diff catalog/generated/skills-catalog-diff.json"
+          fi
+          # shellcheck disable=SC2086
+          if ! bun run catalog/src/release-notes.ts check-version \
+                 ${PREV:+--previous "$PREV"} $DIFF_ARG > /tmp/version-check.json; then
+            echo "::error::VERSION is too low for the changes in this range. See the job log for the exact value to write."
+            cat /tmp/version-check.json || true
+            exit 1
+          fi
+          BUMP=$(bun -e 'console.log(JSON.parse(await Bun.file("/tmp/version-check.json").text()).bump)')
+          echo "Required bump: $BUMP (VERSION=$VERSION, previous=${PREV:-none})"
+          if [ "$BUMP" = "none" ]; then
+            echo "next_tag=none" >> "$GITHUB_ENV"
+          elif git rev-parse -q --verify "refs/tags/v${VERSION}" >/dev/null; then
+            echo "::error::VERSION ${VERSION} is already released as v${VERSION}, but this commit is not that release. Bump VERSION and re-run 'bun run marketplace:generate'."
+            exit 1
+          else
+            echo "next_tag=v${VERSION}" >> "$GITHUB_ENV"
+          fi
 
       - name: Stop if no release is warranted
         if: ${{ env.existing_tag == '' && env.next_tag == 'none' }}
@@ -207,8 +224,16 @@ jobs:
           # shellcheck disable=SC2086
           ( cd "$STAGE" && sha256sum $ASSETS > SHA256SUMS )
 
-          # Release notes: version + source revisions + change counts + checksums.
-          TAG="$TAG" SHA="$SHA" bun run catalog/src/summary.ts --release-notes > /tmp/release-notes.md
+          # Release notes come from the commits in this range plus the catalog
+          # diff. There is no hand-maintained changelog to read; see
+          # docs/release-process.md.
+          PREV="${{ env.latest_tag }}"
+          bun run catalog/src/release-notes.ts notes \
+            ${PREV:+--previous "$PREV"} \
+            --sha "$SHA" \
+            --diff catalog/generated/skills-catalog-diff.json \
+            --repo-url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
+            > /tmp/release-notes.md
           {
             echo ""
             echo "### Checksums (release assets)"

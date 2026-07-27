@@ -1,0 +1,20 @@
+# fk-toolkit security advisories.
+#
+# Tab-separated so it needs no parser, no API and no account: `fkt` fetches this
+# one static file from the default branch and matches it against the installed
+# VERSION. Nothing is sent anywhere — the request carries no identifiers, and no
+# response is recorded beyond the cached copy of this file.
+#
+# Columns:
+#   id          FKT-YYYY-NNN
+#   severity    critical | high | moderate | low
+#   introduced  first affected version, or - if every earlier version is affected
+#   fixed       first fixed version, or - while unfixed
+#   summary     one line, no tabs
+#   url         advisory link, or - if there is none yet
+#
+# Advisories are published here even for users who have turned update checks
+# off; see docs/security-model.md. Publishing one is a deliberate, reviewed act
+# — this file is not a changelog.
+#
+#id	severity	introduced	fixed	summary	url

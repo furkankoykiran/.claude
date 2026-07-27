@@ -7,8 +7,8 @@ Generated index of every Claude Code skill, command, and runtime component repre
 Resolver version 1 · schema v1.
 
 - **Sources:** 11
-- **Skills / entries:** 141
-- **Redistributable (full body):** 131
+- **Skills / entries:** 142
+- **Redistributable (full body):** 132
 - **Runtime-only:** 3
 
 ## Anthropic skills (anthropics/skills)
@@ -193,21 +193,22 @@ _Runtime-only — see notes below._
 
 ## furkankoykiran/.claude (personal skills)
 
-type: `repo-owned` · pack: `repository` · skills: 11 · redistribution: full
+type: `repo-owned` · pack: `repository` · skills: 12 · redistribution: full
 
 | invocation | description | redistribution |
 | --- | --- | --- |
-| [/add-mcp](../../docs/skills/repository/add-mcp.md) | Provision an MCP server from a JSON `mcpServers` block. Use when the user pastes an MCP config snippet (e.g. from a serv | full |
-| [/blog-from-chat](../../docs/skills/repository/blog-from-chat.md) | Write a polished blog post from a chat or conversation summary, with multi-language output. Use when the user wants to t | full |
-| [/find-issues](../../docs/skills/repository/find-issues.md) | Search a specific GitHub repository for open issues that fit the user's contribution profile. Use when the user wants is | full |
-| [/find-repos](../../docs/skills/repository/find-repos.md) | Discover open-source contribution opportunities across an entire GitHub organization. Use when the user wants to find su | full |
-| [/github-comment](../../docs/skills/repository/github-comment.md) | Write natural, warm GitHub comments that sound like a real developer wrote them. Reads the issue/PR conversation history | full |
-| [/github-profile-blog](../../docs/skills/repository/github-profile-blog.md) | Write an educational blog post analyzing a GitHub profile's public activity. Use when the user wants to turn their GitHu | full |
-| [/humanizer](../../docs/skills/repository/humanizer.md) | Remove signs of AI-generated writing from text. Use when editing or reviewing text to make it sound more natural and hum | full |
-| [/linkedin-post](../../docs/skills/repository/linkedin-post.md) | Generate professionally formatted LinkedIn posts from a blog post, URL, or chat context. Use when the user wants a Linke | full |
-| [/manim-narration](../../docs/skills/repository/manim-narration.md) | Trigger when: (1) User asks for a "narrated Manim video", "anlatımlı manim", "manim with voice", "manim video with audio | full |
-| [/pr-followup](../../docs/skills/repository/pr-followup.md) | Analyze a GitHub pull request's latest discussion and act on pending review feedback or requested changes. Use when the  | full |
-| [/solve-issue](../../docs/skills/repository/solve-issue.md) | Solve a GitHub issue end-to-end and open a pull request. Use when the user wants to fix or resolve a specific GitHub iss | full |
+| [/fk-gh-flow:find-issues](../../docs/skills/repository/fk-gh-flow-find-issues.md) | Find open issues in ONE GitHub repository that fit the user's contribution profile. Use for "what can I contribute to <r | full |
+| [/fk-gh-flow:find-repos](../../docs/skills/repository/fk-gh-flow-find-repos.md) | Find contribution opportunities across an entire GitHub organisation, ranked by fit against the profile in ~/.claude/con | full |
+| [/fk-gh-flow:github-comment](../../docs/skills/repository/fk-gh-flow-github-comment.md) | Write GitHub issue comments, PR descriptions and review replies that read like a real developer wrote them, matching the | full |
+| [/fk-gh-flow:pr-followup](../../docs/skills/repository/fk-gh-flow-pr-followup.md) | Read a pull request's latest review discussion and act on the pending feedback. Use for "follow up on PR | full |
+| [/fk-gh-flow:solve-issue](../../docs/skills/repository/fk-gh-flow-solve-issue.md) | Solve a GitHub issue end-to-end and open a pull request. Use when the user wants to fix or resolve a specific GitHub iss | full |
+| [/fk-manim-video:manim-narration](../../docs/skills/repository/fk-manim-video-manim-narration.md) | Build a Manim video with spoken narration synced to the animation. Use for a "narrated Manim video", "anlatımlı manim",  | full |
+| [/fk-toolkit-ops:add-mcp](../../docs/skills/repository/fk-toolkit-ops-add-mcp.md) | Wire an MCP server into Claude Code from a pasted JSON `mcpServers` block, via `claude mcp add` rather than hand-editing | full |
+| [/fk-toolkit-ops:toolkit-update](../../docs/skills/repository/fk-toolkit-ops-toolkit-update.md) | Check for and apply FK Claude Toolkit updates, or switch the stable/edge channel. | full |
+| [/fk-writing-kit:blog-from-chat](../../docs/skills/repository/fk-writing-kit-blog-from-chat.md) | Turn a chat log, conversation or discussion summary into a publishable blog post, in one or more languages. Use for "blo | full |
+| [/fk-writing-kit:github-profile-blog](../../docs/skills/repository/fk-writing-kit-github-profile-blog.md) | Write an educational blog post analysing a GitHub profile's public activity. Use for "blog about my GitHub" or a write-u | full |
+| [/fk-writing-kit:humanizer](../../docs/skills/repository/fk-writing-kit-humanizer.md) | Strip the tells of AI-generated writing — inflated symbolism, promotional phrasing, vague attribution, em-dash and rule- | full |
+| [/fk-writing-kit:linkedin-post](../../docs/skills/repository/fk-writing-kit-linkedin-post.md) | Turn a blog post, URL or chat context into a formatted LinkedIn post. Use to share an article on LinkedIn or repurpose c | full |
 
 ## rtk (rtk-ai/rtk)
 
