@@ -157,6 +157,11 @@ function checkMovedPaths(docs: string[]): void {
     // name paths that have since moved. Checking it would force us to rewrite
     // history to keep a linter happy.
     if (doc === "docs/changelog-archive.md") continue;
+    // Payload uploaded to a ChatGPT project, not repository documentation. These
+    // files name the assistant's own uploaded files, which keep the bare release
+    // asset names because that is what the upload is called. Rewriting them to
+    // repository paths would break the artifact to satisfy a linter.
+    if (doc.startsWith("docs/chatgpt-project/")) continue;
     let section = "";
     readFileSync(join(ROOT, doc), "utf8").split("\n").forEach((line, i) => {
       const h = /^#{1,6}\s+(.*)$/.exec(line);
