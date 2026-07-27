@@ -292,6 +292,53 @@ export function checkVersion(
   };
 }
 
+export interface VersionPlan {
+  previous: string | null;
+  declared: string;
+  minimum: string;
+  next: string;
+  bump: Bump;
+  raised: boolean;
+  reason: string;
+}
+
+/**
+ * The VERSION this range should carry.
+ *
+ * checkVersion asks "is the declared VERSION big enough?" — a question the
+ * release only gets to ask after the merge, which is too late for an automated
+ * PR: the bot has already landed a catalog change it never bumped for, and main
+ * is un-releasable until a human fixes it by hand. This answers the same
+ * question one step earlier and returns the value to write.
+ *
+ * Never lowers VERSION. A VERSION already past the minimum is a deliberate bump
+ * someone made for a change that has not been released yet; clamping it down to
+ * the minimum would silently undo that and understate the next release.
+ */
+export function nextVersion(
+  declared: string,
+  previousTag: string | null,
+  groups: Grouped[],
+  diff: DiffReport | null,
+): VersionPlan {
+  // Validates `declared` and derives the minimum; throws on non-semver.
+  const verdict = checkVersion(declared, previousTag, groups, diff);
+  const dec = parseVersion(declared)!;
+  const min = parseVersion(verdict.minimum)!;
+  const raised = compareVersions(min, dec) > 0;
+  return {
+    previous: verdict.previous,
+    declared,
+    minimum: verdict.minimum,
+    next: raised ? verdict.minimum : declared,
+    bump: verdict.bump,
+    raised,
+    reason: raised
+      ? `raising VERSION ${declared} -> ${verdict.minimum} to cover the required ${verdict.bump} bump`
+      : verdict.reason,
+  };
+}
+
 export interface NotesOptions {
   version: string;
   migrations?: string[];
@@ -396,6 +443,14 @@ async function main(): Promise<void> {
   const diff = await loadDiff(arg("--diff"));
   const version = (await readFile(join(repoRoot, "VERSION"), "utf8")).trim();
   const commits = readCommits(repoRoot, previousTag, arg("--to") ?? "HEAD");
+  // A caller that is ABOUT to commit (the catalog automation, deciding its own
+  // VERSION before it has made the commit) has to reckon with that commit: the
+  // release will see it and derive a bump floor from it, so a plan built
+  // without it can come out a bump too low and strand main un-releasable.
+  const pending = arg("--pending-commit");
+  if (pending) {
+    commits.push({ sha: "0".repeat(40), shortSha: "0000000", subject: pending, body: "", files: [] });
+  }
   const groups = groupCommits(commits);
 
   if (mode === "check-version") {
@@ -407,6 +462,11 @@ async function main(): Promise<void> {
       process.stderr.write(`     printf '${verdict.minimum}\\n' > VERSION && bun run marketplace:generate\n`);
       process.exit(1);
     }
+    return;
+  }
+
+  if (mode === "next-version") {
+    process.stdout.write(JSON.stringify(nextVersion(version, previousTag, groups, diff), null, 2) + "\n");
     return;
   }
 
@@ -426,8 +486,9 @@ async function main(): Promise<void> {
   }
 
   process.stderr.write(
-    "usage: bun run catalog/src/release-notes.ts <notes|check-version> " +
-      "[--previous vX.Y.Z] [--to REF] [--diff FILE] [--sha SHA] [--repo-url URL]\n",
+    "usage: bun run catalog/src/release-notes.ts <notes|check-version|next-version> " +
+      "[--previous vX.Y.Z] [--to REF] [--diff FILE] [--sha SHA] [--repo-url URL] " +
+      "[--pending-commit SUBJECT]\n",
   );
   process.exit(mode ? 1 : 0);
 }

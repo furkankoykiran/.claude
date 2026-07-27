@@ -22,6 +22,7 @@
     "marketplace:validate": "./scripts/validate-marketplace.sh",
     "release:notes": "bun run catalog/src/release-notes.ts notes",
     "release:check-version": "bun run catalog/src/release-notes.ts check-version",
+    "release:next-version": "bun run catalog/src/release-notes.ts next-version",
     "gen:skill-docs": "bun run catalog/src/cli.ts generate",
     "docs:check": "bun run catalog/src/docs-check.ts"
   },
