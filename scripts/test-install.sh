@@ -98,6 +98,11 @@ EOF
 # shellcheck source=/dev/null
 CLAUDE_BOOTSTRAP_LIB_ONLY=1 CLAUDE_DIR="$CLAUDE_DIR" source "$REPO_ROOT/install.sh"
 
+# install.sh sets `-e` at the top, and sourcing applies that to THIS shell. Half
+# these tests deliberately exercise functions that return non-zero, so leaving it
+# on would abort the run at the first refusal and report a pass.
+set +e
+
 check "locked_revision reads the pinned SHA" "$PINNED_SHA" "$(locked_revision demo)"
 check "locked_revision is empty for a source with no revision" "" "$(locked_revision other)"
 check "locked_revision is empty for an unknown source" "" "$(locked_revision nope)"
@@ -121,6 +126,26 @@ check "re-staging an existing clone returns it to the pin" \
 STAGE_EDGE="$WORK/stage-edge"
 CLAUDE_BOOTSTRAP_CHANNEL=edge stage_source demo "$UPSTREAM" "$STAGE_EDGE" >/dev/null 2>&1
 check "edge follows upstream HEAD" "$HEAD_SHA" "$(git -C "$STAGE_EDGE" rev-parse HEAD 2>/dev/null)"
+
+# A non-empty, non-git directory is somebody's files. Refuse; never delete.
+STAGE_OCCUPIED="$WORK/stage-occupied"
+mkdir -p "$STAGE_OCCUPIED"
+printf 'my own work\n' > "$STAGE_OCCUPIED/NOTES.md"
+OCC_OUT="$(CLAUDE_BOOTSTRAP_CHANNEL=stable stage_source demo "$UPSTREAM" "$STAGE_OCCUPIED" 2>&1)"
+check "staging refuses a non-empty directory that is not a checkout" \
+  "my own work" "$(cat "$STAGE_OCCUPIED/NOTES.md" 2>/dev/null)"
+if printf '%s' "$OCC_OUT" | grep -q "refusing to replace it"; then
+  pass "and says why"
+else
+  fail "and says why" "$(printf '%s' "$OCC_OUT" | tail -2 | tr '\n' ' ')"
+fi
+
+# An EMPTY directory is fine to clone into — a half-made mkdir must not block.
+STAGE_EMPTY="$WORK/stage-empty"
+mkdir -p "$STAGE_EMPTY"
+CLAUDE_BOOTSTRAP_CHANNEL=stable stage_source demo "$UPSTREAM" "$STAGE_EMPTY" >/dev/null 2>&1
+check "staging still works into an empty directory" \
+  "$PINNED_SHA" "$(git -C "$STAGE_EMPTY" rev-parse HEAD 2>/dev/null)"
 
 # An unreachable pin must warn and fall back, not fail silently or hang.
 cat > "$CLAUDE_DIR/skills-source.lock.json" <<EOF
@@ -266,6 +291,42 @@ check "a legacy staging clone is moved out of skills/" "1" \
 check "and lands under .cache/skill-src" "0" "$([ -d "$SKILL_SRC_DIR/marketing" ]; echo $?)"
 migrate_skill_staging >/dev/null 2>&1
 check "the migration is idempotent" "0" "$([ -d "$SKILL_SRC_DIR/marketing" ]; echo $?)"
+
+# ---------------------------------------------------------------------------
+# migration 0001: retires superseded directories without destroying them
+# ---------------------------------------------------------------------------
+CLAUDE_DIR="$WORK/mig"
+mkdir -p "$CLAUDE_DIR/skills/humanizer" "$CLAUDE_DIR/skills/fk-writing-kit/skills/humanizer"
+git_q "$CLAUDE_DIR" init -b main
+git_q "$CLAUDE_DIR" config user.email t@example.invalid
+git_q "$CLAUDE_DIR" config user.name Test
+printf 'new\n' > "$CLAUDE_DIR/skills/fk-writing-kit/skills/humanizer/SKILL.md"
+printf 'MINE — not the shipped one\n' > "$CLAUDE_DIR/skills/humanizer/SKILL.md"
+
+FKT_HOME="$CLAUDE_DIR" bash "$REPO_ROOT/migrations/0001-plugin-layout.sh" >/dev/null 2>&1
+check "the superseded directory is gone from skills/" "1" \
+  "$([ -d "$CLAUDE_DIR/skills/humanizer" ]; echo $?)"
+check "but its content was moved, not deleted" "MINE — not the shipped one" \
+  "$(cat "$CLAUDE_DIR/.cache/superseded-skills/humanizer/SKILL.md" 2>/dev/null)"
+
+# Re-created afterwards, a second run must not clobber the first rescue.
+mkdir -p "$CLAUDE_DIR/skills/humanizer"
+printf 'second\n' > "$CLAUDE_DIR/skills/humanizer/SKILL.md"
+FKT_HOME="$CLAUDE_DIR" bash "$REPO_ROOT/migrations/0001-plugin-layout.sh" >/dev/null 2>&1
+check "a second rescue does not overwrite the first" "MINE — not the shipped one" \
+  "$(cat "$CLAUDE_DIR/.cache/superseded-skills/humanizer/SKILL.md" 2>/dev/null)"
+check "and lands beside it" "second" \
+  "$(cat "$CLAUDE_DIR/.cache/superseded-skills/humanizer.1/SKILL.md" 2>/dev/null)"
+
+# A git-TRACKED legacy copy is left strictly alone.
+mkdir -p "$CLAUDE_DIR/skills/add-mcp" "$CLAUDE_DIR/skills/fk-toolkit-ops/skills/add-mcp"
+printf 'tracked\n' > "$CLAUDE_DIR/skills/add-mcp/SKILL.md"
+printf 'new\n' > "$CLAUDE_DIR/skills/fk-toolkit-ops/skills/add-mcp/SKILL.md"
+git_q "$CLAUDE_DIR" add -f skills/add-mcp/SKILL.md
+git_q "$CLAUDE_DIR" commit -m tracked
+FKT_HOME="$CLAUDE_DIR" bash "$REPO_ROOT/migrations/0001-plugin-layout.sh" >/dev/null 2>&1
+check "a git-tracked legacy copy is left in place" "tracked" \
+  "$(cat "$CLAUDE_DIR/skills/add-mcp/SKILL.md" 2>/dev/null)"
 
 printf '\n%s passed, %s failed\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]

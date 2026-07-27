@@ -347,6 +347,15 @@ stage_source() {
   fi
 
   if [ ! -d "$stage/.git" ]; then
+    # A non-empty directory that is NOT a git checkout is not ours to delete.
+    # It could be a manual copy, an unpacked tarball, or a user's own work. The
+    # previous behaviour here (git clone into it) failed loudly; deleting it
+    # would fail silently and take their files with it.
+    if [ -d "$stage" ] && [ -n "$(ls -A "$stage" 2>/dev/null)" ]; then
+      warn "$stage exists but is not a git checkout — refusing to replace it."
+      warn "Move it aside (or delete it yourself) and re-run to install '$id' cleanly."
+      return 1
+    fi
     rm -rf "$stage"
     mkdir -p "$(dirname "$stage")"
     if [ -n "$sha" ]; then

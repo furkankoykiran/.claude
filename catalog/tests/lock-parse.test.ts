@@ -57,6 +57,10 @@ describe("install.sh lock extraction", () => {
   });
 
   it("returns nothing for a source that has no revision", () => {
+    // "repository" is the dangerous shape: it has no resolvedRevision and is
+    // IMMEDIATELY followed by a source that does. A parser that kept scanning
+    // past the object boundary would hand install.sh gstack's SHA for it.
+    expect(awkLockedRevision("repository")).toBe("");
     expect(awkLockedRevision("rtk")).toBe("");
     expect(awkLockedRevision("no-such-source")).toBe("");
   });
