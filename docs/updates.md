@@ -118,22 +118,57 @@ see below. Those have their own switch.
 ### The session notice
 
 `hooks/session-start-update-notice.sh` runs on SessionStart and prints two lines
-when a cached check found an update: the version pair, and the convention that
-Claude raises it with you in your own language and runs `fkt update` only once
-you agree.
+when a cached check found an update: the version pair, and the convention for
+handling it. Which convention depends on how the session started, which Claude
+Code reports as `source` in the JSON payload it writes to the hook's stdin.
+
+On a fresh **startup**, the convention asks Claude to open the reply with an
+`AskUserQuestion` call — before any greeting or other prose — offering *Update
+now*, *Skip for now* and *Show details*. Your answer is the only thing that
+starts an update.
+
+On **resume**, **clear**, **compact** and **fork**, and when no payload arrives,
+you get the quieter line instead: Claude raises it with you in your own language
+and runs `fkt update` only once you agree. Re-opening the question after every
+compaction would be noise, and you already answered it.
+
+A hook is a shell script, not an agent: it has no access to Claude Code's tools,
+so it cannot call `AskUserQuestion` itself or wait for your answer. The text it
+prints is its only lever. That also means the notice is a request, not a
+guarantee — nothing here can force a tool call.
 
 It is built not to be in your way:
 
-- **no network on this path.** It reads the cache `fkt` already wrote.
+- **no network on this path.** It reads the cache `fkt` already wrote. That
+  includes discarding a cache written for a different version, which is a local
+  `VERSION` comparison; the rebuild happens in the detached refresh.
 - **the refresh is detached.** Startup never waits on DNS. A timing test in
   `scripts/test-fkt.sh` asserts this against an unroutable remote.
+- **it does not wait on stdin.** The payload read is capped at one second, so a
+  host that opens stdin and never writes cannot stall the session.
 - **it always exits 0.** A broken or absent updater cannot stop Claude Code
   from starting.
 - **it changes nothing.** Notification only; applying an update is always an
   explicit `fkt update`.
 
 Remove the `SessionStart` block from `settings.json` to drop it entirely, or set
-`FKT_UPDATE_CHECK=0`.
+`FKT_UPDATE_CHECK=0`. To keep the notice but never be asked, set
+`FKT_UPDATE_PROMPT=0`; non-interactive entrypoints are detected and skipped
+already, because `claude -p` and the `dontAsk` permission mode both deny
+`AskUserQuestion`.
+
+### Why a cached check can be discarded
+
+A cache line records the verdict *and* the version installed when it was
+written. Nothing invalidates that line when the checkout moves — `fkt update`, a
+plain `git pull`, or re-running `install.sh` all change `VERSION` behind its
+back — so `fkt check` compares the two before trusting it, and drops the record
+when they disagree or when the target is not actually ahead of what is
+installed. `fkt status` marks such a record `stale` rather than reporting it.
+
+Without that check a record could outlive its install and keep announcing an
+update that had already landed; a `0.3.0 -> 0.3.1` notice once reached a 0.4.1
+checkout, for a 0.3.1 that was never released.
 
 ### Migrations
 
