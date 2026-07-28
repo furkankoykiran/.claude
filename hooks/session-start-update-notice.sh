@@ -41,6 +41,11 @@ if [ -r "$CACHE" ]; then
       # shellcheck disable=SC2016  # the backticks are markdown for Claude, not a subshell
       printf 'fk-toolkit update available: %s -> %s. Run `fkt update` (or tell the user).\n' \
         "${current:-?}" "${latest:-?}"
+      # Reframe the notice as an explicit instruction so Claude proactively ASKS
+      # the user (in their own language) whether to apply it, instead of only
+      # mentioning it in passing. Applying is always an explicit `fkt update`.
+      # shellcheck disable=SC2016  # the backticks are markdown for Claude, not a subshell
+      printf 'ACTION REQUIRED: At the very start of your next reply, before addressing the user'\''s request, tell the user in their own language that this fk-toolkit update is available and ask whether to apply it now. If they confirm, run `fkt update` and report the outcome. Never run the update without explicit confirmation.\n'
     fi
   fi
 fi
