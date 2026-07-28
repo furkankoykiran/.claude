@@ -204,6 +204,31 @@ cache_field() {
   awk -v n="$1" 'NR==1{print $n}' "$CHECK_CACHE"
 }
 
+# A cached verdict describes one specific install, and nothing invalidates it
+# when the checkout moves: `fkt update`, a plain `git pull`, or re-running
+# install.sh over the top all change VERSION without touching this file. Field 2
+# records the version that was installed when the line was written, and until
+# now nothing ever read it back — so a record could outlive its install and keep
+# asserting an update that had already landed. That is how a "0.3.0 -> 0.3.1"
+# notice reached a 0.4.1 checkout, for a 0.3.1 that was never even released.
+#
+# Validation is local: VERSION is a file read, so this costs no network.
+cache_valid_for() {
+  local current="$1" ch="$2" recorded latest
+  recorded="$(cache_field 2 2>/dev/null || true)"
+  latest="$(cache_field 3 2>/dev/null || true)"
+  # A truncated or garbled line leaves these empty; treat it as no cache at all.
+  [ -n "$recorded" ] && [ -n "$latest" ] || return 1
+  [ "$recorded" = "$current" ] || return 1
+  # An UPDATE_AVAILABLE whose target is not ahead of what is installed
+  # contradicts itself. On stable that is checkable without the network; on edge
+  # the target is a commit, so there is nothing to compare it against here.
+  if [ "$ch" = "stable" ] && [ "$(cache_field 1 2>/dev/null || true)" = "UPDATE_AVAILABLE" ]; then
+    [ "$current" = "unknown" ] || [ "$(version_newer "$current" "$latest")" = "newer" ] || return 1
+  fi
+  return 0
+}
+
 snoozed_for() {
   # Snooze is per target version: a newer release always breaks through.
   local version="$1" until_epoch snoozed_version
@@ -325,6 +350,20 @@ do_check() {
   local current ch
   current="$(installed_version)"
   ch="$(channel)"
+
+  if [ "$force" -eq 0 ] && cache_fresh && ! cache_valid_for "$current" "$ch"; then
+    # Written for a different install than the one running now. Drop it rather
+    # than replay it, and answer "nothing to report" instead of reaching for the
+    # remote: this path runs inside the SessionStart hook, which must never
+    # block startup on IO. Deleting the record makes the next cache_fresh test
+    # fail, so the hook's own detached refresh rebuilds it for the next session.
+    # That costs one background fetch per version change, not one per startup.
+    local stale_for
+    stale_for="$(cache_field 2 2>/dev/null || true)"
+    rm -f "$CHECK_CACHE"
+    [ "$quiet" -eq 1 ] || say "discarded a cached check written for ${stale_for:-an unknown version} (installed: $current)"
+    return 0
+  fi
 
   if [ "$force" -eq 0 ] && cache_fresh; then
     local status latest
@@ -595,7 +634,11 @@ do_status() {
   say "  update checks  $(checks_enabled && echo enabled || echo disabled)"
   say "  advisories     $(advisories_enabled && echo enabled || echo disabled)"
   if [ -f "$CHECK_CACHE" ]; then
-    say "  last check     $(cache_field 1) (latest: $(cache_field 3))"
+    # Say so when the record predates the installed version. `status` reports,
+    # it does not repair: leave the file for `check` to discard on its own terms.
+    local staleness=""
+    cache_valid_for "$current" "$ch" || staleness=" — stale, written for $(cache_field 2 2>/dev/null || printf 'an unknown version'); re-run 'fkt check --force'"
+    say "  last check     $(cache_field 1) (latest: $(cache_field 3))$staleness"
   else
     say "  last check     never"
   fi
