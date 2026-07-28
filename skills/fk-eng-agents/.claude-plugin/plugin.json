@@ -2,7 +2,7 @@
   "name": "fk-eng-agents",
   "displayName": "Engineering Subagents",
   "description": "Four focused subagents — researcher, planner, code-reviewer, debugger — for deep codebase research, dependency-aware planning, pre-commit review, and root-cause debugging. Adds no skill-listing context cost.",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "author": {
     "name": "Furkan Köykıran",
     "url": "https://github.com/furkankoykiran"
