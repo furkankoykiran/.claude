@@ -474,6 +474,14 @@ else
   fail "the hook reports a cached update" "printed: $HOOK_OUT"
 fi
 
+# The notice has to carry the ask-before-applying convention, or Claude has no
+# reason to raise it rather than mention it in passing.
+if printf '%s' "$HOOK_OUT" | grep -qF "runs only once they agree"; then
+  pass "the hook states the ask-before-applying convention"
+else
+  fail "the hook states the ask-before-applying convention" "printed: $HOOK_OUT"
+fi
+
 if [ -z "$(run_hook FKT_OFFLINE=1 FKT_UPDATE_CHECK=0)" ]; then
   pass "FKT_UPDATE_CHECK=0 silences the hook"
 else
