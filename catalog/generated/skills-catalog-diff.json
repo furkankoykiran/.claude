@@ -58,6 +58,14 @@
       "sourceId": "marketing"
     },
     {
+      "key": "/attribution",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
       "key": "/autoplan",
       "kind": "added",
       "manualReviewRequired": true,
@@ -1300,7 +1308,7 @@
   ],
   "schemaVersion": 2,
   "summary": {
-    "added": 142,
+    "added": 143,
     "licenseRestricted": 10,
     "manualReviewRequired": true,
     "massChange": false,

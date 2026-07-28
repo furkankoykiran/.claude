@@ -4443,7 +4443,7 @@
       ],
       "canonicalInvocation": "/impeccable",
       "description": "Use when the user wants to design, redesign, shape, critique, audit, polish, clarify, distill, harden, optimize, adapt, animate, colorize, extract, or otherwise improve a frontend interface. Covers websites, landing pages, dashboards, product UI, app shells, components, forms, settings, onboarding, and empty states. Handles UX review, visual hierarchy, information architecture, cognitive load, accessibility, performance, responsive behavior, theming, anti-patterns, typography, fonts, spacing, layout, alignment, color, motion, micro-interactions, UX copy, error states, edge cases, i18n, and reusable design systems or tokens. Also use for bland designs that need to become bolder or more delightful, loud designs that should become quieter, live browser iteration on UI elements, or ambitious visual effects that should feel technically extraordinary. Not for backend-only or non-UI tasks.",
-      "digest": "73c764804fcbd076e82bfdeffd275213b1178a28d97e0dffdaed96708eee68b4",
+      "digest": "eeffd5227a147cd7f1a627f06cb69ee7ce5f13af99be5913e5627d03ab74f572",
       "frontmatter": {
         "allowed-tools": [
           "Bash(npx impeccable *)",
@@ -4454,7 +4454,7 @@
         "license": "Apache 2.0",
         "name": "impeccable",
         "user-invocable": true,
-        "version": "4.0.2"
+        "version": "4.0.3"
       },
       "fullPagePath": "docs/skills/impeccable/impeccable.md",
       "generated": true,
@@ -4472,7 +4472,7 @@
       "ref": "origin/HEAD",
       "relativePath": ".claude/skills/impeccable/SKILL.md",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "5e572c8b8af3e108ab52ce4180adb4d6eb1c2ebc",
+      "resolvedRevision": "1cf7d7ab0f1ac0bb3319fd20be389a3009f4037d",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4489,7 +4489,7 @@
       "skillName": "impeccable",
       "sourceId": "impeccable",
       "sourceType": "git",
-      "version": "4.0.2",
+      "version": "4.0.3",
       "warnings": []
     },
     {
@@ -4695,7 +4695,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/ab-testing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4741,7 +4741,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/ad-creative/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4787,7 +4787,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/ads/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4833,7 +4833,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/ai-seo/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4854,12 +4854,12 @@
     },
     {
       "canonicalInvocation": "/analytics",
-      "description": "When the user wants to set up, improve, or audit analytics tracking and measurement. Also use when the user mentions \"set up tracking,\" \"GA4,\" \"Google Analytics,\" \"conversion tracking,\" \"event tracking,\" \"UTM parameters,\" \"tag manager,\" \"GTM,\" \"analytics implementation,\" \"tracking plan,\" \"how do I measure this,\" \"track conversions,\" \"attribution,\" \"Mixpanel,\" \"Segment,\" \"are my events firing,\" or \"analytics isn't working.\" Use this whenever someone asks how to know if something is working or wants to measure marketing results. For A/B test measurement, see ab-testing.",
-      "digest": "91797d240e1cebfbbe6a9249881c7c7d732449bbcf33eaad9fd80dc263bfd80e",
+      "description": "When the user wants to set up, improve, or audit analytics tracking and measurement. Also use when the user mentions \"set up tracking,\" \"GA4,\" \"Google Analytics,\" \"conversion tracking,\" \"event tracking,\" \"UTM parameters,\" \"tag manager,\" \"GTM,\" \"analytics implementation,\" \"tracking plan,\" \"how do I measure this,\" \"track conversions,\" \"Mixpanel,\" \"Segment,\" \"are my events firing,\" or \"analytics isn't working.\" Use this whenever someone asks how to know if something is working or wants to measure marketing results. For choosing attribution models, comparing multi-touch/MMM/incrementality, or reconciling conflicting numbers across tools, see attribution. For A/B test measurement, see ab-testing.",
+      "digest": "3487d4572838802a39647d42cc6da83c3c9bc860af930d6a1469e56802d4d327",
       "frontmatter": {
-        "description": "When the user wants to set up, improve, or audit analytics tracking and measurement. Also use when the user mentions \"set up tracking,\" \"GA4,\" \"Google Analytics,\" \"conversion tracking,\" \"event tracking,\" \"UTM parameters,\" \"tag manager,\" \"GTM,\" \"analytics implementation,\" \"tracking plan,\" \"how do I measure this,\" \"track conversions,\" \"attribution,\" \"Mixpanel,\" \"Segment,\" \"are my events firing,\" or \"analytics isn't working.\" Use this whenever someone asks how to know if something is working or wants to measure marketing results. For A/B test measurement, see ab-testing.",
+        "description": "When the user wants to set up, improve, or audit analytics tracking and measurement. Also use when the user mentions \"set up tracking,\" \"GA4,\" \"Google Analytics,\" \"conversion tracking,\" \"event tracking,\" \"UTM parameters,\" \"tag manager,\" \"GTM,\" \"analytics implementation,\" \"tracking plan,\" \"how do I measure this,\" \"track conversions,\" \"Mixpanel,\" \"Segment,\" \"are my events firing,\" or \"analytics isn't working.\" Use this whenever someone asks how to know if something is working or wants to measure marketing results. For choosing attribution models, comparing multi-touch/MMM/incrementality, or reconciling conflicting numbers across tools, see attribution. For A/B test measurement, see ab-testing.",
         "metadata": {
-          "version": "2.0.0"
+          "version": "2.0.1"
         },
         "name": "analytics"
       },
@@ -4879,7 +4879,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/analytics/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4925,7 +4925,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/aso/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4940,6 +4940,52 @@
         "toolCount": 0
       },
       "skillName": "aso",
+      "sourceId": "marketing",
+      "sourceType": "git",
+      "warnings": []
+    },
+    {
+      "canonicalInvocation": "/attribution",
+      "description": "When the user wants to figure out which marketing actually drives conversions and revenue, choose or interpret an attribution model, or reconcile conflicting numbers across tools. Also use when the user mentions \"attribution,\" \"attribution model,\" \"first-touch vs last-touch,\" \"multi-touch,\" \"which channel drives revenue,\" \"what's my real CAC,\" \"my dashboards disagree,\" \"Google/Meta says X but GA says Y,\" \"media mix model,\" \"MMM,\" \"incrementality,\" \"geo lift,\" \"holdout test,\" \"how did you hear about us,\" \"self-reported attribution,\" \"dark social,\" or wants to instrument attribution themselves — \"stitch my bookings to their source,\" \"SavvyCal/Calendly attribution,\" \"close the identify gap,\" \"track conversions on a third-party domain,\" \"first-party / self-hosted attribution.\" For event tracking setup and UTMs, see analytics. For ad-platform pixels/CAPI, see ads. For pipeline and CRM revenue reporting, see revops. For the AI-search attribution blind spot, see ai-seo.",
+      "digest": "17a53b6661b9c9494fb4c41edbd00bf9f291519fbf22ba1621689b030a9109f4",
+      "frontmatter": {
+        "description": "When the user wants to figure out which marketing actually drives conversions and revenue, choose or interpret an attribution model, or reconcile conflicting numbers across tools. Also use when the user mentions \"attribution,\" \"attribution model,\" \"first-touch vs last-touch,\" \"multi-touch,\" \"which channel drives revenue,\" \"what's my real CAC,\" \"my dashboards disagree,\" \"Google/Meta says X but GA says Y,\" \"media mix model,\" \"MMM,\" \"incrementality,\" \"geo lift,\" \"holdout test,\" \"how did you hear about us,\" \"self-reported attribution,\" \"dark social,\" or wants to instrument attribution themselves — \"stitch my bookings to their source,\" \"SavvyCal/Calendly attribution,\" \"close the identify gap,\" \"track conversions on a third-party domain,\" \"first-party / self-hosted attribution.\" For event tracking setup and UTMs, see analytics. For ad-platform pixels/CAPI, see ads. For pipeline and CRM revenue reporting, see revops. For the AI-search attribution blind spot, see ai-seo.",
+        "metadata": {
+          "version": "1.1.0"
+        },
+        "name": "attribution"
+      },
+      "fullPagePath": "docs/skills/marketing/attribution.md",
+      "generated": true,
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT",
+        "matchesDeclaration": true,
+        "redistribution": "full"
+      },
+      "namespacedInvocations": [
+        "/attribution"
+      ],
+      "pack": "marketing",
+      "redistribution": "full",
+      "ref": "origin/HEAD",
+      "relativePath": "skills/attribution/SKILL.md",
+      "repo": "https://github.com/coreyhaines31/marketingskills.git",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "security": {
+        "flags": [],
+        "hasAgents": false,
+        "hasBashOrPowershell": false,
+        "hasCredentialRef": false,
+        "hasDynamicShell": false,
+        "hasExecutable": false,
+        "hasHiddenFiles": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasNetworkRef": false,
+        "toolCount": 0
+      },
+      "skillName": "attribution",
       "sourceId": "marketing",
       "sourceType": "git",
       "warnings": []
@@ -4971,7 +5017,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/churn-prevention/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5017,7 +5063,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/co-marketing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5063,7 +5109,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/cold-email/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5109,7 +5155,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/community-marketing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5155,7 +5201,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/competitor-profiling/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5201,7 +5247,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/competitors/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5247,7 +5293,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/content-strategy/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5293,7 +5339,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/copy-editing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5339,7 +5385,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/copywriting/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5385,7 +5431,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/cro/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5431,7 +5477,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/customer-research/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5477,7 +5523,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/directory-submissions/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [
           "network-access"
@@ -5525,7 +5571,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/emails/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5571,7 +5617,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/free-tools/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5617,7 +5663,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/image/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [
           "network-access"
@@ -5665,7 +5711,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/influencer-marketing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5711,7 +5757,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/launch/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5757,7 +5803,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/lead-magnets/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5803,7 +5849,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-council/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5849,7 +5895,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-ideas/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5895,7 +5941,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-loops/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5938,7 +5984,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-plan/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5984,7 +6030,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-psychology/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6030,7 +6076,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/offers/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6076,7 +6122,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/onboarding/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6122,7 +6168,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/paywalls/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6168,7 +6214,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/popups/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6189,12 +6235,12 @@
     },
     {
       "canonicalInvocation": "/pricing",
-      "description": "When the user wants help with pricing decisions, packaging, or monetization strategy. Also use when the user mentions 'pricing,' 'pricing tiers,' 'freemium,' 'free trial,' 'packaging,' 'price increase,' 'value metric,' 'Van Westendorp,' 'willingness to pay,' 'monetization,' 'how much should I charge,' 'my pricing is wrong,' 'pricing page,' 'annual vs monthly,' 'per seat pricing,' or 'should I offer a free plan.' Use this whenever someone is figuring out what to charge or how to structure their plans. For in-app upgrade screens, see paywalls. For offer construction (bonuses, guarantees, value framing, naming) on services/courses/coaching/high-ticket B2B, see offers.",
-      "digest": "96341f3af48e1bc2651969ead2849b5ac6d8ddb5898992d53fd8912272b881d6",
+      "description": "When the user wants help with pricing decisions, packaging, or monetization strategy. Also use when the user mentions 'pricing,' 'pricing tiers,' 'freemium,' 'free trial,' 'packaging,' 'price increase,' 'value metric,' 'Van Westendorp,' 'willingness to pay,' 'monetization,' 'how much should I charge,' 'my pricing is wrong,' 'pricing page,' 'annual vs monthly,' 'per seat pricing,' 'should I offer a free plan,' 'pricing page teardown,' 'pricing page audit,' 'is my pricing page AI-readable,' or 'can AI read my pricing.' Use this whenever someone is figuring out what to charge, how to structure their plans, or wants to audit a pricing page (for humans and for the AI agents that shortlist tools). For in-app upgrade screens, see paywalls. For offer construction (bonuses, guarantees, value framing, naming) on services/courses/coaching/high-ticket B2B, see offers.",
+      "digest": "b0f9bcfc1e6ef3361c96f1fd8bd525c635599f39e9aa38f97e1fa98578693ed4",
       "frontmatter": {
-        "description": "When the user wants help with pricing decisions, packaging, or monetization strategy. Also use when the user mentions 'pricing,' 'pricing tiers,' 'freemium,' 'free trial,' 'packaging,' 'price increase,' 'value metric,' 'Van Westendorp,' 'willingness to pay,' 'monetization,' 'how much should I charge,' 'my pricing is wrong,' 'pricing page,' 'annual vs monthly,' 'per seat pricing,' or 'should I offer a free plan.' Use this whenever someone is figuring out what to charge or how to structure their plans. For in-app upgrade screens, see paywalls. For offer construction (bonuses, guarantees, value framing, naming) on services/courses/coaching/high-ticket B2B, see offers.",
+        "description": "When the user wants help with pricing decisions, packaging, or monetization strategy. Also use when the user mentions 'pricing,' 'pricing tiers,' 'freemium,' 'free trial,' 'packaging,' 'price increase,' 'value metric,' 'Van Westendorp,' 'willingness to pay,' 'monetization,' 'how much should I charge,' 'my pricing is wrong,' 'pricing page,' 'annual vs monthly,' 'per seat pricing,' 'should I offer a free plan,' 'pricing page teardown,' 'pricing page audit,' 'is my pricing page AI-readable,' or 'can AI read my pricing.' Use this whenever someone is figuring out what to charge, how to structure their plans, or wants to audit a pricing page (for humans and for the AI agents that shortlist tools). For in-app upgrade screens, see paywalls. For offer construction (bonuses, guarantees, value framing, naming) on services/courses/coaching/high-ticket B2B, see offers.",
         "metadata": {
-          "version": "2.0.1"
+          "version": "2.1.0"
         },
         "name": "pricing"
       },
@@ -6214,7 +6260,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/pricing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6260,7 +6306,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/product-marketing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6306,7 +6352,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/programmatic-seo/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6352,7 +6398,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/prospecting/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6398,7 +6444,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/public-relations/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6444,7 +6490,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/referrals/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6490,7 +6536,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/revops/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6536,7 +6582,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/sales-enablement/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6582,7 +6628,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/schema/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6628,7 +6674,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/seo-audit/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [
           "network-access"
@@ -6676,7 +6722,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/signup/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6722,7 +6768,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/site-architecture/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6768,7 +6814,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/sms/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6814,7 +6860,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/social/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [
           "network-access"
@@ -6862,7 +6908,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/video/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8100,7 +8146,7 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "5e572c8b8af3e108ab52ce4180adb4d6eb1c2ebc",
+      "resolvedRevision": "1cf7d7ab0f1ac0bb3319fd20be389a3009f4037d",
       "runtimeOnly": false,
       "skillCount": 1,
       "type": "git"
@@ -8136,9 +8182,9 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c21a984a56da10fb6085e6334f6f60929220a4da",
+      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
       "runtimeOnly": false,
-      "skillCount": 48,
+      "skillCount": 49,
       "type": "git"
     },
     {
@@ -8183,9 +8229,9 @@
     }
   ],
   "totals": {
-    "redistributable": 132,
+    "redistributable": 133,
     "runtimeOnly": 3,
-    "skills": 142,
+    "skills": 143,
     "sources": 11,
     "warnings": 0
   }
