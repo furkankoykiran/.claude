@@ -508,6 +508,84 @@ else
   fail "the hook always exits 0"
 fi
 
+# --- advisories have to reach the hook's stdout ---------------------------
+# `fkt status` prints advisories through warn(), which writes to stderr and
+# wraps every line in ANSI colour. Only stdout reaches Claude's context, so the
+# hook has to capture that stream and hand over clean text: escapes would land
+# in the context window verbatim, and an unbounded feed would flood it. Four
+# applicable advisories, so the three-entry cap is actually exercised.
+reset_state
+mkdir -p "$STATE_DIR"
+printf '#id\tseverity\tintroduced\tfixed\tsummary\turl\n' > "$STATE_DIR/advisories.tsv"
+for n in 1 2 3 4; do
+  printf 'FKT-2026-10%s\tcritical\t0.1.0\t0.9.0\tAdvisory number %s\thttps://example.invalid/%s\n' \
+    "$n" "$n" "$n" >> "$STATE_DIR/advisories.tsv"
+done
+ADV_OUT="$(run_hook FKT_OFFLINE=1)"
+
+if printf '%s' "$ADV_OUT" | grep -qF "FKT-2026-101"; then
+  pass "an applicable advisory reaches the hook's stdout"
+else
+  fail "an applicable advisory reaches the hook's stdout" "printed: $ADV_OUT"
+fi
+
+if printf '%s' "$ADV_OUT" | grep -qF "security advisories apply to this install"; then
+  pass "the advisory block is introduced by its header"
+else
+  fail "the advisory block is introduced by its header" "printed: $ADV_OUT"
+fi
+
+# A colour escape here would be pasted into Claude's context as noise.
+if printf '%s' "$ADV_OUT" | grep -q "$(printf '\033')"; then
+  fail "the hook's advisory output carries no terminal escapes" "printed: $ADV_OUT"
+else
+  pass "the hook's advisory output carries no terminal escapes"
+fi
+
+
+# One header plus at most three entries, however long the feed grows.
+ADV_COUNT="$(printf '%s\n' "$ADV_OUT" | grep -c 'FKT-2026-10')"
+if [ "$ADV_COUNT" = "3" ]; then
+  pass "the hook caps the advisory list at three entries"
+else
+  fail "the hook caps the advisory list at three entries" "counted $ADV_COUNT"
+fi
+
+# `fkt disable` promises in its own output that "Security advisories still
+# apply", so the hook has to keep printing them with update checks turned off.
+# (FKT_UPDATE_CHECK=0 is the separate kill-everything switch and is asserted
+# further up; it silences the whole hook by design.)
+run_fkt disable >/dev/null
+if printf '%s' "$(run_hook FKT_OFFLINE=1)" | grep -qF "FKT-2026-101"; then
+  pass "advisories survive 'fkt disable' on the hook path"
+else
+  fail "advisories survive 'fkt disable' on the hook path"
+fi
+run_fkt enable >/dev/null
+
+if [ -z "$(run_hook FKT_OFFLINE=1 FKT_SECURITY_NOTICES=0)" ]; then
+  pass "FKT_SECURITY_NOTICES=0 silences the advisory block"
+else
+  fail "FKT_SECURITY_NOTICES=0 silences the advisory block"
+fi
+
+# The feed arrives over the network and `looks_like_advisory_feed` only counts
+# columns, so its text is untrusted. A summary carrying escape sequences must
+# not reach Claude's context intact. Sole entry in the feed, so `head -3` cannot
+# drop it and let this pass vacuously.
+printf '#id\tseverity\tintroduced\tfixed\tsummary\turl\n' > "$STATE_DIR/advisories.tsv"
+printf 'FKT-2026-666\tcritical\t0.1.0\t0.9.0\tRed \033[31malert\033[0m here\t-\n' \
+  >> "$STATE_DIR/advisories.tsv"
+HOSTILE_OUT="$(run_hook FKT_OFFLINE=1)"
+if ! printf '%s' "$HOSTILE_OUT" | grep -qF "FKT-2026-666"; then
+  fail "escape sequences in the feed are stripped" "advisory never rendered: $HOSTILE_OUT"
+elif printf '%s' "$HOSTILE_OUT" | grep -q "$(printf '\033')"; then
+  fail "escape sequences in the feed are stripped" "printed: $HOSTILE_OUT"
+else
+  pass "escape sequences in the feed are stripped"
+fi
+reset_state
+
 # A missing updater must be survivable: the hook is wired into settings.json and
 # a half-installed toolkit must not break every session.
 if [ "$(FKT_HOME="$WORK/nowhere" FKT_STATE_DIR="$STATE_DIR" "$HOOK" >/dev/null 2>&1; echo $?)" = "0" ]; then
