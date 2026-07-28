@@ -3,8 +3,12 @@
 # date, without ever making the user wait for it.
 #
 # Contract with Claude Code: whatever a SessionStart hook prints to stdout is
-# added to Claude's context. So this prints at most three short lines, and only
-# when there is genuinely something to say.
+# added to Claude's context. So this stays silent unless there is genuinely
+# something to say, and each path that can speak is bounded rather than a fixed
+# length: the update notice is one line plus one line of handling convention,
+# and the advisory block is one header line plus at most three advisories
+# (`head -3`). Advisory text comes from the feed, so its width is not ours to
+# promise. Anything added here has to stay bounded the same way.
 #
 # The rules that make this safe to run on every session:
 #   * NO network calls on this path. It reads the cache `fkt` already wrote.
