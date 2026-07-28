@@ -664,9 +664,17 @@ mkdir -p "$STATE_DIR"
 printf 'UPDATE_AVAILABLE 0.1.0 0.9.9 %s\n' "$(date +%s)" > "$STATE_DIR/update-check"
 assert_exit 10 "a record matching the install still reports an update" -- check
 
-# `status` must not present a stale record as current truth.
+# `status` must not present a stale record as current truth. Assert the whole
+# line, not just the marker: the fields and the marker come from one read, and
+# checking only "stale" would pass on a line whose fields had gone empty.
 printf 'UPDATE_AVAILABLE 0.0.9 0.0.99 %s\n' "$(date +%s)" > "$STATE_DIR/update-check"
-assert_contains "stale" "status marks a stale record as stale" -- status
+assert_contains "last check     UPDATE_AVAILABLE (latest: 0.0.99) — stale, written for 0.0.9" \
+  "status marks a stale record as stale without losing its fields" -- status
+
+# A record that cannot be read at all still has to render a whole line rather
+# than a half-built one.
+printf '\n' > "$STATE_DIR/update-check"
+assert_contains "last check     unreadable (latest: -)" "an empty record renders as unreadable" -- status
 reset_state
 
 # On edge the recorded-version test cannot carry this on its own: most edge
