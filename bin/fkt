@@ -272,6 +272,16 @@ applicable_advisories() {
   ' "$ADVISORY_CACHE"
 }
 
+# Machine-readable form of the same list `print_advisories` renders. The
+# SessionStart hook needs the data, not the presentation: `warn` writes to
+# stderr and colours every line, so scraping `fkt status` loses the advisories
+# to the wrong stream and to escape codes. Both sides share
+# `applicable_advisories`, so version matching is defined in exactly one place.
+do_advisories() {
+  advisories_enabled || return 0
+  applicable_advisories "$(installed_version)"
+}
+
 print_advisories() {
   local current="$1" out
   # Gate on the setting here, not only in fetch_advisories: turning notices off
@@ -667,6 +677,8 @@ usage() {
 fkt — FK Claude Toolkit updater (bootstrap layer only)
 
   fkt status                 what is installed, which channel, cached check state
+  fkt advisories             applicable security advisories, one TSV row each
+                             (id, severity, summary, url) — for scripts
   fkt version                print the installed version
   fkt check [--force] [--quiet]
                              is an update available? (cached; exit 10 if yes)
@@ -694,6 +706,7 @@ main() {
   [ $# -gt 0 ] && shift
   case "$cmd" in
     status)          do_status "$@" ;;
+    advisories)      do_advisories "$@" ;;
     version)         installed_version ;;
     schema-version)  printf '%s\n' "$FKT_VERSION_SCHEMA" ;;
     check)           do_check "$@" ;;

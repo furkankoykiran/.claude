@@ -58,7 +58,12 @@ fi
 
 # --- surface security advisories even when checks are stale ---------------
 if [ -r "$STATE_DIR/advisories.tsv" ] && [ "${FKT_SECURITY_NOTICES:-1}" != "0" ]; then
-  advisories="$("$FKT" status 2>/dev/null | sed -n 's/^!! *\(\[.*\)$/\1/p' | head -3)"
+  # Ask for the data, not the rendered status page: `fkt status` prints
+  # advisories through `warn`, which goes to stderr and colours every line, so
+  # scraping it silently yielded nothing. `fkt advisories` is the same list as
+  # plain TSV on stdout, and reads only the cache.
+  advisories="$("$FKT" advisories 2>/dev/null | head -3 |
+    awk -F'\t' '{ printf "  [%s] %s — %s\n", $2, $1, $3 }')"
   if [ -n "${advisories:-}" ]; then
     printf 'fk-toolkit security advisories apply to this install:\n%s\n' "$advisories"
   fi
