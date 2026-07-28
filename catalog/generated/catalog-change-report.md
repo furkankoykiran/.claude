@@ -2,7 +2,7 @@
 
 # Catalog change report
 
-- added: 142
+- added: 143
 - updated: 0
 - removed: 0
 - renamed: 0
@@ -11,7 +11,7 @@
 - security-sensitive: 65
 - **manual-review-required: true**
 
-## Added (142)
+## Added (143)
 
 - `/ab-testing`
 - `/ad-creative`
@@ -20,6 +20,7 @@
 - `/analytics`
 - `/anthropics/skills:*`
 - `/aso`
+- `/attribution`
 - `/autoplan`
 - `/benchmark`
 - `/benchmark-models`

@@ -7,8 +7,8 @@ Generated index of every Claude Code skill, command, and runtime component repre
 Resolver version 1 · schema v1.
 
 - **Sources:** 11
-- **Skills / entries:** 142
-- **Redistributable (full body):** 132
+- **Skills / entries:** 143
+- **Redistributable (full body):** 133
 - **Runtime-only:** 3
 
 ## Anthropic skills (anthropics/skills)
@@ -100,7 +100,7 @@ repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: 
 ## Impeccable (pbakaus/impeccable)
 
 type: `git` · pack: `impeccable` · skills: 1 · redistribution: full
-repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `5e572c8b8af3`
+repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `1cf7d7ab0f1a`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -128,8 +128,8 @@ repo: https://github.com/adithya-s-k/manim_skill.git · ref: `origin/HEAD` · re
 
 ## Marketing skills (coreyhaines31/marketingskills)
 
-type: `git` · pack: `marketing` · skills: 48 · redistribution: full
-repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `c21a984a56da`
+type: `git` · pack: `marketing` · skills: 49 · redistribution: full
+repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `7868cb9251fa`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -139,6 +139,7 @@ repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD`
 | [/ai-seo](../../docs/skills/marketing/ai-seo.md) | When the user wants to optimize content for AI search engines, get cited by LLMs, or appear in AI-generated answers. Als | full |
 | [/analytics](../../docs/skills/marketing/analytics.md) | When the user wants to set up, improve, or audit analytics tracking and measurement. Also use when the user mentions "se | full |
 | [/aso](../../docs/skills/marketing/aso.md) | When the user wants to audit or optimize an App Store or Google Play listing. Also use when the user mentions 'ASO audit | full |
+| [/attribution](../../docs/skills/marketing/attribution.md) | When the user wants to figure out which marketing actually drives conversions and revenue, choose or interpret an attrib | full |
 | [/churn-prevention](../../docs/skills/marketing/churn-prevention.md) | When the user wants to reduce churn, build cancellation flows, set up save offers, recover failed payments, or implement | full |
 | [/co-marketing](../../docs/skills/marketing/co-marketing.md) | When the user wants to find co-marketing partners, plan joint campaigns, or brainstorm partnership opportunities. Use wh | full |
 | [/cold-email](../../docs/skills/marketing/cold-email.md) | Write B2B cold emails and follow-up sequences that get replies. Use when the user wants to write cold outreach emails, p | full |
