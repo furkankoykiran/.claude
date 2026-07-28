@@ -43,7 +43,7 @@ assert_contains() {
   local needle="$1" label="$2"; shift 3
   local out
   out="$(run_fkt "$@" 2>&1)"
-  if printf '%s' "$out" | grep -qF -- "$needle"; then
+  if grep -qF -- "$needle" <<<"$out"; then
     pass "$label"
   else
     fail "$label" "output did not contain '$needle': $(printf '%s' "$out" | head -3 | tr '\n' ' ')"
@@ -54,7 +54,7 @@ assert_not_contains() {
   local needle="$1" label="$2"; shift 3
   local out
   out="$(run_fkt "$@" 2>&1)"
-  if printf '%s' "$out" | grep -qF -- "$needle"; then
+  if grep -qF -- "$needle" <<<"$out"; then
     fail "$label" "output unexpectedly contained '$needle'"
   else
     pass "$label"
@@ -185,7 +185,7 @@ else
 fi
 # Grep the captured text, not a pipeline: `set -o pipefail` would surface fkt's
 # own exit 30 as the pipeline status and make the assertion meaningless.
-if printf '%s' "$OFFLINE_OUT" | grep -qi offline; then
+if grep -qi offline <<<"$OFFLINE_OUT"; then
   pass "offline mode says so"
 else
   fail "offline mode says so" "$(printf '%s' "$OFFLINE_OUT" | head -2 | tr '\n' ' ')"
@@ -345,11 +345,12 @@ mkdir -p "$STATE_DIR"
 printf '#id\tseverity\tintroduced\tfixed\tsummary\turl\n' > "$STATE_DIR/advisories.tsv"
 printf 'FKT-2026-001\tcritical\t0.1.0\t0.9.0\tExample unfixed-for-you issue\thttps://example.invalid/a\n' >> "$STATE_DIR/advisories.tsv"
 printf 'FKT-2026-002\thigh\t0.0.1\t0.2.0\tAlready fixed in your version\t-\n' >> "$STATE_DIR/advisories.tsv"
-# Capture into a variable before matching. `cmd | grep -q` under
-# `set -o pipefail` reports the PIPELINE as failed when grep exits on its first
-# match and the writer takes SIGPIPE — which inverts every positive assertion.
+# Match with a herestring, never a pipe. `cmd | grep -q` under `set -o pipefail`
+# reports the PIPELINE as failed when grep exits on its first match and the
+# writer takes SIGPIPE — which inverts a positive assertion at random, depending
+# on which side wins the race. `<<<` has no writer to kill, so it cannot.
 adv_status() { run_fkt_env FKT_OFFLINE=1 -- status 2>&1; }
-adv_has() { printf '%s' "$(adv_status)" | grep -qF "$1"; }
+adv_has() { grep -qF "$1" <<<"$(adv_status)"; }
 if adv_has "FKT-2026-001"; then
   pass "an applicable advisory is surfaced"
 else
@@ -390,7 +391,7 @@ if bash -c 'source "$1" 2>/dev/null; looks_like_advisory_feed "$2"' _ "$FKT" "$B
 else
   pass "an HTML error page is rejected as an advisory feed"
 fi
-if printf '%s' "$(run_fkt_env FKT_SECURITY_NOTICES=0 -- status 2>&1)" | grep -qF "FKT-2026-001"; then
+if grep -qF "FKT-2026-001" <<<"$(run_fkt_env FKT_SECURITY_NOTICES=0 -- status 2>&1)"; then
   fail "FKT_SECURITY_NOTICES=0 silences them for one run"
 else
   pass "FKT_SECURITY_NOTICES=0 silences them for one run"
@@ -428,7 +429,7 @@ for _try in 1 2 3 4 5 6 7 8; do
   BIG_LAST="$(run_fkt update --dry-run 2>&1)"
   BIG_STATUS=$?
   # Exit 0 AND a real answer. A silent death shows up as 141 and empty output.
-  if [ "$BIG_STATUS" -ne 0 ] || ! printf '%s' "$BIG_LAST" | grep -q "would fast-forward"; then
+  if [ "$BIG_STATUS" -ne 0 ] || ! grep -q "would fast-forward" <<<"$BIG_LAST"; then
     BIG_FAILS=$((BIG_FAILS + 1))
   fi
 done
@@ -447,13 +448,26 @@ git_q "$HOME_DIR" reset --hard v0.1.0
 HOOK="$REPO_ROOT/hooks/session-start-update-notice.sh"
 reset_state
 
+# Closed stdin, the way a host that sends no payload behaves. The hook has to
+# treat that as "source unknown", so this is also the default every pre-existing
+# test runs under.
 run_hook() {
   (
     export FKT_HOME="$HOME_DIR" FKT_STATE_DIR="$STATE_DIR" FKT_CONFIG_DIR="$CFG_DIR"
     local kv
     for kv in "$@"; do export "${kv?}"; done
-    "$HOOK" 2>/dev/null
+    "$HOOK" 2>/dev/null </dev/null
   )
+}
+
+# The real thing: Claude Code writes a SessionStart JSON payload to the hook's
+# stdin. `source` is what decides whether this is a fresh startup.
+# Usage: run_hook_src <source> [VAR=VAL...]
+run_hook_src() {
+  local src="$1"; shift
+  printf '{"session_id":"t","hook_event_name":"SessionStart","source":"%s"}' "$src" \
+    | env FKT_HOME="$HOME_DIR" FKT_STATE_DIR="$STATE_DIR" FKT_CONFIG_DIR="$CFG_DIR" \
+          "$@" "$HOOK" 2>/dev/null
 }
 
 HOOK_OUT="$(run_hook FKT_OFFLINE=1)"
@@ -463,12 +477,12 @@ else
   fail "the hook says nothing when there is no cached update" "printed: $HOOK_OUT"
 fi
 
-# Capture, then match. Piping into `grep -q` under `set -o pipefail` reports the
-# pipeline as failed when grep exits early and the writer takes SIGPIPE.
+# Capture, then match with a herestring — see the note above the advisory
+# helpers for why piping into `grep -q` flakes under `set -o pipefail`.
 mkdir -p "$STATE_DIR"
 printf 'UPDATE_AVAILABLE 0.1.0 0.9.9 %s\n' "$(date +%s)" > "$STATE_DIR/update-check"
 HOOK_OUT="$(run_hook FKT_OFFLINE=1)"
-if printf '%s' "$HOOK_OUT" | grep -qF "0.1.0 -> 0.9.9"; then
+if grep -qF "0.1.0 -> 0.9.9" <<<"$HOOK_OUT"; then
   pass "the hook reports a cached update"
 else
   fail "the hook reports a cached update" "printed: $HOOK_OUT"
@@ -476,7 +490,7 @@ fi
 
 # The notice has to carry the ask-before-applying convention, or Claude has no
 # reason to raise it rather than mention it in passing.
-if printf '%s' "$HOOK_OUT" | grep -qF "runs only once they agree"; then
+if grep -qF "runs only once they agree" <<<"$HOOK_OUT"; then
   pass "the hook states the ask-before-applying convention"
 else
   fail "the hook states the ask-before-applying convention" "printed: $HOOK_OUT"
@@ -492,8 +506,16 @@ fi
 # at an unroutable host and confirm the hook still returns effectively instantly,
 # because the refresh it triggers is detached.
 git -C "$HOME_DIR" remote set-url origin "https://10.255.255.1/unreachable.git" >/dev/null 2>&1
+# This is the one hook call that is deliberately not offline, so it is the one
+# that leaves a detached `fkt check` hanging on the unroutable address. That
+# child outlives the test and writes its own verdict whenever the connection
+# finally gives up, so it gets a state directory of its own: pointed at the
+# shared one it would overwrite the cache out from under a later test.
+NET_STATE="$WORK/net-state"
+mkdir -p "$NET_STATE"
+printf 'UPDATE_AVAILABLE 0.1.0 0.9.9 %s\n' "$(date +%s)" > "$NET_STATE/update-check"
 HOOK_START="$(date +%s)"
-run_hook >/dev/null 2>&1
+run_hook FKT_STATE_DIR="$NET_STATE" >/dev/null 2>&1
 HOOK_ELAPSED=$(( $(date +%s) - HOOK_START ))
 if [ "$HOOK_ELAPSED" -le 2 ]; then
   pass "the hook does not block on the network (${HOOK_ELAPSED}s)"
@@ -523,20 +545,20 @@ for n in 1 2 3 4; do
 done
 ADV_OUT="$(run_hook FKT_OFFLINE=1)"
 
-if printf '%s' "$ADV_OUT" | grep -qF "FKT-2026-101"; then
+if grep -qF "FKT-2026-101" <<<"$ADV_OUT"; then
   pass "an applicable advisory reaches the hook's stdout"
 else
   fail "an applicable advisory reaches the hook's stdout" "printed: $ADV_OUT"
 fi
 
-if printf '%s' "$ADV_OUT" | grep -qF "security advisories apply to this install"; then
+if grep -qF "security advisories apply to this install" <<<"$ADV_OUT"; then
   pass "the advisory block is introduced by its header"
 else
   fail "the advisory block is introduced by its header" "printed: $ADV_OUT"
 fi
 
 # A colour escape here would be pasted into Claude's context as noise.
-if printf '%s' "$ADV_OUT" | grep -q "$(printf '\033')"; then
+if grep -q "$(printf '\033')" <<<"$ADV_OUT"; then
   fail "the hook's advisory output carries no terminal escapes" "printed: $ADV_OUT"
 else
   pass "the hook's advisory output carries no terminal escapes"
@@ -556,7 +578,7 @@ fi
 # (FKT_UPDATE_CHECK=0 is the separate kill-everything switch and is asserted
 # further up; it silences the whole hook by design.)
 run_fkt disable >/dev/null
-if printf '%s' "$(run_hook FKT_OFFLINE=1)" | grep -qF "FKT-2026-101"; then
+if grep -qF "FKT-2026-101" <<<"$(run_hook FKT_OFFLINE=1)"; then
   pass "advisories survive 'fkt disable' on the hook path"
 else
   fail "advisories survive 'fkt disable' on the hook path"
@@ -577,9 +599,9 @@ printf '#id\tseverity\tintroduced\tfixed\tsummary\turl\n' > "$STATE_DIR/advisori
 printf 'FKT-2026-666\tcritical\t0.1.0\t0.9.0\tRed \033[31malert\033[0m here\t-\n' \
   >> "$STATE_DIR/advisories.tsv"
 HOSTILE_OUT="$(run_hook FKT_OFFLINE=1)"
-if ! printf '%s' "$HOSTILE_OUT" | grep -qF "FKT-2026-666"; then
+if ! grep -qF "FKT-2026-666" <<<"$HOSTILE_OUT"; then
   fail "escape sequences in the feed are stripped" "advisory never rendered: $HOSTILE_OUT"
-elif printf '%s' "$HOSTILE_OUT" | grep -q "$(printf '\033')"; then
+elif grep -q "$(printf '\033')" <<<"$HOSTILE_OUT"; then
   fail "escape sequences in the feed are stripped" "printed: $HOSTILE_OUT"
 else
   pass "escape sequences in the feed are stripped"
@@ -593,6 +615,202 @@ if [ "$(FKT_HOME="$WORK/nowhere" FKT_STATE_DIR="$STATE_DIR" "$HOOK" >/dev/null 2
 else
   fail "the hook exits 0 when fkt is missing entirely"
 fi
+
+# --- a cached verdict is only valid for the install it was written for -----
+# The bug this covers: a record written while 0.3.0 was installed kept asserting
+# "0.3.0 -> 0.3.1" after the checkout moved to a newer version, because nothing
+# ever compared the record's own version field against VERSION. The fixture is
+# at 0.1.0, so a record claiming 0.0.9 is one written for a different install.
+reset_state
+mkdir -p "$STATE_DIR"
+
+printf 'UPDATE_AVAILABLE 0.0.9 0.1.0 %s\n' "$(date +%s)" > "$STATE_DIR/update-check"
+assert_exit 0 "a check written for another version is not replayed" -- check
+if [ ! -f "$STATE_DIR/update-check" ]; then
+  pass "the outdated record is discarded rather than kept"
+else
+  fail "the outdated record is discarded rather than kept" "still: $(cat "$STATE_DIR/update-check")"
+fi
+
+# The impossible notice in its purest form: a target that is not ahead of what
+# is installed. Self-contradictory even though the version field matches.
+printf 'UPDATE_AVAILABLE 0.1.0 0.0.5 %s\n' "$(date +%s)" > "$STATE_DIR/update-check"
+assert_exit 0 "an update to an older version is rejected" -- check
+
+# A truncated line must read as "no usable cache", not as a usable one.
+printf 'UPDATE_AVAILABLE\n' > "$STATE_DIR/update-check"
+assert_exit 0 "a truncated cache line is not trusted" -- check
+
+# Validation must not cost a network round trip: VERSION is a local file read.
+# With the remote gone, an invalid record still resolves, and it resolves quietly.
+printf 'UPDATE_AVAILABLE 0.0.9 0.1.0 %s\n' "$(date +%s)" > "$STATE_DIR/update-check"
+mv "$REMOTE" "$REMOTE.hidden"
+assert_exit 0 "invalidation needs no network" -- check
+mv "$REMOTE.hidden" "$REMOTE"
+
+# And the hook stays silent on it, rather than printing the impossible pair.
+printf 'UPDATE_AVAILABLE 0.0.9 0.0.99 %s\n' "$(date +%s)" > "$STATE_DIR/update-check"
+HOOK_OUT="$(run_hook_src startup FKT_OFFLINE=1)"
+if [ -z "$HOOK_OUT" ]; then
+  pass "the hook prints nothing for a stale cached record"
+else
+  fail "the hook prints nothing for a stale cached record" "printed: $HOOK_OUT"
+fi
+
+# A record that matches the install is still honoured — the fix must not have
+# simply switched the notice off.
+reset_state
+mkdir -p "$STATE_DIR"
+printf 'UPDATE_AVAILABLE 0.1.0 0.9.9 %s\n' "$(date +%s)" > "$STATE_DIR/update-check"
+assert_exit 10 "a record matching the install still reports an update" -- check
+
+# `status` must not present a stale record as current truth.
+printf 'UPDATE_AVAILABLE 0.0.9 0.0.99 %s\n' "$(date +%s)" > "$STATE_DIR/update-check"
+assert_contains "stale" "status marks a stale record as stale" -- status
+reset_state
+
+# On edge the recorded-version test cannot carry this on its own: most edge
+# commits leave VERSION alone, so a record written before the checkout caught up
+# still has a matching version field. Whether the target is already contained is
+# the real question, and `merge-base --is-ancestor` answers it without a remote.
+run_fkt channel edge >/dev/null
+mkdir -p "$STATE_DIR"
+EDGE_HEAD="$(git -C "$HOME_DIR" rev-parse HEAD)"
+EDGE_VER="$(tr -d '[:space:]' < "$HOME_DIR/VERSION")"
+
+printf 'UPDATE_AVAILABLE %s edge-%s %s\n' "$EDGE_VER" "${EDGE_HEAD:0:12}" "$(date +%s)" \
+  > "$STATE_DIR/update-check"
+assert_exit 0 "edge rejects a target the checkout already contains" -- check
+
+# The same shape, but for a commit this checkout genuinely does not have: the
+# record is real and must survive. An unknown sha is not evidence of staleness.
+printf 'UPDATE_AVAILABLE %s edge-%s %s\n' "$EDGE_VER" "0123456789ab" "$(date +%s)" \
+  > "$STATE_DIR/update-check"
+assert_exit 10 "edge keeps a target the checkout does not have" -- check
+run_fkt channel stable >/dev/null
+reset_state
+
+# --- the interactive startup prompt ----------------------------------------
+# A real update on a fresh startup: the notice has to name AskUserQuestion as
+# the reply's opening move, and name the choices the user gets.
+mkdir -p "$STATE_DIR"
+printf 'UPDATE_AVAILABLE 0.1.0 0.9.9 %s\n' "$(date +%s)" > "$STATE_DIR/update-check"
+STARTUP_OUT="$(run_hook_src startup FKT_OFFLINE=1)"
+
+if grep -qF "0.1.0 -> 0.9.9" <<<"$STARTUP_OUT"; then
+  pass "a validated update is reported on startup"
+else
+  fail "a validated update is reported on startup" "printed: $STARTUP_OUT"
+fi
+
+if grep -qF "AskUserQuestion" <<<"$STARTUP_OUT"; then
+  pass "the startup notice calls for AskUserQuestion"
+else
+  fail "the startup notice calls for AskUserQuestion" "printed: $STARTUP_OUT"
+fi
+
+# "before any greeting" is the whole point: without it Claude answers first and
+# mentions the update afterwards, which is the behaviour this replaced.
+if grep -qF "nothing precedes it" <<<"$STARTUP_OUT"; then
+  pass "the startup notice puts the question before any prose"
+else
+  fail "the startup notice puts the question before any prose" "printed: $STARTUP_OUT"
+fi
+
+for choice in "Update now" "Skip for now" "Show details"; do
+  if grep -qF "$choice" <<<"$STARTUP_OUT"; then
+    pass "the startup notice offers \"$choice\""
+  else
+    fail "the startup notice offers \"$choice\"" "printed: $STARTUP_OUT"
+  fi
+done
+
+# Accepting and declining are both the user's call. The hook cannot apply an
+# update either way, so what it must guarantee is that nothing runs unasked.
+if grep -qF "absent that answer nothing runs" <<<"$STARTUP_OUT"; then
+  pass "the startup notice forbids updating without an answer"
+else
+  fail "the startup notice forbids updating without an answer" "printed: $STARTUP_OUT"
+fi
+
+# Notification only: whatever the user answers, the hook itself never mutates
+# the checkout. The fixture must still be on the version it started at.
+if [ "$(tr -d '[:space:]' < "$HOME_DIR/VERSION")" = "0.1.0" ]; then
+  pass "the hook applies no update of its own"
+else
+  fail "the hook applies no update of its own" "VERSION: $(cat "$HOME_DIR/VERSION")"
+fi
+
+# --- non-startup and non-interactive sources -------------------------------
+# Resuming or compacting still reports the update, but must not re-open the
+# question: the user already answered it once this session.
+for src in resume compact clear fork; do
+  SRC_OUT="$(run_hook_src "$src" FKT_OFFLINE=1)"
+  if grep -qF "0.1.0 -> 0.9.9" <<<"$SRC_OUT" &&
+     ! grep -qF "AskUserQuestion" <<<"$SRC_OUT"; then
+    pass "source=$src reports the update without re-asking"
+  else
+    fail "source=$src reports the update without re-asking" "printed: $SRC_OUT"
+  fi
+done
+
+# No payload at all (a host that sends nothing) falls back to the plain notice
+# rather than demanding a tool call it cannot know is available.
+NOSTDIN_OUT="$(run_hook FKT_OFFLINE=1)"
+if grep -qF "runs only once they agree" <<<"$NOSTDIN_OUT" &&
+   ! grep -qF "AskUserQuestion" <<<"$NOSTDIN_OUT"; then
+  pass "an absent payload falls back to the plain notice"
+else
+  fail "an absent payload falls back to the plain notice" "printed: $NOSTDIN_OUT"
+fi
+
+# AskUserQuestion is denied in print mode, so a non-interactive entrypoint gets
+# the plain notice even on a genuine startup.
+SDK_OUT="$(run_hook_src startup FKT_OFFLINE=1 CLAUDE_CODE_ENTRYPOINT=sdk-py)"
+if grep -qF "0.1.0 -> 0.9.9" <<<"$SDK_OUT" &&
+   ! grep -qF "AskUserQuestion" <<<"$SDK_OUT"; then
+  pass "a non-interactive entrypoint gets no question"
+else
+  fail "a non-interactive entrypoint gets no question" "printed: $SDK_OUT"
+fi
+
+# An explicit opt-out, matching FKT_SECURITY_NOTICES on the advisory path.
+OPTOUT_OUT="$(run_hook_src startup FKT_OFFLINE=1 FKT_UPDATE_PROMPT=0)"
+if grep -qF "0.1.0 -> 0.9.9" <<<"$OPTOUT_OUT" &&
+   ! grep -qF "AskUserQuestion" <<<"$OPTOUT_OUT"; then
+  pass "FKT_UPDATE_PROMPT=0 keeps the notice but drops the question"
+else
+  fail "FKT_UPDATE_PROMPT=0 keeps the notice but drops the question" "printed: $OPTOUT_OUT"
+fi
+
+# No update, on the same startup path: silence, not an empty question.
+reset_state
+if [ -z "$(run_hook_src startup FKT_OFFLINE=1)" ]; then
+  pass "no cached update means no question on startup"
+else
+  fail "no cached update means no question on startup"
+fi
+
+# Reading the payload must not become a way to stall startup: an open stdin that
+# never delivers has to time out, not hang until the hook's 5s budget expires.
+mkdir -p "$STATE_DIR"
+printf 'UPDATE_AVAILABLE 0.1.0 0.9.9 %s\n' "$(date +%s)" > "$STATE_DIR/update-check"
+STDIN_START="$(date +%s)"
+# Deliberately not run_hook: this needs the un-redirected stdin it closes off.
+# Process substitution rather than a pipeline, so the wait being measured is the
+# hook's own and not the writer's — bash does not block on a process
+# substitution once the reader has exited.
+env FKT_HOME="$HOME_DIR" FKT_STATE_DIR="$STATE_DIR" FKT_CONFIG_DIR="$CFG_DIR" \
+    FKT_OFFLINE=1 "$HOOK" < <(sleep 6) >/dev/null 2>&1
+STDIN_ELAPSED=$(( $(date +%s) - STDIN_START ))
+# The read is capped at 1s; the extra second is whole-second clock rounding.
+# What matters is that it is nowhere near the writer's 6s or the hook's 5s budget.
+if [ "$STDIN_ELAPSED" -le 3 ]; then
+  pass "a stalled stdin does not hold up the hook (${STDIN_ELAPSED}s)"
+else
+  fail "a stalled stdin does not hold up the hook" "took ${STDIN_ELAPSED}s"
+fi
+reset_state
 
 # ---------------------------------------------------------------------------
 printf '\n%s passed, %s failed\n' "$PASS" "$FAIL"

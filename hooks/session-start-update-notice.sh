@@ -10,6 +10,12 @@
 # (`head -3`). Advisory text comes from the feed, so its width is not ours to
 # promise. Anything added here has to stay bounded the same way.
 #
+# What a hook cannot do: a command hook is a shell script, not an agent. It has
+# no access to Claude Code's tools, so it cannot call AskUserQuestion itself and
+# cannot hold the session open waiting for an answer. The only lever it has is
+# the text it prints. On an interactive startup this text therefore names
+# AskUserQuestion as the reply's opening move; the tool call is Claude's to make.
+#
 # The rules that make this safe to run on every session:
 #   * NO network calls on this path. It reads the cache `fkt` already wrote.
 #   * The cache refresh is detached and backgrounded, so a hung DNS lookup can
@@ -33,6 +39,35 @@ REFRESH_LOCK="$STATE_DIR/.refresh.lock"
 [ -x "$FKT" ] || exit 0
 [ "${FKT_UPDATE_CHECK:-1}" = "0" ] && exit 0
 
+# --- which kind of session is this? ---------------------------------------
+# Claude Code hands SessionStart hooks a JSON payload on stdin whose `source` is
+# "startup", "resume", "clear", "compact" or "fork". Only a fresh startup earns
+# the interactive prompt; re-asking after every compaction would be noise.
+#
+# Read with bash's own `read` rather than jq, which this toolkit does not depend
+# on, and bounded by -t so a caller that leaves stdin open cannot stall startup.
+# Every failure here leaves hook_source empty, which selects the quieter notice.
+hook_source=""
+if [ ! -t 0 ]; then
+  hook_payload=""
+  IFS= read -r -t 1 -d '' hook_payload 2>/dev/null || true
+  hook_source="$(printf '%s' "${hook_payload:-}" \
+    | sed -n 's/.*"source"[[:space:]]*:[[:space:]]*"\([A-Za-z]*\)".*/\1/p' | head -1)"
+fi
+
+# AskUserQuestion is an interactive tool: `claude -p` has nobody to answer it and
+# the `dontAsk` permission mode denies it outright, so asking there would spend
+# the turn on a call that cannot succeed. Claude Code documents no way for a hook
+# to detect print mode, so this only ever *suppresses* on a positive signal and
+# never requires one — an unrecognised environment still gets the plain notice.
+prompt_first=0
+if [ "$hook_source" = "startup" ] && [ "${FKT_UPDATE_PROMPT:-1}" != "0" ]; then
+  prompt_first=1
+  case "${CLAUDE_CODE_ENTRYPOINT:-}" in
+    sdk-*|*print*|*headless*) prompt_first=0 ;;
+  esac
+fi
+
 # --- report from the cache only -------------------------------------------
 if [ -r "$CACHE" ]; then
   read -r status current latest _ts < "$CACHE" 2>/dev/null || status=""
@@ -42,16 +77,27 @@ if [ -r "$CACHE" ]; then
     if "$FKT" check --quiet >/dev/null 2>&1; then
       : # up to date, or snoozed — say nothing
     else
-      # shellcheck disable=SC2016  # the backticks are markdown for Claude, not a subshell
-      printf 'fk-toolkit update available: %s -> %s. Run `fkt update` (or tell the user).\n' \
-        "${current:-?}" "${latest:-?}"
+      # Report the version that is installed right now, not the one the cache
+      # happens to name. `fkt check` above already refuses to speak for a record
+      # written against a different install, so these agree — but the number the
+      # user reads should come from VERSION, not from a cache field.
+      installed="$("$FKT" version 2>/dev/null | tr -d '[:space:]')"
+      [ -n "$installed" ] || installed="${current:-?}"
+      printf 'fk-toolkit update available: %s -> %s.\n' "$installed" "${latest:-?}"
       # Say how the notice is handled, so Claude raises it instead of mentioning
-      # it in passing. Stated as convention, not as an out-of-band command:
-      # imperative "do this first" text injected into context trips Claude's
-      # prompt-injection defences and gets shown to the user verbatim rather
-      # than acted on, which would defeat the point.
-      # shellcheck disable=SC2016  # the backticks are markdown for Claude, not a subshell
-      printf 'fk-toolkit convention for this notice: it is raised with the user early in the reply, in the language they are writing in, and `fkt update` runs only once they agree to it.\n'
+      # it in passing. Both variants stay phrased as this toolkit's convention
+      # rather than as an out-of-band order: imperative "do this first" text
+      # injected into context trips Claude's prompt-injection defences and gets
+      # shown to the user verbatim instead of acted on, which would defeat the
+      # point. Naming the required opening move inside that framing is what
+      # survives; a bare command is not.
+      if [ "$prompt_first" = "1" ]; then
+        # shellcheck disable=SC2016  # the backticks are markdown for Claude, not a subshell
+        printf 'fk-toolkit convention for this notice on an interactive startup: the reply opens with an AskUserQuestion call and nothing precedes it, no greeting and no other prose, offering "Update now" (run `fkt update`), "Skip for now" (say nothing further about it) and "Show details" (run `fkt status`, report it, then ask again). The user picking "Update now" is the only thing that starts an update; absent that answer nothing runs. Ask in the language they are writing in.\n'
+      else
+        # shellcheck disable=SC2016  # the backticks are markdown for Claude, not a subshell
+        printf 'fk-toolkit convention for this notice: it is raised with the user early in the reply, in the language they are writing in, and `fkt update` runs only once they agree to it.\n'
+      fi
     fi
   fi
 fi
