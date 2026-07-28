@@ -220,11 +220,21 @@ cache_valid_for() {
   # A truncated or garbled line leaves these empty; treat it as no cache at all.
   [ -n "$recorded" ] && [ -n "$latest" ] || return 1
   [ "$recorded" = "$current" ] || return 1
-  # An UPDATE_AVAILABLE whose target is not ahead of what is installed
-  # contradicts itself. On stable that is checkable without the network; on edge
-  # the target is a commit, so there is nothing to compare it against here.
-  if [ "$ch" = "stable" ] && [ "$(cache_field 1 2>/dev/null || true)" = "UPDATE_AVAILABLE" ]; then
-    [ "$current" = "unknown" ] || [ "$(version_newer "$current" "$latest")" = "newer" ] || return 1
+  # An UPDATE_AVAILABLE whose target the checkout has already reached
+  # contradicts itself. Both channels can answer that without the network.
+  if [ "$(cache_field 1 2>/dev/null || true)" = "UPDATE_AVAILABLE" ]; then
+    if [ "$ch" = "stable" ]; then
+      [ "$current" = "unknown" ] || [ "$(version_newer "$current" "$latest")" = "newer" ] || return 1
+    else
+      # On edge the target is a commit, and "do we already contain it" is a
+      # local question: --is-ancestor reads the object database, not the remote,
+      # and counts a commit as its own ancestor. This matters because most edge
+      # commits leave VERSION alone, so the recorded-version test above cannot
+      # catch a record the checkout has since caught up with. A sha git does not
+      # have errors out non-zero, which correctly leaves the record standing.
+      local sha="${latest#edge-}"
+      ! git_at merge-base --is-ancestor "$sha" HEAD 2>/dev/null || return 1
+    fi
   fi
   return 0
 }
@@ -358,9 +368,16 @@ do_check() {
     # block startup on IO. Deleting the record makes the next cache_fresh test
     # fail, so the hook's own detached refresh rebuilds it for the next session.
     # That costs one background fetch per version change, not one per startup.
-    local stale_for
+    local stale_for stale_line
     stale_for="$(cache_field 2 2>/dev/null || true)"
-    rm -f "$CHECK_CACHE"
+    stale_line="$(head -n 1 "$CHECK_CACHE" 2>/dev/null || true)"
+    # Discard only the exact record that was judged. write_cache is atomic, so a
+    # concurrent refresh either has not landed yet or has landed whole; re-reading
+    # first keeps this from deleting a good record that arrived in between and
+    # costing the next session a needless fetch.
+    if [ "$stale_line" = "$(head -n 1 "$CHECK_CACHE" 2>/dev/null || true)" ]; then
+      rm -f "$CHECK_CACHE"
+    fi
     [ "$quiet" -eq 1 ] || say "discarded a cached check written for ${stale_for:-an unknown version} (installed: $current)"
     return 0
   fi
