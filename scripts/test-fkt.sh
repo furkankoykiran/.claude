@@ -542,6 +542,7 @@ else
   pass "the hook's advisory output carries no terminal escapes"
 fi
 
+
 # One header plus at most three entries, however long the feed grows.
 ADV_COUNT="$(printf '%s\n' "$ADV_OUT" | grep -c 'FKT-2026-10')"
 if [ "$ADV_COUNT" = "3" ]; then
@@ -566,6 +567,22 @@ if [ -z "$(run_hook FKT_OFFLINE=1 FKT_SECURITY_NOTICES=0)" ]; then
   pass "FKT_SECURITY_NOTICES=0 silences the advisory block"
 else
   fail "FKT_SECURITY_NOTICES=0 silences the advisory block"
+fi
+
+# The feed arrives over the network and `looks_like_advisory_feed` only counts
+# columns, so its text is untrusted. A summary carrying escape sequences must
+# not reach Claude's context intact. Sole entry in the feed, so `head -3` cannot
+# drop it and let this pass vacuously.
+printf '#id\tseverity\tintroduced\tfixed\tsummary\turl\n' > "$STATE_DIR/advisories.tsv"
+printf 'FKT-2026-666\tcritical\t0.1.0\t0.9.0\tRed \033[31malert\033[0m here\t-\n' \
+  >> "$STATE_DIR/advisories.tsv"
+HOSTILE_OUT="$(run_hook FKT_OFFLINE=1)"
+if ! printf '%s' "$HOSTILE_OUT" | grep -qF "FKT-2026-666"; then
+  fail "escape sequences in the feed are stripped" "advisory never rendered: $HOSTILE_OUT"
+elif printf '%s' "$HOSTILE_OUT" | grep -q "$(printf '\033')"; then
+  fail "escape sequences in the feed are stripped" "printed: $HOSTILE_OUT"
+else
+  pass "escape sequences in the feed are stripped"
 fi
 reset_state
 

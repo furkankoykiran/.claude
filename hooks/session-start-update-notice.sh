@@ -62,8 +62,13 @@ if [ -r "$STATE_DIR/advisories.tsv" ] && [ "${FKT_SECURITY_NOTICES:-1}" != "0" ]
   # advisories through `warn`, which goes to stderr and colours every line, so
   # scraping it silently yielded nothing. `fkt advisories` is the same list as
   # plain TSV on stdout, and reads only the cache.
+  #
+  # The feed itself arrives over the network and is validated only for its
+  # column count, so its text is untrusted: strip control characters before
+  # they reach Claude's context as escape sequences.
   advisories="$("$FKT" advisories 2>/dev/null | head -3 |
-    awk -F'\t' '{ printf "  [%s] %s — %s\n", $2, $1, $3 }')"
+    awk -F'\t' '{ for (i = 1; i <= 3; i++) gsub(/[[:cntrl:]]/, "", $i)
+                  printf "  [%s] %s — %s\n", $2, $1, $3 }')"
   if [ -n "${advisories:-}" ]; then
     printf 'fk-toolkit security advisories apply to this install:\n%s\n' "$advisories"
   fi
