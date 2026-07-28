@@ -117,8 +117,10 @@ see below. Those have their own switch.
 
 ### The session notice
 
-`hooks/session-start-update-notice.sh` runs on SessionStart and prints one line
-when a cached check found an update, so Claude can tell you and offer to run it.
+`hooks/session-start-update-notice.sh` runs on SessionStart and prints two lines
+when a cached check found an update: the version pair, and the convention that
+Claude raises it with you in your own language and runs `fkt update` only once
+you agree.
 
 It is built not to be in your way:
 
