@@ -651,11 +651,18 @@ do_status() {
   say "  update checks  $(checks_enabled && echo enabled || echo disabled)"
   say "  advisories     $(advisories_enabled && echo enabled || echo disabled)"
   if [ -f "$CHECK_CACHE" ]; then
+    # Read the record once and report from that snapshot. `check` discards a
+    # record it finds invalid, and the hook fires one in the background on every
+    # session, so the file can vanish partway through this line: field-by-field
+    # reads render half of it from before the delete and half from after, which
+    # printed a real "last check      (latest: ) — stale, written for 0.3.0".
+    #
     # Say so when the record predates the installed version. `status` reports,
     # it does not repair: leave the file for `check` to discard on its own terms.
-    local staleness=""
-    cache_valid_for "$current" "$ch" || staleness=" — stale, written for $(cache_field 2 2>/dev/null || printf 'an unknown version'); re-run 'fkt check --force'"
-    say "  last check     $(cache_field 1) (latest: $(cache_field 3))$staleness"
+    local last_status="" last_for="" last_latest="" staleness=""
+    read -r last_status last_for last_latest _ < "$CHECK_CACHE" 2>/dev/null || true
+    cache_valid_for "$current" "$ch" || staleness=" — stale, written for ${last_for:-an unknown version}; re-run 'fkt check --force'"
+    say "  last check     ${last_status:-unreadable} (latest: ${last_latest:--})$staleness"
   else
     say "  last check     never"
   fi
