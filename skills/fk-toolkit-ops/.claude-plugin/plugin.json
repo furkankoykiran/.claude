@@ -2,7 +2,7 @@
   "name": "fk-toolkit-ops",
   "displayName": "Toolkit Ops",
   "description": "Operate the toolkit itself: check for and apply toolkit updates on the stable or edge channel, and wire an MCP server into Claude Code from a pasted config block.",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "author": {
     "name": "Furkan Köykıran",
     "url": "https://github.com/furkankoykiran"
