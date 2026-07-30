@@ -4443,7 +4443,7 @@
       ],
       "canonicalInvocation": "/impeccable",
       "description": "Use when the user wants to design, redesign, shape, critique, audit, polish, clarify, distill, harden, optimize, adapt, animate, colorize, extract, or otherwise improve a frontend interface. Covers websites, landing pages, dashboards, product UI, app shells, components, forms, settings, onboarding, and empty states. Handles UX review, visual hierarchy, information architecture, cognitive load, accessibility, performance, responsive behavior, theming, anti-patterns, typography, fonts, spacing, layout, alignment, color, motion, micro-interactions, UX copy, error states, edge cases, i18n, and reusable design systems or tokens. Also use for bland designs that need to become bolder or more delightful, loud designs that should become quieter, live browser iteration on UI elements, or ambitious visual effects that should feel technically extraordinary. Not for backend-only or non-UI tasks.",
-      "digest": "eeffd5227a147cd7f1a627f06cb69ee7ce5f13af99be5913e5627d03ab74f572",
+      "digest": "a0c7405ae664c3310d778a0b059fb7d47c87c298c647444c5cc4007c087368f5",
       "frontmatter": {
         "allowed-tools": [
           "Bash(npx impeccable *)",
@@ -4454,7 +4454,7 @@
         "license": "Apache 2.0",
         "name": "impeccable",
         "user-invocable": true,
-        "version": "4.0.3"
+        "version": "4.0.4"
       },
       "fullPagePath": "docs/skills/impeccable/impeccable.md",
       "generated": true,
@@ -4472,7 +4472,7 @@
       "ref": "origin/HEAD",
       "relativePath": ".claude/skills/impeccable/SKILL.md",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "adf7d706fa7cc4155ddceca241748e3de021ec8e",
+      "resolvedRevision": "6b342244e915d64b0d6e84d5eec448fd196ce6bb",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4489,7 +4489,7 @@
       "skillName": "impeccable",
       "sourceId": "impeccable",
       "sourceType": "git",
-      "version": "4.0.3",
+      "version": "4.0.4",
       "warnings": []
     },
     {
@@ -8146,7 +8146,7 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "adf7d706fa7cc4155ddceca241748e3de021ec8e",
+      "resolvedRevision": "6b342244e915d64b0d6e84d5eec448fd196ce6bb",
       "runtimeOnly": false,
       "skillCount": 1,
       "type": "git"
