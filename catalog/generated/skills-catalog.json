@@ -4443,13 +4443,13 @@
       ],
       "canonicalInvocation": "/impeccable",
       "description": "Use when the user wants to design, redesign, shape, critique, audit, polish, clarify, distill, harden, optimize, adapt, animate, colorize, extract, or otherwise improve a frontend interface. Covers websites, landing pages, dashboards, product UI, app shells, components, forms, settings, onboarding, and empty states. Handles UX review, visual hierarchy, information architecture, cognitive load, accessibility, performance, responsive behavior, theming, anti-patterns, typography, fonts, spacing, layout, alignment, color, motion, micro-interactions, UX copy, error states, edge cases, i18n, and reusable design systems or tokens. Also use for bland designs that need to become bolder or more delightful, loud designs that should become quieter, live browser iteration on UI elements, or ambitious visual effects that should feel technically extraordinary. Not for backend-only or non-UI tasks.",
-      "digest": "a0c7405ae664c3310d778a0b059fb7d47c87c298c647444c5cc4007c087368f5",
+      "digest": "574331ee26a454633996c26e3042e40e9d7b51f558de9be47d19184880c3bdf4",
       "frontmatter": {
         "allowed-tools": [
           "Bash(npx impeccable *)",
           "Bash(node .claude/skills/impeccable/scripts/*)"
         ],
-        "argument-hint": "[craft|shape · audit|critique · animate|bolder|colorize|delight|layout|overdrive|quieter|typeset · adapt|clarify|distill · harden|onboard|optimize|polish · init|document|extract|live] [target]",
+        "argument-hint": "[shape · audit|critique · animate|bolder|colorize|delight|layout|overdrive|quieter|typeset · adapt|clarify|distill · harden|onboard|optimize|polish · init|document|extract|live] [target]",
         "description": "Use when the user wants to design, redesign, shape, critique, audit, polish, clarify, distill, harden, optimize, adapt, animate, colorize, extract, or otherwise improve a frontend interface. Covers websites, landing pages, dashboards, product UI, app shells, components, forms, settings, onboarding, and empty states. Handles UX review, visual hierarchy, information architecture, cognitive load, accessibility, performance, responsive behavior, theming, anti-patterns, typography, fonts, spacing, layout, alignment, color, motion, micro-interactions, UX copy, error states, edge cases, i18n, and reusable design systems or tokens. Also use for bland designs that need to become bolder or more delightful, loud designs that should become quieter, live browser iteration on UI elements, or ambitious visual effects that should feel technically extraordinary. Not for backend-only or non-UI tasks.",
         "license": "Apache 2.0",
         "name": "impeccable",
@@ -4472,7 +4472,7 @@
       "ref": "origin/HEAD",
       "relativePath": ".claude/skills/impeccable/SKILL.md",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "33b9a3752b8852c7adb7f4935a3f6c160bf3fefc",
+      "resolvedRevision": "620ba1fe7d87a39039a8528bfaa319ecfa893cb2",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8146,7 +8146,7 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "33b9a3752b8852c7adb7f4935a3f6c160bf3fefc",
+      "resolvedRevision": "620ba1fe7d87a39039a8528bfaa319ecfa893cb2",
       "runtimeOnly": false,
       "skillCount": 1,
       "type": "git"

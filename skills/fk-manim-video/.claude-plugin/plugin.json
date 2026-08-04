@@ -2,7 +2,7 @@
   "name": "fk-manim-video",
   "displayName": "Narrated Manim Video",
   "description": "Build Manim animations with synced spoken narration using edge-tts and ffmpeg. Ships a NarratedScene base class, reusable visuals, and a screenshot-asset pipeline.",
-  "version": "0.4.8",
+  "version": "0.4.9",
   "author": {
     "name": "Furkan Köykıran",
     "url": "https://github.com/furkankoykiran"
