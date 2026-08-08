@@ -2,7 +2,7 @@
   "name": "fk-writing-kit",
   "displayName": "Writing Kit",
   "description": "Turn raw material into publishable writing: strip AI tells from drafts, and build blog posts or LinkedIn copy from a chat, a URL, or a GitHub profile.",
-  "version": "0.4.12",
+  "version": "0.4.13",
   "author": {
     "name": "Furkan Köykıran",
     "url": "https://github.com/furkankoykiran"
