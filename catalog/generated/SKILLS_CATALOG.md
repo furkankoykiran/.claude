@@ -14,7 +14,7 @@ Resolver version 1 · schema v1.
 ## Anthropic skills (anthropics/skills)
 
 type: `git` · pack: `anthropic` · skills: 8 · redistribution: metadata-only
-repo: https://github.com/anthropics/skills.git · ref: `origin/HEAD` · revision: `b29e7cf65e5c`
+repo: https://github.com/anthropics/skills.git · ref: `origin/HEAD` · revision: `f17010c9bb48`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -39,7 +39,7 @@ _Runtime-only — see notes below._
 ## gstack (garrytan/gstack)
 
 type: `git` · pack: `gstack` · skills: 53 · redistribution: full
-repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `a3259400a366`
+repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `960c3a8d6c4d`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
