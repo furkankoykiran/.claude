@@ -406,6 +406,14 @@
       "sourceId": "marketing"
     },
     {
+      "key": "/events",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
       "key": "/fk-gh-flow:find-issues",
       "kind": "added",
       "manualReviewRequired": false,
@@ -555,7 +563,8 @@
       "manualReviewRequired": true,
       "reasons": [
         "new-skill-capability:bash/powershell",
-        "new-skill-capability:executable/binary"
+        "new-skill-capability:executable/binary",
+        "new-skill-capability:network-access"
       ],
       "securitySensitive": true,
       "sourceId": "gstack"
@@ -626,9 +635,11 @@
     {
       "key": "/impeccable",
       "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:executable/binary"
+      ],
+      "securitySensitive": true,
       "sourceId": "impeccable"
     },
     {
@@ -1308,7 +1319,7 @@
   ],
   "schemaVersion": 2,
   "summary": {
-    "added": 143,
+    "added": 144,
     "licenseRestricted": 10,
     "manualReviewRequired": true,
     "massChange": false,
@@ -1322,7 +1333,7 @@
       "new-skill-capability:network-access"
     ],
     "runtimeOnly": 3,
-    "securitySensitive": 65,
+    "securitySensitive": 66,
     "updated": 0
   }
 }
