@@ -28,7 +28,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/doc-coauthoring/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "f17010c9bb483898c1d9c9f42dde2b3a98889434",
+      "resolvedRevision": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -75,7 +75,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/docx/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "f17010c9bb483898c1d9c9f42dde2b3a98889434",
+      "resolvedRevision": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
       "security": {
         "flags": [
           "executables:5"
@@ -123,7 +123,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/mcp-builder/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "f17010c9bb483898c1d9c9f42dde2b3a98889434",
+      "resolvedRevision": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -168,7 +168,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/pdf/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "f17010c9bb483898c1d9c9f42dde2b3a98889434",
+      "resolvedRevision": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
       "security": {
         "flags": [
           "executables:1"
@@ -217,7 +217,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/pptx/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "f17010c9bb483898c1d9c9f42dde2b3a98889434",
+      "resolvedRevision": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
       "security": {
         "flags": [
           "executables:4"
@@ -264,7 +264,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/skill-creator/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "f17010c9bb483898c1d9c9f42dde2b3a98889434",
+      "resolvedRevision": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
       "security": {
         "flags": [
           "executables:7"
@@ -310,7 +310,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/web-artifacts-builder/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "f17010c9bb483898c1d9c9f42dde2b3a98889434",
+      "resolvedRevision": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
       "security": {
         "flags": [
           "executables:2",
@@ -358,7 +358,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/xlsx/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "f17010c9bb483898c1d9c9f42dde2b3a98889434",
+      "resolvedRevision": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
       "security": {
         "flags": [
           "executables:2"
@@ -431,7 +431,7 @@
       ],
       "canonicalInvocation": "/autoplan",
       "description": "Auto-review pipeline — reads the full CEO, design, eng, and DX review skills from disk and runs them sequentially with auto-decisions using 6 decision principles. (gstack)",
-      "digest": "7e5ed862190ff1c4a63b0da6367e10db4043ac333a8eb5ab4651e09fdb9b8251",
+      "digest": "5f22fd8076093e7774e069996b806516511ee7bb52651076573e63df2e6b48d1",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -442,9 +442,6 @@
           "Grep",
           "WebSearch",
           "AskUserQuestion"
-        ],
-        "benefits-from": [
-          "office-hours"
         ],
         "description": "Auto-review pipeline — reads the full CEO, design, eng, and DX review skills from disk and runs them sequentially with auto-decisions using 6 decision principles. (gstack)",
         "name": "autoplan",
@@ -473,7 +470,7 @@
       "ref": "origin/HEAD",
       "relativePath": "autoplan/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -505,7 +502,7 @@
       ],
       "canonicalInvocation": "/benchmark",
       "description": "Performance regression detection using the browse daemon. (gstack)",
-      "digest": "523f7a7881d6cdf0f390374b2c715cd1aa10192183856ee0690c97286eed95d8",
+      "digest": "4d6bd4039707a1afd29b2eeea94bec1dd34490641c19ffff50514dc1a720054f",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -541,7 +538,7 @@
       "ref": "origin/HEAD",
       "relativePath": "benchmark/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -572,7 +569,7 @@
       ],
       "canonicalInvocation": "/benchmark-models",
       "description": "Cross-model benchmark for gstack skills. (gstack)",
-      "digest": "616d78118cbb017708cde2e57fd198c6de172ea8ecfeb641624775e2625a8919",
+      "digest": "29f71b0b3df8a41510b62a9fac8a4f5cc3165c266248d96ffd08f14aa17fde3f",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -607,7 +604,7 @@
       "ref": "origin/HEAD",
       "relativePath": "benchmark-models/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -637,7 +634,7 @@
       ],
       "canonicalInvocation": "/browse",
       "description": "Fast headless browser for QA testing and site dogfooding. (gstack)",
-      "digest": "24cd19eca8496742614e096bc6b4332e1024d5f9aff68b985b726077ef2d654c",
+      "digest": "e952b221ebf4c62417456b18fe638677454120c08775e72c5e67a0c890cfe009",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -671,12 +668,12 @@
       "ref": "origin/HEAD",
       "relativePath": "browse/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
           "network-access",
-          "executables:4"
+          "executables:5"
         ],
         "hasAgents": false,
         "hasBashOrPowershell": true,
@@ -705,7 +702,7 @@
       ],
       "canonicalInvocation": "/canary",
       "description": "Post-deploy canary monitoring. (gstack)",
-      "digest": "2057e03a77f70fb8c221f433cd49f1236bbcf6c87fe825fbc49d1eb16bbd288f",
+      "digest": "a089b7e2c2cc706ec32afe10f918b590688eb4d72ba08ff8522489ad275c282b",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -741,7 +738,7 @@
       "ref": "origin/HEAD",
       "relativePath": "canary/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -771,7 +768,7 @@
       ],
       "canonicalInvocation": "/careful",
       "description": "Safety guardrails for destructive commands. (gstack)",
-      "digest": "d89a0ff089a49d01de5230a3cc0778d2ca3372325015d0640d4af1c53cb4f3d8",
+      "digest": "591b09da82ff1eadab5d06323c53dc02e59a51ad3f549a45300ea03598041ff3",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -816,7 +813,7 @@
       "ref": "origin/HEAD",
       "relativePath": "careful/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -851,7 +848,7 @@
       ],
       "canonicalInvocation": "/codex",
       "description": "OpenAI Codex CLI wrapper — three modes. (gstack)",
-      "digest": "796ef62ab4f0cd08bccbd088b72c85e5b2e19b5800febfcee808ac173e1ec720",
+      "digest": "f8f12df3f8c9d9942f68e54d484d6f188c4c64febafd00c9d8c6348c3c4ebdaa",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -888,7 +885,7 @@
       "ref": "origin/HEAD",
       "relativePath": "codex/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -920,7 +917,7 @@
       ],
       "canonicalInvocation": "/context-restore",
       "description": "Restore working context saved earlier by /context-save. (gstack)",
-      "digest": "c7b42e37aa2e65362760da0173e251aee6ffd5df3225a209404f5e1d89d8771d",
+      "digest": "44cd7de937c588f7ba411baa907692d7a9f529d27854daeae8e1ce90b30a75b7",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -958,7 +955,7 @@
       "ref": "origin/HEAD",
       "relativePath": "context-restore/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -991,7 +988,7 @@
       ],
       "canonicalInvocation": "/context-save",
       "description": "Save working context. (gstack)",
-      "digest": "1d285f761b257e491400c53c526e5c7eb6affef8aff8e3d24b4317fdb005deae",
+      "digest": "9c24a5e909c3d39168a5c54d4f2cf7be1cf7bd3119352ea77e9240e92ff6f5eb",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -1029,7 +1026,7 @@
       "ref": "origin/HEAD",
       "relativePath": "context-save/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -1064,7 +1061,7 @@
       ],
       "canonicalInvocation": "/cso",
       "description": "Chief Security Officer mode. (gstack)",
-      "digest": "a1318f1d17ec92f1bd4570f79020f187d52f6665f967b13133b451c1c5a891e1",
+      "digest": "d06c48dc7aedc0016e52f5cb81a5894ca32fddb762712e387324d949f3ca5e0a",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -1103,7 +1100,7 @@
       "ref": "origin/HEAD",
       "relativePath": "cso/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -1138,7 +1135,7 @@
       ],
       "canonicalInvocation": "/design-consultation",
       "description": "Design consultation: understands your product, researches the landscape, proposes a complete design system (aesthetic, typography, color, layout, spacing, motion), and generates font+color preview... (gstack)",
-      "digest": "d0f39526e30286b0801df4099b8de8e1aaa5d91552355ff4158f754bdaa78ca3",
+      "digest": "649d1f486e333b7b528546738f2a1594d6cd97be47eba1599413b0971fa75300",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -1209,7 +1206,7 @@
       "ref": "origin/HEAD",
       "relativePath": "design-consultation/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -1245,7 +1242,7 @@
       ],
       "canonicalInvocation": "/design-html",
       "description": "Design finalization: generates production-quality Pretext-native HTML/CSS. (gstack)",
-      "digest": "492a6f525f38f391bd01ee2dcb93b54d6791851f1025330ab35d90115c611445",
+      "digest": "46f587f9ace85f5121e387bf973c6f523813aba1b7987865501d924522907daf",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -1284,7 +1281,7 @@
       "ref": "origin/HEAD",
       "relativePath": "design-html/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -1320,7 +1317,7 @@
       ],
       "canonicalInvocation": "/design-review",
       "description": "Designer's eye QA: finds visual inconsistency, spacing issues, hierarchy problems, AI slop patterns, and slow interactions — then fixes them. (gstack)",
-      "digest": "f91cc8dd8999d91e6dd9c92bd7b5cfdc218884f921df25397b3766d870b32e90",
+      "digest": "48ce1fc3e40b5b9d6ab94c61fb20912d054408bb23b33247b6ee9950317f94ec",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -1359,7 +1356,7 @@
       "ref": "origin/HEAD",
       "relativePath": "design-review/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -1393,7 +1390,7 @@
       ],
       "canonicalInvocation": "/design-shotgun",
       "description": "Design shotgun: generate multiple AI design variants, open a comparison board, collect structured feedback, and iterate. (gstack)",
-      "digest": "5c955cdaea21abb5fe6b25a76e869f2aa4d7536a194a724030e7feda144ca3ce",
+      "digest": "8ae65d569b3d9c24bbd622bdf53e45065aee23ea262d2e8b835b534214c25f00",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -1458,7 +1455,7 @@
       "ref": "origin/HEAD",
       "relativePath": "design-shotgun/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -1493,7 +1490,7 @@
       ],
       "canonicalInvocation": "/devex-review",
       "description": "Live developer experience audit. (gstack)",
-      "digest": "d24bb55f6703bc4c95439c0586a9e501bc8a58c122748d1e81de8354730e9895",
+      "digest": "168fcf05f8a10126bed59c80f941f1bc2b366eb000c2ec00137221a4f2632129",
       "frontmatter": {
         "allowed-tools": [
           "Read",
@@ -1531,7 +1528,7 @@
       "ref": "origin/HEAD",
       "relativePath": "devex-review/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -1562,8 +1559,8 @@
         "AskUserQuestion"
       ],
       "canonicalInvocation": "/diagram",
-      "description": "Turn an English description (or mermaid source) into a diagram triplet: the source, an editable .excalidraw file you can open (gstack)",
-      "digest": "8483fa09da43657c2a917d74dd01338301bcdd1f3ec2b7f26250ce00a27b3841",
+      "description": "Turn an English description (or mermaid source) into a diagram triplet: the source, an editable .excalidraw file you can open on excalidraw.com, and rendered SVG + PNG. (gstack)",
+      "digest": "019acb337b8e0a6984cdfb23579595c62de9ca506ef5bc97180114c8ad39fb21",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -1571,8 +1568,9 @@
           "Write",
           "AskUserQuestion"
         ],
-        "description": "Turn an English description (or mermaid source) into a diagram triplet: the source, an editable .excalidraw file you can open (gstack)",
+        "description": "Turn an English description (or mermaid source) into a diagram triplet: the source, an editable .excalidraw file you can open on excalidraw.com, and rendered SVG + PNG. (gstack)",
         "name": "diagram",
+        "preamble-tier": 1,
         "triggers": [
           "make a diagram",
           "draw a diagram",
@@ -1595,11 +1593,12 @@
         "/diagram"
       ],
       "pack": "gstack",
+      "preambleTier": 1,
       "redistribution": "full",
       "ref": "origin/HEAD",
       "relativePath": "diagram/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -1633,7 +1632,7 @@
       ],
       "canonicalInvocation": "/document-generate",
       "description": "Generate missing documentation from scratch for a feature, module, or entire project. (gstack)",
-      "digest": "13a2ee135e5810915ab4b7b318119a12215ba729e6ed5f2879df52587a8834f7",
+      "digest": "8cbd0f504ced04c7865cdab401c883a0e206d02d04d09fd1644e62ae14397b82",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -1675,7 +1674,7 @@
       "ref": "origin/HEAD",
       "relativePath": "document-generate/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -1710,7 +1709,7 @@
       ],
       "canonicalInvocation": "/document-release",
       "description": "Post-ship documentation update. (gstack)",
-      "digest": "7c3800f1d5d408c68f34cd6f5ab87dbd9f1a0ff9b1c04d49178645a8666fa7ed",
+      "digest": "6c2172d38182d18e297b4f5075b043c5b9b0b5d1ac5445634eb8b3476f5398ab",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -1748,7 +1747,7 @@
       "ref": "origin/HEAD",
       "relativePath": "document-release/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -1778,7 +1777,7 @@
       ],
       "canonicalInvocation": "/freeze",
       "description": "Restrict file edits to a specific directory for the session. (gstack)",
-      "digest": "9c64756d22eba7d6f6688bc5974febf1147bd9fd41cf2aba4112450245044752",
+      "digest": "b3694e19b4546deca13ed3b50e6f2d007cfef836eb5862812c6ed2e46e391430",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -1834,7 +1833,7 @@
       "ref": "origin/HEAD",
       "relativePath": "freeze/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -1867,7 +1866,7 @@
       ],
       "canonicalInvocation": "/gstack-upgrade",
       "description": "Upgrade gstack to the latest version.",
-      "digest": "c7bc125c054792a932babef611af344f4d448ae1038d312cea61405c47a84497",
+      "digest": "1e2425d5f0f5e62df951dde80f09c3fb57e1d8f7cb535b94165723961a6e0f15",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -1900,11 +1899,12 @@
       "ref": "origin/HEAD",
       "relativePath": "gstack-upgrade/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
-          "executables:10"
+          "network-access",
+          "executables:13"
         ],
         "hasAgents": false,
         "hasBashOrPowershell": true,
@@ -1914,7 +1914,7 @@
         "hasHiddenFiles": false,
         "hasHooks": false,
         "hasMcpOrLsp": false,
-        "hasNetworkRef": false,
+        "hasNetworkRef": true,
         "toolCount": 4
       },
       "skillName": "gstack-upgrade",
@@ -1931,7 +1931,7 @@
       ],
       "canonicalInvocation": "/guard",
       "description": "Full safety mode: destructive command warnings + directory-scoped edits. (gstack)",
-      "digest": "48f866bab860c6857507bb4b0482208fe365acece000dff362822db0f8939e40",
+      "digest": "01d98bd8cfce99f8580fd423a9ad16d8079082da1b3ea2694fd81d21581e8879",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -1997,7 +1997,7 @@
       "ref": "origin/HEAD",
       "relativePath": "guard/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -2032,7 +2032,7 @@
       ],
       "canonicalInvocation": "/health",
       "description": "Code quality dashboard. (gstack)",
-      "digest": "93ec2439aa0b07b48ab607b55a5b62402362a09257d3de72b184ad950d5f3157",
+      "digest": "1be74b14dd361c5a15afe107ec4866826647eb2cb5ddd73fee9a8ef5d8af14fb",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -2070,7 +2070,7 @@
       "ref": "origin/HEAD",
       "relativePath": "health/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -2105,7 +2105,7 @@
       ],
       "canonicalInvocation": "/investigate",
       "description": "Systematic debugging with root cause investigation. (gstack)",
-      "digest": "e916ccaf3b0d1ac0af90aa9f1292812e982093febda80ce086edd8142dd757b6",
+      "digest": "37537a919deaf1fa796b9795ee725047fa224daf3d23e575e66a8aa74fc1b38c",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -2154,7 +2154,7 @@
             {
               "hooks": [
                 {
-                  "command": "bash -c 'S=\"${CLAUDE_SKILL_DIR}/../freeze/bin/check-freeze.sh\"; [ -x \"$S\" ] || S=\"${CLAUDE_SKILL_DIR}/../gstack-freeze/bin/check-freeze.sh\"; [ -x \"$S\" ] && bash \"$S\" || exit 0'",
+                  "command": "bash -c 'S=\"$HOME/.claude/skills/gstack/freeze/bin/check-freeze.sh\"; [ -x \"$S\" ] && exec bash \"$S\"; exit 0'",
                   "statusMessage": "Checking debug scope boundary...",
                   "type": "command"
                 }
@@ -2164,7 +2164,7 @@
             {
               "hooks": [
                 {
-                  "command": "bash -c 'S=\"${CLAUDE_SKILL_DIR}/../freeze/bin/check-freeze.sh\"; [ -x \"$S\" ] || S=\"${CLAUDE_SKILL_DIR}/../gstack-freeze/bin/check-freeze.sh\"; [ -x \"$S\" ] && bash \"$S\" || exit 0'",
+                  "command": "bash -c 'S=\"$HOME/.claude/skills/gstack/freeze/bin/check-freeze.sh\"; [ -x \"$S\" ] && exec bash \"$S\"; exit 0'",
                   "statusMessage": "Checking debug scope boundary...",
                   "type": "command"
                 }
@@ -2201,7 +2201,7 @@
       "ref": "origin/HEAD",
       "relativePath": "investigate/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -2235,7 +2235,7 @@
       ],
       "canonicalInvocation": "/ios-clean",
       "description": "Remove the DebugBridge SPM package and all #if DEBUG wiring from an iOS app. (gstack)",
-      "digest": "fbae5244b02978c04a04e0cc4567d9ce25d05dada1b6e0ddd386079b3ba0dd24",
+      "digest": "a04622e18eba7ce6b42ce1f996fd77e51198d869422b9d1ecd2064183d7bc50f",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -2247,7 +2247,7 @@
         ],
         "description": "Remove the DebugBridge SPM package and all #if DEBUG wiring from an iOS app. (gstack)",
         "name": "ios-clean",
-        "preamble-tier": 3,
+        "preamble-tier": 2,
         "triggers": [
           "clean the ios debug bridge",
           "remove debugbridge",
@@ -2267,12 +2267,12 @@
         "/ios-clean"
       ],
       "pack": "gstack",
-      "preambleTier": 3,
+      "preambleTier": 2,
       "redistribution": "full",
       "ref": "origin/HEAD",
       "relativePath": "ios-clean/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -2304,7 +2304,7 @@
       ],
       "canonicalInvocation": "/ios-design-review",
       "description": "Visual design audit for iOS apps on real hardware. (gstack)",
-      "digest": "f1c1e5e953e2d311116f80b3f0721bf03c0d7adfb416ca71ca2f9bf7b279fc03",
+      "digest": "badc9ac9ac9fcf994732014bef84806513491b4de5b9532db364dc954688edca",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -2315,7 +2315,7 @@
         ],
         "description": "Visual design audit for iOS apps on real hardware. (gstack)",
         "name": "ios-design-review",
-        "preamble-tier": 3,
+        "preamble-tier": 2,
         "triggers": [
           "review the ios design",
           "audit the iphone app visuals",
@@ -2335,12 +2335,12 @@
         "/ios-design-review"
       ],
       "pack": "gstack",
-      "preambleTier": 3,
+      "preambleTier": 2,
       "redistribution": "full",
       "ref": "origin/HEAD",
       "relativePath": "ios-design-review/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -2374,7 +2374,7 @@
       ],
       "canonicalInvocation": "/ios-fix",
       "description": "Autonomous iOS bug fixer. (gstack)",
-      "digest": "98235db64c68612d6bfb65dea321822a708d5dc0d9c1dada5c56587c43f45b10",
+      "digest": "c8a6f93753d1829b935ff4c2770d48d2786262da2f0bffbd5f1674ee619351b8",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -2387,7 +2387,7 @@
         ],
         "description": "Autonomous iOS bug fixer. (gstack)",
         "name": "ios-fix",
-        "preamble-tier": 3,
+        "preamble-tier": 2,
         "triggers": [
           "fix this ios bug",
           "patch the iphone app",
@@ -2407,12 +2407,12 @@
         "/ios-fix"
       ],
       "pack": "gstack",
-      "preambleTier": 3,
+      "preambleTier": 2,
       "redistribution": "full",
       "ref": "origin/HEAD",
       "relativePath": "ios-fix/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -2446,7 +2446,7 @@
       ],
       "canonicalInvocation": "/ios-qa",
       "description": "Live-device iOS QA for SwiftUI apps. (gstack)",
-      "digest": "8bb8ac90d12a71f16c170d8b6e8f8440c8bf9f46ac50334928ee7dd8fcbf72e2",
+      "digest": "9f85d2a8a12b9d7ce1c6803f2dd979a6a92e82aaa734af0c90befbd0c2aa2ead",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -2486,7 +2486,7 @@
       "ref": "origin/HEAD",
       "relativePath": "ios-qa/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -2521,7 +2521,7 @@
       ],
       "canonicalInvocation": "/ios-sync",
       "description": "Regenerate the iOS debug bridge against the latest upstream gstack templates. (gstack)",
-      "digest": "6b5efc878a4dd177bbb0f945273454a28df899febfd84a7514c32508149e0dc8",
+      "digest": "2cf7688c0421292a241ed3a5d061d11ada06bcd2df1342387d1d471d0b33746e",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -2534,7 +2534,7 @@
         ],
         "description": "Regenerate the iOS debug bridge against the latest upstream gstack templates. (gstack)",
         "name": "ios-sync",
-        "preamble-tier": 3,
+        "preamble-tier": 2,
         "triggers": [
           "resync the ios debug bridge",
           "regenerate ios accessors",
@@ -2554,12 +2554,12 @@
         "/ios-sync"
       ],
       "pack": "gstack",
-      "preambleTier": 3,
+      "preambleTier": 2,
       "redistribution": "full",
       "ref": "origin/HEAD",
       "relativePath": "ios-sync/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -2591,7 +2591,7 @@
       ],
       "canonicalInvocation": "/land-and-deploy",
       "description": "Land and deploy workflow. (gstack)",
-      "digest": "af56a83cf6470ff1b882da29a13d141419581c6f0ba5c13c4f61b3251bf525fb",
+      "digest": "2a862423e9433383db522ffe994c9e6e6a7e0047593272047aab086da2b07c77",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -2627,7 +2627,7 @@
       "ref": "origin/HEAD",
       "relativePath": "land-and-deploy/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -2657,7 +2657,7 @@
       ],
       "canonicalInvocation": "/landing-report",
       "description": "Read-only queue dashboard for workspace-aware ship. (gstack)",
-      "digest": "ee7ecc1067c5ad45464e54bbbb5dac822bd2549af9fae4b802543de1c77629b4",
+      "digest": "870dbdc7f9d8a4e65ebddc2a8894d22fd240870e2bf8345a9351152c70f4d908",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -2665,6 +2665,7 @@
         ],
         "description": "Read-only queue dashboard for workspace-aware ship. (gstack)",
         "name": "landing-report",
+        "preamble-tier": 2,
         "triggers": [
           "landing report",
           "version queue",
@@ -2686,11 +2687,12 @@
         "/landing-report"
       ],
       "pack": "gstack",
+      "preambleTier": 2,
       "redistribution": "full",
       "ref": "origin/HEAD",
       "relativePath": "landing-report/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -2724,7 +2726,7 @@
       ],
       "canonicalInvocation": "/learn",
       "description": "Manage project learnings.",
-      "digest": "5ad56876611896c5e18ae964dbe06b4db73a6680dc39a3324d2b818e5202b7c6",
+      "digest": "7ae2f89e74b76eb283f3dec7cae181ca16026add67ad1045866b272fabbff3db",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -2762,7 +2764,7 @@
       "ref": "origin/HEAD",
       "relativePath": "learn/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -2792,7 +2794,7 @@
       ],
       "canonicalInvocation": "/make-pdf",
       "description": "Turn any markdown file into a publication-quality PDF. (gstack)",
-      "digest": "8a748801b61742e88fe2b5fbd8b9a57ba42887a450f5475e525ee33ec9d51555",
+      "digest": "f2dec8379c4fba01b2aff33cce49bbaee674bb988c58f901342b04ed36041adf",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -2827,7 +2829,7 @@
       "ref": "origin/HEAD",
       "relativePath": "make-pdf/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -2863,7 +2865,7 @@
       ],
       "canonicalInvocation": "/office-hours",
       "description": "YC Office Hours — two modes. (gstack)",
-      "digest": "b32ad2a08735b84d4ee35312627e55174c56b2e9e308af5b880a3434294279b7",
+      "digest": "f351c526e2388f2de7bdb822fa860e15465d85eb5671fc6a598f739361ed2297",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -2941,7 +2943,7 @@
       "ref": "origin/HEAD",
       "relativePath": "office-hours/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -2972,7 +2974,7 @@
       ],
       "canonicalInvocation": "/open-gstack-browser",
       "description": "Launch GStack Browser — AI-controlled Chromium with the sidebar extension baked in.",
-      "digest": "5e673dbdee7627075e111ccf1d912ea146f053395f7e008e1a32db1043f6a193",
+      "digest": "f36e319b1348f441870f26c22a69caacba491bd19d96bb9ab7757c1a5bb1e552",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -2981,6 +2983,7 @@
         ],
         "description": "Launch GStack Browser — AI-controlled Chromium with the sidebar extension baked in.",
         "name": "open-gstack-browser",
+        "preamble-tier": 1,
         "triggers": [
           "open gstack browser",
           "launch chromium",
@@ -3000,11 +3003,12 @@
         "/open-gstack-browser"
       ],
       "pack": "gstack",
+      "preambleTier": 1,
       "redistribution": "full",
       "ref": "origin/HEAD",
       "relativePath": "open-gstack-browser/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -3035,7 +3039,7 @@
       ],
       "canonicalInvocation": "/pair-agent",
       "description": "Pair a remote AI agent with your browser. (gstack)",
-      "digest": "6fa13dafd14eda6194d9045fbed87b2a660a60d34552534adb4c303b81c7a3f1",
+      "digest": "63969c3f478935019fae1dedd4efb6f592b82114660a67738577107872fb0dc1",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -3044,6 +3048,7 @@
         ],
         "description": "Pair a remote AI agent with your browser. (gstack)",
         "name": "pair-agent",
+        "preamble-tier": 2,
         "triggers": [
           "pair with agent",
           "connect remote agent",
@@ -3063,11 +3068,12 @@
         "/pair-agent"
       ],
       "pack": "gstack",
+      "preambleTier": 2,
       "redistribution": "full",
       "ref": "origin/HEAD",
       "relativePath": "pair-agent/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -3101,7 +3107,7 @@
       ],
       "canonicalInvocation": "/plan-ceo-review",
       "description": "CEO/founder-mode plan review. (gstack)",
-      "digest": "d36e5f210feafc22b301596be431e7e1eb0935ceeb922f643876dcde082c8ed9",
+      "digest": "50dda561dcb93d2989a148faf5f2a3e26f444b46086595cd5e5c2be12d5fc2d0",
       "frontmatter": {
         "allowed-tools": [
           "Read",
@@ -3110,9 +3116,6 @@
           "Bash",
           "AskUserQuestion",
           "WebSearch"
-        ],
-        "benefits-from": [
-          "office-hours"
         ],
         "description": "CEO/founder-mode plan review. (gstack)",
         "gbrain": {
@@ -3148,7 +3151,6 @@
           ],
           "schema": 1
         },
-        "interactive": true,
         "name": "plan-ceo-review",
         "preamble-tier": 3,
         "triggers": [
@@ -3176,7 +3178,7 @@
       "ref": "origin/HEAD",
       "relativePath": "plan-ceo-review/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -3209,7 +3211,7 @@
       ],
       "canonicalInvocation": "/plan-design-review",
       "description": "Designer's eye plan review — interactive, like CEO and Eng review. (gstack)",
-      "digest": "81d823aa69e09952c3180459a4a31375a3b688ac0b60d83e0b96f69cf5fa481b",
+      "digest": "a64102152b3a5bed6d60f208b238168fec6027c6b934c450f975e4ef6081b195",
       "frontmatter": {
         "allowed-tools": [
           "Read",
@@ -3220,7 +3222,6 @@
           "AskUserQuestion"
         ],
         "description": "Designer's eye plan review — interactive, like CEO and Eng review. (gstack)",
-        "interactive": true,
         "name": "plan-design-review",
         "preamble-tier": 3,
         "triggers": [
@@ -3247,7 +3248,7 @@
       "ref": "origin/HEAD",
       "relativePath": "plan-design-review/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -3282,7 +3283,7 @@
       ],
       "canonicalInvocation": "/plan-devex-review",
       "description": "Interactive developer experience plan review. (gstack)",
-      "digest": "9b2df6e735b49adb84f81a9f47b7e798be95f8d13f311cb3de5fa8126df07466",
+      "digest": "9972e248eb457ea83d08a73157c1f8ee0a686a77d3d0681640af389c3306a952",
       "frontmatter": {
         "allowed-tools": [
           "Read",
@@ -3293,11 +3294,7 @@
           "AskUserQuestion",
           "WebSearch"
         ],
-        "benefits-from": [
-          "office-hours"
-        ],
         "description": "Interactive developer experience plan review. (gstack)",
-        "interactive": true,
         "name": "plan-devex-review",
         "preamble-tier": 3,
         "triggers": [
@@ -3324,7 +3321,7 @@
       "ref": "origin/HEAD",
       "relativePath": "plan-devex-review/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -3359,7 +3356,7 @@
       ],
       "canonicalInvocation": "/plan-eng-review",
       "description": "Eng manager-mode plan review. (gstack)",
-      "digest": "e301837aef7e6ed8ef77c4b08921b49a08c6db496976efbce888342975d251cb",
+      "digest": "afbda1d8e28f90b7d61ed164c9c7ab4f0b85fcca1d2372c753b6c2555f0162f6",
       "frontmatter": {
         "allowed-tools": [
           "Read",
@@ -3370,11 +3367,7 @@
           "Bash",
           "WebSearch"
         ],
-        "benefits-from": [
-          "office-hours"
-        ],
         "description": "Eng manager-mode plan review. (gstack)",
-        "interactive": true,
         "name": "plan-eng-review",
         "preamble-tier": 3,
         "triggers": [
@@ -3401,7 +3394,7 @@
       "ref": "origin/HEAD",
       "relativePath": "plan-eng-review/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -3435,7 +3428,7 @@
       ],
       "canonicalInvocation": "/plan-tune",
       "description": "Self-tuning question sensitivity + developer psychographic for gstack (v1: observational). (gstack)",
-      "digest": "d6b5bd099bb6d8edfceb3ed2ecb577293b300c7b366c5f48784aafff0f10e127",
+      "digest": "8385a4f170e401a70e72e492552f35d4f349c17c5a3c688b81aa684b97fc62eb",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -3477,7 +3470,7 @@
       "ref": "origin/HEAD",
       "relativePath": "plan-tune/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -3512,7 +3505,7 @@
       ],
       "canonicalInvocation": "/qa",
       "description": "Systematically QA test a web application and fix bugs found. (gstack)",
-      "digest": "30dc3f50c6a7d3387c7c7297422d309c8eed949ec79bdbcfb7f22abde69a79dc",
+      "digest": "e3e371f9c5e7c6209d6ace3df1ca5c97de19e79862d17ba4af99a793b40decc1",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -3551,7 +3544,7 @@
       "ref": "origin/HEAD",
       "relativePath": "qa/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -3584,7 +3577,7 @@
       ],
       "canonicalInvocation": "/qa-only",
       "description": "Report-only QA testing. (gstack)",
-      "digest": "9ad3de814959fda5a59cba780a45f9e72e07d0dd7fd97c9237332d56e6ca0cc5",
+      "digest": "95a0bff12047212882224e643015510e22fc140cc7c75e795eaec6fef3d028df",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -3620,7 +3613,7 @@
       "ref": "origin/HEAD",
       "relativePath": "qa-only/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -3653,7 +3646,7 @@
       ],
       "canonicalInvocation": "/retro",
       "description": "Weekly engineering retrospective. (gstack)",
-      "digest": "b84ca7ccacf4715a8988620e99fbd374d14219942b022189815dac33142f67aa",
+      "digest": "06032c9f03b9bb2c1e889b13bf5fff7ecf179e4dd7b607dc92eb75f0a9f21665",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -3666,7 +3659,7 @@
         "gbrain": {
           "context_queries": [
             {
-              "glob": "~/.gstack/projects/{repo_slug}/retros/*.md",
+              "glob": ".context/retros/*.json",
               "id": "prior-retros",
               "kind": "filesystem",
               "limit": 5,
@@ -3716,7 +3709,7 @@
       "ref": "origin/HEAD",
       "relativePath": "retro/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -3752,7 +3745,7 @@
       ],
       "canonicalInvocation": "/review",
       "description": "Pre-landing PR review. (gstack)",
-      "digest": "d55591cf422745c60547be3d0166c2957a694935ccb05fe1caba6e70b9cc9b68",
+      "digest": "af1a366399ce937829d8f93fa6c0009178d66f57cc447f266da0b5a028414b69",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -3793,7 +3786,7 @@
       "ref": "origin/HEAD",
       "relativePath": "review/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -3823,7 +3816,7 @@
       ],
       "canonicalInvocation": "/scrape",
       "description": "Pull data from a web page. (gstack)",
-      "digest": "048de300dde94a754bc30eff10f958d2a98eb37e2eef2bfa25a62d077836bf6f",
+      "digest": "bb4978c911eb67f39359b30c6d7729c912c5f1be0ef22e2f02f5d1d36154d2e1",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -3832,6 +3825,7 @@
         ],
         "description": "Pull data from a web page. (gstack)",
         "name": "scrape",
+        "preamble-tier": 1,
         "triggers": [
           "scrape this page",
           "get data from",
@@ -3853,11 +3847,12 @@
         "/scrape"
       ],
       "pack": "gstack",
+      "preambleTier": 1,
       "redistribution": "full",
       "ref": "origin/HEAD",
       "relativePath": "scrape/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -3887,7 +3882,7 @@
       ],
       "canonicalInvocation": "/setup-browser-cookies",
       "description": "Import cookies from your real Chromium browser into the headless browse session. (gstack)",
-      "digest": "b17b4919efed09f18cb0b3df5c1e1daade52c5e70c7002f5ecdfbf370c2d773b",
+      "digest": "b457829153c29d66996b9c90982ddb7562c44d3a41d807e1f697f883579ef76f",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -3921,7 +3916,7 @@
       "ref": "origin/HEAD",
       "relativePath": "setup-browser-cookies/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -3956,7 +3951,7 @@
       ],
       "canonicalInvocation": "/setup-deploy",
       "description": "Configure deployment settings for /land-and-deploy.",
-      "digest": "c3586906341ed222d8b9ffcf742b2f8e7dd00885c817524fc5c1711156edde91",
+      "digest": "7131615caeffba63f89a35634fe0d0bfa6852d69341f42c96cff3d0fc3cf5f58",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -3994,7 +3989,7 @@
       "ref": "origin/HEAD",
       "relativePath": "setup-deploy/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -4029,7 +4024,7 @@
       ],
       "canonicalInvocation": "/setup-gbrain",
       "description": "Set up gbrain for this coding agent: install the CLI, initialize a local PGLite or Supabase brain, register MCP, capture per-remote trust policy. (gstack)",
-      "digest": "80afabd5f0a7e60dc302065d0bb3de9a4d8525acf5b6f5aca0a1a29e0ee07743",
+      "digest": "130679cea62e63baef022e7f6c3cd38d599338334f120345e2d678f88577aba4",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -4069,7 +4064,7 @@
       "ref": "origin/HEAD",
       "relativePath": "setup-gbrain/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -4106,7 +4101,7 @@
       ],
       "canonicalInvocation": "/ship",
       "description": "Ship workflow: detect + merge base branch, run tests, review diff, bump VERSION, update CHANGELOG, commit, push, create PR. (gstack)",
-      "digest": "9364877107c695363bdf0934c7dd77db7f36687b31c2cb87469f97c310536b23",
+      "digest": "20ea051624280b67b7d8e1582041bdb5ce86b241a7e9eefdc927f9076e43091f",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -4147,7 +4142,7 @@
       "ref": "origin/HEAD",
       "relativePath": "ship/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -4178,7 +4173,7 @@
       ],
       "canonicalInvocation": "/skillify",
       "description": "Codify the most recent successful /scrape flow into a permanent browser-skill on disk. (gstack)",
-      "digest": "65ba5891804fce15e970877ad7ba51e0c901a8554c91bef2d03fd6fbf803786b",
+      "digest": "5d0ff42673b5d098b6c5f7bd0bfbcb31d1b42a2bce25e5c0767f23ad53877491",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -4188,6 +4183,7 @@
         ],
         "description": "Codify the most recent successful /scrape flow into a permanent browser-skill on disk. (gstack)",
         "name": "skillify",
+        "preamble-tier": 2,
         "triggers": [
           "skillify",
           "codify this scrape",
@@ -4208,11 +4204,12 @@
         "/skillify"
       ],
       "pack": "gstack",
+      "preambleTier": 2,
       "redistribution": "full",
       "ref": "origin/HEAD",
       "relativePath": "skillify/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -4244,7 +4241,7 @@
       ],
       "canonicalInvocation": "/spec",
       "description": "Turn vague intent into a precise, executable spec in five phases. (gstack)",
-      "digest": "c33cfed188888e9d95e7d591c2260e542bc4babd40bf278486398e52a8fd41ce",
+      "digest": "5415485591015fd1f27280900f41db761599ed6969b452e9230ed4d5b1c15019",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -4255,6 +4252,7 @@
         ],
         "description": "Turn vague intent into a precise, executable spec in five phases. (gstack)",
         "name": "spec",
+        "preamble-tier": 3,
         "triggers": [
           "spec this out",
           "file an issue",
@@ -4277,11 +4275,12 @@
         "/spec"
       ],
       "pack": "gstack",
+      "preambleTier": 3,
       "redistribution": "full",
       "ref": "origin/HEAD",
       "relativePath": "spec/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -4314,8 +4313,8 @@
         "AskUserQuestion"
       ],
       "canonicalInvocation": "/sync-gbrain",
-      "description": "Keep gbrain current with this repo's code and refresh agent search guidance in CLAUDE.md. Wraps the gstack-gbrain-sync orchestrator with state (gstack)",
-      "digest": "c66ce02ae1078e4444d320f7b96aceb3669cc75a8d2a059e989322e7f51a7b17",
+      "description": "Keep gbrain current with this repo's code and refresh agent search guidance in CLAUDE.md. (gstack)",
+      "digest": "28bbc8f9439a7d99de35061ef6323ab8241c89ccce25364c008e89db95a5046c",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -4326,7 +4325,7 @@
           "Grep",
           "AskUserQuestion"
         ],
-        "description": "Keep gbrain current with this repo's code and refresh agent search guidance in CLAUDE.md. Wraps the gstack-gbrain-sync orchestrator with state (gstack)",
+        "description": "Keep gbrain current with this repo's code and refresh agent search guidance in CLAUDE.md. (gstack)",
         "name": "sync-gbrain",
         "preamble-tier": 2,
         "triggers": [
@@ -4354,7 +4353,7 @@
       "ref": "origin/HEAD",
       "relativePath": "sync-gbrain/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -4414,7 +4413,7 @@
       "ref": "origin/HEAD",
       "relativePath": "unfreeze/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -4437,24 +4436,16 @@
       "warnings": []
     },
     {
-      "allowedTools": [
-        "Bash(npx impeccable *)",
-        "Bash(node .claude/skills/impeccable/scripts/*)"
-      ],
       "canonicalInvocation": "/impeccable",
       "description": "Use when the user wants to design, redesign, shape, critique, audit, polish, clarify, distill, harden, optimize, adapt, animate, colorize, extract, or otherwise improve a frontend interface. Covers websites, landing pages, dashboards, product UI, app shells, components, forms, settings, onboarding, and empty states. Handles UX review, visual hierarchy, information architecture, cognitive load, accessibility, performance, responsive behavior, theming, anti-patterns, typography, fonts, spacing, layout, alignment, color, motion, micro-interactions, UX copy, error states, edge cases, i18n, and reusable design systems or tokens. Also use for bland designs that need to become bolder or more delightful, loud designs that should become quieter, live browser iteration on UI elements, or ambitious visual effects that should feel technically extraordinary. Not for backend-only or non-UI tasks.",
-      "digest": "574331ee26a454633996c26e3042e40e9d7b51f558de9be47d19184880c3bdf4",
+      "digest": "495437d5e0b4fb6a3134019e9ade3a036089b9ff18ffb150b035ce0999d75e01",
       "frontmatter": {
-        "allowed-tools": [
-          "Bash(npx impeccable *)",
-          "Bash(node .claude/skills/impeccable/scripts/*)"
-        ],
         "argument-hint": "[shape · audit|critique · animate|bolder|colorize|delight|layout|overdrive|quieter|typeset · adapt|clarify|distill · harden|onboard|optimize|polish · init|document|extract|live] [target]",
         "description": "Use when the user wants to design, redesign, shape, critique, audit, polish, clarify, distill, harden, optimize, adapt, animate, colorize, extract, or otherwise improve a frontend interface. Covers websites, landing pages, dashboards, product UI, app shells, components, forms, settings, onboarding, and empty states. Handles UX review, visual hierarchy, information architecture, cognitive load, accessibility, performance, responsive behavior, theming, anti-patterns, typography, fonts, spacing, layout, alignment, color, motion, micro-interactions, UX copy, error states, edge cases, i18n, and reusable design systems or tokens. Also use for bland designs that need to become bolder or more delightful, loud designs that should become quieter, live browser iteration on UI elements, or ambitious visual effects that should feel technically extraordinary. Not for backend-only or non-UI tasks.",
         "license": "Apache 2.0",
         "name": "impeccable",
         "user-invocable": true,
-        "version": "4.0.4"
+        "version": "4.2.1"
       },
       "fullPagePath": "docs/skills/impeccable/impeccable.md",
       "generated": true,
@@ -4472,24 +4463,26 @@
       "ref": "origin/HEAD",
       "relativePath": ".claude/skills/impeccable/SKILL.md",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "aee6ce9352b842217b3f57c78296a7a4fa35a7f3",
+      "resolvedRevision": "831cabee8b4bc1a2b66e5ae22003e9a19b57d464",
       "security": {
-        "flags": [],
+        "flags": [
+          "executables:1"
+        ],
         "hasAgents": false,
         "hasBashOrPowershell": false,
         "hasCredentialRef": false,
         "hasDynamicShell": false,
-        "hasExecutable": false,
+        "hasExecutable": true,
         "hasHiddenFiles": false,
         "hasHooks": false,
         "hasMcpOrLsp": false,
         "hasNetworkRef": false,
-        "toolCount": 2
+        "toolCount": 0
       },
       "skillName": "impeccable",
       "sourceId": "impeccable",
       "sourceType": "git",
-      "version": "4.0.4",
+      "version": "4.2.1",
       "warnings": []
     },
     {
@@ -4695,7 +4688,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/ab-testing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4716,12 +4709,12 @@
     },
     {
       "canonicalInvocation": "/ad-creative",
-      "description": "When the user wants to generate, iterate, or scale ad creative — headlines, descriptions, primary text, or full ad variations — for any paid advertising platform. Also use when the user mentions 'ad copy variations,' 'ad creative,' 'generate headlines,' 'RSA headlines,' 'bulk ad copy,' 'ad iterations,' 'creative testing,' 'ad performance optimization,' 'write me some ads,' 'Facebook ad copy,' 'Google ad headlines,' 'LinkedIn ad text,' 'static ads,' 'static ad concepts,' 'ad templates,' 'iMessage ad,' 'chat reveal ad,' 'fake DM ad,' 'ChatGPT ad,' 'Apple Notes ad,' 'AirDrop ad,' 'creative strategy,' 'creative roadmap,' 'creative retro,' 'hook writing,' 'creative review page,' 'present ad creative for approval,' 'motion video ad,' 'faceless video ad,' 'animated explainer ad,' 'motion collage ad,' or 'I need more ad variations.' Use this whenever someone needs to produce ad copy at scale or iterate on existing ads. For campaign strategy and targeting, see ads. For landing page copy, see copywriting.",
-      "digest": "b5aca4724921e5193b5bae1a64b5f927501ca7caf492d5359bf03e045547a87a",
+      "description": "When the user wants to generate, iterate, or scale ad creative — headlines, descriptions, primary text, or full ad variations — for any paid advertising platform. Also use when the user mentions 'ad copy variations,' 'ad creative,' 'generate headlines,' 'RSA headlines,' 'bulk ad copy,' 'ad iterations,' 'creative testing,' 'write me some ads,' 'Facebook ad copy,' 'Google ad headlines,' 'LinkedIn ad text,' 'static ads,' 'ad templates,' 'iMessage ad,' 'chat reveal ad,' 'ChatGPT ad,' 'Apple Notes ad,' 'AirDrop ad,' 'creative strategy,' 'creative roadmap,' 'creative retro,' 'hook writing,' 'creative review page,' 'present ad creative for approval,' 'motion video ad,' 'faceless video ad,' 'UGC ad,' 'greenscreen ad,' 'TikTok/Reels ad format,' 'which ad format to make,' 'Meta ad format tier list,' or 'creative format taxonomy.' Use this whenever someone needs to produce ad copy at scale or iterate on existing ads. For campaign strategy and targeting, see ads. For landing page copy, see copywriting.",
+      "digest": "5393fd449702b2a35c078c3198c0e86bde4b2b812e10be1fe35dceb12e0a59a2",
       "frontmatter": {
-        "description": "When the user wants to generate, iterate, or scale ad creative — headlines, descriptions, primary text, or full ad variations — for any paid advertising platform. Also use when the user mentions 'ad copy variations,' 'ad creative,' 'generate headlines,' 'RSA headlines,' 'bulk ad copy,' 'ad iterations,' 'creative testing,' 'ad performance optimization,' 'write me some ads,' 'Facebook ad copy,' 'Google ad headlines,' 'LinkedIn ad text,' 'static ads,' 'static ad concepts,' 'ad templates,' 'iMessage ad,' 'chat reveal ad,' 'fake DM ad,' 'ChatGPT ad,' 'Apple Notes ad,' 'AirDrop ad,' 'creative strategy,' 'creative roadmap,' 'creative retro,' 'hook writing,' 'creative review page,' 'present ad creative for approval,' 'motion video ad,' 'faceless video ad,' 'animated explainer ad,' 'motion collage ad,' or 'I need more ad variations.' Use this whenever someone needs to produce ad copy at scale or iterate on existing ads. For campaign strategy and targeting, see ads. For landing page copy, see copywriting.",
+        "description": "When the user wants to generate, iterate, or scale ad creative — headlines, descriptions, primary text, or full ad variations — for any paid advertising platform. Also use when the user mentions 'ad copy variations,' 'ad creative,' 'generate headlines,' 'RSA headlines,' 'bulk ad copy,' 'ad iterations,' 'creative testing,' 'write me some ads,' 'Facebook ad copy,' 'Google ad headlines,' 'LinkedIn ad text,' 'static ads,' 'ad templates,' 'iMessage ad,' 'chat reveal ad,' 'ChatGPT ad,' 'Apple Notes ad,' 'AirDrop ad,' 'creative strategy,' 'creative roadmap,' 'creative retro,' 'hook writing,' 'creative review page,' 'present ad creative for approval,' 'motion video ad,' 'faceless video ad,' 'UGC ad,' 'greenscreen ad,' 'TikTok/Reels ad format,' 'which ad format to make,' 'Meta ad format tier list,' or 'creative format taxonomy.' Use this whenever someone needs to produce ad copy at scale or iterate on existing ads. For campaign strategy and targeting, see ads. For landing page copy, see copywriting.",
         "metadata": {
-          "version": "2.8.0"
+          "version": "2.8.2"
         },
         "name": "ad-creative"
       },
@@ -4741,7 +4734,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/ad-creative/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4763,11 +4756,11 @@
     {
       "canonicalInvocation": "/ads",
       "description": "When the user wants help with paid advertising campaigns on Google Ads, Meta (Facebook/Instagram), LinkedIn, Twitter/X, or other ad platforms. Also use when the user mentions 'PPC,' 'paid media,' 'ROAS,' 'CPA,' 'ad campaign,' 'retargeting,' 'audience targeting,' 'Google Ads,' 'Facebook ads,' 'LinkedIn ads,' 'ad budget,' 'cost per click,' 'ad spend,' 'should I run ads,' 'ABM,' 'account-based marketing,' 'B2B ads,' 'lead quality,' 'negative keywords,' 'Performance Max,' 'thought leader ads,' or 'when should I kill an ad.' Use this for campaign strategy, audience targeting, bidding, and optimization. For bulk ad creative generation and iteration, see ad-creative. For landing page optimization, see cro.",
-      "digest": "570cf59d6de352c8b52610532cf88dc9693efd5e003095c5a5ed73ac470d8c1b",
+      "digest": "1c3cd0a9f90e7c4d5e2a86e0b6fd6a5f6d1b235fcc3e964878cff3b2bb4a33b6",
       "frontmatter": {
         "description": "When the user wants help with paid advertising campaigns on Google Ads, Meta (Facebook/Instagram), LinkedIn, Twitter/X, or other ad platforms. Also use when the user mentions 'PPC,' 'paid media,' 'ROAS,' 'CPA,' 'ad campaign,' 'retargeting,' 'audience targeting,' 'Google Ads,' 'Facebook ads,' 'LinkedIn ads,' 'ad budget,' 'cost per click,' 'ad spend,' 'should I run ads,' 'ABM,' 'account-based marketing,' 'B2B ads,' 'lead quality,' 'negative keywords,' 'Performance Max,' 'thought leader ads,' or 'when should I kill an ad.' Use this for campaign strategy, audience targeting, bidding, and optimization. For bulk ad creative generation and iteration, see ad-creative. For landing page optimization, see cro.",
         "metadata": {
-          "version": "2.2.0"
+          "version": "2.3.2"
         },
         "name": "ads"
       },
@@ -4787,7 +4780,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/ads/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4808,12 +4801,12 @@
     },
     {
       "canonicalInvocation": "/ai-seo",
-      "description": "When the user wants to optimize content for AI search engines, get cited by LLMs, or appear in AI-generated answers. Also use when the user mentions 'AI SEO,' 'AEO,' 'GEO,' 'LLMO,' 'answer engine optimization,' 'generative engine optimization,' 'LLM optimization,' 'AI Overviews,' 'optimize for ChatGPT,' 'optimize for Perplexity,' 'AI citations,' 'AI visibility,' 'zero-click search,' 'how do I show up in AI answers,' 'LLM mentions,' 'optimize for Claude/Gemini,' 'llms.txt,' 'OKF,' 'Open Knowledge Format,' 'knowledge bundle,' or 'agent-readable site.' Use this whenever someone wants their content to be cited or surfaced by AI assistants and AI search engines. For traditional technical and on-page SEO audits, see seo-audit. For structured data implementation, see schema.",
-      "digest": "278118f4f2231b068889ac2487abcc8cc6dc75a7251c06cb540ef827aca0070d",
+      "description": "When the user wants to optimize content for AI search engines, get cited by LLMs, or appear in AI-generated answers. Also use when the user mentions 'AI SEO,' 'AEO,' 'GEO,' 'LLMO,' 'answer engine optimization,' 'generative engine optimization,' 'LLM optimization,' 'AI Overviews,' 'optimize for ChatGPT,' 'optimize for Perplexity,' 'AI citations,' 'AI visibility,' 'zero-click search,' 'how do I show up in AI answers,' 'LLM mentions,' 'optimize for Claude/Gemini,' 'llms.txt,' 'llms-full.txt,' 'OKF,' 'Open Knowledge Format,' 'knowledge bundle,' 'agent-readable site,' 'agent readiness,' 'is my site agent-ready,' 'WebMCP,' 'do listicles still work for AI,' 'ChatGPT stopped citing comparison pages,' or 'AI citation format shift.' Use this whenever someone wants their content to be cited or surfaced by AI assistants and AI search engines. For traditional technical and on-page SEO audits, see seo-audit. For structured data implementation, see schema.",
+      "digest": "7ecc1706a0d5e16f6059379ef4ba2bd049b5b03a6e98433f76872ae91f613bc9",
       "frontmatter": {
-        "description": "When the user wants to optimize content for AI search engines, get cited by LLMs, or appear in AI-generated answers. Also use when the user mentions 'AI SEO,' 'AEO,' 'GEO,' 'LLMO,' 'answer engine optimization,' 'generative engine optimization,' 'LLM optimization,' 'AI Overviews,' 'optimize for ChatGPT,' 'optimize for Perplexity,' 'AI citations,' 'AI visibility,' 'zero-click search,' 'how do I show up in AI answers,' 'LLM mentions,' 'optimize for Claude/Gemini,' 'llms.txt,' 'OKF,' 'Open Knowledge Format,' 'knowledge bundle,' or 'agent-readable site.' Use this whenever someone wants their content to be cited or surfaced by AI assistants and AI search engines. For traditional technical and on-page SEO audits, see seo-audit. For structured data implementation, see schema.",
+        "description": "When the user wants to optimize content for AI search engines, get cited by LLMs, or appear in AI-generated answers. Also use when the user mentions 'AI SEO,' 'AEO,' 'GEO,' 'LLMO,' 'answer engine optimization,' 'generative engine optimization,' 'LLM optimization,' 'AI Overviews,' 'optimize for ChatGPT,' 'optimize for Perplexity,' 'AI citations,' 'AI visibility,' 'zero-click search,' 'how do I show up in AI answers,' 'LLM mentions,' 'optimize for Claude/Gemini,' 'llms.txt,' 'llms-full.txt,' 'OKF,' 'Open Knowledge Format,' 'knowledge bundle,' 'agent-readable site,' 'agent readiness,' 'is my site agent-ready,' 'WebMCP,' 'do listicles still work for AI,' 'ChatGPT stopped citing comparison pages,' or 'AI citation format shift.' Use this whenever someone wants their content to be cited or surfaced by AI assistants and AI search engines. For traditional technical and on-page SEO audits, see seo-audit. For structured data implementation, see schema.",
         "metadata": {
-          "version": "2.2.0"
+          "version": "2.5.0"
         },
         "name": "ai-seo"
       },
@@ -4833,7 +4826,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/ai-seo/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4879,7 +4872,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/analytics/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4901,11 +4894,11 @@
     {
       "canonicalInvocation": "/aso",
       "description": "When the user wants to audit or optimize an App Store or Google Play listing. Also use when the user mentions 'ASO audit,' 'app store optimization,' 'optimize my app listing,' 'improve app visibility,' 'app store ranking,' 'audit my listing,' 'why aren't people downloading my app,' 'improve my app conversion,' 'keyword optimization for app,' or 'compare my app to competitors.' Use when the user shares an App Store or Google Play URL and wants to improve it.",
-      "digest": "b542726b389653b15ae15f1f45a05345bd0fbcdf6c004984060b87d8e2b066a3",
+      "digest": "c4929e53b94a95f532eb63b6a53d62bc5277d85a91818d0de4b7e7602fa8597e",
       "frontmatter": {
         "description": "When the user wants to audit or optimize an App Store or Google Play listing. Also use when the user mentions 'ASO audit,' 'app store optimization,' 'optimize my app listing,' 'improve app visibility,' 'app store ranking,' 'audit my listing,' 'why aren't people downloading my app,' 'improve my app conversion,' 'keyword optimization for app,' or 'compare my app to competitors.' Use when the user shares an App Store or Google Play URL and wants to improve it.",
         "metadata": {
-          "version": "2.0.0"
+          "version": "2.0.1"
         },
         "name": "aso"
       },
@@ -4925,7 +4918,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/aso/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4971,7 +4964,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/attribution/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5017,7 +5010,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/churn-prevention/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5039,11 +5032,11 @@
     {
       "canonicalInvocation": "/co-marketing",
       "description": "When the user wants to find co-marketing partners, plan joint campaigns, or brainstorm partnership opportunities. Use when the user says 'co-marketing,' 'partner marketing,' 'joint campaign,' 'who should we partner with,' 'integration marketing,' 'cross-promotion,' 'collaborate with another company,' 'partnership ideas,' or 'co-brand.' For customer referral programs, see referrals. For launch-specific partnerships, see launch.",
-      "digest": "7961b37aa294292c4802e9c521c4d863cbb65693f24479b0f6a08a3a340f3b91",
+      "digest": "83fadc4013dd1f664056783bf59bc3c528f311069fdb25c8befb9d25ab80c1ba",
       "frontmatter": {
         "description": "When the user wants to find co-marketing partners, plan joint campaigns, or brainstorm partnership opportunities. Use when the user says 'co-marketing,' 'partner marketing,' 'joint campaign,' 'who should we partner with,' 'integration marketing,' 'cross-promotion,' 'collaborate with another company,' 'partnership ideas,' or 'co-brand.' For customer referral programs, see referrals. For launch-specific partnerships, see launch.",
         "metadata": {
-          "version": "2.0.0"
+          "version": "2.0.1"
         },
         "name": "co-marketing"
       },
@@ -5063,7 +5056,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/co-marketing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5109,7 +5102,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/cold-email/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5131,11 +5124,11 @@
     {
       "canonicalInvocation": "/community-marketing",
       "description": "Build and leverage online communities to drive product growth and brand loyalty. Use when the user wants to create a community strategy, grow a Discord or Slack community, manage a forum or subreddit, build brand advocates, increase word-of-mouth, drive community-led growth, engage users post-signup, or turn customers into evangelists. Trigger phrases: \"build a community,\" \"community strategy,\" \"Discord community,\" \"Slack community,\" \"community-led growth,\" \"brand advocates,\" \"user community,\" \"forum strategy,\" \"community engagement,\" \"grow our community,\" \"ambassador program,\" \"community flywheel.\"",
-      "digest": "f63523a3a43f58329a3572759cbfa85bb40fb4aa9cb15cdbb61d38c19fb8223b",
+      "digest": "b68def94dc1ffb36e95117b4e9c34648b730af697bbad7690f1fcc6b37b97d53",
       "frontmatter": {
         "description": "Build and leverage online communities to drive product growth and brand loyalty. Use when the user wants to create a community strategy, grow a Discord or Slack community, manage a forum or subreddit, build brand advocates, increase word-of-mouth, drive community-led growth, engage users post-signup, or turn customers into evangelists. Trigger phrases: \"build a community,\" \"community strategy,\" \"Discord community,\" \"Slack community,\" \"community-led growth,\" \"brand advocates,\" \"user community,\" \"forum strategy,\" \"community engagement,\" \"grow our community,\" \"ambassador program,\" \"community flywheel.\"",
         "metadata": {
-          "version": "2.0.0"
+          "version": "2.0.1"
         },
         "name": "community-marketing"
       },
@@ -5155,7 +5148,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/community-marketing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5177,11 +5170,11 @@
     {
       "canonicalInvocation": "/competitor-profiling",
       "description": "When the user wants to research, profile, or analyze competitors from their URLs. Also use when the user mentions 'competitor profile,' 'competitor research,' 'competitor analysis,' 'profile this competitor,' 'analyze competitor,' 'competitive intelligence,' 'competitor deep dive,' 'who are my competitors,' 'competitor landscape,' 'competitor dossier,' 'competitive audit,' or 'research these competitors.' Input is a list of competitor URLs. Output is structured competitor profile markdown files. For creating comparison/alternative pages from profiles, see competitors. For sales-specific battle cards, see sales-enablement.",
-      "digest": "e094be1315f4ae3f63de9d189f6b78f7d71503c0a06af8f63f563ab1d564afc7",
+      "digest": "6d45d9fde6252c547872dd891e30317bd54db236e78f249c91ea1209b7d7358f",
       "frontmatter": {
         "description": "When the user wants to research, profile, or analyze competitors from their URLs. Also use when the user mentions 'competitor profile,' 'competitor research,' 'competitor analysis,' 'profile this competitor,' 'analyze competitor,' 'competitive intelligence,' 'competitor deep dive,' 'who are my competitors,' 'competitor landscape,' 'competitor dossier,' 'competitive audit,' or 'research these competitors.' Input is a list of competitor URLs. Output is structured competitor profile markdown files. For creating comparison/alternative pages from profiles, see competitors. For sales-specific battle cards, see sales-enablement.",
         "metadata": {
-          "version": "2.0.0"
+          "version": "2.0.1"
         },
         "name": "competitor-profiling"
       },
@@ -5201,7 +5194,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/competitor-profiling/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5247,7 +5240,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/competitors/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5269,11 +5262,11 @@
     {
       "canonicalInvocation": "/content-strategy",
       "description": "When the user wants to plan a content strategy, decide what content to create, or figure out what topics to cover. Also use when the user mentions \"content strategy,\" \"what should I write about,\" \"content ideas,\" \"blog strategy,\" \"topic clusters,\" \"content planning,\" \"editorial calendar,\" \"content marketing,\" \"content roadmap,\" \"what content should I create,\" \"blog topics,\" \"content pillars,\" or \"I don't know what to write.\" Use this whenever someone needs help deciding what content to produce, not just writing it. For writing individual pieces, see copywriting. For SEO-specific audits, see seo-audit. For social media content specifically, see social.",
-      "digest": "0aeb3ddae83424092690bb9adbbe6a2b47560b4de3ca4f433951fec3909c3538",
+      "digest": "ae48c45cf052f4a2961ac672da851bc2c3540d97e3962fc7eab939c526e70e49",
       "frontmatter": {
         "description": "When the user wants to plan a content strategy, decide what content to create, or figure out what topics to cover. Also use when the user mentions \"content strategy,\" \"what should I write about,\" \"content ideas,\" \"blog strategy,\" \"topic clusters,\" \"content planning,\" \"editorial calendar,\" \"content marketing,\" \"content roadmap,\" \"what content should I create,\" \"blog topics,\" \"content pillars,\" or \"I don't know what to write.\" Use this whenever someone needs help deciding what content to produce, not just writing it. For writing individual pieces, see copywriting. For SEO-specific audits, see seo-audit. For social media content specifically, see social.",
         "metadata": {
-          "version": "2.0.0"
+          "version": "2.1.1"
         },
         "name": "content-strategy"
       },
@@ -5293,7 +5286,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/content-strategy/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5339,7 +5332,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/copy-editing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5361,11 +5354,11 @@
     {
       "canonicalInvocation": "/copywriting",
       "description": "When the user wants to write, rewrite, or improve marketing copy for any page — including homepage, landing pages, pricing pages, feature pages, about pages, or product pages. Also use when the user says \"write copy for,\" \"improve this copy,\" \"rewrite this page,\" \"marketing copy,\" \"headline help,\" \"CTA copy,\" \"value proposition,\" \"tagline,\" \"subheadline,\" \"hero section copy,\" \"above the fold,\" \"this copy is weak,\" \"make this more compelling,\" or \"help me describe my product.\" Use this whenever someone is working on website text that needs to persuade or convert. For email copy, see emails. For popup copy, see popups. For editing existing copy, see copy-editing. For the offer underneath the copy (bonuses, guarantees, value framing), see offers.",
-      "digest": "cf4b387551bb08d0aaad155d78b13b88c59a7eb25e75a99773a7c89ddcef989c",
+      "digest": "2a5d3be8c11c5143ff53ddb4bd21486d725118f0a6fc5ec29611bb4c7dc8262c",
       "frontmatter": {
         "description": "When the user wants to write, rewrite, or improve marketing copy for any page — including homepage, landing pages, pricing pages, feature pages, about pages, or product pages. Also use when the user says \"write copy for,\" \"improve this copy,\" \"rewrite this page,\" \"marketing copy,\" \"headline help,\" \"CTA copy,\" \"value proposition,\" \"tagline,\" \"subheadline,\" \"hero section copy,\" \"above the fold,\" \"this copy is weak,\" \"make this more compelling,\" or \"help me describe my product.\" Use this whenever someone is working on website text that needs to persuade or convert. For email copy, see emails. For popup copy, see popups. For editing existing copy, see copy-editing. For the offer underneath the copy (bonuses, guarantees, value framing), see offers.",
         "metadata": {
-          "version": "2.0.1"
+          "version": "2.0.2"
         },
         "name": "copywriting"
       },
@@ -5385,7 +5378,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/copywriting/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5431,7 +5424,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/cro/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5452,12 +5445,12 @@
     },
     {
       "canonicalInvocation": "/customer-research",
-      "description": "When the user wants to conduct, analyze, or synthesize customer research. Use when the user mentions \"customer research,\" \"ICP research,\" \"talk to customers,\" \"analyze transcripts,\" \"customer interviews,\" \"survey analysis,\" \"support ticket analysis,\" \"voice of customer,\" \"VOC,\" \"build personas,\" \"customer personas,\" \"jobs to be done,\" \"JTBD,\" \"what do customers say,\" \"what are customers struggling with,\" \"Reddit mining,\" \"G2 reviews,\" \"review mining,\" \"digital watering holes,\" \"community research,\" \"forum research,\" \"competitor reviews,\" \"customer sentiment,\" or \"find out why customers churn/convert/buy.\" Use for both analyzing existing research assets AND gathering new research from online sources. For writing copy informed by research, see copywriting. For acting on research to improve pages, see cro.",
-      "digest": "e9db734f41e1959597e52db28515be18ee0933726b16ec0c26647c51cdbef29e",
+      "description": "When the user wants to conduct, analyze, or synthesize customer research. Use when the user mentions \"customer research,\" \"ICP research,\" \"talk to customers,\" \"analyze transcripts,\" \"customer interviews,\" \"survey analysis,\" \"support ticket analysis,\" \"voice of customer,\" \"VOC,\" \"build personas,\" \"customer personas,\" \"jobs to be done,\" \"JTBD,\" \"what do customers say,\" \"what are customers struggling with,\" \"Reddit mining,\" \"G2 reviews,\" \"review mining,\" \"digital watering holes,\" \"community research,\" \"forum research,\" \"competitor reviews,\" \"customer sentiment,\" \"PMF survey,\" \"product/market fit survey,\" \"customer interview questions,\" \"interview outreach,\" \"Sales Safari,\" or \"find out why customers churn/convert/buy.\" Use for analyzing existing research assets, mining online sources, AND running primary research (interviews and surveys). For writing copy informed by research, see copywriting. For acting on research to improve pages, see cro.",
+      "digest": "ea1faaf82ad55a3f740315484e9c4a81cd4f56e9ab7cb8c549e5abb119b36b83",
       "frontmatter": {
-        "description": "When the user wants to conduct, analyze, or synthesize customer research. Use when the user mentions \"customer research,\" \"ICP research,\" \"talk to customers,\" \"analyze transcripts,\" \"customer interviews,\" \"survey analysis,\" \"support ticket analysis,\" \"voice of customer,\" \"VOC,\" \"build personas,\" \"customer personas,\" \"jobs to be done,\" \"JTBD,\" \"what do customers say,\" \"what are customers struggling with,\" \"Reddit mining,\" \"G2 reviews,\" \"review mining,\" \"digital watering holes,\" \"community research,\" \"forum research,\" \"competitor reviews,\" \"customer sentiment,\" or \"find out why customers churn/convert/buy.\" Use for both analyzing existing research assets AND gathering new research from online sources. For writing copy informed by research, see copywriting. For acting on research to improve pages, see cro.",
+        "description": "When the user wants to conduct, analyze, or synthesize customer research. Use when the user mentions \"customer research,\" \"ICP research,\" \"talk to customers,\" \"analyze transcripts,\" \"customer interviews,\" \"survey analysis,\" \"support ticket analysis,\" \"voice of customer,\" \"VOC,\" \"build personas,\" \"customer personas,\" \"jobs to be done,\" \"JTBD,\" \"what do customers say,\" \"what are customers struggling with,\" \"Reddit mining,\" \"G2 reviews,\" \"review mining,\" \"digital watering holes,\" \"community research,\" \"forum research,\" \"competitor reviews,\" \"customer sentiment,\" \"PMF survey,\" \"product/market fit survey,\" \"customer interview questions,\" \"interview outreach,\" \"Sales Safari,\" or \"find out why customers churn/convert/buy.\" Use for analyzing existing research assets, mining online sources, AND running primary research (interviews and surveys). For writing copy informed by research, see copywriting. For acting on research to improve pages, see cro.",
         "metadata": {
-          "version": "2.0.1"
+          "version": "2.0.2"
         },
         "name": "customer-research"
       },
@@ -5477,7 +5470,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/customer-research/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5523,7 +5516,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/directory-submissions/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [
           "network-access"
@@ -5571,7 +5564,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/emails/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5591,13 +5584,59 @@
       "warnings": []
     },
     {
+      "canonicalInvocation": "/events",
+      "description": "When the user wants to plan, run, sponsor, speak at, or get pipeline from events — webinars, conferences, trade shows, meetups, dinners, workshops, virtual summits, or user conferences. Also use when the user mentions 'event marketing,' 'field marketing,' 'run a webinar,' 'webinar funnel,' 'show-up rate,' 'should we sponsor,' 'sponsor a conference,' 'trade show booth,' 'booth strategy,' 'event ROI,' 'badge scans,' 'event follow-up,' 'speaking slot,' 'CFP,' 'conference talk,' 'host a dinner,' 'user conference,' or 'virtual summit.' Covers all four roles: hosting, sponsoring/exhibiting, speaking, and attending. For product launch moments, see launch. For the partnership side of joint webinars, see co-marketing. For ongoing community programs, see community-marketing. For podcast appearances, see public-relations. For the email sequences themselves, see emails.",
+      "digest": "1454c3154a4403f107c4cc60897b61fac1f1a6cf16a87cd8e112d8e714148490",
+      "frontmatter": {
+        "description": "When the user wants to plan, run, sponsor, speak at, or get pipeline from events — webinars, conferences, trade shows, meetups, dinners, workshops, virtual summits, or user conferences. Also use when the user mentions 'event marketing,' 'field marketing,' 'run a webinar,' 'webinar funnel,' 'show-up rate,' 'should we sponsor,' 'sponsor a conference,' 'trade show booth,' 'booth strategy,' 'event ROI,' 'badge scans,' 'event follow-up,' 'speaking slot,' 'CFP,' 'conference talk,' 'host a dinner,' 'user conference,' or 'virtual summit.' Covers all four roles: hosting, sponsoring/exhibiting, speaking, and attending. For product launch moments, see launch. For the partnership side of joint webinars, see co-marketing. For ongoing community programs, see community-marketing. For podcast appearances, see public-relations. For the email sequences themselves, see emails.",
+        "metadata": {
+          "version": "1.0.0"
+        },
+        "name": "events"
+      },
+      "fullPagePath": "docs/skills/marketing/events.md",
+      "generated": true,
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT",
+        "matchesDeclaration": true,
+        "redistribution": "full"
+      },
+      "namespacedInvocations": [
+        "/events"
+      ],
+      "pack": "marketing",
+      "redistribution": "full",
+      "ref": "origin/HEAD",
+      "relativePath": "skills/events/SKILL.md",
+      "repo": "https://github.com/coreyhaines31/marketingskills.git",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+      "security": {
+        "flags": [],
+        "hasAgents": false,
+        "hasBashOrPowershell": false,
+        "hasCredentialRef": false,
+        "hasDynamicShell": false,
+        "hasExecutable": false,
+        "hasHiddenFiles": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasNetworkRef": false,
+        "toolCount": 0
+      },
+      "skillName": "events",
+      "sourceId": "marketing",
+      "sourceType": "git",
+      "warnings": []
+    },
+    {
       "canonicalInvocation": "/free-tools",
       "description": "When the user wants to plan, evaluate, or build a free tool for marketing purposes — lead generation, SEO value, or brand awareness. Also use when the user mentions \"engineering as marketing,\" \"free tool,\" \"marketing tool,\" \"calculator,\" \"generator,\" \"interactive tool,\" \"lead gen tool,\" \"build a tool for leads,\" \"free resource,\" \"ROI calculator,\" \"grader tool,\" \"audit tool,\" \"should I build a free tool,\" or \"tools for lead gen.\" Use this whenever someone wants to build something useful and give it away to attract leads or earn links. For downloadable content lead magnets (ebooks, checklists, templates), see lead-magnets.",
-      "digest": "970a14608b36a85e0d0964a93fa7c6aef8444a132b7fecb41620642ce0744e3e",
+      "digest": "4c3907e802abd189d933a24c9b8a35bfc136f73e693127d2027892c014fd8df6",
       "frontmatter": {
         "description": "When the user wants to plan, evaluate, or build a free tool for marketing purposes — lead generation, SEO value, or brand awareness. Also use when the user mentions \"engineering as marketing,\" \"free tool,\" \"marketing tool,\" \"calculator,\" \"generator,\" \"interactive tool,\" \"lead gen tool,\" \"build a tool for leads,\" \"free resource,\" \"ROI calculator,\" \"grader tool,\" \"audit tool,\" \"should I build a free tool,\" or \"tools for lead gen.\" Use this whenever someone wants to build something useful and give it away to attract leads or earn links. For downloadable content lead magnets (ebooks, checklists, templates), see lead-magnets.",
         "metadata": {
-          "version": "2.0.0"
+          "version": "2.0.1"
         },
         "name": "free-tools"
       },
@@ -5617,7 +5656,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/free-tools/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5663,7 +5702,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/image/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [
           "network-access"
@@ -5686,12 +5725,12 @@
     },
     {
       "canonicalInvocation": "/influencer-marketing",
-      "description": "When the user wants to run influencer, creator, or ambassador partnerships to promote their product — finding and vetting partners, structuring deals, briefing creators, disclosure compliance, and measuring ROI. Also use when the user mentions 'influencer marketing,' 'creator partnerships,' 'sponsorships,' 'YouTube sponsorships,' 'podcast sponsorships,' 'brand ambassador,' 'ambassador program,' 'creator program,' 'UGC creators,' 'B2B influencers,' 'thought leader ads,' 'gifting,' 'product seeding,' 'whitelisting creator content,' 'how much to pay an influencer,' or 'FTC disclosure.' For affiliate/referral payout mechanics, see referrals. For community-led advocacy, see community-marketing. For turning creator content into paid ads, see ad-creative.",
-      "digest": "8d1393bc729e2b35c4a564f7b70210d36295fe9678448b89ed168932c7de1bc6",
+      "description": "When the user wants to run influencer, creator, or ambassador partnerships to promote their product — finding and vetting partners, structuring deals, briefing creators, disclosure compliance, and measuring ROI. Also use when the user mentions 'influencer marketing,' 'creator partnerships,' 'sponsorships,' 'YouTube sponsorships,' 'podcast sponsorships,' 'brand ambassador,' 'ambassador program,' 'creator program,' 'UGC creators,' 'tech UGC,' 'UGC creator program,' 'creator network,' 'B2B influencers,' 'thought leader ads,' 'gifting,' 'product seeding,' 'whitelisting creator content,' 'how much to pay an influencer,' or 'FTC disclosure.' For affiliate/referral payout mechanics, see referrals. For community-led advocacy, see community-marketing. For turning creator content into paid ads, see ad-creative.",
+      "digest": "c3c3cad7c7d80e03a35515497559fcf7ac8f12d3b9bf68eb3d996fcb85ad09b5",
       "frontmatter": {
-        "description": "When the user wants to run influencer, creator, or ambassador partnerships to promote their product — finding and vetting partners, structuring deals, briefing creators, disclosure compliance, and measuring ROI. Also use when the user mentions 'influencer marketing,' 'creator partnerships,' 'sponsorships,' 'YouTube sponsorships,' 'podcast sponsorships,' 'brand ambassador,' 'ambassador program,' 'creator program,' 'UGC creators,' 'B2B influencers,' 'thought leader ads,' 'gifting,' 'product seeding,' 'whitelisting creator content,' 'how much to pay an influencer,' or 'FTC disclosure.' For affiliate/referral payout mechanics, see referrals. For community-led advocacy, see community-marketing. For turning creator content into paid ads, see ad-creative.",
+        "description": "When the user wants to run influencer, creator, or ambassador partnerships to promote their product — finding and vetting partners, structuring deals, briefing creators, disclosure compliance, and measuring ROI. Also use when the user mentions 'influencer marketing,' 'creator partnerships,' 'sponsorships,' 'YouTube sponsorships,' 'podcast sponsorships,' 'brand ambassador,' 'ambassador program,' 'creator program,' 'UGC creators,' 'tech UGC,' 'UGC creator program,' 'creator network,' 'B2B influencers,' 'thought leader ads,' 'gifting,' 'product seeding,' 'whitelisting creator content,' 'how much to pay an influencer,' or 'FTC disclosure.' For affiliate/referral payout mechanics, see referrals. For community-led advocacy, see community-marketing. For turning creator content into paid ads, see ad-creative.",
         "metadata": {
-          "version": "1.0.0"
+          "version": "1.1.0"
         },
         "name": "influencer-marketing"
       },
@@ -5711,7 +5750,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/influencer-marketing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5733,11 +5772,11 @@
     {
       "canonicalInvocation": "/launch",
       "description": "When the user wants to plan a product launch, feature announcement, or release strategy. Also use when the user mentions 'launch,' 'Product Hunt,' 'feature release,' 'announcement,' 'go-to-market,' 'beta launch,' 'early access,' 'waitlist,' 'product update,' 'how do I launch this,' 'launch checklist,' 'GTM plan,' or 'we're about to ship.' Use this whenever someone is preparing to release something publicly. For ongoing marketing after launch, see marketing-ideas. For the offer being launched (bonuses, guarantees, scarcity, naming), see offers.",
-      "digest": "d67ae22a2e34af90a61dcbd44514bc18009a5f72d0905550519221b3eae702aa",
+      "digest": "04a503bec9150454f458126de7bbb3bd1c8949d39043b1eb623d380862284d86",
       "frontmatter": {
         "description": "When the user wants to plan a product launch, feature announcement, or release strategy. Also use when the user mentions 'launch,' 'Product Hunt,' 'feature release,' 'announcement,' 'go-to-market,' 'beta launch,' 'early access,' 'waitlist,' 'product update,' 'how do I launch this,' 'launch checklist,' 'GTM plan,' or 'we're about to ship.' Use this whenever someone is preparing to release something publicly. For ongoing marketing after launch, see marketing-ideas. For the offer being launched (bonuses, guarantees, scarcity, naming), see offers.",
         "metadata": {
-          "version": "2.0.1"
+          "version": "2.0.2"
         },
         "name": "launch"
       },
@@ -5757,7 +5796,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/launch/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5803,7 +5842,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/lead-magnets/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5849,7 +5888,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-council/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5871,11 +5910,11 @@
     {
       "canonicalInvocation": "/marketing-ideas",
       "description": "When the user needs marketing ideas, inspiration, or strategies for their SaaS or software product. Also use when the user asks for 'marketing ideas,' 'growth ideas,' 'how to market,' 'marketing strategies,' 'marketing tactics,' 'ways to promote,' 'ideas to grow,' 'what else can I try,' 'I don't know how to market this,' 'brainstorm marketing,' or 'what marketing should I do.' Use this as a starting point whenever someone is stuck or looking for inspiration on how to grow. For specific channel execution, see the relevant skill (ads, social, emails, etc.).",
-      "digest": "0b5fe0e8480f9400ea9cb0b48009d21941e1a59a4be451037c65cb58ca5cd127",
+      "digest": "7a0dc3451f7a6fb0389067ebb4bfa66e74f66d28d4716674a4a044fdf88c6758",
       "frontmatter": {
         "description": "When the user needs marketing ideas, inspiration, or strategies for their SaaS or software product. Also use when the user asks for 'marketing ideas,' 'growth ideas,' 'how to market,' 'marketing strategies,' 'marketing tactics,' 'ways to promote,' 'ideas to grow,' 'what else can I try,' 'I don't know how to market this,' 'brainstorm marketing,' or 'what marketing should I do.' Use this as a starting point whenever someone is stuck or looking for inspiration on how to grow. For specific channel execution, see the relevant skill (ads, social, emails, etc.).",
         "metadata": {
-          "version": "2.0.0"
+          "version": "2.0.1"
         },
         "name": "marketing-ideas"
       },
@@ -5895,7 +5934,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-ideas/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5941,7 +5980,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-loops/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5963,9 +6002,12 @@
     {
       "canonicalInvocation": "/marketing-plan",
       "description": "When the user needs a comprehensive marketing plan for a client, a company they advise, or their own product. Also use when the user mentions \"marketing plan,\" \"growth plan,\" \"GTM plan,\" \"go-to-market plan,\" \"AARRR plan,\" \"90-day marketing plan,\" \"12-month marketing roadmap,\" \"fractional CMO plan,\" or \"fCMO plan.\" Generates an exhaustive 13-section plan structured by AARRR (Acquisition, Activation, Retention, Referral, Revenue), customized to the client's current budget, team, and stage, mapped to future funding milestones, cross-referenced with the 139-idea marketing-ideas library and an embedded 17-section current-state audit rubric, with a full marketing operations stack showing which skills and MCP/API integrations execute each part. Outputs a Notion-paste-ready markdown document. For positioning and ICP context before planning, see product-marketing. For stage-specific deep work, see onboarding, signup, emails, referrals, pricing.",
-      "digest": "7ed21841e442ca7efcad15cc4f7a987d49066389d86e02b8d02a546a77fa9818",
+      "digest": "ea3109c870666414acf5e7dd8f0d8adcec4f5e4d64f91bca5c4e8f81d22e2294",
       "frontmatter": {
         "description": "When the user needs a comprehensive marketing plan for a client, a company they advise, or their own product. Also use when the user mentions \"marketing plan,\" \"growth plan,\" \"GTM plan,\" \"go-to-market plan,\" \"AARRR plan,\" \"90-day marketing plan,\" \"12-month marketing roadmap,\" \"fractional CMO plan,\" or \"fCMO plan.\" Generates an exhaustive 13-section plan structured by AARRR (Acquisition, Activation, Retention, Referral, Revenue), customized to the client's current budget, team, and stage, mapped to future funding milestones, cross-referenced with the 139-idea marketing-ideas library and an embedded 17-section current-state audit rubric, with a full marketing operations stack showing which skills and MCP/API integrations execute each part. Outputs a Notion-paste-ready markdown document. For positioning and ICP context before planning, see product-marketing. For stage-specific deep work, see onboarding, signup, emails, referrals, pricing.",
+        "metadata": {
+          "version": "1.1.1"
+        },
         "name": "marketing-plan"
       },
       "fullPagePath": "docs/skills/marketing/marketing-plan.md",
@@ -5984,7 +6026,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-plan/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6030,7 +6072,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-psychology/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6052,11 +6094,11 @@
     {
       "canonicalInvocation": "/offers",
       "description": "When the user wants to design, construct, or improve an offer — the thing they actually sell — including value framing, bonus stacking, guarantee design, scarcity/urgency, naming, and payment structure. Also use when the user mentions 'offer,' 'offer design,' 'build an offer,' 'grand slam offer,' 'irresistible offer,' 'value stack,' 'bonus stack,' 'guarantee,' 'risk reversal,' 'money-back guarantee,' 'scarcity,' 'urgency,' 'high-ticket offer,' 'productize a service,' 'naming an offer,' 'payment plan,' 'down-sell,' 'upsell offer,' or 'why isn't my offer converting.' Best for services, agencies, courses, coaching, info products, high-ticket B2B, and direct-response. If you run pure self-serve SaaS, read pricing first — tiers and packaging do more work there. For price level itself (tiers, freemium, value metric), see pricing. For the page that presents the offer, see copywriting. For the launch moment, see launch. For sales collateral, see sales-enablement.",
-      "digest": "8818c00ae44f3e055eaae033cfcda0421caf22715e9f92a21291c4df3e173e5e",
+      "digest": "1ac68629a50e48d14c87b72b1d8e576abd58aa20475d9685757a6591e6fba424",
       "frontmatter": {
         "description": "When the user wants to design, construct, or improve an offer — the thing they actually sell — including value framing, bonus stacking, guarantee design, scarcity/urgency, naming, and payment structure. Also use when the user mentions 'offer,' 'offer design,' 'build an offer,' 'grand slam offer,' 'irresistible offer,' 'value stack,' 'bonus stack,' 'guarantee,' 'risk reversal,' 'money-back guarantee,' 'scarcity,' 'urgency,' 'high-ticket offer,' 'productize a service,' 'naming an offer,' 'payment plan,' 'down-sell,' 'upsell offer,' or 'why isn't my offer converting.' Best for services, agencies, courses, coaching, info products, high-ticket B2B, and direct-response. If you run pure self-serve SaaS, read pricing first — tiers and packaging do more work there. For price level itself (tiers, freemium, value metric), see pricing. For the page that presents the offer, see copywriting. For the launch moment, see launch. For sales collateral, see sales-enablement.",
         "metadata": {
-          "version": "1.0.0"
+          "version": "1.0.1"
         },
         "name": "offers"
       },
@@ -6076,7 +6118,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/offers/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6098,11 +6140,11 @@
     {
       "canonicalInvocation": "/onboarding",
       "description": "When the user wants to optimize post-signup onboarding, user activation, first-run experience, or time-to-value. Also use when the user mentions \"onboarding flow,\" \"activation rate,\" \"user activation,\" \"first-run experience,\" \"empty states,\" \"onboarding checklist,\" \"aha moment,\" \"new user experience,\" \"users aren't activating,\" \"nobody completes setup,\" \"low activation rate,\" \"users sign up but don't use the product,\" \"time to value,\" or \"first session experience.\" Use this whenever users are signing up but not sticking around. For signup/registration optimization, see signup. For ongoing email sequences, see emails.",
-      "digest": "93c5141372890f66e87add51cecae167325d3ef97bd40361ec57541a0f6b4d46",
+      "digest": "00746bf2c50904841e8d42025597160caa052321e1438fd8f6c8f46279e04691",
       "frontmatter": {
         "description": "When the user wants to optimize post-signup onboarding, user activation, first-run experience, or time-to-value. Also use when the user mentions \"onboarding flow,\" \"activation rate,\" \"user activation,\" \"first-run experience,\" \"empty states,\" \"onboarding checklist,\" \"aha moment,\" \"new user experience,\" \"users aren't activating,\" \"nobody completes setup,\" \"low activation rate,\" \"users sign up but don't use the product,\" \"time to value,\" or \"first session experience.\" Use this whenever users are signing up but not sticking around. For signup/registration optimization, see signup. For ongoing email sequences, see emails.",
         "metadata": {
-          "version": "2.0.0"
+          "version": "2.0.1"
         },
         "name": "onboarding"
       },
@@ -6122,7 +6164,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/onboarding/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6168,7 +6210,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/paywalls/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6214,7 +6256,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/popups/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6236,11 +6278,11 @@
     {
       "canonicalInvocation": "/pricing",
       "description": "When the user wants help with pricing decisions, packaging, or monetization strategy. Also use when the user mentions 'pricing,' 'pricing tiers,' 'freemium,' 'free trial,' 'packaging,' 'price increase,' 'value metric,' 'Van Westendorp,' 'willingness to pay,' 'monetization,' 'how much should I charge,' 'my pricing is wrong,' 'pricing page,' 'annual vs monthly,' 'per seat pricing,' 'should I offer a free plan,' 'pricing page teardown,' 'pricing page audit,' 'is my pricing page AI-readable,' or 'can AI read my pricing.' Use this whenever someone is figuring out what to charge, how to structure their plans, or wants to audit a pricing page (for humans and for the AI agents that shortlist tools). For in-app upgrade screens, see paywalls. For offer construction (bonuses, guarantees, value framing, naming) on services/courses/coaching/high-ticket B2B, see offers.",
-      "digest": "b0f9bcfc1e6ef3361c96f1fd8bd525c635599f39e9aa38f97e1fa98578693ed4",
+      "digest": "01556c9a6e02b775098da04791553b26f10be94db48027c1518bf4fcbeab7bc9",
       "frontmatter": {
         "description": "When the user wants help with pricing decisions, packaging, or monetization strategy. Also use when the user mentions 'pricing,' 'pricing tiers,' 'freemium,' 'free trial,' 'packaging,' 'price increase,' 'value metric,' 'Van Westendorp,' 'willingness to pay,' 'monetization,' 'how much should I charge,' 'my pricing is wrong,' 'pricing page,' 'annual vs monthly,' 'per seat pricing,' 'should I offer a free plan,' 'pricing page teardown,' 'pricing page audit,' 'is my pricing page AI-readable,' or 'can AI read my pricing.' Use this whenever someone is figuring out what to charge, how to structure their plans, or wants to audit a pricing page (for humans and for the AI agents that shortlist tools). For in-app upgrade screens, see paywalls. For offer construction (bonuses, guarantees, value framing, naming) on services/courses/coaching/high-ticket B2B, see offers.",
         "metadata": {
-          "version": "2.1.0"
+          "version": "2.1.1"
         },
         "name": "pricing"
       },
@@ -6260,7 +6302,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/pricing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6306,7 +6348,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/product-marketing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6352,7 +6394,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/programmatic-seo/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6398,7 +6440,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/prospecting/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6419,12 +6461,12 @@
     },
     {
       "canonicalInvocation": "/public-relations",
-      "description": "When the user wants help with public relations, earned media, press coverage, journalist outreach, or media strategy (not pull requests). Also use when the user mentions 'PR,' 'public relations,' 'press,' 'press release,' 'press coverage,' 'media outreach,' 'pitch a journalist,' 'get featured,' 'media list,' 'media kit,' 'press kit,' 'newsjacking,' 'news hijack,' 'HARO,' 'Qwoted,' 'Featured,' 'Help A Reporter,' 'reporter request,' 'tech press,' 'TechCrunch,' 'earned media,' 'thought leadership placement,' 'op-ed,' 'guest article,' 'press contacts,' or 'how do I get press.' Use this for earned media work — finding journalists, pitching stories, newsjacking, and responding to press requests. For startup/SaaS/AI directory submissions, see directory-submissions. For product launches, see launch. For social-media engagement, see social. For cold-email outreach to prospects, see cold-email.",
-      "digest": "3caa4527d19bd27f7ae6d7fc3b17e5e7a60667c77e4ef409fae697846ea234ef",
+      "description": "When the user wants help with public relations, earned media, press coverage, journalist outreach, or media strategy (not pull requests). Also use when the user mentions 'PR,' 'public relations,' 'press,' 'press release,' 'press coverage,' 'media outreach,' 'pitch a journalist,' 'get featured,' 'media list,' 'media kit,' 'press kit,' 'newsjacking,' 'news hijack,' 'HARO,' 'Qwoted,' 'Featured,' 'Help A Reporter,' 'reporter request,' 'tech press,' 'TechCrunch,' 'earned media,' 'thought leadership placement,' 'op-ed,' 'guest article,' 'press contacts,' 'podcast prep,' 'going on a podcast,' 'podcast guest,' 'prep me for this podcast,' or 'how do I get press.' Use this for earned media work — finding journalists, pitching stories, newsjacking, prepping podcast appearances, and responding to press requests. For startup/SaaS/AI directory submissions, see directory-submissions. For product launches, see launch. For social-media engagement, see social. For cold-email outreach to prospects, see cold-email.",
+      "digest": "359579a12daee81b1b303df5ad83365164044c104dece7b215462cad3e3663a8",
       "frontmatter": {
-        "description": "When the user wants help with public relations, earned media, press coverage, journalist outreach, or media strategy (not pull requests). Also use when the user mentions 'PR,' 'public relations,' 'press,' 'press release,' 'press coverage,' 'media outreach,' 'pitch a journalist,' 'get featured,' 'media list,' 'media kit,' 'press kit,' 'newsjacking,' 'news hijack,' 'HARO,' 'Qwoted,' 'Featured,' 'Help A Reporter,' 'reporter request,' 'tech press,' 'TechCrunch,' 'earned media,' 'thought leadership placement,' 'op-ed,' 'guest article,' 'press contacts,' or 'how do I get press.' Use this for earned media work — finding journalists, pitching stories, newsjacking, and responding to press requests. For startup/SaaS/AI directory submissions, see directory-submissions. For product launches, see launch. For social-media engagement, see social. For cold-email outreach to prospects, see cold-email.",
+        "description": "When the user wants help with public relations, earned media, press coverage, journalist outreach, or media strategy (not pull requests). Also use when the user mentions 'PR,' 'public relations,' 'press,' 'press release,' 'press coverage,' 'media outreach,' 'pitch a journalist,' 'get featured,' 'media list,' 'media kit,' 'press kit,' 'newsjacking,' 'news hijack,' 'HARO,' 'Qwoted,' 'Featured,' 'Help A Reporter,' 'reporter request,' 'tech press,' 'TechCrunch,' 'earned media,' 'thought leadership placement,' 'op-ed,' 'guest article,' 'press contacts,' 'podcast prep,' 'going on a podcast,' 'podcast guest,' 'prep me for this podcast,' or 'how do I get press.' Use this for earned media work — finding journalists, pitching stories, newsjacking, prepping podcast appearances, and responding to press requests. For startup/SaaS/AI directory submissions, see directory-submissions. For product launches, see launch. For social-media engagement, see social. For cold-email outreach to prospects, see cold-email.",
         "metadata": {
-          "version": "1.0.0"
+          "version": "1.1.1"
         },
         "name": "public-relations"
       },
@@ -6444,7 +6486,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/public-relations/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6466,11 +6508,11 @@
     {
       "canonicalInvocation": "/referrals",
       "description": "When the user wants to create, optimize, or analyze a referral program, affiliate program, or word-of-mouth strategy. Also use when the user mentions 'referral,' 'affiliate,' 'ambassador,' 'word of mouth,' 'viral loop,' 'refer a friend,' 'partner program,' 'referral incentive,' 'how to get referrals,' 'customers referring customers,' or 'affiliate payout.' Use this whenever someone wants existing users or partners to bring in new customers. For launch-specific virality, see launch.",
-      "digest": "0e86f424c3ba5c67861558a22b448c525571b1b764d2c52cf97f63fbe392093f",
+      "digest": "7a95902a8f70170a601e1b1c0e83442ab45f5c32a767c2d1070b9d7d2633ec25",
       "frontmatter": {
         "description": "When the user wants to create, optimize, or analyze a referral program, affiliate program, or word-of-mouth strategy. Also use when the user mentions 'referral,' 'affiliate,' 'ambassador,' 'word of mouth,' 'viral loop,' 'refer a friend,' 'partner program,' 'referral incentive,' 'how to get referrals,' 'customers referring customers,' or 'affiliate payout.' Use this whenever someone wants existing users or partners to bring in new customers. For launch-specific virality, see launch.",
         "metadata": {
-          "version": "2.0.0"
+          "version": "2.0.1"
         },
         "name": "referrals"
       },
@@ -6490,7 +6532,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/referrals/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6536,7 +6578,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/revops/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6582,7 +6624,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/sales-enablement/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6628,7 +6670,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/schema/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6650,11 +6692,11 @@
     {
       "canonicalInvocation": "/seo-audit",
       "description": "When the user wants to audit, review, or diagnose SEO issues on their site. Also use when the user mentions \"SEO audit,\" \"technical SEO,\" \"why am I not ranking,\" \"SEO issues,\" \"on-page SEO,\" \"meta tags review,\" \"SEO health check,\" \"my traffic dropped,\" \"lost rankings,\" \"not showing up in Google,\" \"site isn't ranking,\" \"Google update hit me,\" \"page speed,\" \"core web vitals,\" \"crawl errors,\" or \"indexing issues.\" Use this even if the user just says something vague like \"my SEO is bad\" or \"help with SEO\" — start with an audit. For building pages at scale to target keywords, see programmatic-seo. For adding structured data, see schema. For AI search optimization, see ai-seo.",
-      "digest": "19b1acb4f98bafe4ea58a41503cd9bbde643fa7ebaa96a6db74fbd87ef7e899a",
+      "digest": "9fdc53e1157c604c18cf27b7f0d37ea722fe08b3be072ee9b1c141d439de1ada",
       "frontmatter": {
         "description": "When the user wants to audit, review, or diagnose SEO issues on their site. Also use when the user mentions \"SEO audit,\" \"technical SEO,\" \"why am I not ranking,\" \"SEO issues,\" \"on-page SEO,\" \"meta tags review,\" \"SEO health check,\" \"my traffic dropped,\" \"lost rankings,\" \"not showing up in Google,\" \"site isn't ranking,\" \"Google update hit me,\" \"page speed,\" \"core web vitals,\" \"crawl errors,\" or \"indexing issues.\" Use this even if the user just says something vague like \"my SEO is bad\" or \"help with SEO\" — start with an audit. For building pages at scale to target keywords, see programmatic-seo. For adding structured data, see schema. For AI search optimization, see ai-seo.",
         "metadata": {
-          "version": "2.0.0"
+          "version": "2.0.1"
         },
         "name": "seo-audit"
       },
@@ -6674,7 +6716,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/seo-audit/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [
           "network-access"
@@ -6722,7 +6764,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/signup/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6768,7 +6810,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/site-architecture/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6814,7 +6856,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/sms/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6860,7 +6902,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/social/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [
           "network-access"
@@ -6908,7 +6950,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/video/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7569,7 +7611,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/brandkit/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "e988add20dab0fa97d7a76781c48961c8184288e",
+      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7612,7 +7654,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/taste-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "e988add20dab0fa97d7a76781c48961c8184288e",
+      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7655,7 +7697,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/taste-skill-v1/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "e988add20dab0fa97d7a76781c48961c8184288e",
+      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7698,7 +7740,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/output-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "e988add20dab0fa97d7a76781c48961c8184288e",
+      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7741,7 +7783,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/gpt-tasteskill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "e988add20dab0fa97d7a76781c48961c8184288e",
+      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7784,7 +7826,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/soft-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "e988add20dab0fa97d7a76781c48961c8184288e",
+      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7827,7 +7869,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/image-to-code-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "e988add20dab0fa97d7a76781c48961c8184288e",
+      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7870,7 +7912,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/imagegen-frontend-mobile/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "e988add20dab0fa97d7a76781c48961c8184288e",
+      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7913,7 +7955,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/imagegen-frontend-web/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "e988add20dab0fa97d7a76781c48961c8184288e",
+      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7956,7 +7998,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/brutalist-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "e988add20dab0fa97d7a76781c48961c8184288e",
+      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7999,7 +8041,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/minimalist-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "e988add20dab0fa97d7a76781c48961c8184288e",
+      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8042,7 +8084,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/redesign-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "e988add20dab0fa97d7a76781c48961c8184288e",
+      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8085,7 +8127,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/stitch-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "e988add20dab0fa97d7a76781c48961c8184288e",
+      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8113,7 +8155,7 @@
       "redistribution": "metadata-only",
       "ref": "origin/HEAD",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "f17010c9bb483898c1d9c9f42dde2b3a98889434",
+      "resolvedRevision": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
       "runtimeOnly": false,
       "skillCount": 8,
       "type": "git"
@@ -8134,7 +8176,7 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "960c3a8d6c4d14cb4c5e551a8847f8ec7c4267df",
+      "resolvedRevision": "c24121663732644c56280474a1720475dbe53127",
       "runtimeOnly": false,
       "skillCount": 53,
       "type": "git"
@@ -8146,7 +8188,7 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "aee6ce9352b842217b3f57c78296a7a4fa35a7f3",
+      "resolvedRevision": "831cabee8b4bc1a2b66e5ae22003e9a19b57d464",
       "runtimeOnly": false,
       "skillCount": 1,
       "type": "git"
@@ -8182,9 +8224,9 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+      "resolvedRevision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
       "runtimeOnly": false,
-      "skillCount": 49,
+      "skillCount": 50,
       "type": "git"
     },
     {
@@ -8222,16 +8264,16 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "e988add20dab0fa97d7a76781c48961c8184288e",
+      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
       "runtimeOnly": false,
       "skillCount": 13,
       "type": "git"
     }
   ],
   "totals": {
-    "redistributable": 133,
+    "redistributable": 134,
     "runtimeOnly": 3,
-    "skills": 143,
+    "skills": 144,
     "sources": 11,
     "warnings": 0
   }

@@ -7,14 +7,14 @@ Generated index of every Claude Code skill, command, and runtime component repre
 Resolver version 1 · schema v1.
 
 - **Sources:** 11
-- **Skills / entries:** 143
-- **Redistributable (full body):** 133
+- **Skills / entries:** 144
+- **Redistributable (full body):** 134
 - **Runtime-only:** 3
 
 ## Anthropic skills (anthropics/skills)
 
 type: `git` · pack: `anthropic` · skills: 8 · redistribution: metadata-only
-repo: https://github.com/anthropics/skills.git · ref: `origin/HEAD` · revision: `f17010c9bb48`
+repo: https://github.com/anthropics/skills.git · ref: `origin/HEAD` · revision: `41bbe19d1a1a`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -39,7 +39,7 @@ _Runtime-only — see notes below._
 ## gstack (garrytan/gstack)
 
 type: `git` · pack: `gstack` · skills: 53 · redistribution: full
-repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `960c3a8d6c4d`
+repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `c24121663732`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -94,13 +94,13 @@ repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: 
 | [/ship](../../docs/skills/gstack/ship.md) | Ship workflow: detect + merge base branch, run tests, review diff, bump VERSION, update CHANGELOG, commit, push, create  | full |
 | [/skillify](../../docs/skills/gstack/skillify.md) | Codify the most recent successful /scrape flow into a permanent browser-skill on disk. (gstack) | full |
 | [/spec](../../docs/skills/gstack/spec.md) | Turn vague intent into a precise, executable spec in five phases. (gstack) | full |
-| [/sync-gbrain](../../docs/skills/gstack/sync-gbrain.md) | Keep gbrain current with this repo's code and refresh agent search guidance in CLAUDE.md. Wraps the gstack-gbrain-sync o | full |
+| [/sync-gbrain](../../docs/skills/gstack/sync-gbrain.md) | Keep gbrain current with this repo's code and refresh agent search guidance in CLAUDE.md. (gstack) | full |
 | [/unfreeze](../../docs/skills/gstack/unfreeze.md) | Clear the freeze boundary set by /freeze, allowing edits to all directories again. (gstack) | full |
 
 ## Impeccable (pbakaus/impeccable)
 
 type: `git` · pack: `impeccable` · skills: 1 · redistribution: full
-repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `aee6ce9352b8`
+repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `831cabee8b4b`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -128,8 +128,8 @@ repo: https://github.com/adithya-s-k/manim_skill.git · ref: `origin/HEAD` · re
 
 ## Marketing skills (coreyhaines31/marketingskills)
 
-type: `git` · pack: `marketing` · skills: 49 · redistribution: full
-repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `7868cb9251fa`
+type: `git` · pack: `marketing` · skills: 50 · redistribution: full
+repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `5b2c0007766c`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -153,6 +153,7 @@ repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD`
 | [/customer-research](../../docs/skills/marketing/customer-research.md) | When the user wants to conduct, analyze, or synthesize customer research. Use when the user mentions "customer research, | full |
 | [/directory-submissions](../../docs/skills/marketing/directory-submissions.md) | When the user wants to submit their product to startup, SaaS, AI, agent, MCP, no-code, or review directories for backlin | full |
 | [/emails](../../docs/skills/marketing/emails.md) | When the user wants to create or optimize an email sequence, drip campaign, automated email flow, or lifecycle email pro | full |
+| [/events](../../docs/skills/marketing/events.md) | When the user wants to plan, run, sponsor, speak at, or get pipeline from events — webinars, conferences, trade shows, m | full |
 | [/free-tools](../../docs/skills/marketing/free-tools.md) | When the user wants to plan, evaluate, or build a free tool for marketing purposes — lead generation, SEO value, or bran | full |
 | [/image](../../docs/skills/marketing/image.md) | When the user wants to create, generate, edit, or optimize images for marketing — blog heroes, social graphics, product  | full |
 | [/influencer-marketing](../../docs/skills/marketing/influencer-marketing.md) | When the user wants to run influencer, creator, or ambassador partnerships to promote their product — finding and vettin | full |
@@ -223,7 +224,7 @@ _Runtime-only — see notes below._
 ## Taste skills (Leonxlnx/taste-skill)
 
 type: `git` · pack: `taste` · skills: 13 · redistribution: full
-repo: https://github.com/Leonxlnx/taste-skill.git · ref: `origin/HEAD` · revision: `e988add20dab`
+repo: https://github.com/Leonxlnx/taste-skill.git · ref: `origin/HEAD` · revision: `ccbc15639c97`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
