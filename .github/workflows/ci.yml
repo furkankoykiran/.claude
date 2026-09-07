@@ -188,7 +188,14 @@ jobs:
       - name: Typecheck
         run: bun run typecheck
       - name: Tests
-        run: bun test catalog
+        # catalog/tests, not `catalog`: bun's positional argument is a path
+        # SUBSTRING filter, not a directory. On a real install — where this repo
+        # is also the live ~/.claude — plain `catalog` matches vendored
+        # third-party suites under plugins/ and skills/gstack/ and the
+        # documented gate fails on tests this repo does not own. Those paths are
+        # gitignored so CI never saw it, which is how the mandatory command
+        # ended up being one nobody could actually run locally.
+        run: bun test catalog/tests
       - name: Catalog check (parity + consistency + policy + determinism)
         run: bun run catalog:check
       # The marketplace manifests are generated from marketplace.toml + VERSION.

@@ -1,0 +1,75 @@
+{
+  "_comment": [
+    "Repo-owned Claude Code settings. `ccs <provider>` MERGES this into",
+    "settings.json on every switch and never writes back to it, so the safety",
+    "controls below cannot be lost by changing API provider.",
+    "",
+    "Merge order is: current settings.json (carried over) <- this file <-",
+    "providers/<active>.json. Provider-owned keys (env, model, apiKeyHelper,",
+    "enabledPlugins, effortLevel) are taken wholesale from the provider file so",
+    "no credential or base URL can survive a switch. permissions.deny and hooks",
+    "are unioned, so a rule here is always present regardless of provider.",
+    "",
+    "Edit this file to change a safety rule, then re-run `ccs $(cat providers/.active)`.",
+    "See docs/configuration.md and docs/security-model.md."
+  ],
+
+  "cleanupPeriodDays": 14,
+
+  "permissions": {
+    "deny": [
+      "Read(//var/lib/docker/volumes/**)",
+      "Write(//var/lib/docker/volumes/**)",
+      "Edit(//var/lib/docker/volumes/**)",
+      "Bash(docker volume rm*)",
+      "Bash(docker volume prune*)",
+      "Bash(*docker*volume*remove*)",
+      "Bash(*docker*volume*delete*)",
+      "Bash(*docker-compose*down*-v*)",
+      "Bash(*docker*compose*down*--volumes*)",
+      "Bash(*docker*compose*down*-volumes*)",
+      "Bash(rm -rf */var/lib/docker/volumes*)",
+      "Bash(rm -rf */docker/volumes*)"
+    ]
+  },
+
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/session-start-update-notice.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/format-on-edit.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/protect-docker-volumes.sh"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/secret-scan-on-commit.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -32,6 +32,7 @@
 #   FKT_CHANNEL      stable | edge                   (overrides config)
 #   FKT_UPDATE_CHECK 0 disables update checks entirely
 #   FKT_SECURITY_NOTICES 0 disables the advisory fetch
+#   FKT_GSTACK_UPDATE 0 skips the skills/gstack fast-forward during `fkt update`
 #   FKT_OFFLINE      1 forbids all network access
 #   FKT_ADVISORY_URL_BASE  base URL for the advisory feed (testing/air-gapped)
 #   FKT_CHECK_TTL_MINUTES, FKT_SNOOZE_HOURS  cache tuning (testing)
@@ -506,6 +507,117 @@ resolve_target() {
   fi
 }
 
+# ---------------------------------------------------------------------------
+# gstack
+# ---------------------------------------------------------------------------
+# skills/gstack falls through every update path this machine has. It is not part
+# of this repository's history and it is not a Claude Code plugin — it is an
+# independent checkout of garrytan/gstack with its own upstream, VERSION and
+# ./setup. So `fkt update` skipped it, the plugin updater skipped it, and it
+# only ever moved when someone remembered to run /gstack-upgrade by hand.
+#
+# That cost 11 days of broken AskUserQuestion on this install: gstack's
+# question-preference-hook returned permissionDecision 'defer' on its
+# pass-through path, which since Claude Code 2.1.89 means "pause for external
+# resumption" rather than "no opinion". Nothing resumed it, so every call was
+# backfilled as "[Tool result missing due to internal error]". The fix was two
+# commits upstream the whole time.
+#
+# This deliberately does NOT shell out to /gstack-upgrade, which runs
+# `git stash && git fetch && git reset --hard origin/main`. A hard reset of a
+# third-party checkout has no place inside `fkt update`, whose first design rule
+# is that it never destroys local work. Fast-forward or nothing.
+#
+# Fails open in every branch: a gstack problem must never fail `fkt update`,
+# so this returns 0 unconditionally.
+gstack_git() { git -C "$FKT_HOME/skills/gstack" "$@"; }
+
+gstack_version() {
+  if [ -f "$FKT_HOME/skills/gstack/VERSION" ]; then
+    tr -d '[:space:]' < "$FKT_HOME/skills/gstack/VERSION"
+  else
+    printf 'unknown\n'
+  fi
+}
+
+do_gstack_update() {
+  local dry_run="${1:-0}"
+  local dir="$FKT_HOME/skills/gstack"
+
+  # Not installed. Silent: a toolkit without gstack is a supported layout, not
+  # a problem to report on every update.
+  [ -d "$dir/.git" ] || return 0
+
+  [ "${FKT_GSTACK_UPDATE:-1}" != "0" ] || return 0
+  if offline; then
+    return 0
+  fi
+
+  if ! GIT_TERMINAL_PROMPT=0 gstack_git fetch --quiet --prune origin 2>/dev/null; then
+    warn "gstack: could not reach its remote; leaving it at $(gstack_version)"
+    return 0
+  fi
+
+  local head target
+  head="$(gstack_git rev-parse --verify HEAD 2>/dev/null || true)"
+  target="$(gstack_git rev-parse --verify --quiet origin/main 2>/dev/null || true)"
+  if [ -z "$head" ] || [ -z "$target" ]; then
+    warn "gstack: could not resolve HEAD or origin/main; skipping"
+    return 0
+  fi
+  [ "$head" = "$target" ] && return 0
+
+  # Refuse rather than repair, exactly as the bootstrap layer does. Both of
+  # these mean the user has work here that only /gstack-upgrade is allowed to
+  # discard, and then only because the user asked it to.
+  if [ -n "$(gstack_git status --porcelain --untracked-files=no 2>/dev/null)" ]; then
+    warn "gstack: skipping update, $dir has uncommitted changes."
+    warn "Run '/gstack-upgrade' inside Claude Code to update it anyway (it discards them)."
+    return 0
+  fi
+  if ! gstack_git merge-base --is-ancestor "$head" "$target" 2>/dev/null; then
+    warn "gstack: skipping update, $dir has local commits that are not on origin/main."
+    warn "Run '/gstack-upgrade' inside Claude Code to update it anyway (it discards them)."
+    return 0
+  fi
+
+  local before after
+  before="$(gstack_version)"
+
+  # `--dry-run` must not write anything, and here "writing" includes executing
+  # gstack's ./setup — downloaded third-party code. The bootstrap dry-run check
+  # sits further down do_update(), so without this a dry run against an
+  # already-current toolkit would reach this point and really update gstack.
+  if [ "$dry_run" -eq 1 ]; then
+    say "would fast-forward gstack $before -> $(gstack_git show "$target:VERSION" 2>/dev/null | tr -d '[:space:]' || printf 'unknown')"
+    return 0
+  fi
+
+  # --no-overwrite-ignore: git will happily clobber an IGNORED file when the
+  # incoming commit starts tracking that path, and --ff-only does not change
+  # that. gstack checkouts carry ignored local state, and silently overwriting
+  # it is exactly the kind of loss this updater promises never to cause.
+  if ! gstack_git merge --ff-only --no-overwrite-ignore --quiet "$target" 2>/dev/null; then
+    warn "gstack: fast-forward refused or failed; nothing was changed (still $before)"
+    warn "If it names an untracked or ignored file, move it aside and re-run."
+    return 0
+  fi
+
+  # A bare fast-forward is not enough: setup relinks gstack's skills and
+  # rebuilds its binaries, so skipping it leaves the checkout ahead of what is
+  # actually wired into Claude Code.
+  if ! (cd "$dir" && ./setup --no-prefix >/dev/null 2>&1); then
+    after="$(gstack_version)"
+    warn "gstack: updated $before -> $after but './setup --no-prefix' failed."
+    warn "Re-run it by hand: cd $dir && ./setup --no-prefix"
+    return 0
+  fi
+
+  after="$(gstack_version)"
+  info "gstack updated $before -> $after"
+  return 0
+}
+
 do_update() {
   local assume_yes=0 dry_run=0
   while [ $# -gt 0 ]; do
@@ -549,6 +661,10 @@ do_update() {
     say "already at $target ($before)"
     write_cache UP_TO_DATE "$before" "$before"
     do_migrate
+    # Also on this path: gstack has its own upstream and moves independently of
+    # the bootstrap layer, so a no-op `fkt update` must still keep it current.
+    # Skipping it here is how a fix sat two commits away for eleven days.
+    do_gstack_update "$dry_run"
     return 0
   fi
 
@@ -565,6 +681,7 @@ do_update() {
   if [ "$dry_run" -eq 1 ]; then
     say "would fast-forward $(git_at rev-parse --short HEAD) -> $(git_at rev-parse --short "$target_sha") ($target)"
     log_range "$target_sha"
+    do_gstack_update 1
     return 0
   fi
 
@@ -582,8 +699,12 @@ do_update() {
     esac
   fi
 
-  if ! git_at merge --ff-only --quiet "$target_sha"; then
+  # --no-overwrite-ignore for the same reason as the gstack step above: an
+  # ignored local file whose path the incoming commit starts tracking would
+  # otherwise be silently overwritten, which this updater must never do.
+  if ! git_at merge --ff-only --no-overwrite-ignore --quiet "$target_sha"; then
     err "fast-forward failed; nothing was changed"
+    err "If it names an untracked or ignored file, move it aside and re-run."
     return "$EX_REFUSED"
   fi
 
@@ -594,6 +715,7 @@ do_update() {
   rm -f "$SNOOZE_FILE"
 
   do_migrate || return $?
+  do_gstack_update
 
   say ""
   say "Bootstrap layer updated. Two follow-ups:"
@@ -632,6 +754,133 @@ do_migrate() {
   done
 
   [ "$ran" -gt 0 ] && info "$ran migration(s) applied"
+  return 0
+}
+
+# ---------------------------------------------------------------------------
+# disk
+# ---------------------------------------------------------------------------
+# Read-only, and deliberately so. Claude Code already runs a retention sweep at
+# startup behind a 24h sentinel (~/.claude/.last-cleanup), gated on
+# `cleanupPeriodDays`. It works — so this does not write a second sweeper that
+# would race it. What was missing is visibility: nothing said how much the
+# toolkit costs, nothing said the setting exists, and the parts core provably
+# cannot reach looked identical to the parts it handles every day.
+#
+# `fkt disk` reports three categories and stops. It never deletes anything, and
+# there is no --clean flag: deciding to remove a live venv or a memory
+# directory needs a confirmation this cannot ask for.
+
+# Size of a path in KiB, or empty when it does not exist.
+disk_kb() {
+  [ -e "$1" ] || return 0
+  du -sk "$1" 2>/dev/null | awk 'NR==1{print $1}'
+}
+
+# KiB -> human. Avoids `du -h` so the number can be compared and totalled.
+disk_human() {
+  awk -v k="${1:-0}" 'BEGIN {
+    if (k >= 1048576) printf "%.1f GiB", k / 1048576
+    else if (k >= 1024) printf "%.0f MiB", k / 1024
+    else printf "%d KiB", k
+  }'
+}
+
+disk_row() {
+  local label="$1" path="$2" note="${3-}" kb
+  kb="$(disk_kb "$path")"
+  [ -n "$kb" ] || return 0
+  printf '  %-34s %10s  %s\n' "$label" "$(disk_human "$kb")" "$note"
+}
+
+# The retention window Claude Code will actually apply. Reported because the
+# setting is the single highest-leverage number here and is otherwise invisible:
+# it appears in no documentation and in no file this toolkit ships.
+disk_cleanup_period() {
+  local v=""
+  if [ -f "$FKT_HOME/settings.json" ] && command -v jq >/dev/null 2>&1; then
+    v="$(jq -r '.cleanupPeriodDays // empty' "$FKT_HOME/settings.json" 2>/dev/null || true)"
+  fi
+  if [ -n "$v" ]; then
+    printf '%s (settings.json)\n' "$v"
+  else
+    printf '30 (Claude Code default; unset in settings.json)\n'
+  fi
+}
+
+do_disk() {
+  local total
+  total="$(disk_kb "$FKT_HOME")"
+  say "fk-toolkit disk report — $FKT_HOME"
+  say "  total                              $(disk_human "${total:-0}")"
+  say "  retention window                   $(disk_cleanup_period)"
+  if [ -f "$FKT_HOME/.last-cleanup" ]; then
+    say "  last sweep                         $(tr -d '[:space:]' < "$FKT_HOME/.last-cleanup")"
+  else
+    say "  last sweep                         never recorded"
+  fi
+
+  say ""
+  say "Swept by Claude Code (no action needed):"
+  disk_row "projects/"        "$FKT_HOME/projects"        "transcripts + sidecars"
+  disk_row "file-history/"    "$FKT_HOME/file-history"    ""
+  disk_row "session-env/"     "$FKT_HOME/session-env"     ""
+  disk_row "shell-snapshots/" "$FKT_HOME/shell-snapshots" ""
+  disk_row "plans/"           "$FKT_HOME/plans"           ""
+  disk_row "debug/"           "$FKT_HOME/debug"           ""
+  disk_row "backups/"         "$FKT_HOME/backups"         ""
+  disk_row "paste-cache/"     "$FKT_HOME/paste-cache"     ""
+
+  say ""
+  say "Never touched (hard-coded, not configurable):"
+  disk_row "cache/nim-gateway/"   "$FKT_HOME/cache/nim-gateway"   "live litellm venv"
+  disk_row "catalog/cache/"       "$FKT_HOME/catalog/cache"       "git-tracked; offline generate"
+  local memkb=0 d
+  for d in "$FKT_HOME"/projects/*/memory; do
+    [ -d "$d" ] || continue
+    memkb=$(( memkb + $(disk_kb "$d") ))
+  done
+  [ "$memkb" -gt 0 ] && printf '  %-34s %10s  %s\n' "projects/*/memory/" "$(disk_human "$memkb")" "holds MEMORY.md"
+
+  say ""
+  say "Outside every sweep (reported only — fkt deletes nothing):"
+  # Core sweeps ~/.cache/claude-cli-nodejs only for slugify(cwd), so a slug for
+  # a deleted project — or for an ephemeral /tmp scratchpad cwd — is unreachable
+  # forever. Upstream: anthropics/claude-code#87678.
+  local nodecache="${XDG_CACHE_HOME:-$HOME/.cache}/claude-cli-nodejs"
+  if [ -d "$nodecache" ]; then
+    local slugs
+    slugs="$(find "$nodecache" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')"
+    # Deliberately reported as a total, not as "orphaned": a slug for a project
+    # that still exists is live data. Which slugs are dead cannot be decided
+    # from here without reversing slugify() over paths that may be gone.
+    # shellcheck disable=SC2088  # display label, never expanded as a path
+    disk_row "~/.cache/claude-cli-nodejs/" "$nodecache" "$slugs slug(s) total; those for deleted projects are unreachable"
+  fi
+  # Atomic-write leftovers. Each is named .claude.json.tmp.<pid>.<hash>, so
+  # whether it is an orphan or a live writer's file is answerable — check the
+  # PID rather than claiming every one of them is dead.
+  # Upstream: anthropics/claude-code#87677.
+  local dead=0 live=0 f pid
+  for f in "$HOME"/.claude.json.tmp.*; do
+    [ -e "$f" ] || continue
+    pid="${f##*.tmp.}"; pid="${pid%%.*}"
+    case "$pid" in
+      ''|*[!0-9]*) dead=$((dead + 1)) ;;
+      *) if kill -0 "$pid" 2>/dev/null; then live=$((live + 1)); else dead=$((dead + 1)); fi ;;
+    esac
+  done
+  # shellcheck disable=SC2088  # display label, never expanded as a path
+  [ "$dead" -gt 0 ] && printf '  %-34s %10s  %s\n' "~/.claude.json.tmp.*" "-" "$dead orphan(s) from dead PIDs"
+  # shellcheck disable=SC2088  # display label, never expanded as a path
+  [ "$live" -gt 0 ] && printf '  %-34s %10s  %s\n' "~/.claude.json.tmp.*" "-" "$live in use by a running process — leave alone"
+  # Ours, gitignored, pinned by skills-source.lock.json. Shrink with
+  # `git gc --prune=now` per clone rather than by deleting it.
+  disk_row ".cache/skill-src/" "$FKT_HOME/.cache/skill-src" "pinned by the lock; git gc to shrink"
+
+  say ""
+  say "Lower the retention window to halve the steady-state footprint:"
+  say "  set \"cleanupPeriodDays\" in settings.base.json, then re-run 'ccs \$(cat providers/.active)'"
   return 0
 }
 
@@ -751,6 +1000,8 @@ fkt — FK Claude Toolkit updater (bootstrap layer only)
                              is an update available? (cached; exit 10 if yes)
   fkt update [-y] [--dry-run]
                              fast-forward the checkout, then run migrations
+  fkt disk                   what ~/.claude costs, and which of it core sweeps
+                             on its own (read-only; deletes nothing)
   fkt migrate                run pending migrations only
   fkt channel [stable|edge]  show or set the update channel
   fkt snooze [HOURS]         hide the current update for a while (default 168)
@@ -777,6 +1028,7 @@ main() {
     version)         installed_version ;;
     schema-version)  printf '%s\n' "$FKT_VERSION_SCHEMA" ;;
     check)           do_check "$@" ;;
+    disk)            do_disk "$@" ;;
     update|upgrade)  do_update "$@" ;;
     migrate)         do_migrate "$@" ;;
     channel)         do_channel "$@" ;;

@@ -11,7 +11,7 @@ rules that are easy to violate accidentally.
 **Verification before claiming done** (all five, from the repo root):
 
 ```bash
-bun install --frozen-lockfile && bun run typecheck && bun test catalog \
+bun install --frozen-lockfile && bun run typecheck && bun test catalog/tests \
   && bun run catalog:check && bun run docs:check
 ```
 

@@ -9,7 +9,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "bun test catalog",
+    "test": "bun test catalog/tests",
     "catalog:resolve": "bun run catalog/src/cli.ts resolve",
     "catalog:resolve:update": "bun run catalog/src/cli.ts resolve --update",
     "catalog:generate": "bun run catalog/src/cli.ts generate",

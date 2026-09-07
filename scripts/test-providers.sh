@@ -22,6 +22,7 @@ trap 'rm -rf "$SANDBOX"' EXIT
 mkdir -p "$SANDBOX/providers"
 cp "$REPO_DIR"/providers/*.json.example "$SANDBOX/providers/"
 cp "$REPO_DIR"/providers/*.yaml.example "$SANDBOX/providers/" 2>/dev/null || true
+cp "$REPO_DIR/settings.base.json" "$SANDBOX/"
 
 ccs() { CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "$@"; }
 # Merged stdout+stderr as a string. Captured rather than piped: under `set -o
@@ -150,10 +151,11 @@ case "$out" in
   *"Active provider: anthropic"*) ok "ccs anthropic reports activation" ;;
   *) bad "ccs anthropic did not report activation: $out" ;;
 esac
-if [ -f "$SANDBOX/settings.json" ] && cmp -s "$SANDBOX/providers/anthropic.json" "$SANDBOX/settings.json"; then
-  ok "settings.json is a byte-identical copy of the provider file"
+if [ -f "$SANDBOX/settings.json" ] \
+   && [ "$(jq -S -c '.env // {}' "$SANDBOX/settings.json")" = "$(jq -S -c '.env // {}' "$SANDBOX/providers/anthropic.json")" ]; then
+  ok "settings.json carries the provider's env exactly"
 else
-  bad "settings.json does not match providers/anthropic.json"
+  bad "settings.json env does not match providers/anthropic.json"
 fi
 if [ "$(cat "$SANDBOX/providers/.active")" = "anthropic" ]; then
   ok ".active records the choice"
@@ -181,6 +183,170 @@ if grep -q 'api.z.ai' "$SANDBOX/settings.json"; then
 else
   ok "switching back leaves no trace of the previous provider"
 fi
+
+# --- the safety block survives every switch --------------------------------
+# Regression for the failure that made this repo's docker-volume guard inert on
+# every machine that had ever run `ccs`: settings.json was a straight copy of
+# the provider file, no provider template carries the safety block, and
+# seed_configs() only writes settings.json when it does not already exist. So
+# the guard was in git, passed review, and was registered nowhere.
+head_ "Repo-owned safety config survives provider switching"
+
+BASE="$REPO_DIR/settings.base.json"
+if jq -e . "$BASE" >/dev/null 2>&1; then
+  ok "settings.base.json is valid JSON"
+else
+  bad "settings.base.json is not valid JSON"
+fi
+
+# The two files must not overlap. settings.base.json owns the safety config;
+# settings.json.example owns the optional extras. A second copy of a deny rule
+# or a safety hook is a copy that can silently fall behind, which is the whole
+# failure this change exists to end.
+EXAMPLE="$REPO_DIR/settings.json.example"
+if [ "$(jq -r '(.permissions.deny // []) | length' "$EXAMPLE")" = "0" ] \
+   && [ "$(jq -r '(.hooks // {}) | length' "$EXAMPLE")" = "0" ] \
+   && [ "$(jq -r 'has("cleanupPeriodDays")' "$EXAMPLE")" = "false" ]; then
+  ok "settings.json.example does not duplicate the safety config"
+else
+  bad "settings.json.example duplicates settings.base.json (deny, hooks or cleanupPeriodDays)"
+fi
+
+# An install that never picks a provider still has to end up guarded, so the
+# seed is base + example rather than either one alone.
+seeded=$(jq -s '.[0] * (.[1] // {}) | del(._comment) | del(.["$comment"])' "$BASE" "$EXAMPLE")
+if [ "$(printf '%s' "$seeded" | jq '.permissions.deny | length')" = "$(jq '.permissions.deny | length' "$BASE")" ] \
+   && [ "$(printf '%s' "$seeded" | jq -r '[.hooks[]?[]?.hooks[]?.command] | length')" = "4" ] \
+   && [ "$(printf '%s' "$seeded" | jq -r 'has("statusLine")')" = "true" ]; then
+  ok "the seeded settings.json carries both the safety config and the optional extras"
+else
+  bad "seeding settings.base.json + settings.json.example loses one of the two"
+fi
+if [ "$(printf '%s' "$seeded" | jq -r 'has("_comment") or has("$comment")')" = "false" ]; then
+  ok "the seed strips the explanatory comment keys"
+else
+  bad "the seed leaves a _comment/\$comment key in settings.json"
+fi
+
+# Both installers must seed the same way. A fresh Windows install has no
+# providers/.active, so the provider re-apply cannot repair it afterwards —
+# if install.ps1 copies the example alone, that machine has no safety config
+# at all and nothing will ever put it there.
+for inst in install.sh install.ps1; do
+  if grep -q 'settings.base.json' "$REPO_DIR/$inst"; then
+    ok "$inst seeds settings.json from settings.base.json"
+  else
+    bad "$inst still seeds settings.json without the safety config"
+  fi
+done
+
+# A single leading slash in a path rule is relative to the working directory,
+# so "Read(/var/lib/docker/volumes/**)" guards <cwd>/var/lib/... and protects
+# nothing. Absolute paths need the double slash.
+if [ "$(jq -r '[.permissions.deny[] | select(startswith("Read(/") or startswith("Write(/") or startswith("Edit(/")) | select(startswith("Read(//") or startswith("Write(//") or startswith("Edit(//") | not)] | length' "$BASE")" = "0" ]; then
+  ok "every path deny rule is absolute (// prefix), not cwd-relative"
+else
+  bad "a path deny rule uses a single leading slash and resolves relative to cwd"
+fi
+
+for p in anthropic zai; do
+  ccs "$p" >/dev/null 2>&1
+  n=$(jq '[.permissions.deny[]] | length' "$SANDBOX/settings.json" 2>/dev/null || echo 0)
+  if [ "$n" = "$(jq '.permissions.deny | length' "$BASE")" ]; then
+    ok "$p: every deny rule from settings.base.json is registered"
+  else
+    bad "$p: settings.json has $n deny rule(s), expected $(jq '.permissions.deny | length' "$BASE")"
+  fi
+
+  cmds=$(jq -r '[.hooks[]?[]?.hooks[]?.command] | join(" ")' "$SANDBOX/settings.json")
+  for h in protect-docker-volumes.sh secret-scan-on-commit.sh format-on-edit.sh; do
+    case "$cmds" in
+      *"$h"*) ok "$p: the $h hook is registered" ;;
+      *)      bad "$p: the $h hook is missing after switching to $p" ;;
+    esac
+  done
+  # The provider's own hook must survive the merge too, not be replaced by it.
+  case "$cmds" in
+    *"rtk hook claude"*) ok "$p: the provider's rtk hook survives the merge" ;;
+    *)                   bad "$p: the provider's rtk hook was lost in the merge" ;;
+  esac
+done
+
+# #55 lands cleanupPeriodDays in settings.base.json precisely so it is not a
+# per-provider concern and cannot be wiped by the next switch.
+ccs zai >/dev/null 2>&1
+if [ "$(jq -r '.cleanupPeriodDays' "$SANDBOX/settings.json")" = "$(jq -r '.cleanupPeriodDays' "$BASE")" ]; then
+  ok "cleanupPeriodDays survives a provider switch"
+else
+  bad "cleanupPeriodDays did not survive a provider switch"
+fi
+
+# Keys Claude Code and other tools write into settings.json are not the
+# switcher's to delete. Before the merge, `ccs` silently dropped the gstack Stop
+# hook, tui and agentPushNotifEnabled on every switch.
+jq '. + {tui:"fullscreen", agentPushNotifEnabled:true}
+    | .hooks.Stop = [{"hooks":[{"type":"command","command":"gstack/timeline-stop-hook"}]}]' \
+  "$SANDBOX/settings.json" > "$SANDBOX/s.tmp" && mv "$SANDBOX/s.tmp" "$SANDBOX/settings.json"
+ccs anthropic >/dev/null 2>&1
+if [ "$(jq -r '.tui // "gone"' "$SANDBOX/settings.json")" = "fullscreen" ] \
+   && [ "$(jq -r '[.hooks.Stop[]?.hooks[]?.command] | join(",")' "$SANDBOX/settings.json")" = "gstack/timeline-stop-hook" ]; then
+  ok "unrelated settings and third-party hooks are carried across a switch"
+else
+  bad "a switch destroyed unrelated settings or a third-party hook"
+fi
+
+# Provider-owned keys are OBJECTS, and a recursive merge would blend them: a
+# lower layer's env.ANTHROPIC_BASE_URL surviving next to the new provider's
+# token keeps routing traffic to the provider you just left, holding a live
+# credential against the wrong endpoint. Wholesale replacement must be true by
+# construction, not because the shipped files happen not to collide.
+printf '{"env":{"ANTHROPIC_AUTH_TOKEN":"tokenB"}}\n' > "$SANDBOX/providers/wholesale.json"
+jq '.env = {"ANTHROPIC_BASE_URL":"https://provider-a.invalid","LEAK":"1"}' "$SANDBOX/settings.base.json" \
+  > "$SANDBOX/b.tmp" && mv "$SANDBOX/b.tmp" "$SANDBOX/settings.base.json"
+ccs wholesale >/dev/null 2>&1
+if [ "$(jq -S -c '.env' "$SANDBOX/settings.json")" = '{"ANTHROPIC_AUTH_TOKEN":"tokenB"}' ]; then
+  ok "a provider-owned object is replaced wholesale, not blended"
+else
+  bad "env was blended across layers: $(jq -S -c '.env' "$SANDBOX/settings.json")"
+fi
+cp "$REPO_DIR/settings.base.json" "$SANDBOX/settings.base.json"
+rm -f "$SANDBOX/providers/wholesale.json"
+
+# Hook identity: handlers with no `command` (prompt-type hooks) would all
+# collide on an empty key and only the first would survive, and a naive
+# "matcher|command" key lets ("Bash|Write","x") and ("Bash","Write|x") collide.
+cat > "$SANDBOX/settings.json" <<'HOOKS'
+{"hooks":{"Stop":[{"hooks":[{"type":"prompt","prompt":"first"},{"type":"prompt","prompt":"second"}]}],
+"PreToolUse":[{"matcher":"Bash|Write","hooks":[{"type":"command","command":"echo check"}]},
+{"matcher":"Bash","hooks":[{"type":"command","command":"Write|echo check"}]}]}}
+HOOKS
+ccs anthropic >/dev/null 2>&1
+if [ "$(jq -c '[.hooks.Stop[]?.hooks[]?.prompt]' "$SANDBOX/settings.json")" = '["first","second"]' ]; then
+  ok "hook handlers without a command are not collapsed into one"
+else
+  bad "command-less hook handlers were deduplicated away"
+fi
+if [ "$(jq -r '[.hooks.PreToolUse[]?.hooks[]?.command] | map(select(. == "echo check" or . == "Write|echo check")) | length' "$SANDBOX/settings.json")" = "2" ]; then
+  ok "hook identities that would collide on a naive key stay distinct"
+else
+  bad "two distinct hooks collided on the same identity key"
+fi
+
+# Fail closed: writing a settings.json without the safety block is worse than
+# refusing to switch at all.
+mv "$SANDBOX/settings.base.json" "$SANDBOX/settings.base.json.away"
+before=$(jq -S -c . "$SANDBOX/settings.json")
+if rc anthropic; then
+  bad "activation succeeded with settings.base.json missing (would ship an unguarded settings.json)"
+else
+  ok "activation fails closed when settings.base.json is missing"
+fi
+if [ "$(jq -S -c . "$SANDBOX/settings.json")" = "$before" ]; then
+  ok "a failed activation leaves settings.json untouched"
+else
+  bad "a failed activation modified settings.json"
+fi
+mv "$SANDBOX/settings.base.json.away" "$SANDBOX/settings.base.json"
 
 # --- guardrails ------------------------------------------------------------
 head_ "Guardrails"
@@ -215,9 +381,21 @@ fi
 # settings.json drifting from the provider file is the silent-401 footgun.
 printf '{"drifted":true}\n' > "$SANDBOX/settings.json"
 case "$(say status)" in
-  *"differs from providers/zai.json"*) ok "drift between settings.json and the provider file is reported" ;;
+  *"out of date with providers/zai.json"*) ok "drift between settings.json and the provider file is reported" ;;
   *) bad "drift went unreported" ;;
 esac
+
+# The same check now also catches an edited settings.base.json that has not been
+# re-applied — the case where a safety rule exists in git but not on the box.
+ccs zai >/dev/null 2>&1
+jq '.permissions.deny += ["Bash(rm -rf /*)"]' "$SANDBOX/settings.base.json" > "$SANDBOX/b.tmp" \
+  && mv "$SANDBOX/b.tmp" "$SANDBOX/settings.base.json"
+case "$(say status)" in
+  *"or settings.base.json"*) ok "an unapplied settings.base.json change is reported as drift" ;;
+  *) bad "an unapplied safety-config change went unreported" ;;
+esac
+cp "$REPO_DIR/settings.base.json" "$SANDBOX/settings.base.json"
+ccs zai >/dev/null 2>&1
 
 # A loopback provider with nothing listening is the NVIDIA-gateway footgun.
 head_ "Local gateway detection"

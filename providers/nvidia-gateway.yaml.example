@@ -8,6 +8,26 @@
 #
 # Self-hosted NIM containers expose `/v1/messages` natively and need no gateway
 # at all - use the `nvidia-nim` provider for those.
+#
+# ---------------------------------------------------------------------------
+# Do not carry one session across this gateway and api.anthropic.com.
+#
+# LiteLLM's `/v1/messages` adapter opens content block 0 as
+# `{"type": "text", "text": ""}` before it has read a single upstream chunk, so
+# every turn that goes straight to a tool call streams a text block with no
+# deltas (BerriAI/litellm#34692). Claude Code writes that block into the session
+# transcript verbatim, and nothing here objects - the gateway does not validate
+# its own output.
+#
+# It objects later. Resume that session against api.anthropic.com and the
+# transcript is replayed as `messages`, which answers
+# `400 messages: text content blocks must be non-empty` - and keeps answering
+# it, because the block is on disk. The session is unrecoverable
+# (anthropics/claude-code#88536).
+#
+# So `ccs nvidia` and `ccs anthropic` each want a fresh session. Switching
+# providers is safe; resuming across the switch is not.
+# ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
 # YOUR API KEY GOES HERE, once. Get one at https://build.nvidia.com (`nvapi-...`).
@@ -27,7 +47,7 @@ defaults: &nim_defaults
   #
   # If a future Claude Code release adds another such field, requests start
   # returning 400 and the error names the field - append it here.
-  additional_drop_params: ["diagnostics"]
+  additional_drop_params: ["diagnostics", "stop_sequences"]
   # NVIDIA's hosted tier caps concurrent requests per worker and answers
   # `ResourceExhausted: Worker local total request limit reached (64/48)` once
   # Claude Code's parallel subagents exceed it. Queue here rather than fail.
@@ -45,20 +65,20 @@ model_list:
   - model_name: claude-opus-5
     litellm_params:
       <<: *nim_defaults
-      model: nvidia_nim/minimaxai/minimax-m3
+      model: nvidia_nim/nvidia/nemotron-3-super-120b-a12b
   - model_name: claude-fable-5
     litellm_params:
       <<: *nim_defaults
-      model: nvidia_nim/minimaxai/minimax-m3
+      model: nvidia_nim/nvidia/nemotron-3-super-120b-a12b
 
   - model_name: claude-sonnet-5
     litellm_params:
       <<: *nim_defaults
-      model: nvidia_nim/deepseek-ai/deepseek-v4-flash
+      model: nvidia_nim/moonshotai/kimi-k3
   - model_name: claude-sonnet-4-5
     litellm_params:
       <<: *nim_defaults
-      model: nvidia_nim/deepseek-ai/deepseek-v4-flash
+      model: nvidia_nim/moonshotai/kimi-k3
 
   - model_name: claude-haiku-4-5
     litellm_params:
@@ -68,6 +88,40 @@ model_list:
     litellm_params:
       <<: *nim_defaults
       model: nvidia_nim/openai/gpt-oss-20b
+
+  # The NVIDIA ids below would already be served by the `*` wildcard, but a
+  # wildcard match is not a named model group and `router_settings.fallbacks`
+  # can only name groups. Spelling them out is what makes them reachable as a
+  # fallback target - and what makes NVIDIA rate-limiting one of them a detour
+  # rather than a failed turn.
+  - model_name: nvidia/nemotron-3-super-120b-a12b
+    litellm_params:
+      <<: *nim_defaults
+      model: nvidia_nim/nvidia/nemotron-3-super-120b-a12b
+  - model_name: moonshotai/kimi-k3
+    litellm_params:
+      <<: *nim_defaults
+      model: nvidia_nim/moonshotai/kimi-k3
+  - model_name: openai/gpt-oss-20b
+    litellm_params:
+      <<: *nim_defaults
+      model: nvidia_nim/openai/gpt-oss-20b
+  - model_name: nvidia/nemotron-3.5-lightning-30b-a3b
+    litellm_params:
+      <<: *nim_defaults
+      model: nvidia_nim/nvidia/nemotron-3.5-lightning-30b-a3b
+  - model_name: mistralai/mistral-nemotron
+    litellm_params:
+      <<: *nim_defaults
+      model: nvidia_nim/mistralai/mistral-nemotron
+  # Not a default any more: this key's minimax-m3 quota answers 429 to a single
+  # request, minutes apart, while every other model on the same key answers 200.
+  # It stays here so `/model minimaxai/minimax-m3` still resolves and so the
+  # chain below can route around it until the quota comes back.
+  - model_name: minimaxai/minimax-m3
+    litellm_params:
+      <<: *nim_defaults
+      model: nvidia_nim/minimaxai/minimax-m3
 
   # Anything else is treated as a real NVIDIA model id and forwarded as-is, so
   # the ANTHROPIC_DEFAULT_*_MODEL values in providers/nvidia.json work without
@@ -83,6 +137,42 @@ litellm_settings:
   # NIM rejects Anthropic-only sampling params that have no OpenAI equivalent;
   # drop them instead of failing the request.
   drop_params: true
-  # ResourceExhausted on the shared hosted tier is transient, so retry instead
-  # of surfacing it as a failed turn.
+
+router_settings:
+  # Retries stay on the model that failed, so they only help when the failure
+  # was transient. Everything below assumes that and hands the durable cases to
+  # `fallbacks` instead.
   num_retries: 3
+  retry_policy:
+    # NVIDIA's hosted tier serves two very different 429s under one status:
+    # a momentary concurrency spike, and a model whose per-account quota is
+    # spent - which stays 429 for as long as it takes to refill. Retrying the
+    # second three times just spends three round trips restating the same
+    # answer, so try once and let `fallbacks` move to a model that will reply.
+    RateLimitErrorRetries: 1
+    # A 500 from a NIM worker usually is transient, so this one keeps its budget.
+    InternalServerErrorRetries: 2
+    TimeoutErrorRetries: 1
+  # `Available Model Group Fallbacks=None` is what a failed turn looked like
+  # before this block existed: one model's quota ran out and Claude Code got a
+  # 429 with nowhere to go. Every group now names successors, so a single model
+  # going down costs latency rather than the session.
+  #
+  # Order is deliberate - each chain steps down in capability, never sideways
+  # into a model too small to hold the tier's work. Ids are only useful here if
+  # they support tool calling; a model that cannot call tools cannot run Claude
+  # Code, whatever it scores.
+  fallbacks:
+    - claude-opus-5: ["moonshotai/kimi-k3", "mistralai/mistral-nemotron"]
+    - claude-fable-5: ["moonshotai/kimi-k3", "mistralai/mistral-nemotron"]
+    - nvidia/nemotron-3-super-120b-a12b: ["moonshotai/kimi-k3", "mistralai/mistral-nemotron"]
+
+    - claude-sonnet-5: ["nvidia/nemotron-3-super-120b-a12b", "nvidia/nemotron-3.5-lightning-30b-a3b"]
+    - claude-sonnet-4-5: ["nvidia/nemotron-3-super-120b-a12b", "nvidia/nemotron-3.5-lightning-30b-a3b"]
+    - moonshotai/kimi-k3: ["nvidia/nemotron-3-super-120b-a12b", "nvidia/nemotron-3.5-lightning-30b-a3b"]
+
+    - claude-haiku-4-5: ["nvidia/nemotron-3.5-lightning-30b-a3b", "nvidia/nemotron-3-super-120b-a12b"]
+    - claude-3-5-haiku-20241022: ["nvidia/nemotron-3.5-lightning-30b-a3b", "nvidia/nemotron-3-super-120b-a12b"]
+    - openai/gpt-oss-20b: ["nvidia/nemotron-3.5-lightning-30b-a3b", "nvidia/nemotron-3-super-120b-a12b"]
+
+    - minimaxai/minimax-m3: ["nvidia/nemotron-3-super-120b-a12b", "moonshotai/kimi-k3"]

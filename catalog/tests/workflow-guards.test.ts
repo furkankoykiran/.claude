@@ -72,6 +72,7 @@ const nameOf = (s: Step) => s.name ?? s.uses ?? "<unnamed>";
 const MUTATING = [
   "Automation token (GitHub App)",
   "Preflight App token permissions",
+  "Cancel inherited auto-merge before publishing",
   "Commit + push the automation branch",
   "Open or update the automation PR",
   "Reset PR merge state (fail-closed)",
@@ -91,14 +92,21 @@ const scenario = (o: {
   manual?: string;
   /** '' models the reset step failing or being skipped. */
   verifiedSha?: string;
+  /** '' | 'hold' | 'queued' — the pending-review verdict for this run. */
+  holdState?: string;
+  /** 'true' once a held batch is older than HOLD_ESCALATE_DAYS. */
+  escalate?: string;
 }): Ctx => ({
   steps: {
     detect: { outputs: { changed: o.changed } },
     classify: { outputs: { manual_review: o.manual ?? "" } },
-    "app-token": { outputs: { token: o.token ?? "" } },
+    // A held run never mints a token, so model that rather than letting a
+    // scenario claim both a hold and a live token.
+    "app-token": { outputs: { token: o.holdState ? "" : (o.token ?? "") } },
+    pending: { outputs: { hold_state: o.holdState ?? "", escalate: o.escalate ?? "" } },
     pr: { outputs: { number: "1" } },
     push: { outputs: { sha: "cafe1234" } },
-    reset: { outputs: { verified_sha: o.verifiedSha ?? (o.token ? "cafe1234" : "") } },
+    reset: { outputs: { verified_sha: o.verifiedSha ?? (o.token && !o.holdState ? "cafe1234" : "") } },
   },
   inputs: { dry_run: o.dryRun ?? null },
   vars: { ENABLE_SKILLS_AUTOMATION: o.enabled ?? "" },
@@ -206,6 +214,133 @@ describe("update workflow: manual-review change", () => {
 
   it("always resets inherited merge state first", () => {
     expect(ran).toContain("Reset PR merge state (fail-closed)");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// A batch awaiting human review must be a STABLE review target.
+//
+// Before this guard existed the push step was gated only on "is there a
+// change?", so every scheduled run rebuilt the branch from main and replaced
+// the head SHA of a PR a human was reading. PR #52 took that 29 times in 29
+// days and was never reviewed once. These tests pin the fix: while a review is
+// pending, the run mutates nothing at all.
+// ---------------------------------------------------------------------------
+describe("update workflow: a batch under review is frozen", () => {
+  const ran = runsUnder(scenario({
+    changed: "true", dryRun: false, enabled: "true", manual: "true", holdState: "hold",
+  }));
+
+  it("performs no mutation whatsoever, so the reviewed commit survives", () => {
+    for (const m of MUTATING) expect(ran).not.toContain(m);
+  });
+
+  it("never mints an App token — a held run cannot write even by accident", () => {
+    expect(ran).not.toContain("Automation token (GitHub App)");
+  });
+
+  it("reports the hold instead of going quiet", () => {
+    expect(ran).toContain("Hold — the batch under review is unchanged");
+    expect(ran).toContain("Summary");
+  });
+
+  it("does not claim automation is disabled — it is holding, not broken", () => {
+    expect(ran).not.toContain("Report that automation is disabled");
+  });
+});
+
+describe("update workflow: newer upstream queues behind a pending review", () => {
+  const ran = runsUnder(scenario({
+    changed: "true", dryRun: false, enabled: "true", manual: "true", holdState: "queued",
+  }));
+
+  it("still refuses to touch the reviewed commit", () => {
+    for (const m of MUTATING) expect(ran).not.toContain(m);
+  });
+
+  it("surfaces the queued batch rather than silently dropping it", () => {
+    expect(ran).toContain("Queue — newer upstream is waiting behind the review");
+    expect(ran).not.toContain("Hold — the batch under review is unchanged");
+  });
+});
+
+describe("update workflow: a stalled review batch escalates", () => {
+  it("goes red once the batch is older than the threshold", () => {
+    const ran = runsUnder(scenario({
+      changed: "true", dryRun: false, enabled: "true", manual: "true",
+      holdState: "hold", escalate: "true",
+    }));
+    expect(ran).toContain("Escalate a stalled review batch");
+  });
+
+  it("stays green while the batch is still fresh", () => {
+    const ran = runsUnder(scenario({
+      changed: "true", dryRun: false, enabled: "true", manual: "true", holdState: "hold",
+    }));
+    expect(ran).not.toContain("Escalate a stalled review batch");
+  });
+
+  it("never escalates when nothing is held", () => {
+    const ran = runsUnder(scenario({
+      changed: "true", dryRun: false, enabled: "true", token: "ghs_x", manual: "false",
+    }));
+    expect(ran).not.toContain("Escalate a stalled review batch");
+  });
+
+  it("fails the run, because a green scheduled run notifies nobody", () => {
+    const step = STEPS.find((s) => nameOf(s) === "Escalate a stalled review batch");
+    expect(step, "escalation step not found — did it get renamed?").toBeDefined();
+    expect((step as Step & { run?: string }).run).toContain("exit 1");
+  });
+});
+
+describe("update workflow: the freeze cannot be edited away", () => {
+  // The guard is one term in an `if:` expression. Dropping it from any single
+  // mutating step silently restores the daily force-push over a reviewed SHA,
+  // and nothing else in the suite would notice.
+  for (const name of MUTATING) {
+    it(`"${name}" is gated on there being no pending review`, () => {
+      const step = STEPS.find((s) => nameOf(s) === name)!;
+      const guardedDirectly = String(step.if).includes("steps.pending.outputs.hold_state == ''");
+      // Steps that require the App token inherit the freeze, because the token
+      // step is itself gated on it and a held run leaves the output empty.
+      const viaToken = String(step.if).includes("steps.app-token.outputs.token != ''");
+      expect(guardedDirectly || viaToken,
+        `"${name}" can run while a batch is under review`).toBe(true);
+    });
+  }
+
+  it("gates the App token on the hold, so the freeze is enforced at the root", () => {
+    const token = STEPS.find((s) => nameOf(s) === "Automation token (GitHub App)")!;
+    expect(String(token.if)).toContain("steps.pending.outputs.hold_state == ''");
+  });
+
+  // A GitHub auto-merge request survives a push to the head branch, and is not
+  // auto-cancelled for an actor with write permission. So a routine run's merge
+  // request can still be live when the next run publishes a capability-expanding
+  // batch onto the same branch. Tearing it down only AFTER the push leaves that
+  // window open on every run, and open indefinitely if the run dies in between.
+  it("cancels an inherited auto-merge BEFORE it publishes new content", () => {
+    const names = STEPS.map(nameOf);
+    const cancel = names.indexOf("Cancel inherited auto-merge before publishing");
+    const push = names.indexOf("Commit + push the automation branch");
+    expect(cancel, "the pre-publish cancel step is missing").toBeGreaterThan(-1);
+    expect(cancel, "auto-merge must be cancelled before the push, not after").toBeLessThan(push);
+  });
+
+  it("proves the inherited request is gone rather than trusting the exit status", () => {
+    const step = STEPS.find((s) => nameOf(s) === "Cancel inherited auto-merge before publishing")!;
+    const body = String((step as Step & { run?: string }).run);
+    expect(body).toContain("--disable-auto");
+    expect(body).toMatch(/AFTER=.*autoMergeRequest/);
+    expect(body).toContain("Failing closed before publishing");
+  });
+
+  it("records the catalog identity on the commit it publishes", () => {
+    // The hold check reads this trailer back off the branch to decide whether
+    // upstream has moved. Without it every run would look like a new batch.
+    const push = STEPS.find((s) => nameOf(s) === "Commit + push the automation branch")!;
+    expect((push as Step & { run?: string }).run).toContain("Catalog-Content: ${CONTENT_DIGEST}");
   });
 });
 

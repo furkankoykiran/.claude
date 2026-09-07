@@ -821,5 +821,249 @@ fi
 reset_state
 
 # ---------------------------------------------------------------------------
+# gstack fast-forward during `fkt update`
+# ---------------------------------------------------------------------------
+# skills/gstack fell through every update path: it is not in this repository's
+# history and it is not a Claude Code plugin, so `fkt update` skipped it and so
+# did the plugin updater. On this install that left a fix two commits upstream
+# for eleven days while AskUserQuestion was broken.
+#
+# The design constraints are what these tests actually pin: fast-forward only,
+# never a hard reset, always exit 0, and never any network unless asked.
+echo
+echo "gstack update"
+reset_state
+
+# A throwaway gstack: bare remote with two versions, plus a clone parked on the
+# older one and a ./setup that records that it ran.
+setup_gstack() {
+  local dirty="${1:-clean}"
+  rm -rf "$WORK/gstack-seed" "$WORK/gstack-remote.git" "$HOME_DIR/skills"
+  local seed="$WORK/gstack-seed"
+  mkdir -p "$seed"
+  git_q "$seed" init -b main
+  git_q "$seed" config user.email t@example.invalid
+  git_q "$seed" config user.name Test
+  printf '1.60.1.0\n' > "$seed/VERSION"
+  cat > "$seed/setup" <<'SETUP'
+#!/usr/bin/env bash
+# Records that it ran, and with which arguments.
+printf '%s\n' "$*" >> "$(dirname "$0")/.setup-ran"
+SETUP
+  chmod +x "$seed/setup"
+  git_q "$seed" add -A
+  git_q "$seed" commit -m v1.60.1.0
+  printf '1.61.0.0\n' > "$seed/VERSION"
+  # The failure has to arrive WITH the upstream commit. Editing ./setup in the
+  # clone instead would dirty the worktree, and the dirty guard would skip the
+  # update before setup ever ran — testing the wrong branch.
+  if [ "$dirty" = "failsetup" ]; then
+    printf '#!/usr/bin/env bash\nexit 1\n' > "$seed/setup"
+    chmod +x "$seed/setup"
+  fi
+  git_q "$seed" add -A
+  git_q "$seed" commit -m v1.61.0.0
+
+  git clone --quiet --bare "$seed" "$WORK/gstack-remote.git"
+  mkdir -p "$HOME_DIR/skills"
+  git clone --quiet "$WORK/gstack-remote.git" "$HOME_DIR/skills/gstack"
+  git_q "$HOME_DIR/skills/gstack" config user.email t@example.invalid
+  git_q "$HOME_DIR/skills/gstack" config user.name Test
+  git_q "$HOME_DIR/skills/gstack" reset --hard HEAD~1
+  [ "$dirty" = "dirty" ] && printf 'local edit\n' >> "$HOME_DIR/skills/gstack/VERSION"
+  return 0
+}
+
+gstack_version_now() { tr -d '[:space:]' < "$HOME_DIR/skills/gstack/VERSION" 2>/dev/null; }
+
+# `fkt update` refuses a dirty bootstrap tree, so park the checkout at the tip
+# and drive the "already at" path — which is exactly the path that has to keep
+# gstack current, since most days there is no bootstrap update at all.
+git_q "$HOME_DIR" reset --hard v0.2.0
+run_fkt channel stable >/dev/null 2>&1
+
+setup_gstack
+out="$(run_fkt update -y 2>&1)"; status=$?
+if [ "$status" -eq 0 ] && [ "$(gstack_version_now)" = "1.61.0.0" ]; then
+  pass "a no-op fkt update still fast-forwards gstack"
+else
+  fail "a no-op fkt update still fast-forwards gstack" "exit $status, version $(gstack_version_now)"
+fi
+if grep -qF "gstack updated 1.60.1.0 -> 1.61.0.0" <<<"$out"; then
+  pass "the old -> new gstack version is reported"
+else
+  fail "the old -> new gstack version is reported" "$(printf '%s' "$out" | tr '\n' ' ')"
+fi
+# A bare fast-forward is not enough: setup relinks gstack's skills and rebuilds
+# its binaries, so skipping it leaves the checkout ahead of what is wired in.
+if [ -f "$HOME_DIR/skills/gstack/.setup-ran" ] \
+   && grep -qF -- "--no-prefix" "$HOME_DIR/skills/gstack/.setup-ran"; then
+  pass "gstack's ./setup --no-prefix runs after the fast-forward"
+else
+  fail "gstack's ./setup --no-prefix runs after the fast-forward"
+fi
+
+# Second run has nothing to do and must stay quiet rather than re-running setup.
+setup_gstack
+run_fkt update -y >/dev/null 2>&1
+rm -f "$HOME_DIR/skills/gstack/.setup-ran"
+out="$(run_fkt update -y 2>&1)"
+if [ ! -f "$HOME_DIR/skills/gstack/.setup-ran" ] && ! grep -qF "gstack updated" <<<"$out"; then
+  pass "an already-current gstack is a silent no-op"
+else
+  fail "an already-current gstack is a silent no-op"
+fi
+
+# Never destroys local work. /gstack-upgrade is allowed to hard-reset because
+# the user asked it to; `fkt update` is not.
+setup_gstack dirty
+out="$(run_fkt update -y 2>&1)"; status=$?
+if [ "$status" -eq 0 ] && grep -qF "uncommitted changes" <<<"$out" && grep -qF "/gstack-upgrade" <<<"$out"; then
+  pass "a dirty gstack is skipped with a pointer to /gstack-upgrade"
+else
+  fail "a dirty gstack is skipped with a pointer to /gstack-upgrade" "exit $status: $(printf '%s' "$out" | tr '\n' ' ')"
+fi
+if grep -qF "local edit" "$HOME_DIR/skills/gstack/VERSION"; then
+  pass "the dirty gstack worktree is left exactly as it was"
+else
+  fail "the dirty gstack worktree is left exactly as it was"
+fi
+
+# Diverged: a local commit that origin/main does not contain. A fast-forward is
+# impossible and a reset would discard it, so refuse.
+setup_gstack
+printf 'local work\n' > "$HOME_DIR/skills/gstack/LOCAL"
+git_q "$HOME_DIR/skills/gstack" add -A
+git_q "$HOME_DIR/skills/gstack" commit -m "local commit"
+out="$(run_fkt update -y 2>&1)"; status=$?
+if [ "$status" -eq 0 ] && grep -qF "local commits" <<<"$out"; then
+  pass "a diverged gstack is skipped instead of reset"
+else
+  fail "a diverged gstack is skipped instead of reset" "exit $status: $(printf '%s' "$out" | tr '\n' ' ')"
+fi
+if [ -f "$HOME_DIR/skills/gstack/LOCAL" ]; then
+  pass "the diverged gstack keeps its local commit"
+else
+  fail "the diverged gstack keeps its local commit"
+fi
+
+# No surprise network, and an explicit opt-out.
+setup_gstack
+out="$(run_fkt_env FKT_GSTACK_UPDATE=0 -- update -y 2>&1)"
+if [ "$(gstack_version_now)" = "1.60.1.0" ] && ! grep -qF "gstack updated" <<<"$out"; then
+  pass "FKT_GSTACK_UPDATE=0 skips the gstack step"
+else
+  fail "FKT_GSTACK_UPDATE=0 skips the gstack step" "version $(gstack_version_now)"
+fi
+
+# --dry-run must not write anything, and "writing" here includes executing
+# gstack's ./setup — downloaded third-party code. The bootstrap dry-run check
+# sits further down do_update(), so an already-current toolkit would otherwise
+# reach the gstack step and really update it.
+setup_gstack
+out="$(run_fkt update --dry-run 2>&1)"; status=$?
+if [ "$status" -eq 0 ] && [ "$(gstack_version_now)" = "1.60.1.0" ] \
+   && [ ! -f "$HOME_DIR/skills/gstack/.setup-ran" ]; then
+  pass "a dry run does not move gstack or run its setup"
+else
+  fail "a dry run does not move gstack or run its setup" "exit $status, version $(gstack_version_now)"
+fi
+if grep -qF "would fast-forward gstack 1.60.1.0 -> 1.61.0.0" <<<"$out"; then
+  pass "a dry run reports the gstack fast-forward it would make"
+else
+  fail "a dry run reports the gstack fast-forward it would make" "$(printf '%s' "$out" | tr '\n' ' ')"
+fi
+
+# git overwrites an IGNORED file when the incoming commit starts tracking that
+# path, and --ff-only does not change that. --no-overwrite-ignore is what makes
+# "never destroys local work" true for the files a user actually keeps here.
+if grep -qF -- "--no-overwrite-ignore" "$FKT"; then
+  pass "fast-forwards refuse to clobber ignored local files"
+else
+  fail "fast-forwards refuse to clobber ignored local files" "no --no-overwrite-ignore in bin/fkt"
+fi
+
+# Not installed at all is a supported layout, not something to report about.
+rm -rf "$HOME_DIR/skills"
+out="$(run_fkt update -y 2>&1)"; status=$?
+if [ "$status" -eq 0 ] && ! grep -qiF "gstack" <<<"$out"; then
+  pass "a toolkit without gstack says nothing about it"
+else
+  fail "a toolkit without gstack says nothing about it" "exit $status: $(printf '%s' "$out" | tr '\n' ' ')"
+fi
+
+# Fails open: a broken gstack must never fail `fkt update`.
+setup_gstack
+git_q "$HOME_DIR/skills/gstack" remote set-url origin "$WORK/does-not-exist.git"
+assert_exit 0 "an unreachable gstack remote does not fail fkt update" -- update -y
+
+setup_gstack failsetup
+out="$(run_fkt update -y 2>&1)"; status=$?
+if [ "$status" -eq 0 ] && grep -qF "setup --no-prefix' failed" <<<"$out"; then
+  pass "a failing gstack setup warns but does not fail fkt update"
+else
+  fail "a failing gstack setup warns but does not fail fkt update" "exit $status: $(printf '%s' "$out" | tr '\n' ' ')"
+fi
+if grep -qF "cd $HOME_DIR/skills/gstack" <<<"$out"; then
+  pass "the warning names the command that finishes the job by hand"
+else
+  fail "the warning names the command that finishes the job by hand"
+fi
+
+rm -rf "$HOME_DIR/skills"
+reset_state
+
+# ---------------------------------------------------------------------------
+# fkt disk
+# ---------------------------------------------------------------------------
+# Read-only by construction. Claude Code already sweeps on its own schedule, so
+# the value here is visibility: what it costs, what core handles, and what core
+# provably cannot reach. There is deliberately no --clean.
+echo
+echo "fkt disk"
+
+mkdir -p "$HOME_DIR/projects/demo/memory" "$HOME_DIR/file-history" \
+         "$HOME_DIR/cache/nim-gateway" "$HOME_DIR/catalog/cache"
+printf 'x\n' > "$HOME_DIR/projects/demo/memory/MEMORY.md"
+printf 'x\n' > "$HOME_DIR/file-history/a"
+printf 'x\n' > "$HOME_DIR/cache/nim-gateway/venv-marker"
+printf 'x\n' > "$HOME_DIR/catalog/cache/snapshot"
+
+assert_exit 0 "disk exits 0" -- disk
+assert_contains "Swept by Claude Code" "disk separates what core sweeps" -- disk
+assert_contains "Never touched" "disk names the protected paths" -- disk
+assert_contains "Outside every sweep" "disk names what core cannot reach" -- disk
+assert_contains "cache/nim-gateway/" "disk protects the live litellm venv" -- disk
+assert_contains "catalog/cache/" "disk protects the git-tracked catalog cache" -- disk
+assert_contains "projects/*/memory/" "disk protects the memory directory" -- disk
+assert_contains "retention window" "disk reports the effective cleanupPeriodDays" -- disk
+
+# The setting is invisible otherwise: it appears in no Claude Code prompt and,
+# until now, in nothing this toolkit shipped.
+printf '{"cleanupPeriodDays": 14}\n' > "$HOME_DIR/settings.json"
+if command -v jq >/dev/null 2>&1; then
+  assert_contains "14 (settings.json)" "disk reads cleanupPeriodDays from settings.json" -- disk
+fi
+rm -f "$HOME_DIR/settings.json"
+assert_contains "30 (Claude Code default" "disk reports the default when unset" -- disk
+
+# The whole point of shipping a reporter instead of a sweeper.
+before="$(find "$HOME_DIR" -type f | sort | md5sum)"
+run_fkt disk >/dev/null 2>&1
+after="$(find "$HOME_DIR" -type f | sort | md5sum)"
+if [ "$before" = "$after" ]; then
+  pass "disk deletes nothing"
+else
+  fail "disk deletes nothing" "the file list changed"
+fi
+if grep -qE '(^|[^a-z-])(rm|unlink|rmdir|shred)[[:space:]]' <<<"$(sed -n '/^do_disk()/,/^}/p' "$FKT")"; then
+  fail "do_disk contains no deletion primitive"
+else
+  pass "do_disk contains no deletion primitive"
+fi
+
+reset_state
+
+# ---------------------------------------------------------------------------
 printf '\n%s passed, %s failed\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]
