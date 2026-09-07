@@ -37,6 +37,16 @@ backups/
 debug/
 file-history/
 ide/
+# Claude Code session state that lands in this directory at runtime. Empty
+# today, so `git status` looks clean and the gap is invisible — but this repo
+# IS the live ~/.claude, and paste-cache/ holds the contents of large pastes.
+# The first one that lands here is one `git add -A` away from being committed.
+paste-cache/
+image-cache/
+uploads/
+session-env/
+tasks/
+feedback/
 shell-snapshots/
 projects/
 plugins/
