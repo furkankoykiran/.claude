@@ -956,6 +956,33 @@ else
   fail "FKT_GSTACK_UPDATE=0 skips the gstack step" "version $(gstack_version_now)"
 fi
 
+# --dry-run must not write anything, and "writing" here includes executing
+# gstack's ./setup — downloaded third-party code. The bootstrap dry-run check
+# sits further down do_update(), so an already-current toolkit would otherwise
+# reach the gstack step and really update it.
+setup_gstack
+out="$(run_fkt update --dry-run 2>&1)"; status=$?
+if [ "$status" -eq 0 ] && [ "$(gstack_version_now)" = "1.60.1.0" ] \
+   && [ ! -f "$HOME_DIR/skills/gstack/.setup-ran" ]; then
+  pass "a dry run does not move gstack or run its setup"
+else
+  fail "a dry run does not move gstack or run its setup" "exit $status, version $(gstack_version_now)"
+fi
+if grep -qF "would fast-forward gstack 1.60.1.0 -> 1.61.0.0" <<<"$out"; then
+  pass "a dry run reports the gstack fast-forward it would make"
+else
+  fail "a dry run reports the gstack fast-forward it would make" "$(printf '%s' "$out" | tr '\n' ' ')"
+fi
+
+# git overwrites an IGNORED file when the incoming commit starts tracking that
+# path, and --ff-only does not change that. --no-overwrite-ignore is what makes
+# "never destroys local work" true for the files a user actually keeps here.
+if grep -qF -- "--no-overwrite-ignore" "$FKT"; then
+  pass "fast-forwards refuse to clobber ignored local files"
+else
+  fail "fast-forwards refuse to clobber ignored local files" "no --no-overwrite-ignore in bin/fkt"
+fi
+
 # Not installed at all is a supported layout, not something to report about.
 rm -rf "$HOME_DIR/skills"
 out="$(run_fkt update -y 2>&1)"; status=$?

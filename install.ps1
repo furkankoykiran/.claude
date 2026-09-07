@@ -254,14 +254,52 @@ function Set-SeedLocalOverride {
     Write-Step 'Seeded CLAUDE.local.md (gitignored - your instructions live here, not in CLAUDE.md)'
 }
 
-function Set-SeedConfig {
-    foreach ($name in @('config.json', 'settings.json')) {
-        $target  = Join-Path $ClaudeDir $name
-        $example = Join-Path $ClaudeDir "$name.example"
-        if ((-not (Test-Path $target)) -and (Test-Path $example)) {
-            Copy-Item $example $target
-            Write-Step "Seeded $name from $name.example (edit it with your values)"
+# Minimal local copies of the two helpers bin/cc-provider.ps1 uses. Dot-sourcing
+# that script here would run its dispatch switch as a side effect, so the seed
+# path keeps its own: it only needs base-over-example, never the full merge.
+function Read-SeedJsonMap($path) {
+    if (-not (Test-Path -LiteralPath $path)) { return @{} }
+    $raw = Get-Content -LiteralPath $path -Raw
+    if ([string]::IsNullOrWhiteSpace($raw)) { return @{} }
+    return (ConvertFrom-Json $raw -AsHashtable)
+}
+
+function Merge-SeedMap($lower, $upper) {
+    $out = @{}
+    foreach ($k in $lower.Keys) { $out[$k] = $lower[$k] }
+    foreach ($k in $upper.Keys) {
+        if ($out.ContainsKey($k) -and ($out[$k] -is [hashtable]) -and ($upper[$k] -is [hashtable])) {
+            $out[$k] = Merge-SeedMap $out[$k] $upper[$k]
+        } else {
+            $out[$k] = $upper[$k]
         }
+    }
+    return $out
+}
+
+function Set-SeedConfig {
+    $target  = Join-Path $ClaudeDir 'config.json'
+    $example = Join-Path $ClaudeDir 'config.json.example'
+    if ((-not (Test-Path $target)) -and (Test-Path $example)) {
+        Copy-Item $example $target
+        Write-Step 'Seeded config.json from config.json.example (edit it with your values)'
+    }
+
+    # settings.json is the repo-owned safety config PLUS the optional example,
+    # never one or the other. settings.json.example deliberately carries no deny
+    # rules and no hooks, so copying it alone would leave a fresh Windows
+    # install with no safety config at all - and with no providers/.active yet,
+    # the provider re-apply below could not repair it either.
+    $target = Join-Path $ClaudeDir 'settings.json'
+    $base   = Join-Path $ClaudeDir 'settings.base.json'
+    $extras = Join-Path $ClaudeDir 'settings.json.example'
+    if ((-not (Test-Path $target)) -and (Test-Path $base)) {
+        $merged = Read-SeedJsonMap $base
+        if (Test-Path $extras) { $merged = Merge-SeedMap $merged (Read-SeedJsonMap $extras) }
+        $merged.Remove('_comment')
+        $merged.Remove('$comment')
+        Set-Content -LiteralPath $target -Value ($merged | ConvertTo-Json -Depth 32) -Encoding utf8NoBOM
+        Write-Step 'Seeded settings.json from settings.base.json + settings.json.example'
     }
 }
 

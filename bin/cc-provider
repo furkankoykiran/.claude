@@ -128,16 +128,30 @@ merge_settings() {
     --slurpfile prov_arr "$provider_file" '
     def dedupe: reduce .[] as $x ([]; if any(.[]; . == $x) then . else . + [$x] end);
 
-    # Union hook handlers across layers, deduped by (matcher, command) and kept
-    # in layer order. Regrouping by first-seen matcher keeps one group per
-    # matcher instead of accumulating a new group on every switch.
+    # Identity of a hook handler. Keyed on the whole descriptor minus its
+    # tunables when it has a command, so the same command declared twice is one
+    # handler, and a LATER layer wins for it (a changed timeout, say).
+    # Handlers with no `command` at all — prompt-type hooks, for instance —
+    # cannot share that key or they would all collide on the empty string and
+    # only the first would survive, so they are identified by their full value.
+    def hook_key($m; $h):
+      if ($h | type) == "object" and ($h.command? // null) != null
+      then [$m, ($h.type // "command"), $h.command]
+      else [$m, ($h | tojson)]
+      end;
+
+    # Union hook handlers across layers, keeping first-seen order but letting a
+    # later layer replace the descriptor at the same identity. Regrouping by
+    # first-seen matcher keeps one group per matcher rather than accumulating a
+    # new group on every switch.
     def merge_hooks($layers):
       reduce ($layers[] | (.hooks // {}) | to_entries[]) as $e ({};
         .[$e.key] = ((.[$e.key] // []) + $e.value))
       | with_entries(.value |= (
-          [ .[] as $g | ($g.hooks // [])[] | {m: ($g.matcher // ""), h: .} ]
+          [ .[] as $g | ($g.hooks // [])[] | {m: ($g.matcher // ""), h: ., k: hook_key(($g.matcher // ""); .)} ]
           | reduce .[] as $p ([];
-              if any(.[]; .m == $p.m and .h.command == $p.h.command) then . else . + [$p] end)
+              (map(.k) | index([$p.k])) as $i
+              | if $i == null then . + [$p] else (.[$i] = $p) end)
           | reduce .[] as $p ([];
               (map(.m) | index($p.m)) as $i
               | if $i == null then . + [{m: $p.m, hooks: [$p.h]}]
@@ -162,11 +176,14 @@ merge_settings() {
         | if (.allow | length) == 0 then del(.allow) else . end
       )
     | .hooks = merge_hooks([$carry, $base, $prov])
-    # A provider-owned key the new provider does not set must be REMOVED, not
-    # inherited from the layer below. reduce (not iteration) so this stays one
-    # document however many keys are dropped.
+    # Provider-owned keys, settled in one pass. Present in the provider file ->
+    # assigned STRAIGHT from it, because `*` merges objects recursively and
+    # would otherwise leave a lower layer env.ANTHROPIC_BASE_URL sitting
+    # alongside the new token, still routing traffic to the provider you just
+    # left. Absent -> deleted, never inherited from the layer below.
+    # reduce, not iteration, so this stays one document however many keys move.
     | reduce ($provider_keys[]) as $k (.;
-        if ($prov | has($k)) then . else del(.[$k]) end)
+        if ($prov | has($k)) then .[$k] = $prov[$k] else del(.[$k]) end)
     ' > "$out"
 }
 

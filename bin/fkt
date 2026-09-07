@@ -541,6 +541,7 @@ gstack_version() {
 }
 
 do_gstack_update() {
+  local dry_run="${1:-0}"
   local dir="$FKT_HOME/skills/gstack"
 
   # Not installed. Silent: a toolkit without gstack is a supported layout, not
@@ -582,8 +583,23 @@ do_gstack_update() {
 
   local before after
   before="$(gstack_version)"
-  if ! gstack_git merge --ff-only --quiet "$target" 2>/dev/null; then
-    warn "gstack: fast-forward failed; nothing was changed (still $before)"
+
+  # `--dry-run` must not write anything, and here "writing" includes executing
+  # gstack's ./setup — downloaded third-party code. The bootstrap dry-run check
+  # sits further down do_update(), so without this a dry run against an
+  # already-current toolkit would reach this point and really update gstack.
+  if [ "$dry_run" -eq 1 ]; then
+    say "would fast-forward gstack $before -> $(gstack_git show "$target:VERSION" 2>/dev/null | tr -d '[:space:]' || printf 'unknown')"
+    return 0
+  fi
+
+  # --no-overwrite-ignore: git will happily clobber an IGNORED file when the
+  # incoming commit starts tracking that path, and --ff-only does not change
+  # that. gstack checkouts carry ignored local state, and silently overwriting
+  # it is exactly the kind of loss this updater promises never to cause.
+  if ! gstack_git merge --ff-only --no-overwrite-ignore --quiet "$target" 2>/dev/null; then
+    warn "gstack: fast-forward refused or failed; nothing was changed (still $before)"
+    warn "If it names an untracked or ignored file, move it aside and re-run."
     return 0
   fi
 
@@ -648,7 +664,7 @@ do_update() {
     # Also on this path: gstack has its own upstream and moves independently of
     # the bootstrap layer, so a no-op `fkt update` must still keep it current.
     # Skipping it here is how a fix sat two commits away for eleven days.
-    do_gstack_update
+    do_gstack_update "$dry_run"
     return 0
   fi
 
@@ -665,6 +681,7 @@ do_update() {
   if [ "$dry_run" -eq 1 ]; then
     say "would fast-forward $(git_at rev-parse --short HEAD) -> $(git_at rev-parse --short "$target_sha") ($target)"
     log_range "$target_sha"
+    do_gstack_update 1
     return 0
   fi
 
@@ -682,8 +699,12 @@ do_update() {
     esac
   fi
 
-  if ! git_at merge --ff-only --quiet "$target_sha"; then
+  # --no-overwrite-ignore for the same reason as the gstack step above: an
+  # ignored local file whose path the incoming commit starts tracking would
+  # otherwise be silently overwritten, which this updater must never do.
+  if ! git_at merge --ff-only --no-overwrite-ignore --quiet "$target_sha"; then
     err "fast-forward failed; nothing was changed"
+    err "If it names an untracked or ignored file, move it aside and re-run."
     return "$EX_REFUSED"
   fi
 
@@ -830,14 +851,29 @@ do_disk() {
   if [ -d "$nodecache" ]; then
     local slugs
     slugs="$(find "$nodecache" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')"
+    # Deliberately reported as a total, not as "orphaned": a slug for a project
+    # that still exists is live data. Which slugs are dead cannot be decided
+    # from here without reversing slugify() over paths that may be gone.
     # shellcheck disable=SC2088  # display label, never expanded as a path
-    disk_row "~/.cache/claude-cli-nodejs/" "$nodecache" "$slugs slug(s); unreachable once cwd is gone"
+    disk_row "~/.cache/claude-cli-nodejs/" "$nodecache" "$slugs slug(s) total; those for deleted projects are unreachable"
   fi
-  # Atomic-write leftovers from dead PIDs. Upstream: anthropics/claude-code#87677.
-  local orphans
-  orphans="$(find "$HOME" -maxdepth 1 -name '.claude.json.tmp.*' 2>/dev/null | wc -l | tr -d ' ')"
+  # Atomic-write leftovers. Each is named .claude.json.tmp.<pid>.<hash>, so
+  # whether it is an orphan or a live writer's file is answerable — check the
+  # PID rather than claiming every one of them is dead.
+  # Upstream: anthropics/claude-code#87677.
+  local dead=0 live=0 f pid
+  for f in "$HOME"/.claude.json.tmp.*; do
+    [ -e "$f" ] || continue
+    pid="${f##*.tmp.}"; pid="${pid%%.*}"
+    case "$pid" in
+      ''|*[!0-9]*) dead=$((dead + 1)) ;;
+      *) if kill -0 "$pid" 2>/dev/null; then live=$((live + 1)); else dead=$((dead + 1)); fi ;;
+    esac
+  done
   # shellcheck disable=SC2088  # display label, never expanded as a path
-  [ "${orphans:-0}" -gt 0 ] && printf '  %-34s %10s  %s\n' "~/.claude.json.tmp.*" "-" "$orphans orphan(s) from dead PIDs"
+  [ "$dead" -gt 0 ] && printf '  %-34s %10s  %s\n' "~/.claude.json.tmp.*" "-" "$dead orphan(s) from dead PIDs"
+  # shellcheck disable=SC2088  # display label, never expanded as a path
+  [ "$live" -gt 0 ] && printf '  %-34s %10s  %s\n' "~/.claude.json.tmp.*" "-" "$live in use by a running process — leave alone"
   # Ours, gitignored, pinned by skills-source.lock.json. Shrink with
   # `git gc --prune=now` per clone rather than by deleting it.
   disk_row ".cache/skill-src/" "$FKT_HOME/.cache/skill-src" "pinned by the lock; git gc to shrink"

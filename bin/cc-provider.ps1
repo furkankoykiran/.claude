@@ -85,8 +85,26 @@ function Join-UniqueList($lists) {
   return , $out.ToArray()
 }
 
-# Union hook handlers across layers, deduped by (matcher, command) and kept in
-# layer order, regrouped under one group per matcher.
+# Identity of a hook handler, matching bin/cc-provider's hook_key. JSON-encoded
+# so the parts cannot run together: a naive "$matcher|$command" makes
+# (matcher='Bash|Write', command='x') and (matcher='Bash', command='Write|x')
+# the same key, and silently drops one of them. Handlers with no `command` are
+# keyed by their whole value, or every prompt-type hook would collide on the
+# empty string.
+function Get-HookKey($matcher, $handler) {
+  if ($handler -is [hashtable] -and $handler.ContainsKey('command') -and $null -ne $handler['command']) {
+    $type = 'command'
+    if ($handler.ContainsKey('type') -and $null -ne $handler['type']) { $type = [string]$handler['type'] }
+    return (@($matcher, $type, [string]$handler['command']) | ConvertTo-Json -Compress)
+  }
+  return (@($matcher, ((ConvertTo-CanonicalObject $handler) | ConvertTo-Json -Depth 32 -Compress)) | ConvertTo-Json -Compress)
+}
+
+# Union hook handlers across layers, keeping first-seen order but letting a
+# later layer replace the descriptor at the same identity, regrouped under one
+# group per matcher. All lookups use ordinal (case-sensitive) comparers:
+# PowerShell hashtables are case-INSENSITIVE by default, so `Bash` and `bash`
+# would collide here while jq keeps them apart, and the two ports would diverge.
 function Merge-HookMap($layers) {
   $pairs = [ordered]@{}
   foreach ($layer in $layers) {
@@ -96,19 +114,24 @@ function Merge-HookMap($layers) {
       foreach ($g in @($layer['hooks'][$ev])) {
         $m = ''
         if ($g.ContainsKey('matcher') -and $null -ne $g['matcher']) { $m = [string]$g['matcher'] }
-        foreach ($h in @($g['hooks'])) { $null = $pairs[$ev].Add(@{ Matcher = $m; Handler = $h }) }
+        foreach ($h in @($g['hooks'])) {
+          $null = $pairs[$ev].Add(@{ Matcher = $m; Handler = $h; Key = (Get-HookKey $m $h) })
+        }
       }
     }
   }
   $out = [ordered]@{}
   foreach ($ev in $pairs.Keys) {
-    $seen = @{}
-    $index = @{}
-    $groups = [System.Collections.ArrayList]::new()
+    $order = [System.Collections.ArrayList]::new()
+    $byKey = [System.Collections.Generic.Dictionary[string, object]]::new([System.StringComparer]::Ordinal)
     foreach ($p in $pairs[$ev]) {
-      $key = '{0}|{1}' -f $p.Matcher, [string]$p.Handler['command']
-      if ($seen.ContainsKey($key)) { continue }
-      $seen[$key] = $true
+      if (-not $byKey.ContainsKey($p.Key)) { $null = $order.Add($p.Key) }
+      $byKey[$p.Key] = $p
+    }
+    $index = [System.Collections.Generic.Dictionary[string, object]]::new([System.StringComparer]::Ordinal)
+    $groups = [System.Collections.ArrayList]::new()
+    foreach ($k in $order) {
+      $p = $byKey[$k]
       if (-not $index.ContainsKey($p.Matcher)) {
         $g = [ordered]@{}
         if ($p.Matcher -ne '') { $g['matcher'] = $p.Matcher }
@@ -139,6 +162,11 @@ function Build-MergedSetting($providerFile) {
   foreach ($k in $ProviderKeys) { $carry.Remove($k) }
 
   $merged = Merge-Map (Merge-Map $carry $base) $prov
+  # Merge-Map recurses into objects, so a provider-owned OBJECT would be merged
+  # rather than replaced and a lower layer's env.ANTHROPIC_BASE_URL could
+  # survive alongside the new provider's token. Assign each present
+  # provider-owned key straight from the provider.
+  foreach ($k in $ProviderKeys) { if ($prov.ContainsKey($k)) { $merged[$k] = $prov[$k] } }
   $merged.Remove('_comment')
 
   $permissions = @{}

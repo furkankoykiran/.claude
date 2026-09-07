@@ -443,6 +443,52 @@ jobs:
         run: |
           echo "::warning::Upstream changes detected but no App token was minted (ENABLE_SKILLS_AUTOMATION is not 'true'). No branch, PR, or merge was created. See docs/release-automation.md."
 
+      # ---------------------------------------------------------------------
+      # Cancel an inherited auto-merge BEFORE publishing anything.
+      #
+      # A GitHub auto-merge request survives new pushes to the head branch, and
+      # it is not auto-cancelled here because the App has write permission (that
+      # cancellation only applies to pushes by actors without write access). So
+      # ordering matters: if run N enabled auto-merge on a routine batch and run
+      # N+1 pushes a capability-expanding batch to the same branch, there is a
+      # window where the old merge request is live against the new content. The
+      # teardown used to run after the push, which left that window open on
+      # every single run, and any failure between the two — runner loss, token
+      # expiry, the 25 minute timeout — would leave it open indefinitely.
+      #
+      # Disabling first closes the window: nothing sensitive is ever published
+      # onto a branch that already has a live merge request.
+      # ---------------------------------------------------------------------
+      - name: Cancel inherited auto-merge before publishing
+        if: >-
+          steps.detect.outputs.changed == 'true'
+          && inputs.dry_run != true
+          && steps.pending.outputs.hold_state == ''
+          && steps.app-token.outputs.token != ''
+          && steps.pending.outputs.number != ''
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_NUMBER: ${{ steps.pending.outputs.number }}
+        run: |
+          set -euo pipefail
+          AUTO=$(gh pr view "$PR_NUMBER" --json autoMergeRequest --jq '.autoMergeRequest.mergeMethod // "none"')
+          if [ "$AUTO" = "none" ]; then
+            echo "No inherited auto-merge on PR #$PR_NUMBER."
+            exit 0
+          fi
+          echo "Disabling inherited auto-merge ($AUTO) on PR #$PR_NUMBER before publishing."
+          if ! gh pr merge "$PR_NUMBER" --disable-auto; then
+            echo "::error::Could not disable the inherited auto-merge request on PR #${PR_NUMBER}. Refusing to publish new content onto a branch with a live merge request."
+            exit 1
+          fi
+          # Prove it, never infer from the exit status.
+          AFTER=$(gh pr view "$PR_NUMBER" --json autoMergeRequest --jq '.autoMergeRequest.mergeMethod // "none"')
+          if [ "$AFTER" != "none" ]; then
+            echo "::error::Auto-merge is STILL enabled ($AFTER) on PR #${PR_NUMBER}. Failing closed before publishing."
+            exit 1
+          fi
+          echo "Verified: no live merge request before publishing."
+
       - name: Commit + push the automation branch
         id: push
         if: >-

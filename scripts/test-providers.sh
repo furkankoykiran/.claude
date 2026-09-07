@@ -228,6 +228,18 @@ else
   bad "the seed leaves a _comment/\$comment key in settings.json"
 fi
 
+# Both installers must seed the same way. A fresh Windows install has no
+# providers/.active, so the provider re-apply cannot repair it afterwards —
+# if install.ps1 copies the example alone, that machine has no safety config
+# at all and nothing will ever put it there.
+for inst in install.sh install.ps1; do
+  if grep -q 'settings.base.json' "$REPO_DIR/$inst"; then
+    ok "$inst seeds settings.json from settings.base.json"
+  else
+    bad "$inst still seeds settings.json without the safety config"
+  fi
+done
+
 # A single leading slash in a path rule is relative to the working directory,
 # so "Read(/var/lib/docker/volumes/**)" guards <cwd>/var/lib/... and protects
 # nothing. Absolute paths need the double slash.
@@ -281,6 +293,43 @@ if [ "$(jq -r '.tui // "gone"' "$SANDBOX/settings.json")" = "fullscreen" ] \
   ok "unrelated settings and third-party hooks are carried across a switch"
 else
   bad "a switch destroyed unrelated settings or a third-party hook"
+fi
+
+# Provider-owned keys are OBJECTS, and a recursive merge would blend them: a
+# lower layer's env.ANTHROPIC_BASE_URL surviving next to the new provider's
+# token keeps routing traffic to the provider you just left, holding a live
+# credential against the wrong endpoint. Wholesale replacement must be true by
+# construction, not because the shipped files happen not to collide.
+printf '{"env":{"ANTHROPIC_AUTH_TOKEN":"tokenB"}}\n' > "$SANDBOX/providers/wholesale.json"
+jq '.env = {"ANTHROPIC_BASE_URL":"https://provider-a.invalid","LEAK":"1"}' "$SANDBOX/settings.base.json" \
+  > "$SANDBOX/b.tmp" && mv "$SANDBOX/b.tmp" "$SANDBOX/settings.base.json"
+ccs wholesale >/dev/null 2>&1
+if [ "$(jq -S -c '.env' "$SANDBOX/settings.json")" = '{"ANTHROPIC_AUTH_TOKEN":"tokenB"}' ]; then
+  ok "a provider-owned object is replaced wholesale, not blended"
+else
+  bad "env was blended across layers: $(jq -S -c '.env' "$SANDBOX/settings.json")"
+fi
+cp "$REPO_DIR/settings.base.json" "$SANDBOX/settings.base.json"
+rm -f "$SANDBOX/providers/wholesale.json"
+
+# Hook identity: handlers with no `command` (prompt-type hooks) would all
+# collide on an empty key and only the first would survive, and a naive
+# "matcher|command" key lets ("Bash|Write","x") and ("Bash","Write|x") collide.
+cat > "$SANDBOX/settings.json" <<'HOOKS'
+{"hooks":{"Stop":[{"hooks":[{"type":"prompt","prompt":"first"},{"type":"prompt","prompt":"second"}]}],
+"PreToolUse":[{"matcher":"Bash|Write","hooks":[{"type":"command","command":"echo check"}]},
+{"matcher":"Bash","hooks":[{"type":"command","command":"Write|echo check"}]}]}}
+HOOKS
+ccs anthropic >/dev/null 2>&1
+if [ "$(jq -c '[.hooks.Stop[]?.hooks[]?.prompt]' "$SANDBOX/settings.json")" = '["first","second"]' ]; then
+  ok "hook handlers without a command are not collapsed into one"
+else
+  bad "command-less hook handlers were deduplicated away"
+fi
+if [ "$(jq -r '[.hooks.PreToolUse[]?.hooks[]?.command] | map(select(. == "echo check" or . == "Write|echo check")) | length' "$SANDBOX/settings.json")" = "2" ]; then
+  ok "hook identities that would collide on a naive key stay distinct"
+else
+  bad "two distinct hooks collided on the same identity key"
 fi
 
 # Fail closed: writing a settings.json without the safety block is worse than

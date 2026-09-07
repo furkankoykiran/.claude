@@ -72,6 +72,7 @@ const nameOf = (s: Step) => s.name ?? s.uses ?? "<unnamed>";
 const MUTATING = [
   "Automation token (GitHub App)",
   "Preflight App token permissions",
+  "Cancel inherited auto-merge before publishing",
   "Commit + push the automation branch",
   "Open or update the automation PR",
   "Reset PR merge state (fail-closed)",
@@ -312,6 +313,27 @@ describe("update workflow: the freeze cannot be edited away", () => {
   it("gates the App token on the hold, so the freeze is enforced at the root", () => {
     const token = STEPS.find((s) => nameOf(s) === "Automation token (GitHub App)")!;
     expect(String(token.if)).toContain("steps.pending.outputs.hold_state == ''");
+  });
+
+  // A GitHub auto-merge request survives a push to the head branch, and is not
+  // auto-cancelled for an actor with write permission. So a routine run's merge
+  // request can still be live when the next run publishes a capability-expanding
+  // batch onto the same branch. Tearing it down only AFTER the push leaves that
+  // window open on every run, and open indefinitely if the run dies in between.
+  it("cancels an inherited auto-merge BEFORE it publishes new content", () => {
+    const names = STEPS.map(nameOf);
+    const cancel = names.indexOf("Cancel inherited auto-merge before publishing");
+    const push = names.indexOf("Commit + push the automation branch");
+    expect(cancel, "the pre-publish cancel step is missing").toBeGreaterThan(-1);
+    expect(cancel, "auto-merge must be cancelled before the push, not after").toBeLessThan(push);
+  });
+
+  it("proves the inherited request is gone rather than trusting the exit status", () => {
+    const step = STEPS.find((s) => nameOf(s) === "Cancel inherited auto-merge before publishing")!;
+    const body = String((step as Step & { run?: string }).run);
+    expect(body).toContain("--disable-auto");
+    expect(body).toMatch(/AFTER=.*autoMergeRequest/);
+    expect(body).toContain("Failing closed before publishing");
   });
 
   it("records the catalog identity on the commit it publishes", () => {
