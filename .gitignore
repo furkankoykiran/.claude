@@ -1,8 +1,9 @@
 # Personal configuration
 config.json
 settings.json
-settings.json.bak
-settings.json.backup.*
+# Covers every .bak / .bak-latest / .backup.* / .tmp variant rtk, the installer
+# and Claude Code write next to it. The example is re-included below.
+settings.json.*
 # Provider system (local-only; providers/*.json hold auth tokens; .example templates tracked)
 providers/*.json
 !providers/*.json.example

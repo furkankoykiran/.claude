@@ -279,7 +279,8 @@ CODE_OF_CONDUCT.md  community standards
 SECURITY.md      vulnerability reporting
 LICENSE          MIT, for this repository's own code
 config.json.example     template seeded to config.json on install
-settings.json.example   template seeded to settings.json on install
+settings.json.example   optional settings, merged with settings.base.json on install
+settings.base.json      repo-owned safety config merged in on every provider switch
 PSScriptAnalyzerSettings.psd1   PowerShell lint configuration
 ```
 <!-- root-layout:end -->
