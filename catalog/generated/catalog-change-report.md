@@ -2,16 +2,16 @@
 
 # Catalog change report
 
-- added: 143
+- added: 144
 - updated: 0
 - removed: 0
 - renamed: 0
 - license-restricted: 10
 - runtime-only: 3
-- security-sensitive: 65
+- security-sensitive: 66
 - **manual-review-required: true**
 
-## Added (143)
+## Added (144)
 
 - `/ab-testing`
 - `/ad-creative`
@@ -57,6 +57,7 @@
 - `/document-release`
 - `/docx`
 - `/emails`
+- `/events`
 - `/fk-gh-flow:find-issues`
 - `/fk-gh-flow:find-repos`
 - `/fk-gh-flow:github-comment`
@@ -157,7 +158,7 @@
 - `/web-artifacts-builder`
 - `/xlsx`
 
-## Security-sensitive (65)
+## Security-sensitive (66)
 
 - `/autoplan`
 - `/benchmark`
@@ -186,6 +187,7 @@
 - `/guard`
 - `/health`
 - `/image`
+- `/impeccable`
 - `/investigate`
 - `/ios-clean`
 - `/ios-design-review`
@@ -225,7 +227,7 @@
 - `/web-artifacts-builder`
 - `/xlsx`
 
-## Manual-review-required (65)
+## Manual-review-required (66)
 
 - `/autoplan`
 - `/benchmark`
@@ -254,6 +256,7 @@
 - `/guard`
 - `/health`
 - `/image`
+- `/impeccable`
 - `/investigate`
 - `/ios-clean`
 - `/ios-design-review`
