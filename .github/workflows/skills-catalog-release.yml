@@ -24,6 +24,15 @@ permissions:
 concurrency:
   group: skills-catalog-release
   cancel-in-progress: false
+  # `cancel-in-progress: false` alone did NOT deliver the serialization the
+  # comment above claims. `queue` defaults to `single`, which means "at most one
+  # run may be pending; a newly queued run cancels and replaces the pending
+  # one". So with A running, B pending and C arriving, C evicts B — and because
+  # this workflow is push-only, nothing ever retries B. Its commit is simply
+  # never tagged and never released, with no failure anywhere to notice.
+  # `max` allows up to 100 pending, which is what "serialized" was supposed to
+  # mean all along.
+  queue: max
 
 jobs:
   release:

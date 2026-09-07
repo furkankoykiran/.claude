@@ -391,13 +391,24 @@ describe("update workflow: merge safety invariants", () => {
 describe("release workflow: race and completeness invariants", () => {
   const RELEASE = join(import.meta.dir, "..", "..", ".github", "workflows", "skills-catalog-release.yml");
   const raw = readFileSync(RELEASE, "utf8");
-  const wfr = parse(raw) as { concurrency?: { group?: string; "cancel-in-progress"?: boolean }; jobs: Record<string, { steps: Step[] }> };
+  const wfr = parse(raw) as { concurrency?: { group?: string; "cancel-in-progress"?: boolean; queue?: string }; jobs: Record<string, { steps: Step[] }> };
 
   it("serializes releases repository-wide, not per-commit", () => {
     // A per-SHA group lets two main commits compute the same next tag at once.
     expect(wfr.concurrency?.group).toBe("skills-catalog-release");
     expect(wfr.concurrency?.group).not.toContain("github.sha");
     expect(wfr.concurrency?.["cancel-in-progress"]).toBe(false);
+  });
+
+  // `cancel-in-progress: false` protects the RUNNING job and nothing else.
+  // `queue` defaults to `single`, where a newly queued run cancels the pending
+  // one — so with A running, B pending and C arriving, C evicts B. This
+  // workflow is push-only, so nothing retries B: its commit is never tagged and
+  // never released, and no run anywhere goes red. That is the same silent shape
+  // as the stuck automation PR, one subsystem over.
+  it("queues pending releases instead of letting a newcomer evict them", () => {
+    expect(wfr.concurrency?.queue,
+      "concurrency.queue defaults to 'single', which drops a pending release").toBe("max");
   });
 
   it("reads the latest release after acquiring the lock, not via git describe", () => {

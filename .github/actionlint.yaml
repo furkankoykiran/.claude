@@ -1,0 +1,9 @@
+paths:
+  .github/workflows/**:
+    ignore:
+      # `concurrency.queue` is a real key (GA 2026-05-07) that actionlint does
+      # not know yet: its newest release, 1.7.12, predates the feature. Without
+      # the key, `queue` defaults to `single` and a newly queued run cancels the
+      # pending one — silently dropping a release. Remove this ignore when
+      # actionlint ships support.
+      - 'unexpected key "queue" for "concurrency" section'

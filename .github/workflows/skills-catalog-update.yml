@@ -38,6 +38,11 @@ concurrency:
   group: update-skills-catalog
   # Never cancel an in-flight update mid-merge.
   cancel-in-progress: false
+  # And never silently drop a queued one either: `queue` defaults to `single`,
+  # where a newly queued run cancels the pending one. A dispatch during the
+  # nightly run plus a second dispatch would lose the first. Lower stakes here
+  # than in the release workflow — the next cron recovers — but the same defect.
+  queue: max
 
 env:
   BRANCH: automation/skills-catalog
