@@ -146,7 +146,9 @@ function runScript(script: string, stub: { bin: string }, env: Record<string, st
   return { code: r.status, stdout: r.stdout ?? "", stderr: r.stderr ?? "", outputs };
 }
 
-const resetEnv = { PR_NUMBER: "26", PUSHED_SHA: PUSHED };
+// MANUAL_REVIEW is this run's freshly computed verdict. The reset step needs it
+// because label reconciliation is now a transition, not an unconditional strip.
+const resetEnv = { PR_NUMBER: "26", PUSHED_SHA: PUSHED, MANUAL_REVIEW: "false" };
 
 describe("merge-state reset: inherited auto-merge", () => {
   it("cancels an auto-merge left by a previous routine run, and proves it", () => {
@@ -206,12 +208,24 @@ describe("merge-state reset: head SHA binding", () => {
 });
 
 describe("merge-state reset: stale policy labels", () => {
-  it("removes an inherited manual-review-required label", () => {
+  it("removes the label only on a genuine manual-review -> routine transition", () => {
     const stub = makeStub({ reads: [{ autoMergeMethod: null, labels: ["manual-review-required"] }] });
-    const r = runScript(RESET, stub, resetEnv);
+    const r = runScript(RESET, stub, { ...resetEnv, MANUAL_REVIEW: "false" });
     expect(r.code).toBe(0);
     expect(stub.calls().some((c) => c.includes("--remove-label manual-review-required"))).toBe(true);
     expect(r.stdout).toContain("Removed stale manual-review-required label.");
+  });
+
+  // Regression for the churn that made #52's daily signal unreadable: the label
+  // used to be stripped on EVERY run and re-added by a later step, so the PR was
+  // briefly unlabelled 29 times and produced 29 remove/add notification pairs. A
+  // job that died in that window would leave a supply-chain batch looking routine.
+  it("keeps the label when this run's verdict is still manual-review", () => {
+    const stub = makeStub({ reads: [{ autoMergeMethod: null, labels: ["manual-review-required"] }] });
+    const r = runScript(RESET, stub, { ...resetEnv, MANUAL_REVIEW: "true" });
+    expect(r.code).toBe(0);
+    expect(stub.calls().some((c) => c.includes("--remove-label"))).toBe(false);
+    expect(r.outputs.verified_sha).toBe(PUSHED);
   });
 
   it("leaves unrelated labels alone", () => {
@@ -226,7 +240,7 @@ describe("merge-state reset: stale policy labels", () => {
       reads: [{ autoMergeMethod: null, labels: ["manual-review-required"] }],
       fail: ["--remove-label"],
     });
-    const r = runScript(RESET, stub, resetEnv);
+    const r = runScript(RESET, stub, { ...resetEnv, MANUAL_REVIEW: "false" });
     expect(r.code).not.toBe(0);
     expect(r.stdout + r.stderr).toContain("Could not remove the stale manual-review-required label");
   });
@@ -236,7 +250,7 @@ describe("policy transitions on the reused PR", () => {
   it("routine -> manual-review: the inherited auto-merge is cancelled first", () => {
     // Run N enabled auto-merge; run N+1 classifies the same PR as sensitive.
     const stub = makeStub({ reads: [{ autoMergeMethod: "SQUASH" }, { autoMergeMethod: null }] });
-    const reset = runScript(RESET, stub, resetEnv);
+    const reset = runScript(RESET, stub, { ...resetEnv, MANUAL_REVIEW: "true" });
     expect(reset.code).toBe(0);
     expect(stub.calls().some((c) => c.includes("--disable-auto"))).toBe(true);
 
@@ -248,7 +262,7 @@ describe("policy transitions on the reused PR", () => {
 
   it("manual-review -> routine: the stale label is cleared before auto-merge", () => {
     const stub = makeStub({ reads: [{ autoMergeMethod: null, labels: ["manual-review-required"] }] });
-    const reset = runScript(RESET, stub, resetEnv);
+    const reset = runScript(RESET, stub, { ...resetEnv, MANUAL_REVIEW: "false" });
     expect(reset.code).toBe(0);
     expect(stub.calls().some((c) => c.includes("--remove-label manual-review-required"))).toBe(true);
   });
