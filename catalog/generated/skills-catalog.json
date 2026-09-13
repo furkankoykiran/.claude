@@ -28,7 +28,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/doc-coauthoring/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
+      "resolvedRevision": "34040c9c568585f6929bedeaad110ad08f079624",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -75,7 +75,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/docx/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
+      "resolvedRevision": "34040c9c568585f6929bedeaad110ad08f079624",
       "security": {
         "flags": [
           "executables:5"
@@ -123,7 +123,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/mcp-builder/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
+      "resolvedRevision": "34040c9c568585f6929bedeaad110ad08f079624",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -168,7 +168,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/pdf/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
+      "resolvedRevision": "34040c9c568585f6929bedeaad110ad08f079624",
       "security": {
         "flags": [
           "executables:1"
@@ -217,7 +217,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/pptx/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
+      "resolvedRevision": "34040c9c568585f6929bedeaad110ad08f079624",
       "security": {
         "flags": [
           "executables:4"
@@ -264,7 +264,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/skill-creator/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
+      "resolvedRevision": "34040c9c568585f6929bedeaad110ad08f079624",
       "security": {
         "flags": [
           "executables:7"
@@ -310,7 +310,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/web-artifacts-builder/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
+      "resolvedRevision": "34040c9c568585f6929bedeaad110ad08f079624",
       "security": {
         "flags": [
           "executables:2",
@@ -358,7 +358,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/xlsx/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
+      "resolvedRevision": "34040c9c568585f6929bedeaad110ad08f079624",
       "security": {
         "flags": [
           "executables:2"
@@ -431,7 +431,7 @@
       ],
       "canonicalInvocation": "/autoplan",
       "description": "Auto-review pipeline — reads the full CEO, design, eng, and DX review skills from disk and runs them sequentially with auto-decisions using 6 decision principles. (gstack)",
-      "digest": "5f22fd8076093e7774e069996b806516511ee7bb52651076573e63df2e6b48d1",
+      "digest": "8aac5b69c34189145c7e4cbf56a9deb4c3312142ab4903fd313ca150b3043163",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -470,7 +470,7 @@
       "ref": "origin/HEAD",
       "relativePath": "autoplan/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -502,7 +502,7 @@
       ],
       "canonicalInvocation": "/benchmark",
       "description": "Performance regression detection. (gstack)",
-      "digest": "245f9f972d8b5cbe55511ec0f3afd4b366b604e397ecc30dd79cde2bab849542",
+      "digest": "e87e39f3d2bd2be6436bf4183d9e2521c0eee493c6ddd2a50cba70d533d5debe",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -538,7 +538,7 @@
       "ref": "origin/HEAD",
       "relativePath": "benchmark/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -604,7 +604,7 @@
       "ref": "origin/HEAD",
       "relativePath": "benchmark-models/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -668,7 +668,7 @@
       "ref": "origin/HEAD",
       "relativePath": "browse/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -702,7 +702,7 @@
       ],
       "canonicalInvocation": "/canary",
       "description": "Post-deploy canary monitoring. (gstack)",
-      "digest": "cacb0cf7e41528ee2f6b97d511b50f346a8781054474edc3c160083e680b7807",
+      "digest": "e53529a22b8c6e06697dd09b9bf8373258044eb3bf4ce8762ae4c2c19964ab46",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -738,7 +738,7 @@
       "ref": "origin/HEAD",
       "relativePath": "canary/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -813,7 +813,7 @@
       "ref": "origin/HEAD",
       "relativePath": "careful/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -848,7 +848,7 @@
       ],
       "canonicalInvocation": "/codex",
       "description": "OpenAI Codex CLI wrapper — three modes. (gstack)",
-      "digest": "f8f12df3f8c9d9942f68e54d484d6f188c4c64febafd00c9d8c6348c3c4ebdaa",
+      "digest": "cabe482a537d75206a14b791b339061677ec1b293d242e8bf10c27721ea981cf",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -885,7 +885,7 @@
       "ref": "origin/HEAD",
       "relativePath": "codex/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -955,7 +955,7 @@
       "ref": "origin/HEAD",
       "relativePath": "context-restore/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -1026,7 +1026,7 @@
       "ref": "origin/HEAD",
       "relativePath": "context-save/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -1100,7 +1100,7 @@
       "ref": "origin/HEAD",
       "relativePath": "cso/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -1135,7 +1135,7 @@
       ],
       "canonicalInvocation": "/design-consultation",
       "description": "Design consultation: understands your product, researches the landscape, proposes a complete design system (aesthetic, typography, color, layout, spacing, motion), and generates font+color preview... (gstack)",
-      "digest": "115ceb69c08ca0654e675d7d567150f8722315a68a19897ab78cf0d94f8e58a0",
+      "digest": "f696174cbfb7a5b7e4a7f97f8bb6f0b106232dccad95058c0fe66457f4b7aadb",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -1206,7 +1206,7 @@
       "ref": "origin/HEAD",
       "relativePath": "design-consultation/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -1281,7 +1281,7 @@
       "ref": "origin/HEAD",
       "relativePath": "design-html/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -1316,7 +1316,7 @@
       ],
       "canonicalInvocation": "/design-review",
       "description": "Designer's eye QA: finds visual inconsistency, spacing issues, hierarchy problems, AI slop patterns, and slow interactions — then fixes them. (gstack)",
-      "digest": "d566e9b01a03c2a4183273669bd2271e47cecad32ca4d7014b096dd20953a53d",
+      "digest": "6f9860a8c8cfc3690dda8908ef86bb40c822ea313244199dadffd7b7bd6769fd",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -1355,7 +1355,7 @@
       "ref": "origin/HEAD",
       "relativePath": "design-review/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -1454,7 +1454,7 @@
       "ref": "origin/HEAD",
       "relativePath": "design-shotgun/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -1527,7 +1527,7 @@
       "ref": "origin/HEAD",
       "relativePath": "devex-review/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -1597,7 +1597,7 @@
       "ref": "origin/HEAD",
       "relativePath": "diagram/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -1673,7 +1673,7 @@
       "ref": "origin/HEAD",
       "relativePath": "document-generate/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -1708,7 +1708,7 @@
       ],
       "canonicalInvocation": "/document-release",
       "description": "Post-ship documentation update. (gstack)",
-      "digest": "6c2172d38182d18e297b4f5075b043c5b9b0b5d1ac5445634eb8b3476f5398ab",
+      "digest": "92b2e963c43f3e3b564e33d84d1bb7d716d599faaa544878d5931bb3786b3edb",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -1746,7 +1746,7 @@
       "ref": "origin/HEAD",
       "relativePath": "document-release/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -1832,7 +1832,7 @@
       "ref": "origin/HEAD",
       "relativePath": "freeze/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -1865,7 +1865,7 @@
       ],
       "canonicalInvocation": "/gstack-upgrade",
       "description": "Upgrade gstack to the latest version.",
-      "digest": "1e2425d5f0f5e62df951dde80f09c3fb57e1d8f7cb535b94165723961a6e0f15",
+      "digest": "2b1cc5332de749479c22609b84921b27d8d4827d920c179db877cf55b8bc2fc9",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -1898,7 +1898,7 @@
       "ref": "origin/HEAD",
       "relativePath": "gstack-upgrade/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -1996,7 +1996,7 @@
       "ref": "origin/HEAD",
       "relativePath": "guard/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -2069,7 +2069,7 @@
       "ref": "origin/HEAD",
       "relativePath": "health/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -2200,7 +2200,7 @@
       "ref": "origin/HEAD",
       "relativePath": "investigate/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -2271,7 +2271,7 @@
       "ref": "origin/HEAD",
       "relativePath": "ios-clean/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -2339,7 +2339,7 @@
       "ref": "origin/HEAD",
       "relativePath": "ios-design-review/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -2411,7 +2411,7 @@
       "ref": "origin/HEAD",
       "relativePath": "ios-fix/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -2485,7 +2485,7 @@
       "ref": "origin/HEAD",
       "relativePath": "ios-qa/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -2558,7 +2558,7 @@
       "ref": "origin/HEAD",
       "relativePath": "ios-sync/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -2590,7 +2590,7 @@
       ],
       "canonicalInvocation": "/land-and-deploy",
       "description": "Land and deploy workflow. (gstack)",
-      "digest": "b934024da6f19197893df762472615f0992c12785cfff20aaac2ca5697941eff",
+      "digest": "ae72fbfdb2b05389574a135c71760154a69f712d81c83c68390d3e94f506aec1",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -2626,7 +2626,7 @@
       "ref": "origin/HEAD",
       "relativePath": "land-and-deploy/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -2691,7 +2691,7 @@
       "ref": "origin/HEAD",
       "relativePath": "landing-report/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -2763,7 +2763,7 @@
       "ref": "origin/HEAD",
       "relativePath": "learn/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -2828,7 +2828,7 @@
       "ref": "origin/HEAD",
       "relativePath": "make-pdf/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -2864,7 +2864,7 @@
       ],
       "canonicalInvocation": "/office-hours",
       "description": "YC Office Hours — two modes. (gstack)",
-      "digest": "3ad4e7daadd9cf226a54d6d0e5d2211fdcdafcb872ba9bc4a45c9cd709c25898",
+      "digest": "f055dc7db03de1c8efcf1767b0cc2bdce04e25ecb41f8f7f3c2a4c43a2782c9e",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -2942,7 +2942,7 @@
       "ref": "origin/HEAD",
       "relativePath": "office-hours/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -3007,7 +3007,7 @@
       "ref": "origin/HEAD",
       "relativePath": "open-gstack-browser/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -3072,7 +3072,7 @@
       "ref": "origin/HEAD",
       "relativePath": "pair-agent/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -3106,7 +3106,7 @@
       ],
       "canonicalInvocation": "/plan-ceo-review",
       "description": "CEO/founder-mode plan review. (gstack)",
-      "digest": "01715856bc682b2bfe9038ba2c4bb0f2ef643e1b1073f0e14785db87620ff7cc",
+      "digest": "b40266c1705f595cb0f8bdb442456e0127cbce409754e12c65e5387ccf653372",
       "frontmatter": {
         "allowed-tools": [
           "Read",
@@ -3177,7 +3177,7 @@
       "ref": "origin/HEAD",
       "relativePath": "plan-ceo-review/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -3210,7 +3210,7 @@
       ],
       "canonicalInvocation": "/plan-design-review",
       "description": "Designer's eye plan review — interactive, like CEO and Eng review. (gstack)",
-      "digest": "c2bfb862e61246971be00b91aee53e6eeab418e334d3c9a8657b53063f992849",
+      "digest": "22ef2c2e6b645af043df7b1d6a053bf24b4e5c857be51c06e6937eb8e83a35a0",
       "frontmatter": {
         "allowed-tools": [
           "Read",
@@ -3247,7 +3247,7 @@
       "ref": "origin/HEAD",
       "relativePath": "plan-design-review/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -3320,7 +3320,7 @@
       "ref": "origin/HEAD",
       "relativePath": "plan-devex-review/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -3355,7 +3355,7 @@
       ],
       "canonicalInvocation": "/plan-eng-review",
       "description": "Eng manager-mode plan review. (gstack)",
-      "digest": "f8e5b77987ea8b2f8423c8c6838ede211748f675bc853bc3de4656212b619331",
+      "digest": "92ecbb913562f708ed9d5dc9098c960b6b6b3adde65a4ffcffb41993927f5d33",
       "frontmatter": {
         "allowed-tools": [
           "Read",
@@ -3393,7 +3393,7 @@
       "ref": "origin/HEAD",
       "relativePath": "plan-eng-review/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -3469,7 +3469,7 @@
       "ref": "origin/HEAD",
       "relativePath": "plan-tune/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -3543,7 +3543,7 @@
       "ref": "origin/HEAD",
       "relativePath": "qa/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -3576,7 +3576,7 @@
       ],
       "canonicalInvocation": "/qa-only",
       "description": "Report-only QA testing. (gstack)",
-      "digest": "da324d486030b5d7f0a2204bcab3f0f42af9be361cb5f4158fc25e004603fb6f",
+      "digest": "ef98f58de66cb5adc8d8e7128796d1fe37163f94d267334a704e55fe10871d58",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -3612,7 +3612,7 @@
       "ref": "origin/HEAD",
       "relativePath": "qa-only/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -3645,7 +3645,7 @@
       ],
       "canonicalInvocation": "/retro",
       "description": "Weekly engineering retrospective. (gstack)",
-      "digest": "06032c9f03b9bb2c1e889b13bf5fff7ecf179e4dd7b607dc92eb75f0a9f21665",
+      "digest": "c42835bd6cc985d3d0a812e3abceb603b40fef0a771f660098ec0a7d8d856cf3",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -3708,7 +3708,7 @@
       "ref": "origin/HEAD",
       "relativePath": "retro/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -3785,7 +3785,7 @@
       "ref": "origin/HEAD",
       "relativePath": "review/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -3851,7 +3851,7 @@
       "ref": "origin/HEAD",
       "relativePath": "scrape/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -3916,7 +3916,7 @@
       "ref": "origin/HEAD",
       "relativePath": "setup-browser-cookies/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -3951,7 +3951,7 @@
       ],
       "canonicalInvocation": "/setup-deploy",
       "description": "Configure deployment settings for /land-and-deploy.",
-      "digest": "cc04b11b73df0bab25406d36b122fb166874f15c3d1a707768057e66071c4f2d",
+      "digest": "44f49f804472f5b615cef1d33fad78fedee6eac484355a1b35f47649faf9dd1f",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -3989,7 +3989,7 @@
       "ref": "origin/HEAD",
       "relativePath": "setup-deploy/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -4064,7 +4064,7 @@
       "ref": "origin/HEAD",
       "relativePath": "setup-gbrain/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool",
@@ -4101,7 +4101,7 @@
       ],
       "canonicalInvocation": "/ship",
       "description": "Ship workflow: detect + merge base branch, run tests, review diff, bump VERSION, update CHANGELOG, commit, push, create PR. (gstack)",
-      "digest": "2be01efe0b08c992a43249ad78e4ce4c4bda046366251af6491033eb8306e89b",
+      "digest": "fab9583b15c72a1544d75d68f8b12370d7b407c939a7e2b0b596567d9341d7f3",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -4142,7 +4142,7 @@
       "ref": "origin/HEAD",
       "relativePath": "ship/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -4209,7 +4209,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skillify/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -4241,7 +4241,7 @@
       ],
       "canonicalInvocation": "/spec",
       "description": "Turn vague intent into a precise, executable spec in five phases. (gstack)",
-      "digest": "ba3311335e85eb347a915c46e4839435667721631f17883a1e1a88cd696fefe2",
+      "digest": "4ad6348a8b39f92aefb6e78a635fd5aa0eaddf117d6fe2067da748284f00a372",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
@@ -4280,7 +4280,7 @@
       "ref": "origin/HEAD",
       "relativePath": "spec/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -4353,7 +4353,7 @@
       "ref": "origin/HEAD",
       "relativePath": "sync-gbrain/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -4413,7 +4413,7 @@
       "ref": "origin/HEAD",
       "relativePath": "unfreeze/SKILL.md",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "security": {
         "flags": [
           "bash/powershell tool"
@@ -4463,7 +4463,7 @@
       "ref": "origin/HEAD",
       "relativePath": ".claude/skills/impeccable/SKILL.md",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "cd12f8660e2dde57b9615c8a6b8ea674101f9cfc",
+      "resolvedRevision": "cb56ed6c19a07329a9fa0cd4e657bee040156593",
       "security": {
         "flags": [
           "executables:1"
@@ -8155,7 +8155,7 @@
       "redistribution": "metadata-only",
       "ref": "origin/HEAD",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
+      "resolvedRevision": "34040c9c568585f6929bedeaad110ad08f079624",
       "runtimeOnly": false,
       "skillCount": 8,
       "type": "git"
@@ -8176,7 +8176,7 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "c8f0c4e368fd59ec316c0eb0d1f4ebfa896c2d16",
+      "resolvedRevision": "71f6048e8ada25180e61438abc1d98cb151fe9a7",
       "runtimeOnly": false,
       "skillCount": 53,
       "type": "git"
@@ -8188,7 +8188,7 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "cd12f8660e2dde57b9615c8a6b8ea674101f9cfc",
+      "resolvedRevision": "cb56ed6c19a07329a9fa0cd4e657bee040156593",
       "runtimeOnly": false,
       "skillCount": 1,
       "type": "git"
