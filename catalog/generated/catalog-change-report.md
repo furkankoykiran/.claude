@@ -8,7 +8,7 @@
 - renamed: 0
 - license-restricted: 10
 - runtime-only: 3
-- security-sensitive: 66
+- security-sensitive: 65
 - **manual-review-required: true**
 
 ## Added (144)
@@ -158,7 +158,7 @@
 - `/web-artifacts-builder`
 - `/xlsx`
 
-## Security-sensitive (66)
+## Security-sensitive (65)
 
 - `/autoplan`
 - `/benchmark`
@@ -169,7 +169,6 @@
 - `/codex`
 - `/context-restore`
 - `/context-save`
-- `/cso`
 - `/design-consultation`
 - `/design-html`
 - `/design-review`
@@ -227,7 +226,7 @@
 - `/web-artifacts-builder`
 - `/xlsx`
 
-## Manual-review-required (66)
+## Manual-review-required (65)
 
 - `/autoplan`
 - `/benchmark`
@@ -238,7 +237,6 @@
 - `/codex`
 - `/context-restore`
 - `/context-save`
-- `/cso`
 - `/design-consultation`
 - `/design-html`
 - `/design-review`

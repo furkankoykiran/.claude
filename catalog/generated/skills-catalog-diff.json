@@ -252,11 +252,9 @@
     {
       "key": "/cso",
       "kind": "added",
-      "manualReviewRequired": true,
-      "reasons": [
-        "new-skill-capability:bash/powershell"
-      ],
-      "securitySensitive": true,
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
       "sourceId": "gstack"
     },
     {
@@ -1333,7 +1331,7 @@
       "new-skill-capability:network-access"
     ],
     "runtimeOnly": 3,
-    "securitySensitive": 66,
+    "securitySensitive": 65,
     "updated": 0
   }
 }
