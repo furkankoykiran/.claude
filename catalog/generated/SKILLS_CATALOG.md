@@ -39,7 +39,7 @@ _Runtime-only — see notes below._
 ## gstack (garrytan/gstack)
 
 type: `git` · pack: `gstack` · skills: 53 · redistribution: full
-repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `71f6048e8ada`
+repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `4a3c6a8a3cad`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -52,7 +52,7 @@ repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: 
 | [/codex](../../docs/skills/gstack/codex.md) | OpenAI Codex CLI wrapper — three modes. (gstack) | full |
 | [/context-restore](../../docs/skills/gstack/context-restore.md) | Restore working context saved earlier by /context-save. (gstack) | full |
 | [/context-save](../../docs/skills/gstack/context-save.md) | Save working context. (gstack) | full |
-| [/cso](../../docs/skills/gstack/cso.md) | Chief Security Officer mode. (gstack) | full |
+| [/cso](../../docs/skills/gstack/cso.md) | Security audit: supported static findings; qualified profiles add reproduction and repair candidates. (gstack) | full |
 | [/design-consultation](../../docs/skills/gstack/design-consultation.md) | Design consultation: understands your product, researches the landscape, proposes a complete design system (aesthetic, t | full |
 | [/design-html](../../docs/skills/gstack/design-html.md) | Design finalization: generates production-quality Pretext-native HTML/CSS. (gstack) | full |
 | [/design-review](../../docs/skills/gstack/design-review.md) | Designer's eye QA: finds visual inconsistency, spacing issues, hierarchy problems, AI slop patterns, and slow interactio | full |
@@ -100,7 +100,7 @@ repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: 
 ## Impeccable (pbakaus/impeccable)
 
 type: `git` · pack: `impeccable` · skills: 1 · redistribution: full
-repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `cb56ed6c19a0`
+repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `0a4e72a254f3`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
