@@ -143,7 +143,7 @@
       },
       "redistribution": "full",
       "relativePath": "autoplan/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -155,7 +155,7 @@
       },
       "redistribution": "full",
       "relativePath": "benchmark-models/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -167,7 +167,7 @@
       },
       "redistribution": "full",
       "relativePath": "benchmark/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -179,7 +179,7 @@
       },
       "redistribution": "full",
       "relativePath": "browse/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -191,7 +191,7 @@
       },
       "redistribution": "full",
       "relativePath": "canary/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -203,7 +203,7 @@
       },
       "redistribution": "full",
       "relativePath": "careful/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -215,7 +215,7 @@
       },
       "redistribution": "full",
       "relativePath": "codex/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -227,7 +227,7 @@
       },
       "redistribution": "full",
       "relativePath": "context-restore/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -239,7 +239,7 @@
       },
       "redistribution": "full",
       "relativePath": "context-save/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -251,7 +251,7 @@
       },
       "redistribution": "full",
       "relativePath": "cso/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -263,7 +263,7 @@
       },
       "redistribution": "full",
       "relativePath": "design-consultation/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -275,7 +275,7 @@
       },
       "redistribution": "full",
       "relativePath": "design-html/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -287,7 +287,7 @@
       },
       "redistribution": "full",
       "relativePath": "design-review/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -299,19 +299,19 @@
       },
       "redistribution": "full",
       "relativePath": "design-shotgun/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/devex-review",
-      "digest": "a3736e99bc3d5aede4ca50fc0a0b209e9cd27c380fcbc0e9c935c94533996961",
+      "digest": "1d14ecb7df5aa96dc714ed5b15ea35668ec6d9816062b26bcc8b02c2820e18fd",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "devex-review/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -323,7 +323,7 @@
       },
       "redistribution": "full",
       "relativePath": "diagram/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -335,7 +335,7 @@
       },
       "redistribution": "full",
       "relativePath": "document-generate/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -347,7 +347,7 @@
       },
       "redistribution": "full",
       "relativePath": "document-release/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -359,7 +359,7 @@
       },
       "redistribution": "full",
       "relativePath": "freeze/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -371,7 +371,7 @@
       },
       "redistribution": "full",
       "relativePath": "gstack-upgrade/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -383,19 +383,19 @@
       },
       "redistribution": "full",
       "relativePath": "guard/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/health",
-      "digest": "596797907c89627c41e7d9afc51c4c6291cb89673833da458b01b6dd0bdd01af",
+      "digest": "befc8e7953ea7085f22ed82229fc8a676eb048a7b8df6b584f8cd43ca2ea0deb",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "health/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -407,7 +407,7 @@
       },
       "redistribution": "full",
       "relativePath": "investigate/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -419,7 +419,7 @@
       },
       "redistribution": "full",
       "relativePath": "ios-clean/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -431,7 +431,7 @@
       },
       "redistribution": "full",
       "relativePath": "ios-design-review/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -443,7 +443,7 @@
       },
       "redistribution": "full",
       "relativePath": "ios-fix/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -455,7 +455,7 @@
       },
       "redistribution": "full",
       "relativePath": "ios-qa/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -467,7 +467,7 @@
       },
       "redistribution": "full",
       "relativePath": "ios-sync/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -479,7 +479,7 @@
       },
       "redistribution": "full",
       "relativePath": "land-and-deploy/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -491,7 +491,7 @@
       },
       "redistribution": "full",
       "relativePath": "landing-report/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -503,7 +503,7 @@
       },
       "redistribution": "full",
       "relativePath": "learn/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -515,7 +515,7 @@
       },
       "redistribution": "full",
       "relativePath": "make-pdf/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -527,7 +527,7 @@
       },
       "redistribution": "full",
       "relativePath": "office-hours/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -539,7 +539,7 @@
       },
       "redistribution": "full",
       "relativePath": "open-gstack-browser/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -551,7 +551,7 @@
       },
       "redistribution": "full",
       "relativePath": "pair-agent/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -563,7 +563,7 @@
       },
       "redistribution": "full",
       "relativePath": "plan-ceo-review/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -575,7 +575,7 @@
       },
       "redistribution": "full",
       "relativePath": "plan-design-review/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -587,7 +587,7 @@
       },
       "redistribution": "full",
       "relativePath": "plan-devex-review/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -599,7 +599,7 @@
       },
       "redistribution": "full",
       "relativePath": "plan-eng-review/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -611,7 +611,7 @@
       },
       "redistribution": "full",
       "relativePath": "plan-tune/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -623,7 +623,7 @@
       },
       "redistribution": "full",
       "relativePath": "qa-only/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -635,7 +635,7 @@
       },
       "redistribution": "full",
       "relativePath": "qa/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -647,19 +647,19 @@
       },
       "redistribution": "full",
       "relativePath": "retro/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/review",
-      "digest": "7fff21d75a453b175af011edce78f01611303d9e6c4b191ee548ddead98a8b2a",
+      "digest": "44052651ad60d82c37342db66e0044defe7805adb108c2897fb0a57348ea5afc",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "review/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -671,7 +671,7 @@
       },
       "redistribution": "full",
       "relativePath": "scrape/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -683,7 +683,7 @@
       },
       "redistribution": "full",
       "relativePath": "setup-browser-cookies/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -695,7 +695,7 @@
       },
       "redistribution": "full",
       "relativePath": "setup-deploy/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -707,19 +707,19 @@
       },
       "redistribution": "full",
       "relativePath": "setup-gbrain/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/ship",
-      "digest": "b8c08ed04512e87675ccf3e2f76afbedae8be09ee10c96c1f7f4022b71b57d1b",
+      "digest": "4b4fd9b491620539ee58c15f43dd47ebb2b1f61ecfdc0c205ac57162b454ad5d",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "ship/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -731,7 +731,7 @@
       },
       "redistribution": "full",
       "relativePath": "skillify/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -743,7 +743,7 @@
       },
       "redistribution": "full",
       "relativePath": "spec/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -755,7 +755,7 @@
       },
       "redistribution": "full",
       "relativePath": "sync-gbrain/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -767,7 +767,7 @@
       },
       "redistribution": "full",
       "relativePath": "unfreeze/SKILL.md",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "sourceId": "gstack"
     },
     {
@@ -1427,7 +1427,7 @@
       },
       "redistribution": "full",
       "relativePath": ".claude/skills/impeccable/SKILL.md",
-      "resolvedRevision": "0a4e72a254f3b175c95b36b82e5f2e60fa63f116",
+      "resolvedRevision": "f2c7051853848826aac2f4646581d62a732155ad",
       "sourceId": "impeccable"
     },
     {
@@ -1439,7 +1439,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/brandkit/SKILL.md",
-      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
+      "resolvedRevision": "e79ca9ec7e071eb3a3b623c4fb752e853fc3ed58",
       "sourceId": "taste"
     },
     {
@@ -1451,7 +1451,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/brutalist-skill/SKILL.md",
-      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
+      "resolvedRevision": "e79ca9ec7e071eb3a3b623c4fb752e853fc3ed58",
       "sourceId": "taste"
     },
     {
@@ -1463,7 +1463,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/gpt-tasteskill/SKILL.md",
-      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
+      "resolvedRevision": "e79ca9ec7e071eb3a3b623c4fb752e853fc3ed58",
       "sourceId": "taste"
     },
     {
@@ -1475,7 +1475,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/image-to-code-skill/SKILL.md",
-      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
+      "resolvedRevision": "e79ca9ec7e071eb3a3b623c4fb752e853fc3ed58",
       "sourceId": "taste"
     },
     {
@@ -1487,7 +1487,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/imagegen-frontend-mobile/SKILL.md",
-      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
+      "resolvedRevision": "e79ca9ec7e071eb3a3b623c4fb752e853fc3ed58",
       "sourceId": "taste"
     },
     {
@@ -1499,7 +1499,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/imagegen-frontend-web/SKILL.md",
-      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
+      "resolvedRevision": "e79ca9ec7e071eb3a3b623c4fb752e853fc3ed58",
       "sourceId": "taste"
     },
     {
@@ -1511,7 +1511,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/minimalist-skill/SKILL.md",
-      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
+      "resolvedRevision": "e79ca9ec7e071eb3a3b623c4fb752e853fc3ed58",
       "sourceId": "taste"
     },
     {
@@ -1523,7 +1523,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/output-skill/SKILL.md",
-      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
+      "resolvedRevision": "e79ca9ec7e071eb3a3b623c4fb752e853fc3ed58",
       "sourceId": "taste"
     },
     {
@@ -1535,7 +1535,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/redesign-skill/SKILL.md",
-      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
+      "resolvedRevision": "e79ca9ec7e071eb3a3b623c4fb752e853fc3ed58",
       "sourceId": "taste"
     },
     {
@@ -1547,7 +1547,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/soft-skill/SKILL.md",
-      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
+      "resolvedRevision": "e79ca9ec7e071eb3a3b623c4fb752e853fc3ed58",
       "sourceId": "taste"
     },
     {
@@ -1559,7 +1559,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/stitch-skill/SKILL.md",
-      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
+      "resolvedRevision": "e79ca9ec7e071eb3a3b623c4fb752e853fc3ed58",
       "sourceId": "taste"
     },
     {
@@ -1571,7 +1571,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/taste-skill-v1/SKILL.md",
-      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
+      "resolvedRevision": "e79ca9ec7e071eb3a3b623c4fb752e853fc3ed58",
       "sourceId": "taste"
     },
     {
@@ -1583,7 +1583,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/taste-skill/SKILL.md",
-      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
+      "resolvedRevision": "e79ca9ec7e071eb3a3b623c4fb752e853fc3ed58",
       "sourceId": "taste"
     },
     {
@@ -1842,7 +1842,7 @@
       "notes": "Flat layout (top-level */SKILL.md). SKILL.md are rendered from SKILL.md.tmpl upstream; deterministic per SHA.",
       "redistribution": "full",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
+      "resolvedRevision": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "selectedPaths": [
         "autoplan",
         "benchmark",
@@ -2124,7 +2124,7 @@
       },
       "redistribution": "full",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "0a4e72a254f3b175c95b36b82e5f2e60fa63f116",
+      "resolvedRevision": "f2c7051853848826aac2f4646581d62a732155ad",
       "selectedPaths": [
         ".claude/skills/impeccable"
       ],
@@ -2169,7 +2169,7 @@
       },
       "redistribution": "full",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
+      "resolvedRevision": "e79ca9ec7e071eb3a3b623c4fb752e853fc3ed58",
       "selectedPaths": [
         "skills/brandkit",
         "skills/brutalist-skill",

@@ -39,7 +39,7 @@ _Runtime-only — see notes below._
 ## gstack (garrytan/gstack)
 
 type: `git` · pack: `gstack` · skills: 53 · redistribution: full
-repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `4a3c6a8a3cad`
+repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `a6b3a57512ca`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -100,7 +100,7 @@ repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: 
 ## Impeccable (pbakaus/impeccable)
 
 type: `git` · pack: `impeccable` · skills: 1 · redistribution: full
-repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `0a4e72a254f3`
+repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `f2c705185384`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -224,7 +224,7 @@ _Runtime-only — see notes below._
 ## Taste skills (Leonxlnx/taste-skill)
 
 type: `git` · pack: `taste` · skills: 13 · redistribution: full
-repo: https://github.com/Leonxlnx/taste-skill.git · ref: `origin/HEAD` · revision: `ccbc15639c97`
+repo: https://github.com/Leonxlnx/taste-skill.git · ref: `origin/HEAD` · revision: `e79ca9ec7e07`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
