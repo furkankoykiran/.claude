@@ -39,7 +39,7 @@ _Runtime-only — see notes below._
 ## gstack (garrytan/gstack)
 
 type: `git` · pack: `gstack` · skills: 53 · redistribution: full
-repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `a6b3a57512ca`
+repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `35dd014c5800`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -100,7 +100,7 @@ repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: 
 ## Impeccable (pbakaus/impeccable)
 
 type: `git` · pack: `impeccable` · skills: 1 · redistribution: full
-repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `f2c705185384`
+repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `83c2c735777c`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
