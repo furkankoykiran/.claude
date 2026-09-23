@@ -70,7 +70,9 @@
       "kind": "added",
       "manualReviewRequired": true,
       "reasons": [
-        "new-skill-capability:bash/powershell"
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:executable/binary",
+        "new-skill-capability:hooks"
       ],
       "securitySensitive": true,
       "sourceId": "gstack"
