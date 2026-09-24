@@ -2,16 +2,16 @@
 
 # Catalog change report
 
-- added: 144
+- added: 145
 - updated: 0
 - removed: 0
 - renamed: 0
 - license-restricted: 10
 - runtime-only: 3
-- security-sensitive: 65
+- security-sensitive: 66
 - **manual-review-required: true**
 
-## Added (144)
+## Added (145)
 
 - `/ab-testing`
 - `/ad-creative`
@@ -49,6 +49,7 @@
 - `/design-shotgun`
 - `/design-taste-frontend`
 - `/design-taste-frontend-v1`
+- `/deslop-shared-libs`
 - `/devex-review`
 - `/diagram`
 - `/directory-submissions`
@@ -158,7 +159,7 @@
 - `/web-artifacts-builder`
 - `/xlsx`
 
-## Security-sensitive (65)
+## Security-sensitive (66)
 
 - `/autoplan`
 - `/benchmark`
@@ -173,6 +174,7 @@
 - `/design-html`
 - `/design-review`
 - `/design-shotgun`
+- `/deslop-shared-libs`
 - `/devex-review`
 - `/diagram`
 - `/directory-submissions`
@@ -226,7 +228,7 @@
 - `/web-artifacts-builder`
 - `/xlsx`
 
-## Manual-review-required (65)
+## Manual-review-required (66)
 
 - `/autoplan`
 - `/benchmark`
@@ -241,6 +243,7 @@
 - `/design-html`
 - `/design-review`
 - `/design-shotgun`
+- `/deslop-shared-libs`
 - `/devex-review`
 - `/diagram`
 - `/directory-submissions`
