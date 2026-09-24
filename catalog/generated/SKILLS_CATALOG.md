@@ -7,8 +7,8 @@ Generated index of every Claude Code skill, command, and runtime component repre
 Resolver version 1 · schema v1.
 
 - **Sources:** 11
-- **Skills / entries:** 144
-- **Redistributable (full body):** 134
+- **Skills / entries:** 145
+- **Redistributable (full body):** 135
 - **Runtime-only:** 3
 
 ## Anthropic skills (anthropics/skills)
@@ -38,8 +38,8 @@ _Runtime-only — see notes below._
 
 ## gstack (garrytan/gstack)
 
-type: `git` · pack: `gstack` · skills: 53 · redistribution: full
-repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `636175d3496e`
+type: `git` · pack: `gstack` · skills: 54 · redistribution: full
+repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `06ed920a9748`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -57,6 +57,7 @@ repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: 
 | [/design-html](../../docs/skills/gstack/design-html.md) | Design finalization: generates production-quality Pretext-native HTML/CSS. (gstack) | full |
 | [/design-review](../../docs/skills/gstack/design-review.md) | Designer's eye QA: finds visual inconsistency, spacing issues, hierarchy problems, AI slop patterns, and slow interactio | full |
 | [/design-shotgun](../../docs/skills/gstack/design-shotgun.md) | Design shotgun: generate multiple AI design variants, open a comparison board, collect structured feedback, and iterate. | full |
+| [/deslop-shared-libs](../../docs/skills/gstack/deslop-shared-libs.md) | Find worthwhile shared-code extractions in recent work. (gstack) | full |
 | [/devex-review](../../docs/skills/gstack/devex-review.md) | Live developer experience audit. (gstack) | full |
 | [/diagram](../../docs/skills/gstack/diagram.md) | Turn an English description (or mermaid source) into a diagram triplet: the source, an editable .excalidraw file you can | full |
 | [/document-generate](../../docs/skills/gstack/document-generate.md) | Generate missing documentation from scratch for a feature, module, or entire project. (gstack) | full |

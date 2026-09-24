@@ -327,6 +327,17 @@
       "sourceId": "taste"
     },
     {
+      "key": "/deslop-shared-libs",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
+      "sourceId": "gstack"
+    },
+    {
       "key": "/devex-review",
       "kind": "added",
       "manualReviewRequired": true,
@@ -1319,7 +1330,7 @@
   ],
   "schemaVersion": 2,
   "summary": {
-    "added": 144,
+    "added": 145,
     "licenseRestricted": 10,
     "manualReviewRequired": true,
     "massChange": false,
@@ -1333,7 +1344,7 @@
       "new-skill-capability:network-access"
     ],
     "runtimeOnly": 3,
-    "securitySensitive": 65,
+    "securitySensitive": 66,
     "updated": 0
   }
 }
