@@ -14,7 +14,7 @@ Resolver version 1 · schema v1.
 ## Anthropic skills (anthropics/skills)
 
 type: `git` · pack: `anthropic` · skills: 8 · redistribution: metadata-only
-repo: https://github.com/anthropics/skills.git · ref: `origin/HEAD` · revision: `34040c9c5685`
+repo: https://github.com/anthropics/skills.git · ref: `origin/HEAD` · revision: `33375500bcea`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -39,7 +39,7 @@ _Runtime-only — see notes below._
 ## gstack (garrytan/gstack)
 
 type: `git` · pack: `gstack` · skills: 54 · redistribution: full
-repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `06ed920a9748`
+repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `730a1017d1a1`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -101,7 +101,7 @@ repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: 
 ## Impeccable (pbakaus/impeccable)
 
 type: `git` · pack: `impeccable` · skills: 1 · redistribution: full
-repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `e0881d2de397`
+repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `9d715cc4f556`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
