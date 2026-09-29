@@ -11,6 +11,7 @@
 | [Skill context economy](skill-context-economy.md) | What the skill listing costs, how it was measured, the enforced budget |
 | [ChatGPT project prompting](chatgpt-project.md) | Turning rough intent into Claude Code prompts: files to upload, instructions, verification |
 | [Distribution architecture](architecture-distribution.md) | Why the toolkit ships this way: the decisions, the evidence, what was rejected |
+| [Modernization evidence](modernization-evidence.md) | Cross-agent work boundaries, baseline checks, and runtime proof limits |
 | [Troubleshooting](troubleshooting.md) | Common failures and fixes |
 | [FAQ](faq.md) | Short answers to common questions |
 | [Catalog architecture](catalog-architecture.md) | How the resolver, generator and lock produce a deterministic catalog |

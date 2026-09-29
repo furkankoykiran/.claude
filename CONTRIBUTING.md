@@ -40,8 +40,9 @@ docker run --rm -v "$PWD:/mnt" -w /mnt mcr.microsoft.com/powershell:latest \
 
 # 3. Catalog, marketplace, listing budget and docs (needs bun, not Docker)
 bun install --frozen-lockfile
-bun run typecheck && bun test catalog && bun run catalog:check \
-  && bun run marketplace:check && bun run catalog:budget && bun run docs:check
+bun run typecheck && bun test catalog/tests && bun run catalog:check \
+  && bun run marketplace:check && bun run catalog:budget && bun run instructions:check \
+  && bun run docs:check
 
 # 4. Updater behaviour (hermetic: throwaway repos, no network)
 ./scripts/test-fkt.sh
