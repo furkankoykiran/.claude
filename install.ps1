@@ -452,21 +452,102 @@ function Set-Provider {
         }
     }
 
-    Install-CcsProfile
 }
 
-# Add a `ccs` function to the user's PowerShell profile (idempotent).
-# CurrentUserAllHosts so it loads in both Windows PowerShell and pwsh.
-function Install-CcsProfile {
-    $profilePath = $PROFILE.CurrentUserAllHosts
-    $profileDir  = Split-Path $profilePath -Parent
-    if (-not (Test-Path $profileDir)) { New-Item -ItemType Directory -Path $profileDir -Force | Out-Null }
-    if (-not (Test-Path $profilePath)) { New-Item -ItemType File -Path $profilePath -Force | Out-Null }
-    $existing = Get-Content -LiteralPath $profilePath -Raw -ErrorAction SilentlyContinue
-    if ($existing -match 'cc-provider') { return }
-    $entry = "`r`n# Claude Code provider switcher (managed by ~/.claude/install.ps1)`r`nfunction ccs { & `"$HOME\.claude\bin\cc-provider.ps1`" @args }`r`n"
-    Add-Content -LiteralPath $profilePath -Value $entry
-    Write-Step "Added 'ccs' function to $profilePath (open a new shell)"
+# Install real ccs/fkt commands instead of profile-only functions.
+function ConvertTo-PsSingleQuoted {
+    param([Parameter(Mandatory)][string]$Value)
+    return "'$($Value -replace "'", "''")'"
+}
+
+function Remove-LegacyCommandProfiles {
+    $profilePaths = @($PROFILE.CurrentUserAllHosts) | Where-Object { $_ } | Select-Object -Unique
+    foreach ($profilePath in $profilePaths) {
+        if (-not (Test-Path -LiteralPath $profilePath)) { continue }
+        $existing = Get-Content -LiteralPath $profilePath -Raw -ErrorAction SilentlyContinue
+        if ($null -eq $existing) { continue }
+        $updated = [regex]::Replace(
+            $existing,
+            "(?ms)(?:`r?`n)?# Claude Code provider switcher \(managed by ~/.claude/install\.ps1\)`r?`nfunction ccs \{[^`r`n]*\}`r?`n?",
+            ''
+        )
+        if ($updated -ne $existing) {
+            Set-Content -LiteralPath $profilePath -Value $updated -Encoding ASCII
+        }
+    }
+}
+
+function Add-UserPathDirectory {
+    param([Parameter(Mandatory)][string]$Directory)
+    $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
+    $parts = @()
+    if ($userPath) { $parts = $userPath -split ';' | Where-Object { $_ } }
+    $alreadyUser = $false
+    foreach ($part in $parts) {
+        if ([string]::Equals($part, $Directory, [System.StringComparison]::OrdinalIgnoreCase)) {
+            $alreadyUser = $true
+            break
+        }
+    }
+    if (-not $alreadyUser) {
+        $newPath = (@($parts) + $Directory) -join ';'
+        [Environment]::SetEnvironmentVariable('Path', $newPath, 'User')
+    }
+
+    $sessionParts = @()
+    if ($env:Path) { $sessionParts = $env:Path -split ';' | Where-Object { $_ } }
+    $alreadySession = $false
+    foreach ($part in $sessionParts) {
+        if ([string]::Equals($part, $Directory, [System.StringComparison]::OrdinalIgnoreCase)) {
+            $alreadySession = $true
+            break
+        }
+    }
+    if (-not $alreadySession) { $env:Path = (@($Directory) + $sessionParts) -join ';' }
+}
+
+function Install-UserCommands {
+    $binDir = Join-Path $HOME '.local\bin'
+    New-Item -ItemType Directory -Force -Path $binDir | Out-Null
+    Remove-LegacyCommandProfiles
+    Add-UserPathDirectory $binDir
+
+    $defaultToolkit = if ($ClaudeDir -eq (Join-Path $HOME '.claude')) { "Join-Path `$HOME '.claude'" } else { ConvertTo-PsSingleQuoted $ClaudeDir }
+
+    @(
+        '$ErrorActionPreference = ''Stop'''
+        "if (`$env:CLAUDE_DIR) { `$toolkit = `$env:CLAUDE_DIR } else { `$toolkit = $defaultToolkit }"
+        '& (Join-Path $toolkit ''bin\cc-provider.ps1'') @args'
+        'if ($LASTEXITCODE -ne $null) { exit $LASTEXITCODE }'
+    ) | Set-Content -LiteralPath (Join-Path $binDir 'ccs.ps1') -Encoding ASCII
+
+    @(
+        '$ErrorActionPreference = ''Stop'''
+        'if ($env:FKT_HOME) {'
+        '    $toolkit = $env:FKT_HOME'
+        '} elseif ($env:CLAUDE_DIR) {'
+        '    $toolkit = $env:CLAUDE_DIR'
+        "} else { `$toolkit = $defaultToolkit }"
+        '$candidates = @('
+        '    (Join-Path $env:ProgramFiles ''Git\bin\bash.exe'')'
+        '    (Join-Path ${env:ProgramFiles(x86)} ''Git\bin\bash.exe'')'
+        '    (Join-Path $env:LOCALAPPDATA ''Programs\Git\bin\bash.exe'')'
+        ')'
+        '$bash = $null'
+        'foreach ($candidate in $candidates) {'
+        '    if ($candidate -and (Test-Path -LiteralPath $candidate)) { $bash = $candidate; break }'
+        '}'
+        'if (-not $bash) {'
+        '    $cmd = Get-Command bash -ErrorAction SilentlyContinue'
+        '    if ($cmd -and $cmd.Source -and ($cmd.Source -notmatch ''\\Windows\\System32\\bash\.exe$'')) { $bash = $cmd.Source }'
+        '}'
+        'if (-not $bash) { throw ''Git Bash is required to run fkt on native Windows. Install Git for Windows, then re-run install.ps1.'' }'
+        '$env:FKT_HOME = $toolkit'
+        '& $bash (Join-Path $toolkit ''bin\fkt'') @args'
+        'exit $LASTEXITCODE'
+    ) | Set-Content -LiteralPath (Join-Path $binDir 'fkt.ps1') -Encoding ASCII
+
+    Write-Step "Installed 'ccs' and 'fkt' commands in $binDir"
 }
 
 # ---------------------------------------------------------------------------
@@ -806,6 +887,7 @@ function Invoke-Main {
     Initialize-Repo
     Invoke-Step 'config seeding'   { Set-SeedConfig }
     Invoke-Step 'local overrides'  { Set-SeedLocalOverride }
+    Invoke-Step 'commands'         { Install-UserCommands }
     # Runs in minimal mode too: an install that once had the packs still carries
     # the misplaced clones, and leaving them behind keeps the duplicate plugins.
     Invoke-Step 'staging migration' { Move-LegacySkillStage }

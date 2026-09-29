@@ -21,19 +21,26 @@ yourself — and you flip between them with one command.
 
 ```bash
 ccs list         # every available provider
-ccs zai          # route Claude Code through z.ai (GLM)
-ccs anthropic    # route through the official Anthropic API
-ccs status       # print the active provider
+ccs list             # list available providers
+ccs status           # print the active provider
+ccs use zai          # route Claude Code through z.ai (GLM)
+ccs anthropic        # compatibility shorthand for: ccs use anthropic
+ccs api zai          # fill the local provider API key without echoing it
+ccs logout zai       # clear a local provider API key
+ccs doctor           # check provider setup, safety merge and gateway state
 ```
 
-`ccs` is a shell function the installer adds to your shell profile (`~/.bashrc`
-on Unix, `$PROFILE` on Windows). It works identically on both.
+`ccs` is installed as a real command. On Unix, WSL, and Git Bash the
+installer writes `~/.local/bin/ccs` and adds that directory to normal shell
+startup files. On native Windows it writes `ccs.ps1` under `$HOME\.local\bin`
+and adds that directory to the user PATH.
 
 ### Available providers
 
 | `ccs <name>` | Endpoint | You need | Notes |
 | --- | --- | --- | --- |
 | `anthropic` | `api.anthropic.com` | `claude login` | No token in the file; uses your normal claude.ai auth |
+| `codex` | `127.0.0.1:4545` | `ccs login codex` + experimental local gateway | Routes Claude Code to the isolated Codex adapter. This is not a zero-Anthropic proof until the Wave 2 live test passes. |
 | `zai` | `api.z.ai/api/anthropic` | z.ai API key | GLM models. [Subscription link](https://z.ai/subscribe?ic=SNPFQIQ7BD) (my referral) |
 | `nvidia` | `127.0.0.1:4000` -> `build.nvidia.com` | NVIDIA API key + local gateway | Hosted NVIDIA catalog. [See below](#nvidia-nim) |
 | `nvidia-nim` | your NIM container | a NIM deployment | Self-hosted NIM, no gateway. [See below](#nvidia-nim) |
@@ -42,8 +49,10 @@ on Unix, `$PROFILE` on Windows). It works identically on both.
 | `minimax` | `api.minimax.io/anthropic` | MiniMax API key | `MiniMax-M3[1m]`. Use `api.minimaxi.com` in China |
 | `openrouter` | `openrouter.ai/api` | OpenRouter API key | Anthropic-format "skin"; any OpenRouter model slug |
 
-Every provider except `nvidia` talks to an endpoint that speaks the Anthropic
-Messages API directly, so there is nothing to run and nothing to translate.
+Most remote providers in the table speak the Anthropic Messages API directly.
+`nvidia` and `codex` are different: they route Claude Code to a local loopback
+adapter, so a local gateway must be running before Claude Code can complete a
+request.
 
 Third-party endpoints implement the Anthropic schema to varying depth. Claude
 Code sends its full capability set to any `ANTHROPIC_BASE_URL`, so if a provider
@@ -66,18 +75,26 @@ first (a real file, not a symlink, so the same flow works on Windows):
 | --- | --- | --- |
 | 1 | the existing `settings.json` | everything not owned by a provider — keys Claude Code writes itself (`tui`, `agentPushNotifEnabled`), your own tweaks, hooks other tools installed |
 | 2 | `settings.base.json` | repo-owned safety config: `permissions.deny`, the three safety hooks, `cleanupPeriodDays` |
-| 3 | `providers/<active>.json` | the provider's own keys: `env`, `model`, `apiKeyHelper`, `enabledPlugins`, `effortLevel` |
+| 3 | `providers/<active>.json` | provider routing keys: `env`, `model`, `apiKeyHelper` |
 
 `permissions.deny` and `hooks` are **unioned** across all three, so a rule a
-later layer happens not to mention is never dropped. The provider-owned keys in
-layer 3 are taken **wholesale** — a key the new provider does not set is
-removed, not inherited, so no credential or base URL can outlive a switch.
+later layer happens not to mention is never dropped. The provider-owned routing keys in layer 3 are taken **wholesale** — a key the
+new provider does not set is removed, not inherited, so no credential or base
+URL can outlive a switch. `enabledPlugins` and `effortLevel` are user policy, so
+provider files no longer reset them.
 
-Edit the provider file for credentials and models, or `settings.base.json` for
-safety config, then re-switch; don't hand-edit `settings.json`. `ccs status`
-recomputes the merge and warns when the live file is out of date, which catches
-both the mystery `401` (an edited provider file that was never re-applied) and a
-safety rule that exists in git but not on this machine.
+Use `ccs api <provider>` or `ccs auth <provider>` to fill API-key provider
+files; the prompt is masked where the shell supports it, the local provider file
+is kept mode `600`, and command output only shows a redacted suffix. For
+ChatGPT/Codex entitlement, use the official `codex login`, `codex status`, and
+`codex logout` flow; `ccs login chatgpt` delegates there and never copies those
+tokens into provider JSON.
+
+Edit the provider file for routing and models, or `settings.base.json` for safety config,
+then re-switch; don't hand-edit `settings.json`. `ccs status` recomputes the
+merge and warns when the live file is out of date, which catches both the mystery
+`401` (an edited provider file that was never re-applied) and a safety rule that
+exists in git but not on this machine.
 
 `ccs` refuses to write `settings.json` at all if `jq` is missing or
 `settings.base.json` is absent. Shipping a settings file that silently lacks its

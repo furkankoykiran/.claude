@@ -36,8 +36,10 @@ fkt check       # is there an update? (cached; exit 10 if yes)
 fkt update      # fast-forward, then run migrations
 ```
 
-`fkt` is installed as a shell function by `install.sh`. It is also
-`~/.claude/bin/fkt` if you prefer the path.
+`fkt` is installed as a real command in `~/.local/bin` on Unix, WSL, and
+Git Bash. The native Windows installer writes `fkt.ps1` under
+`$HOME\.local\bin` and adds that directory to the user PATH. The underlying
+script remains `~/.claude/bin/fkt` if you prefer the direct path.
 
 ### It refuses rather than repairs
 

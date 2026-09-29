@@ -42,10 +42,11 @@ human review; the program does not authorize bypassing repository gates.
 - `marketplace.toml` already owns plugin inventory; extend its generator rather
   than maintaining another inventory. Skill bodies remain in their current
   canonical directories.
-- Provider switching currently treats `effortLevel` and `enabledPlugins` as
-  provider-owned. Those settings need to survive provider changes.
-- Unix command installation relies on shell functions in `.bashrc`. Windows
-  also needs a command path that works without a profile.
+- Starting point: provider switching treated `effortLevel` and `enabledPlugins`
+  as provider-owned. Wave 2 changed those to preserved user policy.
+- Starting point: Unix command installation relied on shell functions in
+  `.bashrc`; Windows also needed a command path that worked without a profile.
+  Wave 2 replaced these with real command shims.
 - License resolution checks the root and immediate skill directory but misses
   intermediate component licenses. Supporting-file contents also need evidence
   beyond a filename count before adding runtimes.
@@ -98,3 +99,53 @@ not README guesses.
 | `Panniantong/Agent-Reach` | `a19a171fa980a0785849596492e0af4db800c82f` | Candidate skill content is MIT-licensed. The optional runtime has network, browser, cookie, media, MCP, and system-install capabilities; later integration must keep system-changing install modes opt-in. |
 | `nextlevelbuilder/ui-ux-pro-max-skill` | `09170eec67eefd46a7ae85de61b40c194020f997` | Current CLI is `uipro`. The core skill can be considered for redistribution, but component licenses override the root license where present: `ui-styling` is Apache-2.0 and bundled canvas fonts include OFL-1.1 notices. |
 | `latent-spaces/brag` | `c893c5ed52aed84e3e2ee56787de869fccdae6b0` | The slim skill is the safer lightweight candidate. Full BRAG carries runtime, binary, and media dependencies; the shipped music rights are unresolved, so the full variant stays metadata-only unless licensing is settled. |
+
+
+## Wave 2 evidence
+
+Wave 2 adds the provider/auth command surface, real command shims for `ccs` and
+`fkt`, and an isolated experimental Codex gateway adapter.
+
+`ccs codex` is now a provider switch. It writes Claude Code routing variables for
+a loopback gateway at `127.0.0.1:4545`, disables documented nonessential
+Anthropic surfaces where practical, and preserves the repo-owned safety denies
+and hooks. It does not copy Codex or ChatGPT tokens. `ccs login codex` delegates
+to the official `codex login` flow; `ccs api codex` is rejected because ChatGPT
+entitlement is not an API-key billing path.
+
+The Codex gateway code is still experimental. Current implementation covers the
+translation boundary with fixtures for streaming, system instructions, multi-turn
+state, client tool calls, tool results, duplicate retries, errors, cancellation,
+and clean shutdown. It does not yet prove a live Claude Code session succeeded
+through Codex while Anthropic destinations were unavailable. Until that process
+level test passes, this repository must not claim zero-Anthropic operation.
+
+The old installer-managed shell functions are migrated away. Unix, WSL, and Git
+Bash installs now write `~/.local/bin/ccs` and `~/.local/bin/fkt`; native Windows
+writes `ccs.ps1` and `fkt.ps1` under `$HOME\.local\bin` and updates the user
+PATH. Tests use disposable HOME directories.
+
+Wave 2 checks passed:
+
+```bash
+bash -n bin/cc-provider install.sh scripts/test-providers.sh scripts/test-install.sh scripts/test-fkt.sh
+shellcheck bin/cc-provider install.sh scripts/test-providers.sh scripts/test-install.sh scripts/test-fkt.sh
+scripts/test-providers.sh
+scripts/test-install.sh
+scripts/test-fkt.sh
+bun test catalog/tests/codex-anthropic-gateway.test.ts
+bun run instructions:check
+bun run catalog:budget
+bun run marketplace:check
+git diff --check
+LC_ALL=C grep -n "[^ -~]" bin/cc-provider.ps1 install.ps1 || true
+bun install --frozen-lockfile && bun run typecheck && bun test catalog/tests && bun run catalog:check && bun run docs:check
+```
+
+Results: provider tests `110 passed`; installer tests `42 passed`; updater tests
+`120 passed`; Codex gateway tests `8 passed`; instruction budget `3592 / 8192`
+bytes and Codex discovery `3140 / 4096` bytes; Claude skill listing `1974 / 2048`
+chars; mandatory catalog tests `332 passed`, one opt-in network test skipped, no
+failures. PowerShell runtime checks remain unrun in this Linux container because
+neither `pwsh` nor Windows PowerShell is installed; the PowerShell files were
+kept ASCII-only and covered by shell-side parity tests where possible.

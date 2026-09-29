@@ -564,50 +564,120 @@ setup_providers() {
     fi
   fi
 
-  install_ccs_alias
+  install_ccs_command
 }
 
-install_ccs_alias() {
-  local rc="$HOME/.bashrc"
-  touch "$rc"
-  if grep -q 'cc-provider' "$rc" 2>/dev/null; then return 0; fi
-  # Quoted heredoc: $HOME and $@ must stay literal so the generated function
-  # resolves them at call time (not at install time).
-  cat >> "$rc" <<'EOF'
+shell_quote() {
+  printf "'%s'" "$(printf '%s' "$1" | sed "s/'/'\\''/g")"
+}
 
-# Claude Code provider switcher (managed by ~/.claude/install.sh)
-ccs() { "$HOME/.claude/bin/cc-provider" "$@"; }
+toolkit_dir_default_word() {
+  if [ "$CLAUDE_DIR" = "$HOME/.claude" ]; then
+    # shellcheck disable=SC2016  # written literally into generated commands
+    printf '$HOME/.claude'
+  else
+    shell_quote "$CLAUDE_DIR"
+  fi
+}
+
+remove_legacy_command_functions() {
+  local rc tmp
+  for rc in "$HOME/.bashrc" "$HOME/.bash_profile" "$HOME/.bash_login" "$HOME/.profile" "$HOME/.zshrc" "$HOME/.zprofile"; do
+    [ -f "$rc" ] || continue
+    tmp="${rc}.tmp.$$"
+    local status
+    if awk '
+      /^# Claude Code provider switcher \(managed by .*\/install\.sh\)$/ { skip = "ccs"; changed = 1; next }
+      /^# FK Claude Toolkit updater \(managed by .*\/install\.sh\)$/ { skip = "fkt"; changed = 1; next }
+      skip == "ccs" && /^ccs\(\) \{/ { skip = ""; next }
+      skip == "fkt" && /^fkt\(\) \{/ { skip = ""; next }
+      { if (skip != "") skip = ""; print }
+      END { if (changed) exit 2 }
+    ' "$rc" > "$tmp"; then
+      status=0
+    else
+      status=$?
+    fi
+    case $status in
+      0) rm -f "$tmp" ;;
+      2) mv "$tmp" "$rc" ;;
+      *) rm -f "$tmp"; return 1 ;;
+    esac
+  done
+}
+
+ensure_user_bin_on_path() {
+  local user_bin="$HOME/.local/bin"
+  local rc
+  mkdir -p "$user_bin"
+  case ":$PATH:" in
+    *":$user_bin:"*) ;;
+    *) export PATH="$user_bin:$PATH" ;;
+  esac
+
+  for rc in "$HOME/.profile" "$HOME/.bash_profile" "$HOME/.bashrc" "$HOME/.zprofile" "$HOME/.zshrc"; do
+    case "$rc" in
+      "$HOME/.bash_profile"|"$HOME/.bashrc"|"$HOME/.zshrc")
+        [ -f "$rc" ] || continue
+        ;;
+    esac
+    touch "$rc"
+    if grep -q 'FK Claude Toolkit commands (managed by' "$rc" 2>/dev/null; then
+      continue
+    fi
+    cat >> "$rc" <<'EOF'
+
+# FK Claude Toolkit commands (managed by ~/.claude/install.sh)
+case ":$PATH:" in
+  *":$HOME/.local/bin:"*) ;;
+  *) PATH="$HOME/.local/bin:$PATH" ;;
+esac
+export PATH
 EOF
-  log "Added 'ccs' shell function to ~/.bashrc (run: source ~/.bashrc)"
+  done
+}
+
+write_toolkit_command() {
+  local name="$1" target="$2" env_name="$3" default_word="$4"
+  local out="$HOME/.local/bin/$name"
+  mkdir -p "$HOME/.local/bin"
+  {
+    printf '%s\n' '#!/usr/bin/env bash'
+    printf '%s\n' 'set -e'
+    if [ "$env_name" = "FKT_HOME" ]; then
+      # shellcheck disable=SC2016  # written literally into generated commands
+      printf 'toolkit_dir=${FKT_HOME:-${CLAUDE_DIR:-%s}}\n' "$default_word"
+    else
+      # shellcheck disable=SC2016  # written literally into generated commands
+      printf 'toolkit_dir=${CLAUDE_DIR:-%s}\n' "$default_word"
+    fi
+    # shellcheck disable=SC2016  # written literally into generated commands
+    printf 'exec "$toolkit_dir/%s" "$@"\n' "$target"
+  } > "$out"
+  chmod 755 "$out"
+}
+
+install_ccs_command() {
+  remove_legacy_command_functions
+  ensure_user_bin_on_path
+  write_toolkit_command "ccs" "bin/cc-provider" "CLAUDE_DIR" "$(toolkit_dir_default_word)"
+  log "Installed 'ccs' command in ~/.local/bin"
 }
 
 # ---------------------------------------------------------------------------
 # 5b. Updater (fkt) + versioned migrations
 # ---------------------------------------------------------------------------
 # `fkt` is how the bootstrap layer updates after this first install: a
-# fast-forward-only path that refuses rather than discards. Exposing it as a
-# shell function (not a PATH edit) keeps the change to ~/.bashrc to one line and
-# reversible, and matches how `ccs` is already wired.
+# fast-forward-only path that refuses rather than discards. It is exposed as a
+# real command in ~/.local/bin so normal shells can discover it without sourcing
+# a managed shell function.
 install_fkt() {
   [ -x "$CLAUDE_DIR/bin/fkt" ] || { warn "bin/fkt missing — skipping updater setup"; return 1; }
 
-  local rc="$HOME/.bashrc"
-  touch "$rc"
-  if ! grep -q 'bin/fkt' "$rc" 2>/dev/null; then
-    # Emit "$HOME/.claude" literally for a default install so the function keeps
-    # working if the home directory ever moves; use the resolved path when the
-    # user chose a different CLAUDE_DIR, where "$HOME/.claude" would be wrong.
-    # shellcheck disable=SC2016  # $HOME must reach .bashrc unexpanded
-    local target='"$HOME/.claude/bin/fkt"'
-    if [ "$CLAUDE_DIR" != "$HOME/.claude" ]; then
-      target="\"$CLAUDE_DIR/bin/fkt\""
-    fi
-    {
-      printf '\n# FK Claude Toolkit updater (managed by %s/install.sh)\n' "$CLAUDE_DIR"
-      printf 'fkt() { %s "$@"; }\n' "$target"
-    } >> "$rc"
-    log "Added 'fkt' shell function to ~/.bashrc (run: source ~/.bashrc)"
-  fi
+  remove_legacy_command_functions
+  ensure_user_bin_on_path
+  write_toolkit_command "fkt" "bin/fkt" "FKT_HOME" "$(toolkit_dir_default_word)"
+  log "Installed 'fkt' command in ~/.local/bin"
 
   # Run pending migrations now. On a first install every migration is a no-op,
   # but recording them as applied means an upgrading user never replays a

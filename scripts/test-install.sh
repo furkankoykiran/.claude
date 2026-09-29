@@ -329,33 +329,75 @@ check "a git-tracked legacy copy is left in place" "tracked" \
   "$(cat "$CLAUDE_DIR/skills/add-mcp/SKILL.md" 2>/dev/null)"
 
 # ---------------------------------------------------------------------------
-# install_fkt: the shell function it writes must point at the real install
+# user commands: ccs/fkt must be real commands in a clean shell
 # ---------------------------------------------------------------------------
-fkt_alias_for() {
+install_commands_for() {
   local home="$1" dir="$2"
-  mkdir -p "$dir/bin"
+  mkdir -p "$dir/bin" "$dir/migrations"
   cp "$REPO_ROOT/bin/fkt" "$dir/bin/fkt"
+  cat > "$dir/bin/cc-provider" <<'EOF'
+#!/usr/bin/env bash
+exit 0
+EOF
+  chmod 755 "$dir/bin/cc-provider"
   ( HOME="$home" CLAUDE_DIR="$dir" install_fkt >/dev/null 2>&1
-    grep -h '^fkt()' "$home/.bashrc" 2>/dev/null )
+    HOME="$home" CLAUDE_DIR="$dir" install_ccs_command >/dev/null 2>&1
+    HOME="$home" bash -lc 'command -v ccs; command -v fkt' )
 }
 
-ALIAS_HOME="$WORK/alias-default"
-mkdir -p "$ALIAS_HOME"
-# shellcheck disable=SC2016  # the literal $HOME is exactly what we assert on
-check "a default install keeps \$HOME unexpanded, so the alias survives a home move" \
-  'fkt() { "$HOME/.claude/bin/fkt" "$@"; }' \
-  "$(fkt_alias_for "$ALIAS_HOME" "$ALIAS_HOME/.claude")"
+COMMAND_HOME="$WORK/commands-default"
+mkdir -p "$COMMAND_HOME"
+check "a clean login shell can discover ccs and fkt after install" \
+  "$COMMAND_HOME/.local/bin/ccs
+$COMMAND_HOME/.local/bin/fkt" \
+  "$(install_commands_for "$COMMAND_HOME" "$COMMAND_HOME/.claude")"
 
-ALIAS_HOME2="$WORK/alias-custom"
-mkdir -p "$ALIAS_HOME2"
-check "a custom CLAUDE_DIR is written as the resolved path, not \$HOME/.claude" \
-  "fkt() { \"$ALIAS_HOME2/elsewhere/bin/fkt\" \"\$@\"; }" \
-  "$(fkt_alias_for "$ALIAS_HOME2" "$ALIAS_HOME2/elsewhere")"
+check "the default ccs command resolves the default toolkit lazily" \
+  "toolkit_dir=\${CLAUDE_DIR:-\$HOME/.claude}" \
+  "$(grep '^toolkit_dir=' "$COMMAND_HOME/.local/bin/ccs")"
+check "the default fkt command honors FKT_HOME first" \
+  "toolkit_dir=\${FKT_HOME:-\${CLAUDE_DIR:-\$HOME/.claude}}" \
+  "$(grep '^toolkit_dir=' "$COMMAND_HOME/.local/bin/fkt")"
 
-# Re-running must not append a second copy.
-fkt_alias_for "$ALIAS_HOME" "$ALIAS_HOME/.claude" >/dev/null
-check "install_fkt does not append a duplicate on re-run" "1" \
-  "$(grep -c '^fkt()' "$ALIAS_HOME/.bashrc")"
+COMMAND_HOME2="$WORK/commands-custom"
+mkdir -p "$COMMAND_HOME2"
+install_commands_for "$COMMAND_HOME2" "$COMMAND_HOME2/elsewhere" >/dev/null
+check "a custom CLAUDE_DIR is embedded in the ccs command" \
+  "toolkit_dir=\${CLAUDE_DIR:-'$COMMAND_HOME2/elsewhere'}" \
+  "$(grep '^toolkit_dir=' "$COMMAND_HOME2/.local/bin/ccs")"
+check "a custom CLAUDE_DIR is embedded in the fkt command" \
+  "toolkit_dir=\${FKT_HOME:-\${CLAUDE_DIR:-'$COMMAND_HOME2/elsewhere'}}" \
+  "$(grep '^toolkit_dir=' "$COMMAND_HOME2/.local/bin/fkt")"
+
+# Re-running must not append duplicate PATH blocks.
+install_commands_for "$COMMAND_HOME" "$COMMAND_HOME/.claude" >/dev/null
+check "command PATH setup does not append a duplicate on re-run" "1" \
+  "$(grep -c 'FK Claude Toolkit commands (managed by' "$COMMAND_HOME/.profile")"
+
+LEGACY_HOME="$WORK/legacy-functions"
+mkdir -p "$LEGACY_HOME" "$LEGACY_HOME/.claude/bin"
+cp "$REPO_ROOT/bin/fkt" "$LEGACY_HOME/.claude/bin/fkt"
+cat > "$LEGACY_HOME/.claude/bin/cc-provider" <<'EOF'
+#!/usr/bin/env bash
+exit 0
+EOF
+chmod 755 "$LEGACY_HOME/.claude/bin/cc-provider"
+cat > "$LEGACY_HOME/.bashrc" <<'EOF'
+keep_before=1
+# Claude Code provider switcher (managed by ~/.claude/install.sh)
+ccs() { "$HOME/.claude/bin/cc-provider" "$@"; }
+# FK Claude Toolkit updater (managed by /tmp/old/.claude/install.sh)
+fkt() { "$HOME/.claude/bin/fkt" "$@"; }
+keep_after=1
+EOF
+HOME="$LEGACY_HOME" CLAUDE_DIR="$LEGACY_HOME/.claude" install_fkt >/dev/null 2>&1
+HOME="$LEGACY_HOME" CLAUDE_DIR="$LEGACY_HOME/.claude" install_ccs_command >/dev/null 2>&1
+check "obsolete managed ccs/fkt shell functions are removed" "0" \
+  "$(grep -Ec '^(ccs|fkt)\(\)' "$LEGACY_HOME/.bashrc")"
+check "legacy function migration preserves unrelated shell content" \
+  $'keep_before=1
+keep_after=1' \
+  "$(grep '^keep_' "$LEGACY_HOME/.bashrc")"
 
 printf '\n%s passed, %s failed\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]

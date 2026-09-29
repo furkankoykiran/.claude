@@ -3,10 +3,12 @@
 # file to ~/.claude/settings.json. Copy (not symlink) so it works on every
 # platform, including Windows (symlinks need admin/Developer Mode there).
 #
-#   cc-provider anthropic    -> activate official Anthropic
-#   cc-provider zai          -> activate z.ai (GLM)
-#   cc-provider list         -> list every available provider
-#   cc-provider status       -> print the active provider
+#   cc-provider use anthropic -> activate official Anthropic
+#   cc-provider zai           -> compatibility shorthand for `use zai`
+#   cc-provider list          -> list every available provider
+#   cc-provider status        -> print the active provider
+#   cc-provider auth zai      -> fill a local provider API key without echoing it
+#   cc-provider doctor        -> check the provider setup
 #
 # The provider set is DATA, not code: whatever `providers/<name>.json.example`
 # templates exist are the valid names, so adding a provider means dropping in a
@@ -31,14 +33,48 @@ BASE_SETTINGS="$CLAUDE_DIR/settings.base.json"
 PLACEHOLDER_RE='<[A-Z_]+>'
 
 # Keys the ACTIVE PROVIDER owns outright. Each is taken from the provider file
-# and removed when that file does not set it, so nothing provider-shaped can
-# outlive a switch — a stale ANTHROPIC_BASE_URL would silently keep routing
-# traffic to the provider you just left. Everything not listed here is carried
-# over from the existing settings.json, so keys Claude Code itself writes (tui,
-# agentPushNotifEnabled) and hooks other tools install are not collateral.
-PROVIDER_KEYS='["env","model","apiKeyHelper","enabledPlugins","effortLevel"]'
+# and removed when that file does not set it, so stale routing credentials cannot
+# outlive a switch. UX policy such as effortLevel and enabledPlugins is carried
+# over from the user's settings instead of being reset by provider templates.
+PROVIDER_KEYS='["env","model","apiKeyHelper"]'
 
 die() { printf 'cc-provider: %s\n' "$*" >&2; exit 1; }
+
+need_provider_arg() {
+  local cmd="$1" p="${2:-}"
+  [ -n "$p" ] || die "$cmd requires a provider name"
+  [ "${3:-}" = "" ] || die "$cmd accepts exactly one provider name"
+}
+
+is_codex_entitlement() {
+  case "$1" in
+    codex|chatgpt|chatgpt-entitlement) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+delegate_codex() {
+  local action="$1"
+  command -v codex >/dev/null 2>&1 \
+    || die "codex CLI is not installed; install/sign in with official Codex tooling first"
+  case "$action" in
+    login|status|logout) codex "$action" ;;
+    *) die "unsupported Codex action: $action" ;;
+  esac
+}
+
+redact_secret() {
+  local v="$1" n suffix
+  [ -n "$v" ] || { printf 'empty'; return; }
+  n=${#v}
+  if [ "$n" -le 4 ]; then
+    printf 'configured (****)'
+  else
+    suffix=${v: -4}
+    printf 'configured (****%s)' "$suffix"
+  fi
+}
+
 
 # Provider names, one per line: every .json.example template, plus any local
 # .json a user added by hand. Sorted and de-duplicated.
@@ -77,6 +113,116 @@ ensure_provider_file() {
   fi
 }
 
+
+credential_key() {
+  local p="$1" f
+  f="$PDIR/$p.json"
+  [ -f "$f" ] || return 1
+  jq -r '
+    (.env // {}) as $env
+    | (["ANTHROPIC_AUTH_TOKEN","ANTHROPIC_API_KEY"]
+       | map(. as $k | select($env | has($k)) | {key: $k, value: (($env[$k] // "") | tostring)})) as $keys
+    | (($keys | map(select(.value | test("^<[^>]+>$"))) | .[0].key)
+       // ($keys | map(select(.value == "")) | .[0].key)
+       // ($keys | .[0].key)
+       // empty)
+  ' "$f"
+}
+
+credential_value() {
+  local p="$1" key="$2"
+  [ -n "$key" ] || return 1
+  jq -r --arg key "$key" '(.env[$key] // "") | tostring' "$PDIR/$p.json"
+}
+
+provider_auth_status() {
+  local p="$1" f key value
+  f="$PDIR/$p.json"
+  if is_codex_entitlement "$p"; then
+    printf 'Auth mode: ChatGPT entitlement via official codex login/status/logout (no API key is copied).\n'
+    return 0
+  fi
+  [ -f "$f" ] || { printf 'Auth mode: not configured (no providers/%s.json yet).\n' "$p"; return 0; }
+  key=$(credential_key "$p" || true)
+  if [ -z "$key" ]; then
+    if jq -e '.env.ANTHROPIC_BASE_URL? | test("127.0.0.1|localhost|0.0.0.0")' "$f" >/dev/null 2>&1; then
+      printf 'Auth mode: local/gateway provider (no API key stored in providers/%s.json).\n' "$p"
+    else
+      printf 'Auth mode: no API key field in providers/%s.json.\n' "$p"
+    fi
+    return 0
+  fi
+  value=$(credential_value "$p" "$key")
+  case "$value" in
+    ''|\<*) printf 'Auth mode: API key required in %s (not configured).\n' "$key" ;;
+    *) printf 'Auth mode: API key in %s is %s.\n' "$key" "$(redact_secret "$value")" ;;
+  esac
+}
+
+prompt_secret() {
+  local prompt="$1" secret
+  if [ -n "${CC_PROVIDER_API_KEY:-}" ]; then
+    printf '%s' "$CC_PROVIDER_API_KEY"
+    return 0
+  fi
+  if [ ! -t 0 ]; then
+    die "no API key provided on stdin; run interactively or set CC_PROVIDER_API_KEY for tests"
+  fi
+  printf '%s' "$prompt" >&2
+  if read -r -s secret; then
+    printf '\n' >&2
+    printf '%s' "$secret"
+  else
+    printf '\n' >&2
+    return 1
+  fi
+}
+
+write_api_key() {
+  local p="$1" key secret tmp
+  if is_codex_entitlement "$p"; then
+    die "$p uses ChatGPT entitlement. Use: ccs login $p (delegates to codex login), not an API key."
+  fi
+  is_provider "$p" || die "unknown provider: $p"
+  ensure_provider_file "$p"
+  command -v jq >/dev/null 2>&1 || die "jq is required to update providers/$p.json"
+  key=$(credential_key "$p" || true)
+  [ -n "$key" ] || die "providers/$p.json has no ANTHROPIC_AUTH_TOKEN or ANTHROPIC_API_KEY field to fill"
+  secret=$(prompt_secret "Enter API key for $p ($key): ")
+  [ -n "$secret" ] || die "empty API key; providers/$p.json was not changed"
+  tmp="$(mktemp "$PDIR/.$p.json.XXXXXX")"
+  jq --arg key "$key" --arg secret "$secret" '.env[$key] = $secret' "$PDIR/$p.json" > "$tmp"
+  chmod 600 "$tmp"
+  mv -f "$tmp" "$PDIR/$p.json"
+  printf 'Updated providers/%s.json (%s: %s).\n' "$p" "$key" "$(redact_secret "$secret")"
+  if [ -f "$PDIR/.active" ] && [ "$(cat "$PDIR/.active")" = "$p" ]; then
+    activate "$p"
+  else
+    printf 'Run %s to activate it.\n' "ccs use $p"
+  fi
+}
+
+logout_provider() {
+  local p="$1" f key tmp
+  f="$PDIR/$p.json"
+  if is_codex_entitlement "$p"; then
+    delegate_codex logout
+    return
+  fi
+  is_provider "$p" || die "unknown provider: $p"
+  [ -f "$f" ] || { printf 'Provider %s has no local file to clear.\n' "$p"; return 0; }
+  key=$(credential_key "$p" || true)
+  [ -n "$key" ] || { printf 'Provider %s has no API key field to clear.\n' "$p"; return 0; }
+  tmp="$(mktemp "$PDIR/.$p.json.XXXXXX")"
+  jq --arg key "$key" '.env[$key] = ""' "$f" > "$tmp"
+  chmod 600 "$tmp"
+  mv -f "$tmp" "$f"
+  printf 'Cleared API key in providers/%s.json (%s).\n' "$p" "$key"
+  if [ -f "$PDIR/.active" ] && [ "$(cat "$PDIR/.active")" = "$p" ]; then
+    activate "$p"
+  fi
+}
+
 # Providers that point at a loopback base URL (the NVIDIA gateway, a self-hosted
 # NIM container, a local Ollama) are dead until that listener is up, and the
 # symptom in Claude Code is an opaque connection error. Warn at switch time
@@ -97,6 +243,8 @@ warn_if_local_endpoint_down() {
       "$host" "$port" "$p" >&2
     if [ "$p" = "nvidia" ]; then
       printf 'Start the gateway first: %s/scripts/nim-gateway.sh start\n' "$CLAUDE_DIR" >&2
+    elif [ "$p" = "codex" ]; then
+      printf 'Start the experimental gateway first: bun run %s/scripts/codex-anthropic-gateway.ts\n' "$CLAUDE_DIR" >&2
     fi
   fi
 }
@@ -161,7 +309,7 @@ merge_settings() {
 
     ($base_arr[0] // {}) as $base
     | ($cur_arr[0] // {}) as $cur
-    | ($prov_arr[0] // {}) as $prov
+    | (($prov_arr[0] // {}) | del(.enabledPlugins, .effortLevel)) as $prov
     # Strip the provider-owned keys from the carried-over layer first, so an
     # absent key in the new provider file deletes rather than inherits.
     | ($cur | delpaths($provider_keys | map([.]))) as $carry
@@ -226,6 +374,7 @@ status() {
     return
   fi
   printf '%s\n' "$active"
+  provider_auth_status "$active" >&2
   # Surface the common footgun: settings.json is a COPY, so editing the
   # provider file (or a stale switch) leaves it out of sync and you get a
   # silent 401. Warn on stderr so `ccs status` script output stays clean.
@@ -252,26 +401,92 @@ status() {
   fi
 }
 
+
+doctor() {
+  local active expected deny_count hook_count
+  printf 'Provider doctor\n'
+  command -v jq >/dev/null 2>&1 && printf 'jq: ok\n' || printf 'jq: missing (provider switching cannot merge safely)\n'
+  [ -f "$BASE_SETTINGS" ] && printf 'settings.base.json: present\n' || printf 'settings.base.json: missing\n'
+  if [ -f "$PDIR/.active" ]; then
+    active=$(cat "$PDIR/.active")
+    printf 'active provider: %s\n' "$active"
+    provider_auth_status "$active"
+    if [ -f "$PDIR/$active.json" ] && [ -f "$SETTINGS" ] && command -v jq >/dev/null 2>&1 && [ -f "$BASE_SETTINGS" ]; then
+      expected="$(mktemp "${TMPDIR:-/tmp}/cc-provider-doctor.XXXXXX")"
+      if merge_settings "$PDIR/$active.json" "$expected" 2>/dev/null \
+         && jq -e --slurpfile a "$expected" --slurpfile b "$SETTINGS" -n '$a[0] == $b[0]' >/dev/null 2>&1; then
+        printf 'settings.json: matches active provider merge\n'
+      else
+        printf 'settings.json: drifted (run: ccs use %s)\n' "$active"
+      fi
+      rm -f "$expected"
+    fi
+    warn_if_local_endpoint_down "$active"
+  else
+    printf 'active provider: none\n'
+  fi
+  if [ -f "$SETTINGS" ] && command -v jq >/dev/null 2>&1; then
+    deny_count=$(jq -r '(.permissions.deny // []) | length' "$SETTINGS" 2>/dev/null || printf '0')
+    hook_count=$(jq -r '[.hooks[]?[]?.hooks[]?] | length' "$SETTINGS" 2>/dev/null || printf '0')
+    printf 'safety deny rules: %s\n' "$deny_count"
+    printf 'hook handlers: %s\n' "$hook_count"
+  fi
+  if [ -f "$PDIR/nvidia.json" ] || [ -f "$PDIR/nvidia.json.example" ] || [ -f "$CLAUDE_DIR/scripts/nim-gateway.sh" ]; then
+    printf 'gateway check: '
+    if [ -f "$PDIR/nvidia.json" ]; then
+      printf 'nvidia provider present\n'
+      warn_if_local_endpoint_down nvidia
+    else
+      printf 'nvidia template present\n'
+    fi
+  fi
+}
+
 usage() {
-  printf 'usage: cc-provider [<provider>|list|status]\n' >&2
-  printf '  <provider>  activate it (copies providers/<provider>.json to settings.json)\n' >&2
-  printf '  list        list available providers\n' >&2
-  printf '  status      print the active provider (default)\n' >&2
+  printf 'usage: cc-provider [list|status|doctor|use <provider>|auth <provider>|login <provider>|api <provider>|logout <provider>|<provider>]\n' >&2
+  printf '  list              list available providers\n' >&2
+  printf '  status            print the active provider (default) and auth summary on stderr\n' >&2
+  printf '  use <provider>    activate it (compatibility shorthand: cc-provider <provider>)\n' >&2
+  printf '  auth <provider>   show auth mode or fill an API key when needed\n' >&2
+  printf '  login <provider>  fill an API key; codex/chatgpt delegates to official codex login\n' >&2
+  printf '  api <provider>    fill an API key in providers/<provider>.json\n' >&2
+  printf '  logout <provider> clear a local API key; codex/chatgpt delegates to codex logout\n' >&2
+  printf '  doctor            check provider setup, safety merge and local gateway state\n' >&2
   printf '\navailable providers:\n' >&2
   local p
   for p in $(list_providers); do printf '  %s\n' "$p" >&2; done
 }
 
-case "${1:-status}" in
-  status)    status ;;
-  list)      list_providers ;;
+cmd="${1:-status}"
+case "$cmd" in
+  status)    [ "${2:-}" = "" ] || die "status accepts no provider argument"; status ;;
+  list)      [ "${2:-}" = "" ] || die "list accepts no provider argument"; list_providers ;;
+  doctor)    [ "${2:-}" = "" ] || die "doctor accepts no provider argument"; doctor ;;
+  use)       need_provider_arg use "${2:-}" "${3:-}"; is_provider "$2" || die "unknown provider: $2"; activate "$2" ;;
+  auth)
+    need_provider_arg auth "${2:-}" "${3:-}"
+    if is_codex_entitlement "$2"; then
+      provider_auth_status "$2"
+    else
+      is_provider "$2" || die "unknown provider: $2"
+      ensure_provider_file "$2"
+      provider_auth_status "$2"
+      key=$(credential_key "$2" || true)
+      value=""
+      [ -n "$key" ] && value=$(credential_value "$2" "$key")
+      case "$value" in ''|\<*) write_api_key "$2" ;; esac
+    fi
+    ;;
+  login)     need_provider_arg login "${2:-}" "${3:-}"; if is_codex_entitlement "$2"; then delegate_codex login; else write_api_key "$2"; fi ;;
+  api)       need_provider_arg api "${2:-}" "${3:-}"; write_api_key "$2" ;;
+  logout)    need_provider_arg logout "${2:-}" "${3:-}"; logout_provider "$2" ;;
   -h|--help) usage; exit 0 ;;
   '')        usage; exit 1 ;;
   *)
-    if is_provider "$1"; then
-      activate "$1"
+    if is_provider "$cmd"; then
+      activate "$cmd"
     else
-      printf 'cc-provider: unknown provider: %s\n\n' "$1" >&2
+      printf 'cc-provider: unknown provider or command: %s\n\n' "$cmd" >&2
       usage
       exit 1
     fi

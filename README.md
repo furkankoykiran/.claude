@@ -251,6 +251,7 @@ Measurement, method and the full before/after in
 <!-- root-layout:start -->
 ```text
 .claude-plugin/  generated marketplace manifest
+AGENTS.md       shared cross-agent repository instructions
 bin/             executables on PATH (cc-provider, fkt)
 catalog/         catalog toolchain (src, tests, cache, generated)
 docs/            documentation — start at docs/README.md
