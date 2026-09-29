@@ -14,7 +14,7 @@ Resolver version 1 · schema v1.
 ## Anthropic skills (anthropics/skills)
 
 type: `git` · pack: `anthropic` · skills: 8 · redistribution: metadata-only
-repo: https://github.com/anthropics/skills.git · ref: `origin/HEAD` · revision: `33375500bcea`
+repo: https://github.com/anthropics/skills.git · ref: `origin/HEAD` · revision: `8a1541c4a3ff`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -39,7 +39,7 @@ _Runtime-only — see notes below._
 ## gstack (garrytan/gstack)
 
 type: `git` · pack: `gstack` · skills: 54 · redistribution: full
-repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `730a1017d1a1`
+repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `65bfb0ce49da`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -101,7 +101,7 @@ repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: 
 ## Impeccable (pbakaus/impeccable)
 
 type: `git` · pack: `impeccable` · skills: 1 · redistribution: full
-repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `9d715cc4f556`
+repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `114ea1d3838f`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -225,7 +225,7 @@ _Runtime-only — see notes below._
 ## Taste skills (Leonxlnx/taste-skill)
 
 type: `git` · pack: `taste` · skills: 13 · redistribution: full
-repo: https://github.com/Leonxlnx/taste-skill.git · ref: `origin/HEAD` · revision: `c184364c5865`
+repo: https://github.com/Leonxlnx/taste-skill.git · ref: `origin/HEAD` · revision: `ce26fc25c0e5`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
