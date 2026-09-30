@@ -20,14 +20,16 @@ the official Anthropic API, a cheaper third-party model host, or a model you run
 yourself — and you flip between them with one command.
 
 ```bash
-ccs list         # every available provider
-ccs list             # list available providers
-ccs status           # print the active provider
-ccs use zai          # route Claude Code through z.ai (GLM)
-ccs anthropic        # compatibility shorthand for: ccs use anthropic
-ccs api zai          # fill the local provider API key without echoing it
-ccs logout zai       # clear a local provider API key
-ccs doctor           # check provider setup, safety merge and gateway state
+ccs list                         # list available providers
+ccs status                       # print the active provider
+ccs use zai                      # route Claude Code through z.ai (GLM)
+ccs anthropic                    # compatibility shorthand for: ccs use anthropic
+ccs api zai                      # fill the local provider API key without echoing it
+ccs logout zai                   # clear a local provider API key
+ccs login codex                  # delegate to official codex login
+ccs codex-model gpt-5.5 medium   # choose the Codex model and reasoning effort
+ccs codex-status                 # print Codex gateway state and selected model
+ccs doctor                       # check provider setup, safety merge and gateway state
 ```
 
 `ccs` is installed as a real command. On Unix, WSL, and Git Bash the
@@ -40,7 +42,7 @@ and adds that directory to the user PATH.
 | `ccs <name>` | Endpoint | You need | Notes |
 | --- | --- | --- | --- |
 | `anthropic` | `api.anthropic.com` | `claude login` | No token in the file; uses your normal claude.ai auth |
-| `codex` | `127.0.0.1:4545` | `ccs login codex` + experimental local gateway | Routes Claude Code to the isolated Codex adapter. This is not a zero-Anthropic proof until the Wave 2 live test passes. |
+| `codex` | `127.0.0.1:4545` | `ccs login codex` + experimental local gateway | Routes Claude Code to the isolated Codex adapter. The 2026-09-30 live proof covered a GPT-5.5 Medium text and shell-tool round trip with Anthropic inference unavailable/observed, but it does not make the gateway non-experimental. |
 | `zai` | `api.z.ai/api/anthropic` | z.ai API key | GLM models. [Subscription link](https://z.ai/subscribe?ic=SNPFQIQ7BD) (my referral) |
 | `nvidia` | `127.0.0.1:4000` -> `build.nvidia.com` | NVIDIA API key + local gateway | Hosted NVIDIA catalog. [See below](#nvidia-nim) |
 | `nvidia-nim` | your NIM container | a NIM deployment | Self-hosted NIM, no gateway. [See below](#nvidia-nim) |
@@ -65,6 +67,23 @@ the table follow each vendor's own Claude Code documentation. The `anthropic`,
 `zai`, and `nvidia` rows are verified end-to-end here; the rest are configured
 from vendor docs but not key-tested, so double-check the model id against your
 plan if a request comes back 404.
+
+
+### Codex gateway
+
+Codex authentication stays with the official CLI. Run `ccs login codex` to call `codex login`; the toolkit never copies ChatGPT cookies, Codex tokens, or Claude subscription credentials into provider files. `ccs logout codex` delegates to `codex logout`.
+
+Choose the Codex model independently from Claude aliases:
+
+```bash
+ccs codex-model gpt-5.5 medium
+ccs codex
+ccs codex-status
+```
+
+`ccs codex-model <model> <effort>` accepts a Codex model id and one of `none`, `low`, `medium`, `high`, or `xhigh`. The example above sets `CODEX_GATEWAY_MODEL=gpt-5.5` and `CODEX_GATEWAY_REASONING_EFFORT=medium`. `ccs codex` switches Claude Code to the loopback provider and starts or reuses `scripts/codex-anthropic-gateway.ts`, which supervises `codex app-server --stdio` behind `127.0.0.1:4545`. `ccs codex-start`, `ccs codex-stop`, and `ccs codex-status` expose the same lifecycle without switching providers.
+
+The live zero-Anthropic acceptance test proves a narrow boundary: with Anthropic inference unavailable/observed, Claude Code sent a text prompt and a shell-tool turn through the Codex gateway and received the expected result. It does not prove every Claude Code feature, every MCP server, every model, or production-grade availability. Treat the Codex app-server bridge as experimental until upstream stabilizes it.
 
 ### How it works
 
@@ -211,14 +230,21 @@ enabled on your account.
 
 ## MCP servers
 
-The repo-owned portable plugin marketplace includes the no-auth OpenAI Developer Docs MCP in `skills/fk-toolkit-ops/mcp.json`, generated from `mcp-registry.toml`. Codex/ChatGPT plugin hosts can discover it through `.agents/plugins/marketplace.json`; Claude Code users can still add MCP servers through Claude's native commands.
+The repo-owned portable plugin marketplace includes MCP configuration generated from one registry: `mcp-registry.toml`. The portable `skills/fk-toolkit-ops/mcp.json` emits only no-auth, default-enabled servers, currently OpenAI Developer Docs at `https://developers.openai.com/mcp`. Auth-required entries stay in the registry and in `fkt mcp` output, but are not enabled in portable defaults because the plugin MCP schema has no disabled/auth-state field.
 
-`scripts/setup-mcp.sh` configures the two Claude-local ones:
+The current starter registry is:
 
-- **github** (HTTP) — needs a personal access token
-- **context7** (HTTP) — needs a Context7 API key
+| id | Auth | Default | Endpoint |
+| --- | --- | --- | --- |
+| `openaiDeveloperDocs` | none | enabled | `https://developers.openai.com/mcp` |
+| `github` | API key | login-required | `https://api.githubcopilot.com/mcp/` |
+| `linear` | OAuth | login-required | `https://mcp.linear.app/mcp` |
+| `notion` | OAuth | login-required | `https://mcp.notion.com/mcp` |
+| `sentry` | OAuth | login-required | `https://mcp.sentry.dev/mcp` |
 
-Tokens are stored in `~/.claude.json` (mode `600`), never in this repo. For other Claude-local MCP servers, use `claude mcp add` directly (or the `/add-mcp` skill). For Codex, use Codex's native MCP and plugin authentication commands rather than copying credentials into this repository.
+Use `fkt mcp status`, `fkt mcp auth <id>`, and `fkt mcp doctor` to inspect those states. Complete login in the host that will use the server: Claude Code users add the server with `claude mcp add --transport http ...` and run `/mcp`; Codex users use `codex mcp add ... --url ...` and `codex mcp login <id>` when the server supports OAuth. Tokens stay in native host storage, never in this repository.
+
+`scripts/setup-mcp.sh` still configures the two older Claude-local examples, `github` and `context7`, for users who want that path. Those tokens are stored in `~/.claude.json` (mode `600`).
 
 ### MCP servers across a provider switch
 

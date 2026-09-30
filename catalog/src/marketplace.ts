@@ -298,6 +298,10 @@ export async function loadMcpRegistry(path: string): Promise<McpRegistry> {
     if (!/^https:\/\//.test(url) && !/^http:\/\/(localhost|127\.|\[::1\])/.test(url)) {
       throw new CatalogError(`[[servers]] "${id}": remote MCP URL must be HTTPS unless it is loopback`, path);
     }
+    const defaultEnabled = srv["default_enabled"] === true;
+    if (auth !== "none" && defaultEnabled) {
+      throw new CatalogError(`[[servers]] "${id}": auth-required MCP servers must not be default_enabled=true`, path);
+    }
     return {
       id,
       plugin: assertName(str(srv["plugin"], `[[servers]] "${id}"`, "plugin"), `[[servers]] "${id}"`),
@@ -306,7 +310,7 @@ export async function loadMcpRegistry(path: string): Promise<McpRegistry> {
       url,
       transport: transport as McpRegistryServer["transport"],
       auth: auth as McpRegistryServer["auth"],
-      defaultEnabled: srv["default_enabled"] === true,
+      defaultEnabled,
       sourceUrl: typeof srv["source_url"] === "string" ? srv["source_url"] : undefined,
     };
   });

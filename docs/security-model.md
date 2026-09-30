@@ -47,7 +47,7 @@ Full behaviour, including channels and migrations, in [Updates](updates.md).
 
 ## Capability surface of the plugins
 
-The marketplace plugins ship repository-owned skills and agents. `fk-toolkit-ops` also carries one portable remote MCP configuration for OpenAI Developer Docs, generated from `mcp-registry.toml`. It is a no-auth HTTPS endpoint and adds no local executable, hook, LSP server, or `bin/` directory to the Bash tool's `PATH`.
+The marketplace plugins ship repository-owned skills and agents. `fk-toolkit-ops` also carries a portable MCP manifest generated from `mcp-registry.toml`. The manifest enables only the no-auth OpenAI Developer Docs endpoint. Auth-required starter entries for GitHub, Linear, Notion, and Sentry stay registered in the source registry and `fkt mcp` output, but require native host login before use. None of these entries adds a local executable, hook, LSP server, or `bin/` directory to the Bash tool's `PATH`.
 
 Everything with capability surface — the hooks, the provider switcher, the
 updater, the installer — is in the bootstrap layer, in this repository, where you

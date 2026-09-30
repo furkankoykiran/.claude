@@ -231,7 +231,7 @@ describe("generated manifests", () => {
         url: "https://example.invalid/mcp",
         transport: "streamable-http",
         auth: "oauth",
-        defaultEnabled: true,
+        defaultEnabled: false,
       },
     ]) as Record<string, unknown>;
     expect(manifest["mcpServers"]).toEqual({});
@@ -276,6 +276,24 @@ default_enabled = true
     const registry = await loadMcpRegistry(registryPath);
     expect(registry.servers[0]!.id).toBe("openaiDocs");
     expect(registry.servers[0]!.auth).toBe("none");
+  });
+
+
+  it("rejects auth-required servers that try to default-enable", async () => {
+    const registryPath = join(root, "mcp-registry.toml");
+    await writeFile(registryPath, `schema_version = 1
+
+[[servers]]
+id = "private"
+plugin = "fk-alpha"
+display_name = "Private"
+description = "Private."
+url = "https://example.invalid/mcp"
+transport = "streamable-http"
+auth = "oauth"
+default_enabled = true
+`);
+    await expect(loadMcpRegistry(registryPath)).rejects.toThrow(/default_enabled/);
   });
 
   it("rejects non-HTTPS remote MCP URLs", async () => {

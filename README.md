@@ -64,9 +64,7 @@ independently updatable:
 | `fk-eng-agents` | researcher · planner · code-reviewer · debugger subagents | **0** |
 | `fk-toolkit-ops` | Wire an MCP server from a pasted config; manage toolkit updates | 161 chars |
 
-Plugins carry **no hooks, no MCP servers and no executables** — only skills and
-agents. Everything with capability surface lives in the bootstrap layer below,
-where you can see it before it runs.
+Plugins carry **no hooks and no executables**. `fk-toolkit-ops` carries the generated no-auth OpenAI Developer Docs MCP manifest; auth-required MCP starters stay disabled in the registry until native host login. Everything else with capability surface lives in the bootstrap layer below, where you can see it before it runs.
 
 ### The whole toolkit
 
