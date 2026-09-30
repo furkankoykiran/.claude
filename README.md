@@ -265,6 +265,7 @@ utils/           shared Python helpers
 install.sh       installer for Linux/macOS/WSL — public URL, do not move
 install.ps1      installer for native Windows — public URL, do not move
 marketplace.toml          plugin marketplace source of truth
+mcp-registry.toml         curated portable MCP registry
 skills-sources.toml       declarative source manifest
 skills-source.lock.json   pinned revisions and digests
 security-advisories.tsv   advisory feed consumed by `fkt`

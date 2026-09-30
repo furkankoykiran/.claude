@@ -157,3 +157,9 @@ Wave 3 adds portable plugin manifests and a curated MCP registry without duplica
 The requested upstreams are catalog-only and pinned to immutable revisions: Agent-Reach `a19a171fa980a0785849596492e0af4db800c82f`, UI/UX Pro Max `09170eec67eefd46a7ae85de61b40c194020f997`, and BRAG `c893c5ed52aed84e3e2ee56787de869fccdae6b0`. Agent-Reach, UI/UX Pro Max, and BRAG slim are redistributable from the catalog. Full BRAG remains metadata-only because its runtime and bundled media boundary is not safe to redistribute automatically. None of these sources is installed into every bootstrap by default.
 
 The ChatGPT Project prompt-architect bundle now routes by target runtime: Claude Code, Codex, or cross-agent. It uses `AGENTS.md` as shared policy, `CLAUDE.md` as the Claude adapter, current Codex/GPT-6 and Agent Plugin guidance for Codex prompts, and keeps generated implementation prompts in English with runnable verification.
+
+## Wave 4 evidence
+
+Wave 4 found one automation gap introduced by portable manifests: `skills-catalog-update.yml` already regenerated manifests after a VERSION bump, but it staged only the Claude marketplace and `.claude-plugin` plugin manifests. Portable root `skills/*/plugin.json` also embeds VERSION. The workflow now stages those files, and `catalog/tests/workflow-guards.test.ts` asserts the VERSION-bearing manifest set so the gap cannot return quietly.
+
+No redundant workflow named "Human PR Review" exists. Sensitive catalog changes still stop at the existing deterministic `manual-review-required` boundary; routine automation remains limited to protected squash auto-merge and never uses `--admin`, ruleset bypass, or direct merge fallback.

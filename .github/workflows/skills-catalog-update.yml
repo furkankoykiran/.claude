@@ -67,6 +67,7 @@ env:
     VERSION
     .claude-plugin/marketplace.json
     skills/*/.claude-plugin/plugin.json
+    skills/*/plugin.json
 
 jobs:
   update:
