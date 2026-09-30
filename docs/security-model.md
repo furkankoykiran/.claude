@@ -47,9 +47,7 @@ Full behaviour, including channels and migrations, in [Updates](updates.md).
 
 ## Capability surface of the plugins
 
-The five marketplace plugins ship **skills and agents only**. None of them
-carries a hook, an MCP server, an LSP server, or a `bin/` directory that would
-land on the Bash tool's `PATH`.
+The marketplace plugins ship repository-owned skills and agents. `fk-toolkit-ops` also carries one portable remote MCP configuration for OpenAI Developer Docs, generated from `mcp-registry.toml`. It is a no-auth HTTPS endpoint and adds no local executable, hook, LSP server, or `bin/` directory to the Bash tool's `PATH`.
 
 Everything with capability surface — the hooks, the provider switcher, the
 updater, the installer — is in the bootstrap layer, in this repository, where you
@@ -130,10 +128,7 @@ and the body is not republished. See
 [Catalog coverage](catalog-coverage.md) and [Provenance](provenance.md) for the
 full inventory.
 
-The marketplace publishes **only** repository-owned plugins. No third-party pack
-is republished under this repository's name — one of them declares no licence at
-all, and drawing the line at "content we own" is the version that does not need
-re-deciding every time a source changes its terms.
+The marketplaces publish **only** repository-owned plugins. No third-party pack is republished under this repository's name. Portable root `plugin.json` files and the repo-scoped `.agents/plugins/marketplace.json` are generated from the same inventory as the Claude marketplace.
 
 Upstream projects retain their own licences. This repository's own code is MIT
 (see [LICENSE](../LICENSE)); vendored and cataloged content is not.
@@ -165,8 +160,7 @@ security reports.
 
 - Skills are not sandboxed or audited line by line.
 - Secret detection is heuristic; it gates review, not merge.
-- Metadata-only sources are still fetched at install time by `install.sh`;
-  metadata-only governs republication in the catalog, not local installation.
+- Metadata-only governs republication in the catalog, not local installation. Some metadata-only sources are still installer-fetched; catalog-only sources are not installed by bootstrap.
 - Pinning proves you got the revision that was reviewed. It does not prove the
   revision was safe — the gate reasons about capability surface and provenance,
   not intent.

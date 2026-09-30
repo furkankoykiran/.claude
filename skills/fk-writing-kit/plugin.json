@@ -1,0 +1,30 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "fk-writing-kit",
+  "version": "0.6.1",
+  "description": "Turn raw material into publishable writing: strip AI tells from drafts, and build blog posts or LinkedIn copy from a chat, a URL, or a GitHub profile.",
+  "author": {
+    "name": "Furkan Köykıran",
+    "url": "https://github.com/furkankoykiran"
+  },
+  "homepage": "https://github.com/furkankoykiran/.claude",
+  "repository": "https://github.com/furkankoykiran/.claude",
+  "license": "MIT",
+  "keywords": [
+    "writing",
+    "blogging",
+    "editing",
+    "linkedin",
+    "content"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Writing Kit",
+        "shortDescription": "Turn raw material into publishable writing: strip AI tells from drafts, and build blog posts or LinkedIn copy from a chat, a URL, or a GitHub profile.",
+        "developerName": "Furkan Köykıran",
+        "category": "content"
+      }
+    }
+  }
+}

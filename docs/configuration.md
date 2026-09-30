@@ -211,13 +211,14 @@ enabled on your account.
 
 ## MCP servers
 
-`scripts/setup-mcp.sh` configures the two portable ones:
+The repo-owned portable plugin marketplace includes the no-auth OpenAI Developer Docs MCP in `skills/fk-toolkit-ops/mcp.json`, generated from `mcp-registry.toml`. Codex/ChatGPT plugin hosts can discover it through `.agents/plugins/marketplace.json`; Claude Code users can still add MCP servers through Claude's native commands.
+
+`scripts/setup-mcp.sh` configures the two Claude-local ones:
 
 - **github** (HTTP) — needs a personal access token
 - **context7** (HTTP) — needs a Context7 API key
 
-Tokens are stored in `~/.claude.json` (mode `600`), never in this repo. For
-other MCP servers, use `claude mcp add` directly (or the `/add-mcp` skill).
+Tokens are stored in `~/.claude.json` (mode `600`), never in this repo. For other Claude-local MCP servers, use `claude mcp add` directly (or the `/add-mcp` skill). For Codex, use Codex's native MCP and plugin authentication commands rather than copying credentials into this repository.
 
 ### MCP servers across a provider switch
 

@@ -149,3 +149,11 @@ chars; mandatory catalog tests `332 passed`, one opt-in network test skipped, no
 failures. PowerShell runtime checks remain unrun in this Linux container because
 neither `pwsh` nor Windows PowerShell is installed; the PowerShell files were
 kept ASCII-only and covered by shell-side parity tests where possible.
+
+## Wave 3 evidence
+
+Wave 3 adds portable plugin manifests and a curated MCP registry without duplicating skill bodies. `marketplace.toml` remains the plugin inventory; the generator now writes Claude manifests, portable root `plugin.json` files, the repo-scoped `.agents/plugins/marketplace.json`, and plugin `mcp.json` files where `mcp-registry.toml` assigns no-auth default servers. The default MCP is OpenAI Developer Docs at `https://developers.openai.com/mcp`; auth-required MCP entries are not emitted into portable defaults.
+
+The requested upstreams are catalog-only and pinned to immutable revisions: Agent-Reach `a19a171fa980a0785849596492e0af4db800c82f`, UI/UX Pro Max `09170eec67eefd46a7ae85de61b40c194020f997`, and BRAG `c893c5ed52aed84e3e2ee56787de869fccdae6b0`. Agent-Reach, UI/UX Pro Max, and BRAG slim are redistributable from the catalog. Full BRAG remains metadata-only because its runtime and bundled media boundary is not safe to redistribute automatically. None of these sources is installed into every bootstrap by default.
+
+The ChatGPT Project prompt-architect bundle now routes by target runtime: Claude Code, Codex, or cross-agent. It uses `AGENTS.md` as shared policy, `CLAUDE.md` as the Claude adapter, current Codex/GPT-6 and Agent Plugin guidance for Codex prompts, and keeps generated implementation prompts in English with runnable verification.

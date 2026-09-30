@@ -1,0 +1,18 @@
+# mcp-registry.toml — curated starter MCP servers for portable plugins.
+#
+# This file is source data for generated plugin mcp.json files. Keep credentials
+# out of git: auth-required servers must stay disabled until native auth storage
+# can provision secrets outside this repository.
+
+schema_version = 1
+
+[[servers]]
+id = "openaiDeveloperDocs"
+plugin = "fk-toolkit-ops"
+display_name = "OpenAI Developer Docs"
+description = "Search and read official OpenAI developer documentation."
+url = "https://developers.openai.com/mcp"
+transport = "http"
+auth = "none"
+default_enabled = true
+source_url = "https://developers.openai.com/learn/docs-mcp"

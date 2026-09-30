@@ -26,6 +26,16 @@
       "sourceId": "marketing"
     },
     {
+      "key": "/agent-reach",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
+      "sourceId": "agent_reach"
+    },
+    {
       "key": "/ai-seo",
       "kind": "added",
       "manualReviewRequired": false,
@@ -78,6 +88,14 @@
       "sourceId": "gstack"
     },
     {
+      "key": "/banner-design",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "ui_ux_pro_max"
+    },
+    {
       "key": "/benchmark",
       "kind": "added",
       "manualReviewRequired": true,
@@ -97,6 +115,34 @@
       ],
       "securitySensitive": true,
       "sourceId": "gstack"
+    },
+    {
+      "key": "/brag",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:executable/binary"
+      ],
+      "securitySensitive": true,
+      "sourceId": "brag_full"
+    },
+    {
+      "key": "/brag-slim",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "brag_slim"
+    },
+    {
+      "key": "/brand",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:executable/binary"
+      ],
+      "securitySensitive": true,
+      "sourceId": "ui_ux_pro_max"
     },
     {
       "key": "/brandkit",
@@ -268,6 +314,14 @@
       "sourceId": "marketing"
     },
     {
+      "key": "/design",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "ui_ux_pro_max"
+    },
+    {
       "key": "/design-consultation",
       "kind": "added",
       "manualReviewRequired": true,
@@ -309,6 +363,16 @@
       ],
       "securitySensitive": true,
       "sourceId": "gstack"
+    },
+    {
+      "key": "/design-system",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:executable/binary"
+      ],
+      "securitySensitive": true,
+      "sourceId": "ui_ux_pro_max"
     },
     {
       "key": "/design-taste-frontend",
@@ -1244,6 +1308,14 @@
       "sourceId": "gstack"
     },
     {
+      "key": "/slides",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "ui_ux_pro_max"
+    },
+    {
       "key": "/sms",
       "kind": "added",
       "manualReviewRequired": false,
@@ -1290,6 +1362,24 @@
       "sourceId": "gstack"
     },
     {
+      "key": "/ui-styling",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:executable/binary"
+      ],
+      "securitySensitive": true,
+      "sourceId": "ui_ux_pro_max"
+    },
+    {
+      "key": "/ui-ux-pro-max",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "ui_ux_pro_max"
+    },
+    {
       "key": "/unfreeze",
       "kind": "added",
       "manualReviewRequired": true,
@@ -1330,8 +1420,8 @@
   ],
   "schemaVersion": 2,
   "summary": {
-    "added": 145,
-    "licenseRestricted": 10,
+    "added": 155,
+    "licenseRestricted": 11,
     "manualReviewRequired": true,
     "massChange": false,
     "removed": 0,
@@ -1344,7 +1434,7 @@
       "new-skill-capability:network-access"
     ],
     "runtimeOnly": 3,
-    "securitySensitive": 66,
+    "securitySensitive": 71,
     "updated": 0
   }
 }

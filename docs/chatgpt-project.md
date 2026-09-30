@@ -1,8 +1,6 @@
-# Writing better Claude Code prompts with a ChatGPT project
+# Writing better Claude Code and Codex prompts with a ChatGPT project
 
-A configured ChatGPT project turns a half-formed idea into a Claude Code prompt that
-names real files, routes to real skills, and closes with a check Claude Code can run.
-You type one sentence; you get back a prompt worth pasting.
+A configured ChatGPT project turns a half-formed idea into a prompt for Claude Code, Codex, or a cross-agent migration. It names real files, routes to real skills or plugins, and closes with a check the target runtime can run. You type one sentence; you get back a prompt worth pasting.
 
 This guide sets that up end to end. It takes about twenty minutes, most of it spent
 filling in one file honestly.
@@ -28,10 +26,7 @@ and what it does, so it can put `/skill-name` in the prompt; Claude Code loads t
 itself at runtime. The 27 KB `SKILLS_CATALOG.md` asset carries all 140+ entries and
 routes far better than a multi-megabyte file that retrieval has to wade through.
 
-**`CLAUDE.md` is the single authority.** It already holds coding discipline, commit
-conventions, verification gates and repository invariants. Nothing else uploaded may
-repeat it. Duplication does not reinforce a rule; it creates two sources that drift, and
-it makes it impossible to tell whether the assistant read the real file or a stale copy.
+**`AGENTS.md` is the shared authority; `CLAUDE.md` is the Claude adapter.** Shared coding discipline, verification gates and repository invariants belong in `AGENTS.md`. Claude-specific skill, hook and harness rules belong in `CLAUDE.md`. Nothing else uploaded should repeat either file.
 
 **Every prompt ends in a runnable check.** Claude Code stops when work looks done.
 Without a check it can run, you become the verification loop. The instructions make this
@@ -43,10 +38,7 @@ For the reasoning behind the skill listing budget, see
 
 ## Before you start
 
-**Requirements.** A ChatGPT plan with projects and file uploads. Web browsing enabled,
-since the assistant is instructed to check canonical Anthropic sources before non-trivial
-answers. Use the strongest reasoning model available; prompt synthesis degrades
-noticeably on cheaper models.
+**Requirements.** A ChatGPT plan with projects and file uploads. Web browsing enabled, since the assistant is instructed to check canonical Anthropic, OpenAI, Agent Plugins, Agent Skills and MCP sources before non-trivial answers. Use the strongest reasoning model available; prompt synthesis degrades noticeably on cheaper models.
 
 **File limits.** As of 16 July 2026: 5 files on Free, 25 on Go and Plus, 40 on Edu, Pro,
 Business and Enterprise. Ten files may be uploaded at once. This setup uses seven.
@@ -69,8 +61,7 @@ above. Leave instructions and files empty for now.
 
 ## Step 2: Collect the seven files
 
-Filenames matter. The instructions reference each file by name, so upload them exactly
-as named below.
+Filenames matter. The instructions reference each file by name, so upload them exactly as named below.
 
 ### Two release assets
 
@@ -93,22 +84,23 @@ description. `skills-catalog.json` is the same data structured, for exact matchi
 Do not download `claude_code_skills.md` or `docs-skills.tar.gz`. They are large and
 they degrade retrieval, for the reason given above.
 
-### Four from this repository
+### Repository prompt-architect files
 
 ```bash
 BASE=https://raw.githubusercontent.com/furkankoykiran/.claude/main
 curl -fLO $BASE/docs/chatgpt-project/PROMPT-CANON.md
 curl -fLO $BASE/docs/chatgpt-project/PROJECTS.md
 curl -fLO $BASE/docs/chatgpt-project/PROMPT-LIBRARY.md
+curl -fLO $BASE/AGENTS.md
+curl -fLO $BASE/CLAUDE.md
 curl -fLO $BASE/docs/skills/impeccable/impeccable.md
 ```
 
-- [PROMPT-CANON.md](chatgpt-project/PROMPT-CANON.md) is the distilled prompt engineering
-  canon plus the allowlist of sources the assistant browses. It is the offline baseline
-  for when browsing fails.
+- [PROMPT-CANON.md](chatgpt-project/PROMPT-CANON.md) is the offline baseline and source allowlist for Claude Code, Codex, Agent Plugins, Agent Skills and MCP.
 - [PROJECTS.md](chatgpt-project/PROJECTS.md) is a template. You fill it in at step 5.
-- [PROMPT-LIBRARY.md](chatgpt-project/PROMPT-LIBRARY.md) starts empty and becomes the
-  feedback loop.
+- [PROMPT-LIBRARY.md](chatgpt-project/PROMPT-LIBRARY.md) starts empty and becomes the feedback loop.
+- `AGENTS.md` is the shared repository instruction surface for Codex and other agents.
+- `CLAUDE.md` is the Claude Code adapter. Upload it when Claude Code prompts are in scope.
 - `impeccable.md` is the quality bar for design and hardening work.
 
 `karpathy-guidelines.md` is deliberately absent. Its upstream is redistributed as
@@ -116,15 +108,13 @@ metadata only, so the generated file carries the description rather than the ski
 and the discipline it encodes already lives in `CLAUDE.md`. See
 [Provenance](provenance.md) for what is redistributed in full and what is only pointed at.
 
-### One from your own machine
+### Optional local adapter files
 
-Your `~/.claude/CLAUDE.md`. This is your configuration, not a file to download. If you
-have not written one yet, run `/init` inside Claude Code to generate a starting point,
-then prune it before uploading.
+If your live `~/.claude/CLAUDE.md` or project `AGENTS.md` differs from this repository, upload those local files instead of the downloaded copies. Do not upload secrets, provider JSON, settings, sessions or transcripts.
 
 ## Step 3: Upload
 
-Upload all seven files to the project. Confirm the names survived the upload; a renamed
+Upload the files to the project. Confirm the names survived the upload; a renamed
 file is a file the instructions cannot find.
 
 ## Step 4: Paste the instructions
@@ -206,10 +196,7 @@ state.
 
 > let's hand-fix the broken descriptions under docs/skills, without touching the generator
 
-This deliberately conflicts with a hard rule. Expect the assistant to decline to generate
-a hand-editing prompt, explain that the change would be erased by the next build and fail
-the drift check, and route to the authoritative source instead. If it produces a
-hand-editing prompt, rule precedence is inverted and the instructions need adjusting.
+This deliberately conflicts with a hard rule. Expect the assistant to decline to generate a hand-editing prompt, explain that the change would be erased by the next build and fail the drift check, and route to the authoritative source instead. If it produces a hand-editing prompt, rule precedence is inverted and the instructions need adjusting.
 
 ## Using it day to day
 
@@ -237,6 +224,24 @@ than none.
 **When the assistant reports an unresolved contradiction** between a live source and
 `PROMPT-CANON.md`, refresh the canon. The live source wins by design, but the baseline
 should not drift far behind it.
+
+
+## Refreshing the project bundle
+
+This repository cannot mutate a ChatGPT Project for you. Refresh the export by regenerating the catalog, copying the prompt-architect files into a clean directory, and uploading the changed files yourself:
+
+```bash
+TMP=$(mktemp -d)
+bun run catalog:generate
+cp catalog/generated/SKILLS_CATALOG.md catalog/generated/skills-catalog.json "$TMP"/
+cp docs/chatgpt-project/PROJECT-INSTRUCTIONS.md docs/chatgpt-project/PROMPT-CANON.md "$TMP"/
+cp docs/chatgpt-project/PROJECTS.md docs/chatgpt-project/PROMPT-LIBRARY.md "$TMP"/
+cp AGENTS.md CLAUDE.md "$TMP"/
+cp docs/skills/impeccable/impeccable.md "$TMP"/ 2>/dev/null || true
+printf 'Upload files from %s\n' "$TMP"
+```
+
+Paste `PROJECT-INSTRUCTIONS.md` into the project instructions field. Upload the rest as project files. Re-upload after any change to `AGENTS.md`, `CLAUDE.md`, the skill catalog, or the prompt canon.
 
 ## Troubleshooting
 

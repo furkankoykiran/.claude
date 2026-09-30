@@ -39,8 +39,10 @@ export interface GitSourceConfig {
   /** Whether full bodies may be republished. The resolver may downgrade this. */
   redistribution: "full" | "metadata-only";
   licenseNoticeFiles: string[];
-  /** install.sh function name that installs this source (for parity tests). */
+  /** install.sh function name that installs this source, or catalog-only documentation. */
   installStep: string;
+  /** True for reviewed sources that are cataloged but deliberately not installed by bootstrap. */
+  catalogOnly: boolean;
   notes?: string;
 }
 

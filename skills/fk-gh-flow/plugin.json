@@ -1,0 +1,30 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "fk-gh-flow",
+  "version": "0.6.1",
+  "description": "End-to-end GitHub workflow: find issues worth working on, solve one into a pull request, follow up on review feedback, and write comments that read like a human wrote them.",
+  "author": {
+    "name": "Furkan Köykıran",
+    "url": "https://github.com/furkankoykiran"
+  },
+  "homepage": "https://github.com/furkankoykiran/.claude",
+  "repository": "https://github.com/furkankoykiran/.claude",
+  "license": "MIT",
+  "keywords": [
+    "github",
+    "issues",
+    "pull-requests",
+    "code-review",
+    "open-source"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "GitHub Flow",
+        "shortDescription": "End-to-end GitHub workflow: find issues worth working on, solve one into a pull request, follow up on review feedback, and write comments that read like a human wrote them.",
+        "developerName": "Furkan Köykıran",
+        "category": "productivity"
+      }
+    }
+  }
+}

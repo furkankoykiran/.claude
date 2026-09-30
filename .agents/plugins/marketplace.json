@@ -1,0 +1,83 @@
+{
+  "name": "fk-toolkit",
+  "interface": {
+    "displayName": "FK Claude Toolkit"
+  },
+  "plugins": [
+    {
+      "name": "fk-eng-agents",
+      "source": {
+        "source": "local",
+        "path": "./skills/fk-eng-agents"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "development",
+      "interface": {
+        "displayName": "Engineering Subagents"
+      }
+    },
+    {
+      "name": "fk-gh-flow",
+      "source": {
+        "source": "local",
+        "path": "./skills/fk-gh-flow"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "productivity",
+      "interface": {
+        "displayName": "GitHub Flow"
+      }
+    },
+    {
+      "name": "fk-manim-video",
+      "source": {
+        "source": "local",
+        "path": "./skills/fk-manim-video"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "media",
+      "interface": {
+        "displayName": "Narrated Manim Video"
+      }
+    },
+    {
+      "name": "fk-toolkit-ops",
+      "source": {
+        "source": "local",
+        "path": "./skills/fk-toolkit-ops"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "development",
+      "interface": {
+        "displayName": "Toolkit Ops"
+      }
+    },
+    {
+      "name": "fk-writing-kit",
+      "source": {
+        "source": "local",
+        "path": "./skills/fk-writing-kit"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "content",
+      "interface": {
+        "displayName": "Writing Kit"
+      }
+    }
+  ]
+}

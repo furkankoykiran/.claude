@@ -83,6 +83,7 @@ export async function cleanupTemp(dir: string): Promise<void> {
  * cloning. `git ls-remote` downloads no objects.
  */
 export async function resolveRef(repo: string, ref: string, timeoutMs?: number): Promise<string> {
+  if (/^[0-9a-f]{40}$/i.test(ref)) return ref.toLowerCase();
   const wantHead = ref === "HEAD" || ref === "origin/HEAD";
   try {
     if (wantHead) {

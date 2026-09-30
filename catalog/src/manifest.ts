@@ -96,6 +96,7 @@ function parseGit(id: string, raw: Record<string, unknown>): GitSourceConfig {
     redistribution,
     licenseNoticeFiles: licenseNotice,
     installStep: asString(need(raw, "install_step", id), id, "install_step"),
+    catalogOnly: raw["catalog_only"] === true,
     notes: typeof raw["notes"] === "string" ? raw["notes"] : undefined,
   };
 }

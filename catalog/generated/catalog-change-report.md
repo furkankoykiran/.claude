@@ -2,28 +2,33 @@
 
 # Catalog change report
 
-- added: 145
+- added: 155
 - updated: 0
 - removed: 0
 - renamed: 0
-- license-restricted: 10
+- license-restricted: 11
 - runtime-only: 3
-- security-sensitive: 66
+- security-sensitive: 71
 - **manual-review-required: true**
 
-## Added (145)
+## Added (155)
 
 - `/ab-testing`
 - `/ad-creative`
 - `/ads`
+- `/agent-reach`
 - `/ai-seo`
 - `/analytics`
 - `/anthropics/skills:*`
 - `/aso`
 - `/attribution`
 - `/autoplan`
+- `/banner-design`
 - `/benchmark`
 - `/benchmark-models`
+- `/brag`
+- `/brag-slim`
+- `/brand`
 - `/brandkit`
 - `/browse`
 - `/canary`
@@ -43,10 +48,12 @@
 - `/cro`
 - `/cso`
 - `/customer-research`
+- `/design`
 - `/design-consultation`
 - `/design-html`
 - `/design-review`
 - `/design-shotgun`
+- `/design-system`
 - `/design-taste-frontend`
 - `/design-taste-frontend-v1`
 - `/deslop-shared-libs`
@@ -149,21 +156,27 @@
 - `/site-architecture`
 - `/skill-creator`
 - `/skillify`
+- `/slides`
 - `/sms`
 - `/social`
 - `/spec`
 - `/stitch-design-taste`
 - `/sync-gbrain`
+- `/ui-styling`
+- `/ui-ux-pro-max`
 - `/unfreeze`
 - `/video`
 - `/web-artifacts-builder`
 - `/xlsx`
 
-## Security-sensitive (66)
+## Security-sensitive (71)
 
+- `/agent-reach`
 - `/autoplan`
 - `/benchmark`
 - `/benchmark-models`
+- `/brag`
+- `/brand`
 - `/browse`
 - `/canary`
 - `/careful`
@@ -174,6 +187,7 @@
 - `/design-html`
 - `/design-review`
 - `/design-shotgun`
+- `/design-system`
 - `/deslop-shared-libs`
 - `/devex-review`
 - `/diagram`
@@ -224,15 +238,19 @@
 - `/social`
 - `/spec`
 - `/sync-gbrain`
+- `/ui-styling`
 - `/unfreeze`
 - `/web-artifacts-builder`
 - `/xlsx`
 
-## Manual-review-required (66)
+## Manual-review-required (71)
 
+- `/agent-reach`
 - `/autoplan`
 - `/benchmark`
 - `/benchmark-models`
+- `/brag`
+- `/brand`
 - `/browse`
 - `/canary`
 - `/careful`
@@ -243,6 +261,7 @@
 - `/design-html`
 - `/design-review`
 - `/design-shotgun`
+- `/design-system`
 - `/deslop-shared-libs`
 - `/devex-review`
 - `/diagram`
@@ -293,6 +312,7 @@
 - `/social`
 - `/spec`
 - `/sync-gbrain`
+- `/ui-styling`
 - `/unfreeze`
 - `/web-artifacts-builder`
 - `/xlsx`

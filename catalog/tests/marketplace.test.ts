@@ -8,7 +8,11 @@ import {
   verifyPluginTree,
   buildAll,
   buildMarketplaceManifest,
+  buildOpenAiMarketplaceManifest,
   buildPluginManifest,
+  buildPortableMcpManifest,
+  buildPortablePluginManifest,
+  loadMcpRegistry,
   findStale,
   writeAll,
 } from "../src/marketplace.ts";
@@ -180,6 +184,59 @@ describe("generated manifests", () => {
     expect(buildMarketplaceManifest(spec, "1.2.3")).not.toHaveProperty("renames");
   });
 
+
+  it("builds portable plugin manifests with the Agent Plugins schema", async () => {
+    const spec = await loadMarketplaceSpec(await writeToml(BASE_TOML));
+    const plugin = buildPortablePluginManifest(spec, spec.plugins[0]!, "1.2.3");
+    expect(plugin["$schema"]).toBe("https://agent-plugins.org/schemas/1.0.0/plugin.schema.json");
+    expect(plugin["name"]).toBe("fk-alpha");
+    expect(plugin["version"]).toBe("1.2.3");
+    expect(plugin).toHaveProperty("extensions");
+  });
+
+  it("builds a repo-scoped OpenAI/Codex marketplace from the same inventory", async () => {
+    const spec = await loadMarketplaceSpec(await writeToml(BASE_TOML));
+    const market = buildOpenAiMarketplaceManifest(spec) as Record<string, unknown>;
+    const entries = market["plugins"] as Array<Record<string, unknown>>;
+    expect((market["interface"] as Record<string, unknown>)["displayName"]).toBe("FK Claude Toolkit");
+    expect((entries[0]!["source"] as Record<string, unknown>)["path"]).toBe("./skills/fk-alpha");
+    expect((entries[0]!["policy"] as Record<string, unknown>)["installation"]).toBe("AVAILABLE");
+  });
+
+  it("maps registry HTTP MCP servers to portable streamable-http config", () => {
+    const manifest = buildPortableMcpManifest([
+      {
+        id: "openaiDocs",
+        plugin: "fk-alpha",
+        displayName: "OpenAI Docs",
+        description: "Search docs",
+        url: "https://developers.openai.com/mcp",
+        transport: "http",
+        auth: "none",
+        defaultEnabled: true,
+      },
+    ]) as Record<string, unknown>;
+    const servers = manifest["mcpServers"] as Record<string, Record<string, unknown>>;
+    expect(manifest["$schema"]).toBe("https://agent-plugins.org/schemas/1.0.0/mcp.schema.json");
+    expect(servers["openaiDocs"]!["type"]).toBe("streamable-http");
+  });
+
+  it("does not include auth-required MCP servers in portable defaults", () => {
+    const manifest = buildPortableMcpManifest([
+      {
+        id: "needsAuth",
+        plugin: "fk-alpha",
+        displayName: "Private",
+        description: "Private",
+        url: "https://example.invalid/mcp",
+        transport: "streamable-http",
+        auth: "oauth",
+        defaultEnabled: true,
+      },
+    ]) as Record<string, unknown>;
+    expect(manifest["mcpServers"]).toEqual({});
+  });
+
   it("is byte-stable across two builds", async () => {
     const p = await writeToml(BASE_TOML);
     const a = await buildAll(root, p);
@@ -189,7 +246,7 @@ describe("generated manifests", () => {
 
   it("findStale reports everything before a first write, and nothing after", async () => {
     const p = await writeToml(BASE_TOML);
-    expect((await findStale(root, p)).length).toBe(2);
+    expect((await findStale(root, p)).length).toBe(4);
     await writeAll(root, p);
     expect(await findStale(root, p)).toEqual([]);
   });
@@ -198,6 +255,43 @@ describe("generated manifests", () => {
     const p = await writeToml(BASE_TOML);
     await writeAll(root, p);
     await writeFile(join(root, "VERSION"), "1.3.0\n");
-    expect((await findStale(root, p)).length).toBe(2);
+    expect((await findStale(root, p)).length).toBe(3);
+  });
+});
+describe("mcp-registry.toml parsing", () => {
+  it("parses a no-auth HTTPS server", async () => {
+    const registryPath = join(root, "mcp-registry.toml");
+    await writeFile(registryPath, `schema_version = 1
+
+[[servers]]
+id = "openaiDocs"
+plugin = "fk-alpha"
+display_name = "OpenAI Docs"
+description = "Search docs."
+url = "https://developers.openai.com/mcp"
+transport = "http"
+auth = "none"
+default_enabled = true
+`);
+    const registry = await loadMcpRegistry(registryPath);
+    expect(registry.servers[0]!.id).toBe("openaiDocs");
+    expect(registry.servers[0]!.auth).toBe("none");
+  });
+
+  it("rejects non-HTTPS remote MCP URLs", async () => {
+    const registryPath = join(root, "mcp-registry.toml");
+    await writeFile(registryPath, `schema_version = 1
+
+[[servers]]
+id = "bad"
+plugin = "fk-alpha"
+display_name = "Bad"
+description = "Bad."
+url = "http://example.invalid/mcp"
+transport = "http"
+auth = "none"
+default_enabled = true
+`);
+    await expect(loadMcpRegistry(registryPath)).rejects.toThrow(/HTTPS/);
   });
 });

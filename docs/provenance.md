@@ -25,6 +25,10 @@ bun run catalog:check      # parity, digests, licences, determinism
 | [impeccable](https://github.com/pbakaus/impeccable) | git | Apache-2.0 / Apache-2.0 | full | 1 | `d272b9bd5dcf` |
 | [taste-skill](https://github.com/Leonxlnx/taste-skill) | git | MIT / MIT | full | 13 | `e988add20dab` |
 | [anthropics/skills](https://github.com/anthropics/skills) | git | Apache-2.0 / unknown | metadata-only | 8 | `b29e7cf65e5c` |
+| [Agent-Reach](https://github.com/Panniantong/Agent-Reach) | git, catalog-only | MIT / MIT | full | 1 | `a19a171fa980` |
+| [ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) | git, catalog-only | MIT / MIT plus component licences | full | 7 | `09170eec67ee` |
+| [BRAG slim](https://github.com/latent-spaces/brag) | git, catalog-only | MIT / MIT | full | 1 | `c893c5ed52ae` |
+| [BRAG full](https://github.com/latent-spaces/brag) | git, catalog-only | MIT / MIT | metadata-only | 1 | `c893c5ed52ae` |
 | [graphifyy](https://pypi.org/project/graphifyy/) | runtime | Apache-2.0 | metadata-only | — | *PyPI version* |
 | [rtk](https://github.com/rtk-ai/rtk) | runtime | — | metadata-only | — | *installer script* |
 | plugin marketplaces | runtime | per-plugin | metadata-only | — | *resolved by the `claude` CLI* |
@@ -44,7 +48,7 @@ skill when you install; the toolkit fetches it from upstream on your machine.
 What it does not do is republish someone else's text under this repository's
 release artefacts.
 
-A source lands in metadata-only for one of three reasons:
+A source lands in metadata-only for one of four reasons:
 
 - **No licence upstream.** `andrej-karpathy-skills` declares none. No licence
   means no grant, so nothing is republished.
@@ -57,6 +61,10 @@ A source lands in metadata-only for one of three reasons:
   marketplaces are installed by a package manager, an installer script, or the
   `claude` CLI. There is no tree to digest, so they are recorded honestly as
   runtime components with the reason attached.
+- **The selected variant carries unsettled runtime or media rights.** Full BRAG
+  is cataloged so its existence, digest and revision are reviewable, but the
+  body stays metadata-only until its heavy runtime and bundled music-rights
+  boundary is settled.
 
 The resolver **downgrades automatically**. A source declared `full` whose licence
 cannot be verified becomes metadata-only without anyone deciding to be careful
@@ -74,8 +82,7 @@ would be defensible, but it publishes someone else's work under our marketplace
 identity and makes our manifest depend on repositories we do not control. See
 [the architecture record](architecture-distribution.md) for the full reasoning.
 
-Third-party packs therefore stay installer-fetched, pinned to the reviewed SHAs
-above.
+Third-party packs therefore stay installer-fetched or catalog-only, pinned to the reviewed SHAs above. Catalog-only sources are not copied into every bootstrap install; they exist so provenance, license, capability and routing data are reviewable without expanding the always-loaded skill set.
 
 ## Licence and notice files
 
@@ -120,13 +127,10 @@ cd /tmp/check && sha256sum -c SHA256SUMS
 
 ## Adding a source
 
-1. Declare it in `skills-sources.toml` with its licence, redistribution level and
-   the `install.sh` function that installs it.
+1. Declare it in `skills-sources.toml` with its licence, redistribution level and installer behavior. Use `catalog_only = true` only when bootstrap must not install it by default.
 2. `bun run catalog:resolve` to pin it and detect its licence.
-3. Mirror it in `install.sh`. `catalog/src/parity.ts` fails the build if the two
-   drift.
-4. `bun run catalog:generate` and commit the generated output with the source
-   change.
+3. If it is installable, mirror it in `install.sh`. `catalog/src/parity.ts` fails the build if installable sources and the installer drift.
+4. `bun run catalog:generate` and commit the generated output with the source change.
 
 A new source is a supply-chain decision. The capability gate holds it for human
 review — see [Security model](security-model.md).
