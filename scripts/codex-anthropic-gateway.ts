@@ -1,0 +1,839 @@
+/**
+ * Experimental Claude Code -> local Anthropic-compatible -> Codex app-server
+ * gateway boundary.
+ *
+ * This module intentionally implements a narrow, fail-closed protocol subset.
+ * It is not a live proof that Claude Code avoided Anthropic unless a separate
+ * process-scoped network test blocks and observes Anthropic destinations.
+ */
+
+export type AnthropicRole = "user" | "assistant";
+
+export type AnthropicTextBlock = {
+  type: "text";
+  text: string;
+};
+
+export type AnthropicToolUseBlock = {
+  type: "tool_use";
+  id: string;
+  name: string;
+  input: unknown;
+};
+
+export type AnthropicToolResultBlock = {
+  type: "tool_result";
+  tool_use_id: string;
+  content: string | AnthropicTextBlock[];
+  is_error?: boolean;
+};
+
+export type AnthropicContentBlock =
+  | AnthropicTextBlock
+  | AnthropicToolUseBlock
+  | AnthropicToolResultBlock;
+
+export type AnthropicMessage = {
+  role: AnthropicRole;
+  content: string | AnthropicContentBlock[];
+};
+
+export type AnthropicTool = {
+  name: string;
+  description?: string;
+  input_schema: unknown;
+};
+
+export type AnthropicMessagesRequest = {
+  model: string;
+  max_tokens: number;
+  system?: string | AnthropicTextBlock[];
+  messages: AnthropicMessage[];
+  stream?: boolean;
+  tools?: AnthropicTool[];
+  metadata?: Record<string, unknown>;
+};
+
+export type JsonRpcRequest = {
+  jsonrpc: "2.0";
+  id: string | number;
+  method: string;
+  params: Record<string, unknown>;
+};
+
+export type JsonRpcNotification = {
+  jsonrpc?: "2.0";
+  method: string;
+  params?: Record<string, unknown>;
+};
+
+export type CodexGatewayOptions = {
+  cwd: string;
+  model?: string;
+  reasoningEffort?: string;
+  threadId?: string;
+  requestId?: string | number;
+};
+
+export type GatewayRequestBatch = {
+  threadId: string | null;
+  requests: JsonRpcRequest[];
+  unsupported: string[];
+};
+
+export type AnthropicSseEvent = {
+  event: string;
+  data: Record<string, unknown>;
+};
+
+export type GatewayState = {
+  seenRequestKeys: Set<string>;
+  activeTurns: Map<string, { threadId: string }>;
+  emittedErrors: Set<string>;
+};
+
+export function createGatewayState(): GatewayState {
+  return {
+    seenRequestKeys: new Set(),
+    activeTurns: new Map(),
+    emittedErrors: new Set(),
+  };
+}
+
+export function codexAppServerCommand(): {
+  command: string;
+  args: string[];
+  env: Record<string, string>;
+} {
+  return {
+    command: "codex",
+    args: ["app-server", "--stdio"],
+    env: {},
+  };
+}
+
+export function toCodexRequests(
+  request: AnthropicMessagesRequest,
+  options: CodexGatewayOptions,
+): GatewayRequestBatch {
+  validateAnthropicRequest(request);
+
+  const existingThreadId = options.threadId ?? stringMetadata(request, "codex_thread_id");
+  const input = flattenMessages(request);
+  const system = flattenSystem(request.system);
+  const additionalContext = system
+    ? {
+        "anthropic-system": {
+          kind: "application",
+          value: system,
+        },
+      }
+    : null;
+
+  const toolInstructions = request.tools?.length
+    ? {
+        "anthropic-tools": {
+          kind: "application",
+          value: JSON.stringify({
+            boundary: "experimental-dynamic-client-tools-only",
+            tools: request.tools.map((tool) => ({
+              name: tool.name,
+              description: tool.description ?? "",
+              input_schema: tool.input_schema,
+            })),
+          }),
+        },
+      }
+    : null;
+
+  const params: Record<string, unknown> = {
+    input,
+    cwd: options.cwd,
+    model: resolveCodexModel(request.model, options.model),
+    additionalContext: mergeNullableRecords(additionalContext, toolInstructions),
+  };
+  if (options.reasoningEffort) {
+    params["effort"] = options.reasoningEffort;
+  }
+
+  const requestId = options.requestId ?? "turn-1";
+  const threadId = existingThreadId ?? `urn:uuid:${crypto.randomUUID()}`;
+  const method = "turn/start";
+  const codexParams = { ...params, threadId };
+
+  return {
+    threadId: existingThreadId,
+    requests: [
+      {
+        jsonrpc: "2.0",
+        id: requestId,
+        method,
+        params: codexParams,
+      },
+    ],
+    unsupported: [],
+  };
+}
+
+export function shouldStreamAnthropicResponse(request: Pick<AnthropicMessagesRequest, "stream">): boolean {
+  return request.stream === true;
+}
+
+export function resolveCodexModel(requestModel: string, selectedModel?: string): string {
+  if (selectedModel && selectedModel.length > 0) {
+    return selectedModel;
+  }
+  if (requestModel.startsWith("claude-")) {
+    const envModel = process.env.CODEX_GATEWAY_MODEL || process.env.CODEX_MODEL;
+    if (envModel) {
+      return envModel;
+    }
+    throw new Error(
+      "Claude model aliases cannot be forwarded to Codex directly; set CODEX_GATEWAY_MODEL to a Codex model id",
+    );
+  }
+  return requestModel;
+}
+
+export function toAnthropicStreamEvents(
+  notifications: JsonRpcNotification[],
+  state: GatewayState = createGatewayState(),
+): AnthropicSseEvent[] {
+  const events: AnthropicSseEvent[] = [
+    {
+      event: "message_start",
+      data: {
+        type: "message_start",
+        message: {
+          id: "msg_codex_gateway",
+          type: "message",
+          role: "assistant",
+          content: [],
+          model: "codex-app-server",
+          stop_reason: null,
+          stop_sequence: null,
+          usage: { input_tokens: 0, output_tokens: 0 },
+        },
+      },
+    },
+  ];
+
+  let textOpen = false;
+  let contentIndex = 0;
+
+  for (const notification of notifications) {
+    const params = notification.params ?? {};
+    if (isIgnorableCodexNotification(notification.method)) {
+      continue;
+    }
+
+    if (notification.method === "turn/started") {
+      const turnId = readTurnId(params);
+      const threadId = readString(params, "threadId");
+      if (turnId && threadId) {
+        state.activeTurns.set(turnId, { threadId });
+      }
+      continue;
+    }
+
+    if (notification.method === "item/agentMessage/delta" || notification.method === "item/commandExecution/outputDelta") {
+      if (!textOpen) {
+        events.push({
+          event: "content_block_start",
+          data: {
+            type: "content_block_start",
+            index: contentIndex,
+            content_block: { type: "text", text: "" },
+          },
+        });
+        textOpen = true;
+      }
+      events.push({
+        event: "content_block_delta",
+        data: {
+          type: "content_block_delta",
+          index: contentIndex,
+          delta: { type: "text_delta", text: readString(params, "delta") ?? "" },
+        },
+      });
+      continue;
+    }
+
+    if (notification.method === "item/completed") {
+      const toolUse = dynamicToolUseFromItem(params["item"]);
+      if (toolUse) {
+        if (textOpen) {
+          events.push({
+            event: "content_block_stop",
+            data: { type: "content_block_stop", index: contentIndex },
+          });
+          contentIndex += 1;
+          textOpen = false;
+        }
+        events.push({
+          event: "content_block_start",
+          data: {
+            type: "content_block_start",
+            index: contentIndex,
+            content_block: toolUse,
+          },
+        });
+        events.push({
+          event: "content_block_stop",
+          data: { type: "content_block_stop", index: contentIndex },
+        });
+        contentIndex += 1;
+      }
+      continue;
+    }
+
+    if (notification.method === "turn/completed") {
+      if (textOpen) {
+        events.push({
+          event: "content_block_stop",
+          data: { type: "content_block_stop", index: contentIndex },
+        });
+        contentIndex += 1;
+        textOpen = false;
+      }
+      events.push({
+        event: "message_delta",
+        data: {
+          type: "message_delta",
+          delta: { stop_reason: "end_turn", stop_sequence: null },
+          usage: { output_tokens: 0 },
+        },
+      });
+      continue;
+    }
+
+    if (notification.method === "error") {
+      const key = JSON.stringify(params);
+      if (!state.emittedErrors.has(key)) {
+        state.emittedErrors.add(key);
+        events.push({
+          event: "error",
+          data: {
+            type: "error",
+            error: {
+              type: "api_error",
+              message: readString(params, "message") ?? "Codex app-server error",
+            },
+          },
+        });
+      }
+      continue;
+    }
+
+    throw new Error(`Unsupported Codex notification: ${notification.method}`);
+  }
+
+  if (textOpen) {
+    events.push({
+      event: "content_block_stop",
+      data: { type: "content_block_stop", index: contentIndex },
+    });
+  }
+  events.push({ event: "message_stop", data: { type: "message_stop" } });
+  return events;
+}
+
+export function cancellationRequest(
+  threadId: string,
+  turnId: string,
+  id: string | number = "cancel-1",
+): JsonRpcRequest {
+  if (!threadId || !turnId) {
+    throw new Error("Cancellation requires both threadId and turnId");
+  }
+  return {
+    jsonrpc: "2.0",
+    id,
+    method: "turn/interrupt",
+    params: { threadId, turnId },
+  };
+}
+
+export function shouldForwardWithRetryDedupe(
+  state: GatewayState,
+  request: JsonRpcRequest,
+): boolean {
+  const key = JSON.stringify({
+    method: request.method,
+    params: request.params,
+  });
+  if (state.seenRequestKeys.has(key)) {
+    return false;
+  }
+  state.seenRequestKeys.add(key);
+  return true;
+}
+
+export function cleanShutdownRequests(
+  activeTurns: Iterable<[string, { threadId: string }]>,
+): JsonRpcRequest[] {
+  return Array.from(activeTurns, ([turnId, turn], index) =>
+    cancellationRequest(turn.threadId, turnId, `shutdown-${index + 1}`),
+  );
+}
+
+function isIgnorableCodexNotification(method: string): boolean {
+  return method === "thread/started"
+    || method === "thread/status/changed"
+    || method === "thread/name/updated"
+    || method === "thread/tokenUsage/updated"
+    || method === "thread/settings/updated"
+    || method === "thread/queue/changed"
+    || method === "hook/started"
+    || method === "hook/completed"
+    || method === "item/started"
+    || method === "item/commandExecution/terminalInteraction"
+    || method === "rawResponseItem/completed"
+    || method === "rawResponse/completed"
+    || method === "turn/diff/updated"
+    || method === "turn/plan/updated"
+    || method === "turn/moderationMetadata"
+    || method === "model/verification"
+    || method === "model/rerouted"
+    || method === "model/safetyBuffering/updated"
+    || method === "mcpServer/startupStatus/updated"
+    || method === "account/updated"
+    || method === "account/rateLimits/updated"
+    || method === "configWarning"
+    || method === "warning"
+    || method === "deprecationNotice";
+}
+
+function validateAnthropicRequest(request: AnthropicMessagesRequest): void {
+  if (!request.model) {
+    throw new Error("Anthropic request missing model");
+  }
+  if (!Number.isFinite(request.max_tokens) || request.max_tokens <= 0) {
+    throw new Error("Anthropic request max_tokens must be positive");
+  }
+  if (!Array.isArray(request.messages) || request.messages.length === 0) {
+    throw new Error("Anthropic request must include at least one message");
+  }
+  for (const [index, message] of request.messages.entries()) {
+    if (message.role !== "user" && message.role !== "assistant") {
+      throw new Error(`Unsupported Anthropic message role at index ${index}`);
+    }
+  }
+}
+
+function flattenMessages(request: AnthropicMessagesRequest): Record<string, unknown>[] {
+  const lines: string[] = [];
+  for (const message of request.messages) {
+    const text = flattenContent(message.content);
+    if (text) {
+      lines.push(`${message.role}: ${text}`);
+    }
+  }
+  if (lines.length === 0) {
+    throw new Error("Anthropic request has no text or tool-result content to forward");
+  }
+  return [{ type: "text", text: lines.join("\n\n"), text_elements: [] }];
+}
+
+function flattenContent(content: string | AnthropicContentBlock[]): string {
+  if (typeof content === "string") {
+    return content;
+  }
+  return content
+    .map((block) => {
+      if (block.type === "text") {
+        return block.text;
+      }
+      if (block.type === "tool_result") {
+        return JSON.stringify({
+          type: "tool_result",
+          tool_use_id: block.tool_use_id,
+          is_error: block.is_error === true,
+          content: typeof block.content === "string" ? block.content : flattenContent(block.content),
+        });
+      }
+      if (block.type === "tool_use") {
+        return JSON.stringify({
+          type: "tool_use_observation",
+          id: block.id,
+          name: block.name,
+          input: block.input,
+        });
+      }
+      const unsupported: never = block;
+      throw new Error(`Unsupported Anthropic content block: ${JSON.stringify(unsupported)}`);
+    })
+    .filter(Boolean)
+    .join("\n");
+}
+
+function flattenSystem(system: AnthropicMessagesRequest["system"]): string | null {
+  if (!system) {
+    return null;
+  }
+  if (typeof system === "string") {
+    return system;
+  }
+  return system.map((block) => block.text).join("\n");
+}
+
+function stringMetadata(
+  request: AnthropicMessagesRequest,
+  key: string,
+): string | null {
+  const value = request.metadata?.[key];
+  return typeof value === "string" && value.length > 0 ? value : null;
+}
+
+function mergeNullableRecords(
+  first: Record<string, unknown> | null,
+  second: Record<string, unknown> | null,
+): Record<string, unknown> | null {
+  if (!first && !second) {
+    return null;
+  }
+  return { ...(first ?? {}), ...(second ?? {}) };
+}
+
+function readString(
+  params: Record<string, unknown>,
+  key: string,
+): string | null {
+  const value = params[key];
+  return typeof value === "string" ? value : null;
+}
+
+function readTurnId(params: Record<string, unknown>): string | null {
+  const turn = params["turn"];
+  if (turn && typeof turn === "object" && "id" in turn) {
+    const id = (turn as { id?: unknown }).id;
+    return typeof id === "string" ? id : null;
+  }
+  return readString(params, "turnId");
+}
+
+function dynamicToolUseFromItem(item: unknown): AnthropicToolUseBlock | null {
+  if (!item || typeof item !== "object") {
+    return null;
+  }
+  const record = item as Record<string, unknown>;
+  const type = record["type"];
+  if (type !== "dynamic_tool_call" && type !== "mcp_tool_call" && type !== "dynamicToolCall" && type !== "mcpToolCall") {
+    return null;
+  }
+  const id = typeof record["id"] === "string" ? record["id"] : "toolu_codex";
+  const name =
+    typeof record["toolName"] === "string"
+      ? record["toolName"]
+      : typeof record["tool"] === "string"
+        ? record["tool"]
+      : typeof record["name"] === "string"
+        ? record["name"]
+        : typeof record["tool"] === "string"
+          ? record["tool"]
+          : "codex_tool";
+  return {
+    type: "tool_use",
+    id,
+    name,
+    input: record["input"] ?? record["arguments"] ?? {},
+  };
+}
+
+
+type CodexProcess = {
+  stdin: { write(chunk: Uint8Array): unknown | Promise<unknown> };
+  stdout: ReadableStream<Uint8Array> | null;
+  stderr: ReadableStream<Uint8Array> | null;
+  kill: () => void;
+};
+
+type PendingTurn = {
+  resolve: (events: AnthropicSseEvent[]) => void;
+  reject: (error: Error) => void;
+  state: GatewayState;
+  notifications: JsonRpcNotification[];
+};
+
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
+
+class CodexJsonRpcClient {
+  private seq = 0;
+  private initialized = false;
+  private readonly rpcPending = new Map<string | number, { resolve: (value: unknown) => void; reject: (error: Error) => void }>();
+  private readonly pending = new Map<string | number, PendingTurn>();
+  private readonly activeByTurn = new Map<string, { threadId: string; pending: PendingTurn }>();
+
+  constructor(private readonly proc: CodexProcess) {
+    this.readLoop().catch((error) => this.rejectAll(error));
+    this.stderrLoop().catch(() => undefined);
+  }
+
+  async turn(request: AnthropicMessagesRequest, cwd: string): Promise<AnthropicSseEvent[]> {
+    await this.initialize();
+    const id = `anthropic-${++this.seq}`;
+    const state = createGatewayState();
+    const selectedModel = process.env.CODEX_GATEWAY_MODEL || process.env.CODEX_MODEL;
+    const batch = toCodexRequests(request, {
+      cwd,
+      requestId: id,
+      model: selectedModel,
+      reasoningEffort: process.env.CODEX_GATEWAY_REASONING_EFFORT,
+    });
+    const rpc = batch.requests[0];
+    if (rpc && batch.threadId === null) {
+      const response = await this.request(`thread-${this.seq}`, "thread/start", {
+        cwd,
+        model: selectedModel ?? resolveCodexModel(request.model),
+        ephemeral: true,
+        threadSource: "fk-toolkit-codex-gateway",
+      });
+      const thread = (response as { thread?: { id?: string } }).thread;
+      if (!thread?.id) throw new Error("Codex thread/start returned no thread id");
+      rpc.params.threadId = thread.id;
+    }
+    if (!rpc || !shouldForwardWithRetryDedupe(state, rpc)) {
+      throw new Error("Codex gateway refused to forward duplicate request");
+    }
+    return await new Promise<AnthropicSseEvent[]>((resolve, reject) => {
+      this.pending.set(id, { resolve, reject, state, notifications: [] });
+      this.writeJson(rpc).catch((error) => {
+        this.pending.delete(id);
+        reject(error instanceof Error ? error : new Error(String(error)));
+      });
+    });
+  }
+
+  async interruptAll(): Promise<void> {
+    const active = Array.from(this.activeByTurn.entries()).map(([turnId, turn]) => [turnId, { threadId: turn.threadId }] as [string, { threadId: string }]);
+    for (const request of cleanShutdownRequests(active)) {
+      await this.writeJson(request);
+    }
+  }
+
+  private async initialize(): Promise<void> {
+    if (this.initialized) return;
+    this.initialized = true;
+    await this.request("initialize", "initialize", {
+      capabilities: {
+        experimentalApi: true,
+        requestAttestation: false,
+      },
+      clientInfo: { name: "fk-toolkit-codex-gateway", title: "FK Toolkit Codex Gateway", version: "0.6.1" },
+    });
+    await this.writeJson({
+      jsonrpc: "2.0",
+      method: "initialized",
+    });
+  }
+
+  private async request(id: string | number, method: string, params: Record<string, unknown> | undefined): Promise<unknown> {
+    return await new Promise<unknown>((resolve, reject) => {
+      this.rpcPending.set(id, { resolve, reject });
+      this.writeJson({ jsonrpc: "2.0", id, method, params }).catch((error) => {
+        this.rpcPending.delete(id);
+        reject(error instanceof Error ? error : new Error(String(error)));
+      });
+    });
+  }
+
+  private rejectAll(error: unknown): void {
+    const err = error instanceof Error ? error : new Error(String(error));
+    for (const pending of this.pending.values()) pending.reject(err);
+    this.pending.clear();
+    this.activeByTurn.clear();
+  }
+
+  private async writeJson(value: unknown): Promise<void> {
+    await this.proc.stdin.write(encoder.encode(`${JSON.stringify(value)}\n`));
+  }
+
+  private async readLoop(): Promise<void> {
+    if (!this.proc.stdout) throw new Error("Codex app-server stdout is unavailable");
+    const reader = this.proc.stdout.getReader();
+    let buffer = "";
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      let nl = buffer.indexOf("\n");
+      while (nl >= 0) {
+        const line = buffer.slice(0, nl).trim();
+        buffer = buffer.slice(nl + 1);
+        if (line) this.handleMessage(JSON.parse(line) as JsonRpcNotification | JsonRpcRequest);
+        nl = buffer.indexOf("\n");
+      }
+    }
+  }
+
+  private async stderrLoop(): Promise<void> {
+    if (!this.proc.stderr) return;
+    const reader = this.proc.stderr.getReader();
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      const text = decoder.decode(value);
+      if (text.trim()) console.error(text.trimEnd());
+    }
+  }
+
+  private handleMessage(message: JsonRpcNotification | JsonRpcRequest): void {
+    const record = message as Record<string, unknown>;
+    if ("id" in record && !("method" in record)) {
+      const id = record["id"] as string | number;
+      const rpc = this.rpcPending.get(id);
+      if (rpc) {
+        this.rpcPending.delete(id);
+        if ("error" in record) rpc.reject(new Error(JSON.stringify(record["error"])));
+        else rpc.resolve(record["result"]);
+        return;
+      }
+      const pending = this.pending.get(id);
+      if (pending && "error" in record) {
+        pending.reject(new Error(JSON.stringify(record["error"])));
+        this.pending.delete(id);
+      }
+      return;
+    }
+    const notification = message as JsonRpcNotification;
+    const params = notification.params ?? {};
+    const turnId = readTurnId(params);
+    let pending = turnId ? this.activeByTurn.get(turnId)?.pending : undefined;
+    if (!pending && notification.method === "turn/started") {
+      const latest = Array.from(this.pending.values()).at(-1);
+      const startedTurn = readTurnId(params);
+      if (latest && startedTurn) {
+        pending = latest;
+        const threadId = readString(params, "threadId") ?? "";
+        this.activeByTurn.set(startedTurn, { threadId, pending: latest });
+      }
+    }
+    if (!pending) pending = Array.from(this.pending.values()).at(-1);
+    if (!pending) return;
+    pending.notifications.push(notification);
+    if (notification.method === "turn/completed" || notification.method === "error") {
+      try {
+        pending.resolve(toAnthropicStreamEvents(pending.notifications, pending.state));
+      } catch (error) {
+        pending.reject(error instanceof Error ? error : new Error(String(error)));
+      }
+      for (const [id, p] of this.pending.entries()) {
+        if (p === pending) this.pending.delete(id);
+      }
+      if (turnId) this.activeByTurn.delete(turnId);
+    }
+  }
+}
+
+function spawnCodexAppServer(): CodexProcess {
+  const cmd = codexAppServerCommand();
+  const proc = Bun.spawn([cmd.command, ...cmd.args], {
+    stdin: "pipe",
+    stdout: "pipe",
+    stderr: "pipe",
+    env: { ...process.env, ...cmd.env },
+  });
+  return {
+    stdin: proc.stdin,
+    stdout: proc.stdout,
+    stderr: proc.stderr,
+    kill: () => proc.kill(),
+  };
+}
+
+function sseEncode(event: AnthropicSseEvent): string {
+  return `event: ${event.event}\ndata: ${JSON.stringify(event.data)}\n\n`;
+}
+
+async function serve(): Promise<void> {
+  const port = Number(process.env.CODEX_GATEWAY_PORT || "4545");
+  const cwd = process.env.CODEX_GATEWAY_CWD || process.cwd();
+  const client = new CodexJsonRpcClient(spawnCodexAppServer());
+  const server = Bun.serve({
+    hostname: "127.0.0.1",
+    port,
+    async fetch(req) {
+      const url = new URL(req.url);
+      if (url.pathname === "/health") {
+        return Response.json({
+          ok: true,
+          provider: "codex-app-server",
+          model: process.env.CODEX_GATEWAY_MODEL || process.env.CODEX_MODEL || null,
+          reasoning_effort: process.env.CODEX_GATEWAY_REASONING_EFFORT || null,
+        });
+      }
+      if (url.pathname === "/v1/models") {
+        return Response.json({
+          object: "list",
+          data: [
+            { id: process.env.CODEX_GATEWAY_MODEL || process.env.CODEX_MODEL || "user-selected-codex-model", object: "model" },
+          ],
+        });
+      }
+      if (url.pathname !== "/v1/messages" || req.method !== "POST") {
+        return new Response("not found", { status: 404 });
+      }
+      let body: AnthropicMessagesRequest;
+      try {
+        body = (await req.json()) as AnthropicMessagesRequest;
+      } catch {
+        return Response.json({ type: "error", error: { type: "invalid_request_error", message: "invalid JSON" } }, { status: 400 });
+      }
+      try {
+        const events = await client.turn(body, cwd);
+        if (shouldStreamAnthropicResponse(body)) {
+          return new Response(events.map(sseEncode).join(""), {
+            headers: {
+              "content-type": "text/event-stream; charset=utf-8",
+              "cache-control": "no-cache",
+              connection: "keep-alive",
+            },
+          });
+        }
+        const text = events
+          .filter((event) => event.event === "content_block_delta")
+          .map((event) => {
+            const delta = event.data["delta"] as { text?: string } | undefined;
+            return delta?.text ?? "";
+          })
+          .join("");
+        return Response.json({
+          id: "msg_codex_gateway",
+          type: "message",
+          role: "assistant",
+          model: resolveCodexModel(body.model, process.env.CODEX_GATEWAY_MODEL || process.env.CODEX_MODEL),
+          content: [{ type: "text", text }],
+          stop_reason: "end_turn",
+          usage: { input_tokens: 0, output_tokens: 0 },
+        });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        return Response.json({ type: "error", error: { type: "api_error", message } }, { status: 502 });
+      }
+    },
+  });
+  const stop = async () => {
+    await client.interruptAll().catch(() => undefined);
+    server.stop();
+  };
+  process.on("SIGTERM", () => void stop().then(() => process.exit(0)));
+  process.on("SIGINT", () => void stop().then(() => process.exit(0)));
+  console.error(`codex-anthropic-gateway listening on http://127.0.0.1:${port}`);
+}
+
+if (import.meta.main) {
+  const command = process.argv[2] ?? "serve";
+  if (command === "serve") {
+    await serve();
+  } else if (command === "doctor") {
+    const hasCodex = Bun.which("codex") !== null;
+    console.log(`codex cli: ${hasCodex ? "ok" : "missing"}`);
+    console.log(`model: ${process.env.CODEX_GATEWAY_MODEL || process.env.CODEX_MODEL || "not configured"}`);
+    console.log(`reasoning effort: ${process.env.CODEX_GATEWAY_REASONING_EFFORT || "default"}`);
+    if (!hasCodex) process.exitCode = 1;
+  } else {
+    console.error("usage: bun run scripts/codex-anthropic-gateway.ts [serve|doctor]");
+    process.exit(2);
+  }
+}

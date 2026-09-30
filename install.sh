@@ -48,6 +48,9 @@ MARKETING_REPO="https://github.com/coreyhaines31/marketingskills.git"
 IMPECCABLE_REPO="https://github.com/pbakaus/impeccable.git"
 TASTE_REPO="https://github.com/Leonxlnx/taste-skill.git"
 ANTHROPIC_SKILLS_REPO="https://github.com/anthropics/skills.git"
+AGENT_REACH_REPO="https://github.com/Panniantong/Agent-Reach.git"
+UI_UX_PRO_MAX_REPO="https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git"
+BRAG_REPO="https://github.com/latent-spaces/brag.git"
 
 log()  { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m!!\033[0m %s\n'  "$*" >&2; }
@@ -564,50 +567,120 @@ setup_providers() {
     fi
   fi
 
-  install_ccs_alias
+  install_ccs_command
 }
 
-install_ccs_alias() {
-  local rc="$HOME/.bashrc"
-  touch "$rc"
-  if grep -q 'cc-provider' "$rc" 2>/dev/null; then return 0; fi
-  # Quoted heredoc: $HOME and $@ must stay literal so the generated function
-  # resolves them at call time (not at install time).
-  cat >> "$rc" <<'EOF'
+shell_quote() {
+  printf "'%s'" "$(printf '%s' "$1" | sed "s/'/'\\''/g")"
+}
 
-# Claude Code provider switcher (managed by ~/.claude/install.sh)
-ccs() { "$HOME/.claude/bin/cc-provider" "$@"; }
+toolkit_dir_default_word() {
+  if [ "$CLAUDE_DIR" = "$HOME/.claude" ]; then
+    # shellcheck disable=SC2016  # written literally into generated commands
+    printf '$HOME/.claude'
+  else
+    shell_quote "$CLAUDE_DIR"
+  fi
+}
+
+remove_legacy_command_functions() {
+  local rc tmp
+  for rc in "$HOME/.bashrc" "$HOME/.bash_profile" "$HOME/.bash_login" "$HOME/.profile" "$HOME/.zshrc" "$HOME/.zprofile"; do
+    [ -f "$rc" ] || continue
+    tmp="${rc}.tmp.$$"
+    local status
+    if awk '
+      /^# Claude Code provider switcher \(managed by .*\/install\.sh\)$/ { skip = "ccs"; changed = 1; next }
+      /^# FK Claude Toolkit updater \(managed by .*\/install\.sh\)$/ { skip = "fkt"; changed = 1; next }
+      skip == "ccs" && /^ccs\(\) \{/ { skip = ""; next }
+      skip == "fkt" && /^fkt\(\) \{/ { skip = ""; next }
+      { if (skip != "") skip = ""; print }
+      END { if (changed) exit 2 }
+    ' "$rc" > "$tmp"; then
+      status=0
+    else
+      status=$?
+    fi
+    case $status in
+      0) rm -f "$tmp" ;;
+      2) mv "$tmp" "$rc" ;;
+      *) rm -f "$tmp"; return 1 ;;
+    esac
+  done
+}
+
+ensure_user_bin_on_path() {
+  local user_bin="$HOME/.local/bin"
+  local rc
+  mkdir -p "$user_bin"
+  case ":$PATH:" in
+    *":$user_bin:"*) ;;
+    *) export PATH="$user_bin:$PATH" ;;
+  esac
+
+  for rc in "$HOME/.profile" "$HOME/.bash_profile" "$HOME/.bashrc" "$HOME/.zprofile" "$HOME/.zshrc"; do
+    case "$rc" in
+      "$HOME/.bash_profile"|"$HOME/.bashrc"|"$HOME/.zshrc")
+        [ -f "$rc" ] || continue
+        ;;
+    esac
+    touch "$rc"
+    if grep -q 'FK Claude Toolkit commands (managed by' "$rc" 2>/dev/null; then
+      continue
+    fi
+    cat >> "$rc" <<'EOF'
+
+# FK Claude Toolkit commands (managed by ~/.claude/install.sh)
+case ":$PATH:" in
+  *":$HOME/.local/bin:"*) ;;
+  *) PATH="$HOME/.local/bin:$PATH" ;;
+esac
+export PATH
 EOF
-  log "Added 'ccs' shell function to ~/.bashrc (run: source ~/.bashrc)"
+  done
+}
+
+write_toolkit_command() {
+  local name="$1" target="$2" env_name="$3" default_word="$4"
+  local out="$HOME/.local/bin/$name"
+  mkdir -p "$HOME/.local/bin"
+  {
+    printf '%s\n' '#!/usr/bin/env bash'
+    printf '%s\n' 'set -e'
+    if [ "$env_name" = "FKT_HOME" ]; then
+      # shellcheck disable=SC2016  # written literally into generated commands
+      printf 'toolkit_dir=${FKT_HOME:-${CLAUDE_DIR:-%s}}\n' "$default_word"
+    else
+      # shellcheck disable=SC2016  # written literally into generated commands
+      printf 'toolkit_dir=${CLAUDE_DIR:-%s}\n' "$default_word"
+    fi
+    # shellcheck disable=SC2016  # written literally into generated commands
+    printf 'exec "$toolkit_dir/%s" "$@"\n' "$target"
+  } > "$out"
+  chmod 755 "$out"
+}
+
+install_ccs_command() {
+  remove_legacy_command_functions
+  ensure_user_bin_on_path
+  write_toolkit_command "ccs" "bin/cc-provider" "CLAUDE_DIR" "$(toolkit_dir_default_word)"
+  log "Installed 'ccs' command in ~/.local/bin"
 }
 
 # ---------------------------------------------------------------------------
 # 5b. Updater (fkt) + versioned migrations
 # ---------------------------------------------------------------------------
 # `fkt` is how the bootstrap layer updates after this first install: a
-# fast-forward-only path that refuses rather than discards. Exposing it as a
-# shell function (not a PATH edit) keeps the change to ~/.bashrc to one line and
-# reversible, and matches how `ccs` is already wired.
+# fast-forward-only path that refuses rather than discards. It is exposed as a
+# real command in ~/.local/bin so normal shells can discover it without sourcing
+# a managed shell function.
 install_fkt() {
   [ -x "$CLAUDE_DIR/bin/fkt" ] || { warn "bin/fkt missing — skipping updater setup"; return 1; }
 
-  local rc="$HOME/.bashrc"
-  touch "$rc"
-  if ! grep -q 'bin/fkt' "$rc" 2>/dev/null; then
-    # Emit "$HOME/.claude" literally for a default install so the function keeps
-    # working if the home directory ever moves; use the resolved path when the
-    # user chose a different CLAUDE_DIR, where "$HOME/.claude" would be wrong.
-    # shellcheck disable=SC2016  # $HOME must reach .bashrc unexpanded
-    local target='"$HOME/.claude/bin/fkt"'
-    if [ "$CLAUDE_DIR" != "$HOME/.claude" ]; then
-      target="\"$CLAUDE_DIR/bin/fkt\""
-    fi
-    {
-      printf '\n# FK Claude Toolkit updater (managed by %s/install.sh)\n' "$CLAUDE_DIR"
-      printf 'fkt() { %s "$@"; }\n' "$target"
-    } >> "$rc"
-    log "Added 'fkt' shell function to ~/.bashrc (run: source ~/.bashrc)"
-  fi
+  remove_legacy_command_functions
+  ensure_user_bin_on_path
+  write_toolkit_command "fkt" "bin/fkt" "FKT_HOME" "$(toolkit_dir_default_word)"
+  log "Installed 'fkt' command in ~/.local/bin"
 
   # Run pending migrations now. On a first install every migration is a no-op,
   # but recording them as applied means an upgrading user never replays a
@@ -849,6 +922,60 @@ install_taste_skills() {
   log "Synced $count taste skills"
 }
 
+# Copy one managed upstream skill directory, replacing only copies this
+# installer owns. This keeps reruns idempotent without clobbering a user's skill
+# that happens to use the same directory name.
+install_managed_skill_dir() {
+  local src="$1" name="$2" marker="$3" stage="$4"
+  local target="$CLAUDE_DIR/skills/$name"
+  [ -f "$src/SKILL.md" ] || { warn "upstream skill not found: $src"; return 1; }
+  if [ -d "$target" ] && [ ! -f "$target/$marker" ]; then
+    warn "skipping collision (not from this pack): $name"
+    return 0
+  fi
+  mkdir -p "$target"
+  cp -r "$src"/. "$target/"
+  touch "$target/$marker"
+  [ -f "$stage/LICENSE" ] && cp "$stage/LICENSE" "$target/UPSTREAM_LICENSE"
+  [ -f "$src/LICENSE" ] && cp "$src/LICENSE" "$target/UPSTREAM_COMPONENT_LICENSE"
+  [ -f "$src/LICENSE.txt" ] && cp "$src/LICENSE.txt" "$target/UPSTREAM_COMPONENT_LICENSE"
+  log "Synced upstream skill: $name"
+}
+
+# ---------------------------------------------------------------------------
+# 7f. Agent-Reach safe Agent Skill. The upstream runtime installer can alter
+#     browsers, cookies, media tools and system state, so bootstrap copies only
+#     agent_reach/skill and never runs its runtime installer or --system mode.
+# ---------------------------------------------------------------------------
+install_agent_reach_skill() {
+  local stage="$SKILL_SRC_DIR/agent_reach"
+  stage_source "agent_reach" "$AGENT_REACH_REPO" "$stage" || warn "Panniantong/Agent-Reach staging failed — using whatever is on disk"
+  install_managed_skill_dir "$stage/agent_reach/skill" "agent-reach" ".from_agent_reach" "$stage"
+}
+
+# ---------------------------------------------------------------------------
+# 7g. UI/UX Pro Max approved skill set from .claude/skills.
+# ---------------------------------------------------------------------------
+install_ui_ux_pro_max_skills() {
+  local stage="$SKILL_SRC_DIR/ui_ux_pro_max"
+  stage_source "ui_ux_pro_max" "$UI_UX_PRO_MAX_REPO" "$stage" || warn "nextlevelbuilder/ui-ux-pro-max-skill staging failed — using whatever is on disk"
+  local name count=0
+  for name in banner-design brand design design-system slides ui-styling ui-ux-pro-max; do
+    install_managed_skill_dir "$stage/.claude/skills/$name" "$name" ".from_ui_ux_pro_max" "$stage" && count=$((count+1))
+  done
+  log "Synced $count UI/UX Pro Max skills"
+}
+
+# ---------------------------------------------------------------------------
+# 7h. BRAG slim. The full BRAG runtime/media skill remains metadata-only; this
+#     installs only the lightweight brag-slim skill body.
+# ---------------------------------------------------------------------------
+install_brag_slim_skill() {
+  local stage="$SKILL_SRC_DIR/brag_slim"
+  stage_source "brag_slim" "$BRAG_REPO" "$stage" || warn "latent-spaces/brag staging failed — using whatever is on disk"
+  install_managed_skill_dir "$stage/skills/brag-slim" "brag-slim" ".from_brag_slim" "$stage"
+}
+
 # ---------------------------------------------------------------------------
 # 8. Install graphify (safishamsi/graphify) — knowledge-graph skill
 # ---------------------------------------------------------------------------
@@ -1005,6 +1132,9 @@ main() {
     run_step "impeccable skill"  install_impeccable_skill
     run_step "taste skills"      install_taste_skills
     run_step "anthropic skills"  install_anthropic_skills
+    run_step "Agent-Reach skill" install_agent_reach_skill
+    run_step "UI/UX Pro Max skills" install_ui_ux_pro_max_skills
+    run_step "BRAG slim skill"   install_brag_slim_skill
     run_step "graphify"          install_graphify
     run_step "plugin marketplaces" register_plugin_marketplaces
   fi

@@ -113,12 +113,16 @@ export function checkParity(manifest: Manifest, installSh: string): ParityResult
   const ext = extractInstallerSources(installSh);
 
   const manifestGitRepos = new Set<string>();
+  const installableManifestGitRepos = new Set<string>();
   const manifestMarketplaces = new Set<string>();
   const manifestPlugins = new Set<string>();
   const manifestPypi = new Set<string>();
   const manifestInstallers = new Set<string>();
   for (const s of Object.values(manifest.sources)) {
-    if (s.type === "git") manifestGitRepos.add(s.repo);
+    if (s.type === "git") {
+      manifestGitRepos.add(s.repo);
+      if (!s.catalogOnly) installableManifestGitRepos.add(s.repo);
+    }
     else if (s.type === "runtime") {
       if (s.runtimeKind === "plugin-marketplace") {
         for (const m of s.marketplaces ?? []) manifestMarketplaces.add(m);
@@ -135,7 +139,7 @@ export function checkParity(manifest: Manifest, installSh: string): ParityResult
   // owner/repo tail so http vs https / trailing .git differences don't cause drift.
   const tail = (url: string) => url.replace(/\.git$/, "").replace(/^[^/]*\/\//, "").replace(/^[^/]+\//, "").toLowerCase();
   const missingInManifest = ext.gitRepos.filter((u) => !manifestGitRepos.has(u) && ![...manifestGitRepos].some((m) => tail(m) === tail(u)));
-  const extraInManifest = [...manifestGitRepos].filter((u) => !ext.gitRepos.some((m) => tail(m) === tail(u)));
+  const extraInManifest = [...installableManifestGitRepos].filter((u) => !ext.gitRepos.some((m) => tail(m) === tail(u)));
 
   const missingMarketplaces = ext.marketplaces.filter((m) => !manifestMarketplaces.has(m) && ![...manifestMarketplaces].some((mm) => mm.includes(m)));
   const missingPlugins = ext.plugins.filter((p) => !manifestPlugins.has(p) && ![...manifestPlugins].some((pp) => pp.includes(p)));

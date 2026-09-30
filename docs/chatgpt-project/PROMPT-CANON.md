@@ -1,13 +1,10 @@
-# Claude Code Prompt Engineering Canon
+# Cross-agent Prompt Engineering Canon
 
 Upload this file to the ChatGPT project unchanged.
 
-It is the assistant's offline baseline: the distilled prompt engineering canon plus the
-allowlist of canonical sources it browses. When browsing succeeds, the live source
-overrides this file, and the assistant is instructed to say which line changed.
+It is the assistant's offline baseline for Claude Code, Codex, Agent Skills, Agent Plugins, and MCP prompts. When browsing succeeds, the live source overrides this file, and the assistant is instructed to say which line changed.
 
-Last verified: 2026-07-27. Every URL in section 10 returned HTTP 200 on that date.
-Re-verify when the assistant reports a contradiction it could not resolve.
+Last verified for Claude-only canon: 2026-07-27. Cross-agent additions were refreshed during the 2026-09 modernization. Re-verify when the assistant reports a contradiction it could not resolve.
 
 ---
 
@@ -189,7 +186,7 @@ done
 
 ---
 
-## 10. Canonical sources (verified 2026-07-27)
+## 10. Canonical sources
 
 Primary — Anthropic:
 - https://code.claude.com/docs/en/best-practices
@@ -209,6 +206,18 @@ Primary — Anthropic:
 - https://code.claude.com/docs/en/prompt-library
 - https://code.claude.com/docs/llms.txt  ← full docs index, feed this to fetch any page
 - https://www.anthropic.com/engineering  ← hub, check for new posts
+
+Primary — OpenAI and portable agent standards:
+- https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra
+- https://developers.openai.com/plugins/build/plugins
+- https://developers.openai.com/plugins/build/mcp-server
+- https://developers.openai.com/plugins/concepts/mcp-server
+- https://developers.openai.com/learn/docs-mcp
+- https://developers.openai.com/api/docs/guides/agents-api/tools/plugins
+- https://github.com/openai/codex
+- https://agent-plugins.org/specification
+- https://agentskills.io/
+- https://modelcontextprotocol.io/
 
 Community (secondary, verify before trusting):
 - https://github.com/hesreallyhim/awesome-claude-code

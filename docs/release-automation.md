@@ -131,10 +131,7 @@ workflows never weaken branch protection.
 
 ## Semantic versioning
 
-Source of truth is the **`VERSION`** file at the repository root. It is what
-every `plugin.json` and every marketplace entry carries, so the release tag has
-to be the same value — otherwise installers and releases disagree about what
-shipped. The workflow tags `v$(cat VERSION)`.
+Source of truth is the **`VERSION`** file at the repository root. It is what every Claude plugin manifest, portable root `plugin.json`, and marketplace entry carries, so the release tag has to be the same value. Otherwise installers, Codex plugin hosts, and releases disagree about what shipped. The workflow tags `v$(cat VERSION)`.
 
 The only judgement left to automation is whether that `VERSION` is *big enough*.
 `bun run release:check-version` derives the minimum from the commits in the
@@ -166,8 +163,7 @@ only asked once its change has already landed. A bot PR that never touched
 
 So the update workflow now writes `VERSION` itself. `bun run
 release:next-version` derives the same minimum from the same two inputs and
-returns the value to use; the workflow writes it, reruns `marketplace:generate`,
-and commits the manifests with the catalog. Two properties make this safe:
+returns the value to use; the workflow writes it, reruns `marketplace:generate`, and commits every generated manifest that embeds VERSION, including `.claude-plugin/marketplace.json`, `skills/*/.claude-plugin/plugin.json`, and `skills/*/plugin.json`. Two properties make this safe:
 
 - **It never lowers `VERSION`.** A value already past the minimum is a
   deliberate bump for something unreleased, and clamping it would understate

@@ -1693,6 +1693,126 @@
       "relativePath": "skills/xlsx/SKILL.md",
       "resolvedRevision": "8a1541c4a3ffa5a20a5a91de0dcf3f0bab1d1ef4",
       "sourceId": "anthropic"
+    },
+    {
+      "canonicalInvocation": "/agent-reach",
+      "digest": "7115fc1da9062e67322290754f9d11b14a604196aefe20b9de6801e148e8593b",
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT"
+      },
+      "redistribution": "full",
+      "relativePath": "agent_reach/skill/SKILL.md",
+      "resolvedRevision": "a19a171fa980a0785849596492e0af4db800c82f",
+      "sourceId": "agent_reach"
+    },
+    {
+      "canonicalInvocation": "/banner-design",
+      "digest": "d7b9fd035ae172a63d0428393d153c91f0910ef7e06e7226b77a8367a0865fb3",
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT"
+      },
+      "redistribution": "full",
+      "relativePath": ".claude/skills/banner-design/SKILL.md",
+      "resolvedRevision": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "sourceId": "ui_ux_pro_max"
+    },
+    {
+      "canonicalInvocation": "/brand",
+      "digest": "ba77287f5f7f1542141ed601a96b5ea0de92e2a33211ef68cb94815ce9a7e64e",
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT"
+      },
+      "redistribution": "full",
+      "relativePath": ".claude/skills/brand/SKILL.md",
+      "resolvedRevision": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "sourceId": "ui_ux_pro_max"
+    },
+    {
+      "canonicalInvocation": "/design-system",
+      "digest": "de818a1fcb843a7dd8e6f49e4443eba2a2e58e0605c91eac87d099534dc129c4",
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT"
+      },
+      "redistribution": "full",
+      "relativePath": ".claude/skills/design-system/SKILL.md",
+      "resolvedRevision": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "sourceId": "ui_ux_pro_max"
+    },
+    {
+      "canonicalInvocation": "/design",
+      "digest": "d18867bad8498f4cc295fadfc075cac39d65b235b8ba1af2f29c0bfab2db47d8",
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT"
+      },
+      "redistribution": "full",
+      "relativePath": ".claude/skills/design/SKILL.md",
+      "resolvedRevision": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "sourceId": "ui_ux_pro_max"
+    },
+    {
+      "canonicalInvocation": "/slides",
+      "digest": "8b15374ea4f67f98ac652193418b1fb05b49e0f4638805865d03ee242dfb8080",
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT"
+      },
+      "redistribution": "full",
+      "relativePath": ".claude/skills/slides/SKILL.md",
+      "resolvedRevision": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "sourceId": "ui_ux_pro_max"
+    },
+    {
+      "canonicalInvocation": "/ui-styling",
+      "digest": "3ee6e31cba5492df322c69edb09d729b5a21a43ad6a8a3cc353faf386998813c",
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT"
+      },
+      "redistribution": "full",
+      "relativePath": ".claude/skills/ui-styling/SKILL.md",
+      "resolvedRevision": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "sourceId": "ui_ux_pro_max"
+    },
+    {
+      "canonicalInvocation": "/ui-ux-pro-max",
+      "digest": "185f1286a07f8f23893f9664569ec225c890a9892660714b8df1f9687cfbe68b",
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT"
+      },
+      "redistribution": "full",
+      "relativePath": ".claude/skills/ui-ux-pro-max/SKILL.md",
+      "resolvedRevision": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "sourceId": "ui_ux_pro_max"
+    },
+    {
+      "canonicalInvocation": "/brag-slim",
+      "digest": "6e660e8dd540ba52351e318f8c4ec6d5ba4247e0ae02171a312ddc622ce39610",
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT"
+      },
+      "redistribution": "full",
+      "relativePath": "skills/brag-slim/SKILL.md",
+      "resolvedRevision": "c893c5ed52aed84e3e2ee56787de869fccdae6b0",
+      "sourceId": "brag_slim"
+    },
+    {
+      "canonicalInvocation": "/brag",
+      "digest": "8cf49245bee92b55d7f5f4b22944554753282f3c8682d0b6ff6448fafad34269",
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT"
+      },
+      "redistribution": "metadata-only",
+      "relativePath": "skills/brag/SKILL.md",
+      "resolvedRevision": "c893c5ed52aed84e3e2ee56787de869fccdae6b0",
+      "sourceId": "brag_full"
     }
   ],
   "sources": [
@@ -2253,6 +2373,114 @@
         "skills/skill-creator",
         "skills/web-artifacts-builder",
         "skills/xlsx"
+      ],
+      "type": "git"
+    },
+    {
+      "availableSkillDirs": [
+        "skill"
+      ],
+      "canonicalSkills": [
+        "/agent-reach"
+      ],
+      "configuredRef": "a19a171fa980a0785849596492e0af4db800c82f",
+      "id": "agent_reach",
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT"
+      },
+      "notes": "Full bootstrap installs only agent_reach/skill. Runtime credentials stay in Agent-Reach private storage; system-changing install mode is never run by bootstrap.",
+      "redistribution": "full",
+      "repo": "https://github.com/Panniantong/Agent-Reach.git",
+      "resolvedRevision": "a19a171fa980a0785849596492e0af4db800c82f",
+      "selectedPaths": [
+        "agent_reach/skill"
+      ],
+      "type": "git"
+    },
+    {
+      "availableSkillDirs": [
+        "banner-design",
+        "brand",
+        "design",
+        "design-system",
+        "slides",
+        "ui-styling",
+        "ui-ux-pro-max"
+      ],
+      "canonicalSkills": [
+        "/banner-design",
+        "/brand",
+        "/design-system",
+        "/design",
+        "/slides",
+        "/ui-styling",
+        "/ui-ux-pro-max"
+      ],
+      "configuredRef": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "id": "ui_ux_pro_max",
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT"
+      },
+      "notes": "Full bootstrap installs the approved skill set. Current CLI is uipro; generated platform artifacts are not hand-edited here. Component licenses override the root license where present.",
+      "redistribution": "full",
+      "repo": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
+      "resolvedRevision": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "selectedPaths": [
+        ".claude/skills/banner-design",
+        ".claude/skills/brand",
+        ".claude/skills/design",
+        ".claude/skills/design-system",
+        ".claude/skills/slides",
+        ".claude/skills/ui-styling",
+        ".claude/skills/ui-ux-pro-max"
+      ],
+      "type": "git"
+    },
+    {
+      "availableSkillDirs": [
+        "brag",
+        "brag-slim"
+      ],
+      "canonicalSkills": [
+        "/brag-slim"
+      ],
+      "configuredRef": "c893c5ed52aed84e3e2ee56787de869fccdae6b0",
+      "id": "brag_slim",
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT"
+      },
+      "notes": "Full bootstrap installs only the lightweight BRAG slim skill; no runtime or media dependencies are installed.",
+      "redistribution": "full",
+      "repo": "https://github.com/latent-spaces/brag.git",
+      "resolvedRevision": "c893c5ed52aed84e3e2ee56787de869fccdae6b0",
+      "selectedPaths": [
+        "skills/brag-slim"
+      ],
+      "type": "git"
+    },
+    {
+      "availableSkillDirs": [
+        "brag",
+        "brag-slim"
+      ],
+      "canonicalSkills": [
+        "/brag"
+      ],
+      "configuredRef": "c893c5ed52aed84e3e2ee56787de869fccdae6b0",
+      "id": "brag_full",
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT"
+      },
+      "notes": "Metadata-only. Full BRAG has Node/FFmpeg/media dependencies and upstream music-rights notes that must be settled before redistribution.",
+      "redistribution": "metadata-only",
+      "repo": "https://github.com/latent-spaces/brag.git",
+      "resolvedRevision": "c893c5ed52aed84e3e2ee56787de869fccdae6b0",
+      "selectedPaths": [
+        "skills/brag"
       ],
       "type": "git"
     },

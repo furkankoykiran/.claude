@@ -1,0 +1,30 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "fk-eng-agents",
+  "version": "0.6.2",
+  "description": "Four focused subagents — researcher, planner, code-reviewer, debugger — for deep codebase research, dependency-aware planning, pre-commit review, and root-cause debugging. Adds no skill-listing context cost.",
+  "author": {
+    "name": "Furkan Köykıran",
+    "url": "https://github.com/furkankoykiran"
+  },
+  "homepage": "https://github.com/furkankoykiran/.claude",
+  "repository": "https://github.com/furkankoykiran/.claude",
+  "license": "MIT",
+  "keywords": [
+    "subagents",
+    "code-review",
+    "debugging",
+    "planning",
+    "research"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Engineering Subagents",
+        "shortDescription": "Four focused subagents — researcher, planner, code-reviewer, debugger — for deep codebase research, dependency-aware planning, pre-commit review, and root-cause debugging. Adds no skill-listing context cost.",
+        "developerName": "Furkan Köykıran",
+        "category": "development"
+      }
+    }
+  }
+}

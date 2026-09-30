@@ -5,7 +5,10 @@
  * verifies it against the directories it describes, and emits:
  *
  *   .claude-plugin/marketplace.json
+ *   .agents/plugins/marketplace.json
  *   <plugin_root>/<dir>/.claude-plugin/plugin.json
+ *   <plugin_root>/<dir>/plugin.json
+ *   <plugin_root>/<dir>/mcp.json (when mcp-registry.toml assigns servers)
  *
  * Both artefacts are pure functions of marketplace.toml + VERSION + the tree, so
  * regenerating is byte-stable and `marketplace:check` can assert the committed
@@ -102,6 +105,22 @@ export interface MarketplaceSpec {
   /** old name -> new name, or old name -> null for a removed plugin. */
   renames: Record<string, string | null>;
   plugins: PluginSpec[];
+}
+
+export interface McpRegistryServer {
+  id: string;
+  plugin: string;
+  displayName: string;
+  description: string;
+  url: string;
+  transport: "http" | "streamable-http" | "sse";
+  auth: "none" | "oauth" | "api-key";
+  defaultEnabled: boolean;
+  sourceUrl?: string;
+}
+
+export interface McpRegistry {
+  servers: McpRegistryServer[];
 }
 
 function str(v: unknown, who: string, field: string): string {
@@ -246,6 +265,58 @@ export async function loadMarketplaceSpec(path: string): Promise<MarketplaceSpec
   };
 }
 
+export async function loadMcpRegistry(path: string): Promise<McpRegistry> {
+  if (!existsSync(path)) return { servers: [] };
+  const raw = tomlParse(await readFile(path, "utf8")) as Record<string, unknown>;
+  if (raw["schema_version"] !== 1) {
+    throw new CatalogError(`mcp registry schema_version must be 1 (got ${String(raw["schema_version"])})`, path);
+  }
+  const serversRaw = raw["servers"];
+  if (serversRaw === undefined) return { servers: [] };
+  if (!Array.isArray(serversRaw)) throw new CatalogError(`[[servers]] must be an array`, path);
+  const seen = new Set<string>();
+  const servers = serversRaw.map((srvRaw) => {
+    if (typeof srvRaw !== "object" || srvRaw === null || Array.isArray(srvRaw)) {
+      throw new CatalogError(`[[servers]] entries must be tables`, path);
+    }
+    const srv = srvRaw as Record<string, unknown>;
+    const id = str(srv["id"], `[[servers]]`, "id");
+    if (!/^[A-Za-z][A-Za-z0-9_-]*$/.test(id)) {
+      throw new CatalogError(`[[servers]] id "${id}" must start with a letter and contain only letters, digits, _ or -`, path);
+    }
+    if (seen.has(id)) throw new CatalogError(`duplicate MCP server id "${id}"`, path);
+    seen.add(id);
+    const transport = str(srv["transport"], `[[servers]] "${id}"`, "transport");
+    if (!["http", "streamable-http", "sse"].includes(transport)) {
+      throw new CatalogError(`[[servers]] "${id}": transport must be http, streamable-http or sse`, path);
+    }
+    const auth = str(srv["auth"], `[[servers]] "${id}"`, "auth");
+    if (!["none", "oauth", "api-key"].includes(auth)) {
+      throw new CatalogError(`[[servers]] "${id}": auth must be none, oauth or api-key`, path);
+    }
+    const url = str(srv["url"], `[[servers]] "${id}"`, "url");
+    if (!/^https:\/\//.test(url) && !/^http:\/\/(localhost|127\.|\[::1\])/.test(url)) {
+      throw new CatalogError(`[[servers]] "${id}": remote MCP URL must be HTTPS unless it is loopback`, path);
+    }
+    const defaultEnabled = srv["default_enabled"] === true;
+    if (auth !== "none" && defaultEnabled) {
+      throw new CatalogError(`[[servers]] "${id}": auth-required MCP servers must not be default_enabled=true`, path);
+    }
+    return {
+      id,
+      plugin: assertName(str(srv["plugin"], `[[servers]] "${id}"`, "plugin"), `[[servers]] "${id}"`),
+      displayName: str(srv["display_name"], `[[servers]] "${id}"`, "display_name"),
+      description: str(srv["description"], `[[servers]] "${id}"`, "description"),
+      url,
+      transport: transport as McpRegistryServer["transport"],
+      auth: auth as McpRegistryServer["auth"],
+      defaultEnabled,
+      sourceUrl: typeof srv["source_url"] === "string" ? srv["source_url"] : undefined,
+    };
+  });
+  return { servers: servers.sort((a, b) => a.plugin.localeCompare(b.plugin) || a.id.localeCompare(b.id)) };
+}
+
 /** Read VERSION and validate it is a bare semver string. */
 export async function readVersion(repoRoot: string): Promise<string> {
   const path = join(repoRoot, "VERSION");
@@ -329,6 +400,68 @@ export function buildPluginManifest(spec: MarketplaceSpec, p: PluginSpec, versio
   };
 }
 
+export function buildPortablePluginManifest(spec: MarketplaceSpec, p: PluginSpec, version: string): Record<string, unknown> {
+  const author: Record<string, string> = { name: spec.ownerName };
+  if (spec.ownerEmail) author["email"] = spec.ownerEmail;
+  if (spec.ownerUrl) author["url"] = spec.ownerUrl;
+  return {
+    $schema: "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+    name: p.name,
+    version,
+    description: p.description,
+    author,
+    homepage: spec.homepage,
+    repository: spec.repository,
+    license: spec.license,
+    keywords: p.keywords,
+    extensions: {
+      "com.openai": {
+        interface: {
+          displayName: p.displayName,
+          shortDescription: p.description,
+          developerName: spec.ownerName,
+          category: p.category,
+        },
+      },
+    },
+  };
+}
+
+export function buildPortableMcpManifest(servers: McpRegistryServer[]): Record<string, unknown> {
+  const mcpServers: Record<string, unknown> = {};
+  for (const s of servers) {
+    if (!s.defaultEnabled || s.auth !== "none") continue;
+    mcpServers[s.id] = {
+      type: s.transport === "http" ? "streamable-http" : s.transport,
+      url: s.url,
+    };
+  }
+  return {
+    $schema: "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+    mcpServers,
+  };
+}
+
+export function buildOpenAiMarketplaceManifest(spec: MarketplaceSpec): Record<string, unknown> {
+  return {
+    name: spec.name,
+    interface: { displayName: spec.displayName },
+    plugins: spec.plugins.map((p) => ({
+      name: p.name,
+      source: {
+        source: "local",
+        path: `./${spec.pluginRoot}/${p.dir}`,
+      },
+      policy: {
+        installation: "AVAILABLE",
+        authentication: "ON_INSTALL",
+      },
+      category: p.category,
+      interface: { displayName: p.displayName },
+    })),
+  };
+}
+
 /** Build the marketplace.json object. */
 export function buildMarketplaceManifest(spec: MarketplaceSpec, version: string): Record<string, unknown> {
   const owner: Record<string, string> = { name: spec.ownerName };
@@ -374,13 +507,25 @@ export interface GeneratedFile {
 /** Produce every manifest file without writing anything. */
 export async function buildAll(repoRoot: string, specPath: string): Promise<GeneratedFile[]> {
   const spec = await loadMarketplaceSpec(specPath);
+  const mcp = await loadMcpRegistry(join(repoRoot, "mcp-registry.toml"));
   await verifyPluginTree(spec, repoRoot);
   const version = await readVersion(repoRoot);
+
+  const plugins = new Set(spec.plugins.map((p) => p.name));
+  for (const srv of mcp.servers) {
+    if (!plugins.has(srv.plugin)) {
+      throw new CatalogError(`MCP server "${srv.id}" points at unknown plugin "${srv.plugin}"`, "mcp-registry.toml");
+    }
+  }
 
   const files: GeneratedFile[] = [
     {
       path: join(".claude-plugin", "marketplace.json"),
       content: JSON.stringify(buildMarketplaceManifest(spec, version), null, 2) + "\n",
+    },
+    {
+      path: join(".agents", "plugins", "marketplace.json"),
+      content: JSON.stringify(buildOpenAiMarketplaceManifest(spec), null, 2) + "\n",
     },
   ];
   for (const p of spec.plugins) {
@@ -388,6 +533,17 @@ export async function buildAll(repoRoot: string, specPath: string): Promise<Gene
       path: join(spec.pluginRoot, p.dir, ".claude-plugin", "plugin.json"),
       content: JSON.stringify(buildPluginManifest(spec, p, version), null, 2) + "\n",
     });
+    files.push({
+      path: join(spec.pluginRoot, p.dir, "plugin.json"),
+      content: JSON.stringify(buildPortablePluginManifest(spec, p, version), null, 2) + "\n",
+    });
+    const mcpServers = mcp.servers.filter((srv) => srv.plugin === p.name);
+    if (mcpServers.length > 0) {
+      files.push({
+        path: join(spec.pluginRoot, p.dir, "mcp.json"),
+        content: JSON.stringify(buildPortableMcpManifest(mcpServers), null, 2) + "\n",
+      });
+    }
   }
   return files.sort((a, b) => a.path.localeCompare(b.path));
 }

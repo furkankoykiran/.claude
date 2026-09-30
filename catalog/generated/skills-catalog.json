@@ -4,6 +4,54 @@
   "schemaVersion": 1,
   "skills": [
     {
+      "canonicalInvocation": "/agent-reach",
+      "description": "MUST USE when user wants to 调研/research/搜索/search/查/找/look up anything on the internet — e.g. 全网调研 X / 帮我调研一下 X / 查一下 X / 搜搜 X / 看看大家怎么评价 X / X 上有什么讨论 / research this topic。\nAlso MUST USE when user mentions any platform or shares any URL/链接: 小红书/xiaohongshu/xhs, Twitter/推特/X, B站/bilibili, Reddit, Facebook, Instagram, V2EX, LinkedIn/领英/Boss直聘/招聘/求职/jobs, YouTube, GitHub code search, 小宇宙播客, 雪球/股票行情, RSS feeds, or any web URL.\n16 platforms, multi-backend routing (OpenCLI / per-platform CLIs / APIs). Zero config for 6 channels. Run `agent-reach doctor --json` to see which backend serves each platform right now.\nNOT for: 写报告/数据分析/翻译等内容加工（本 skill 只负责从互联网获取内容）； 发帖/评论/点赞等写操作；已有专门 skill 的平台（先用专门 skill）。\n【路由方式】SKILL.md 包含路由表和常用命令，复杂场景需按需阅读对应分类的 references/*.md。 分类：search / social (小红书/推特/B站/V2EX/Reddit/Facebook/Instagram) / career(LinkedIn/Boss直聘) / dev(github) / web(网页/文章/RSS) / video(YouTube/B站/播客) / finance(雪球/股票)。\n",
+      "digest": "7115fc1da9062e67322290754f9d11b14a604196aefe20b9de6801e148e8593b",
+      "frontmatter": {
+        "description": "MUST USE when user wants to 调研/research/搜索/search/查/找/look up anything on the internet — e.g. 全网调研 X / 帮我调研一下 X / 查一下 X / 搜搜 X / 看看大家怎么评价 X / X 上有什么讨论 / research this topic。\nAlso MUST USE when user mentions any platform or shares any URL/链接: 小红书/xiaohongshu/xhs, Twitter/推特/X, B站/bilibili, Reddit, Facebook, Instagram, V2EX, LinkedIn/领英/Boss直聘/招聘/求职/jobs, YouTube, GitHub code search, 小宇宙播客, 雪球/股票行情, RSS feeds, or any web URL.\n16 platforms, multi-backend routing (OpenCLI / per-platform CLIs / APIs). Zero config for 6 channels. Run `agent-reach doctor --json` to see which backend serves each platform right now.\nNOT for: 写报告/数据分析/翻译等内容加工（本 skill 只负责从互联网获取内容）； 发帖/评论/点赞等写操作；已有专门 skill 的平台（先用专门 skill）。\n【路由方式】SKILL.md 包含路由表和常用命令，复杂场景需按需阅读对应分类的 references/*.md。 分类：search / social (小红书/推特/B站/V2EX/Reddit/Facebook/Instagram) / career(LinkedIn/Boss直聘) / dev(github) / web(网页/文章/RSS) / video(YouTube/B站/播客) / finance(雪球/股票)。\n",
+        "metadata": {
+          "homepage": "https://github.com/Panniantong/Agent-Reach"
+        },
+        "name": "agent-reach"
+      },
+      "fullPagePath": "docs/skills/agent-reach/agent-reach.md",
+      "generated": true,
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT",
+        "matchesDeclaration": true,
+        "redistribution": "full"
+      },
+      "namespacedInvocations": [
+        "/agent-reach"
+      ],
+      "pack": "agent-reach",
+      "redistribution": "full",
+      "ref": "a19a171fa980a0785849596492e0af4db800c82f",
+      "relativePath": "agent_reach/skill/SKILL.md",
+      "repo": "https://github.com/Panniantong/Agent-Reach.git",
+      "resolvedRevision": "a19a171fa980a0785849596492e0af4db800c82f",
+      "security": {
+        "flags": [
+          "network-access"
+        ],
+        "hasAgents": false,
+        "hasBashOrPowershell": false,
+        "hasCredentialRef": false,
+        "hasDynamicShell": false,
+        "hasExecutable": false,
+        "hasHiddenFiles": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasNetworkRef": true,
+        "toolCount": 0
+      },
+      "skillName": "agent-reach",
+      "sourceId": "agent_reach",
+      "sourceType": "git",
+      "warnings": []
+    },
+    {
       "canonicalInvocation": "/doc-coauthoring",
       "description": "Guide users through a structured workflow for co-authoring documentation. Use when user wants to write documentation, proposals, technical specs, decision docs, or similar structured content. This workflow helps users efficiently transfer context, refine content through iteration, and verify the doc works for readers. Trigger when user mentions writing docs, creating proposals, drafting specs, or similar documentation tasks.",
       "digest": "b32381e692b3773a2c37bdce7b1adf084aaaaedfcae15e6d2d7a9f5662f2369b",
@@ -380,6 +428,95 @@
       "warnings": [
         "license: manifest permits full redistribution but detected license \"unknown\" is not in the permissive set; declared \"Apache-2.0\" but detected \"unknown\" upstream"
       ]
+    },
+    {
+      "canonicalInvocation": "/brag",
+      "description": "Turn the current project website into a short, polished, shareable launch video using Hyperframes. Use when someone says \"/brag\", \"let's brag about this\", \"make a launch video\", \"turn this into a video\", or wants to share what they built. Reads the project code directly — no live URL or screenshots needed.",
+      "digest": "8cf49245bee92b55d7f5f4b22944554753282f3c8682d0b6ff6448fafad34269",
+      "frontmatter": {
+        "description": "Turn the current project website into a short, polished, shareable launch video using Hyperframes. Use when someone says \"/brag\", \"let's brag about this\", \"make a launch video\", \"turn this into a video\", or wants to share what they built. Reads the project code directly — no live URL or screenshots needed.",
+        "name": "brag"
+      },
+      "fullPagePath": "docs/skills/brag-full/brag.md",
+      "generated": true,
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT",
+        "matchesDeclaration": true,
+        "redistribution": "metadata-only"
+      },
+      "namespacedInvocations": [
+        "/brag"
+      ],
+      "pack": "brag",
+      "redistribution": "metadata-only",
+      "ref": "c893c5ed52aed84e3e2ee56787de869fccdae6b0",
+      "relativePath": "skills/brag/SKILL.md",
+      "repo": "https://github.com/latent-spaces/brag.git",
+      "resolvedRevision": "c893c5ed52aed84e3e2ee56787de869fccdae6b0",
+      "security": {
+        "flags": [
+          "executables:1",
+          "binaries:5"
+        ],
+        "hasAgents": false,
+        "hasBashOrPowershell": false,
+        "hasCredentialRef": false,
+        "hasDynamicShell": false,
+        "hasExecutable": true,
+        "hasHiddenFiles": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasNetworkRef": false,
+        "toolCount": 0
+      },
+      "skillName": "brag",
+      "sourceId": "brag_full",
+      "sourceType": "git",
+      "warnings": []
+    },
+    {
+      "canonicalInvocation": "/brag-slim",
+      "description": "Turn a project directory or a website URL into a short, shareable launch video with music, motion, and share copy. One file, no bundled assets — built entirely by the model with the tools already on the machine. Use when someone says \"/brag-slim\", \"let's /brag about this\", \"brag about <url>\", \"make a launch video\", or wants to show off what they built. If the /brag skill is also installed, let /brag handle those phrases; it hands off here on Opus 5.5.",
+      "digest": "6e660e8dd540ba52351e318f8c4ec6d5ba4247e0ae02171a312ddc622ce39610",
+      "frontmatter": {
+        "description": "Turn a project directory or a website URL into a short, shareable launch video with music, motion, and share copy. One file, no bundled assets — built entirely by the model with the tools already on the machine. Use when someone says \"/brag-slim\", \"let's /brag about this\", \"brag about <url>\", \"make a launch video\", or wants to show off what they built. If the /brag skill is also installed, let /brag handle those phrases; it hands off here on Opus 5.5.",
+        "name": "brag-slim"
+      },
+      "fullPagePath": "docs/skills/brag-slim/brag-slim.md",
+      "generated": true,
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT",
+        "matchesDeclaration": true,
+        "redistribution": "full"
+      },
+      "namespacedInvocations": [
+        "/brag-slim"
+      ],
+      "pack": "brag",
+      "redistribution": "full",
+      "ref": "c893c5ed52aed84e3e2ee56787de869fccdae6b0",
+      "relativePath": "skills/brag-slim/SKILL.md",
+      "repo": "https://github.com/latent-spaces/brag.git",
+      "resolvedRevision": "c893c5ed52aed84e3e2ee56787de869fccdae6b0",
+      "security": {
+        "flags": [],
+        "hasAgents": false,
+        "hasBashOrPowershell": false,
+        "hasCredentialRef": false,
+        "hasDynamicShell": false,
+        "hasExecutable": false,
+        "hasHiddenFiles": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasNetworkRef": false,
+        "toolCount": 0
+      },
+      "skillName": "brag-slim",
+      "sourceId": "brag_slim",
+      "sourceType": "git",
+      "warnings": []
     },
     {
       "canonicalInvocation": "/graphifyy",
@@ -8219,9 +8356,365 @@
       "sourceId": "taste",
       "sourceType": "git",
       "warnings": []
+    },
+    {
+      "canonicalInvocation": "/banner-design",
+      "description": "Design banners for social media, ads, website heroes, creative assets, and print. Multiple art direction options with optional generated or supplied visuals. Actions: design, create, generate banner. Platforms: Facebook, Twitter/X, LinkedIn, YouTube, Instagram, Google Display, website hero, print. Styles: minimalist, gradient, bold typography, photo-based, illustrated, geometric, retro, glassmorphism, 3D, neon, duotone, editorial, collage.",
+      "digest": "d7b9fd035ae172a63d0428393d153c91f0910ef7e06e7226b77a8367a0865fb3",
+      "frontmatter": {
+        "argument-hint": "[platform] [style] [dimensions]",
+        "description": "Design banners for social media, ads, website heroes, creative assets, and print. Multiple art direction options with optional generated or supplied visuals. Actions: design, create, generate banner. Platforms: Facebook, Twitter/X, LinkedIn, YouTube, Instagram, Google Display, website hero, print. Styles: minimalist, gradient, bold typography, photo-based, illustrated, geometric, retro, glassmorphism, 3D, neon, duotone, editorial, collage.",
+        "license": "MIT",
+        "metadata": {
+          "author": "claudekit",
+          "version": "1.0.0"
+        },
+        "name": "banner-design"
+      },
+      "fullPagePath": "docs/skills/ui-ux-pro-max/banner-design.md",
+      "generated": true,
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT",
+        "matchesDeclaration": true,
+        "redistribution": "full"
+      },
+      "namespacedInvocations": [
+        "/banner-design"
+      ],
+      "pack": "ui-ux-pro-max",
+      "redistribution": "full",
+      "ref": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "relativePath": ".claude/skills/banner-design/SKILL.md",
+      "repo": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
+      "resolvedRevision": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "security": {
+        "flags": [],
+        "hasAgents": false,
+        "hasBashOrPowershell": false,
+        "hasCredentialRef": false,
+        "hasDynamicShell": false,
+        "hasExecutable": false,
+        "hasHiddenFiles": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasNetworkRef": false,
+        "toolCount": 0
+      },
+      "skillName": "banner-design",
+      "sourceId": "ui_ux_pro_max",
+      "sourceType": "git",
+      "warnings": []
+    },
+    {
+      "canonicalInvocation": "/brand",
+      "description": "Brand voice, visual identity, messaging frameworks, asset management, brand consistency. Activate for branded content, tone of voice, marketing assets, brand compliance, style guides.",
+      "digest": "ba77287f5f7f1542141ed601a96b5ea0de92e2a33211ef68cb94815ce9a7e64e",
+      "frontmatter": {
+        "argument-hint": "[update|review|create] [args]",
+        "description": "Brand voice, visual identity, messaging frameworks, asset management, brand consistency. Activate for branded content, tone of voice, marketing assets, brand compliance, style guides.",
+        "metadata": {
+          "author": "claudekit",
+          "version": "1.0.0"
+        },
+        "name": "brand"
+      },
+      "fullPagePath": "docs/skills/ui-ux-pro-max/brand.md",
+      "generated": true,
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT",
+        "matchesDeclaration": true,
+        "redistribution": "full"
+      },
+      "namespacedInvocations": [
+        "/brand"
+      ],
+      "pack": "ui-ux-pro-max",
+      "redistribution": "full",
+      "ref": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "relativePath": ".claude/skills/brand/SKILL.md",
+      "repo": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
+      "resolvedRevision": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "security": {
+        "flags": [
+          "executables:3"
+        ],
+        "hasAgents": false,
+        "hasBashOrPowershell": false,
+        "hasCredentialRef": false,
+        "hasDynamicShell": false,
+        "hasExecutable": true,
+        "hasHiddenFiles": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasNetworkRef": false,
+        "toolCount": 0
+      },
+      "skillName": "brand",
+      "sourceId": "ui_ux_pro_max",
+      "sourceType": "git",
+      "warnings": []
+    },
+    {
+      "canonicalInvocation": "/design",
+      "description": "Comprehensive design skill: brand identity, design tokens, UI styling, logo generation (55 styles, Gemini, Atlas Cloud, or MuAPI AI), corporate identity program (50 deliverables, CIP mockups), HTML presentations (Chart.js), banner design (22 styles, social/ads/web/print), icon design (15 styles, SVG, Gemini 3.1 Pro), social photos (HTML→screenshot, multi-platform). Actions: design logo, create CIP, generate mockups, build slides, design banner, generate icon, create social photos, social media images, brand identity, design system. Platforms: Facebook, Twitter, LinkedIn, YouTube, Instagram, Pinterest, TikTok, Threads, Google Ads.",
+      "digest": "d18867bad8498f4cc295fadfc075cac39d65b235b8ba1af2f29c0bfab2db47d8",
+      "frontmatter": {
+        "argument-hint": "[design-type] [context]",
+        "description": "Comprehensive design skill: brand identity, design tokens, UI styling, logo generation (55 styles, Gemini, Atlas Cloud, or MuAPI AI), corporate identity program (50 deliverables, CIP mockups), HTML presentations (Chart.js), banner design (22 styles, social/ads/web/print), icon design (15 styles, SVG, Gemini 3.1 Pro), social photos (HTML→screenshot, multi-platform). Actions: design logo, create CIP, generate mockups, build slides, design banner, generate icon, create social photos, social media images, brand identity, design system. Platforms: Facebook, Twitter, LinkedIn, YouTube, Instagram, Pinterest, TikTok, Threads, Google Ads.",
+        "license": "MIT",
+        "metadata": {
+          "author": "claudekit",
+          "version": "2.1.0"
+        },
+        "name": "design"
+      },
+      "fullPagePath": "docs/skills/ui-ux-pro-max/design.md",
+      "generated": true,
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT",
+        "matchesDeclaration": true,
+        "redistribution": "full"
+      },
+      "namespacedInvocations": [
+        "/design"
+      ],
+      "pack": "ui-ux-pro-max",
+      "redistribution": "full",
+      "ref": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "relativePath": ".claude/skills/design/SKILL.md",
+      "repo": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
+      "resolvedRevision": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "security": {
+        "flags": [],
+        "hasAgents": false,
+        "hasBashOrPowershell": false,
+        "hasCredentialRef": false,
+        "hasDynamicShell": false,
+        "hasExecutable": false,
+        "hasHiddenFiles": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasNetworkRef": false,
+        "toolCount": 0
+      },
+      "skillName": "design",
+      "sourceId": "ui_ux_pro_max",
+      "sourceType": "git",
+      "warnings": []
+    },
+    {
+      "canonicalInvocation": "/design-system",
+      "description": "Token architecture, component specifications, and slide generation. Three-layer tokens (primitive→semantic→component), CSS variables, spacing/typography scales, component specs, strategic slide creation. Use for design tokens, systematic design, brand-compliant presentations.",
+      "digest": "de818a1fcb843a7dd8e6f49e4443eba2a2e58e0605c91eac87d099534dc129c4",
+      "frontmatter": {
+        "argument-hint": "[component or token]",
+        "description": "Token architecture, component specifications, and slide generation. Three-layer tokens (primitive→semantic→component), CSS variables, spacing/typography scales, component specs, strategic slide creation. Use for design tokens, systematic design, brand-compliant presentations.",
+        "license": "MIT",
+        "metadata": {
+          "author": "claudekit",
+          "version": "1.0.0"
+        },
+        "name": "design-system"
+      },
+      "fullPagePath": "docs/skills/ui-ux-pro-max/design-system.md",
+      "generated": true,
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT",
+        "matchesDeclaration": true,
+        "redistribution": "full"
+      },
+      "namespacedInvocations": [
+        "/design-system"
+      ],
+      "pack": "ui-ux-pro-max",
+      "redistribution": "full",
+      "ref": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "relativePath": ".claude/skills/design-system/SKILL.md",
+      "repo": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
+      "resolvedRevision": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "security": {
+        "flags": [
+          "executables:2"
+        ],
+        "hasAgents": false,
+        "hasBashOrPowershell": false,
+        "hasCredentialRef": false,
+        "hasDynamicShell": false,
+        "hasExecutable": true,
+        "hasHiddenFiles": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasNetworkRef": false,
+        "toolCount": 0
+      },
+      "skillName": "design-system",
+      "sourceId": "ui_ux_pro_max",
+      "sourceType": "git",
+      "warnings": []
+    },
+    {
+      "canonicalInvocation": "/slides",
+      "description": "Create strategic HTML presentations with Chart.js, design tokens, responsive layouts, copywriting formulas, and contextual slide strategies.",
+      "digest": "8b15374ea4f67f98ac652193418b1fb05b49e0f4638805865d03ee242dfb8080",
+      "frontmatter": {
+        "argument-hint": "[topic] [slide-count]",
+        "description": "Create strategic HTML presentations with Chart.js, design tokens, responsive layouts, copywriting formulas, and contextual slide strategies.",
+        "metadata": {
+          "author": "claudekit",
+          "version": "1.0.0"
+        },
+        "name": "slides"
+      },
+      "fullPagePath": "docs/skills/ui-ux-pro-max/slides.md",
+      "generated": true,
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT",
+        "matchesDeclaration": true,
+        "redistribution": "full"
+      },
+      "namespacedInvocations": [
+        "/slides"
+      ],
+      "pack": "ui-ux-pro-max",
+      "redistribution": "full",
+      "ref": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "relativePath": ".claude/skills/slides/SKILL.md",
+      "repo": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
+      "resolvedRevision": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "security": {
+        "flags": [],
+        "hasAgents": false,
+        "hasBashOrPowershell": false,
+        "hasCredentialRef": false,
+        "hasDynamicShell": false,
+        "hasExecutable": false,
+        "hasHiddenFiles": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasNetworkRef": false,
+        "toolCount": 0
+      },
+      "skillName": "slides",
+      "sourceId": "ui_ux_pro_max",
+      "sourceType": "git",
+      "warnings": []
+    },
+    {
+      "canonicalInvocation": "/ui-styling",
+      "description": "Create beautiful, accessible user interfaces with shadcn/ui components (built on Radix UI + Tailwind), Tailwind CSS utility-first styling, and canvas-based visual designs. Use when building user interfaces, implementing design systems, creating responsive layouts, adding accessible components (dialogs, dropdowns, forms, tables), customizing themes and colors, implementing dark mode, generating visual designs and posters, or establishing consistent styling patterns across applications.",
+      "digest": "3ee6e31cba5492df322c69edb09d729b5a21a43ad6a8a3cc353faf386998813c",
+      "frontmatter": {
+        "argument-hint": "[component or layout]",
+        "description": "Create beautiful, accessible user interfaces with shadcn/ui components (built on Radix UI + Tailwind), Tailwind CSS utility-first styling, and canvas-based visual designs. Use when building user interfaces, implementing design systems, creating responsive layouts, adding accessible components (dialogs, dropdowns, forms, tables), customizing themes and colors, implementing dark mode, generating visual designs and posters, or establishing consistent styling patterns across applications.",
+        "license": "MIT",
+        "metadata": {
+          "author": "claudekit",
+          "version": "1.0.0"
+        },
+        "name": "ui-styling"
+      },
+      "fullPagePath": "docs/skills/ui-ux-pro-max/ui-styling.md",
+      "generated": true,
+      "license": {
+        "declared": "MIT",
+        "detected": "Apache-2.0",
+        "matchesDeclaration": false,
+        "note": "declared \"MIT\" but detected \"Apache-2.0\" upstream",
+        "redistribution": "full"
+      },
+      "namespacedInvocations": [
+        "/ui-styling"
+      ],
+      "pack": "ui-ux-pro-max",
+      "redistribution": "full",
+      "ref": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "relativePath": ".claude/skills/ui-styling/SKILL.md",
+      "repo": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
+      "resolvedRevision": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "security": {
+        "flags": [
+          "binaries:54"
+        ],
+        "hasAgents": false,
+        "hasBashOrPowershell": false,
+        "hasCredentialRef": false,
+        "hasDynamicShell": false,
+        "hasExecutable": true,
+        "hasHiddenFiles": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasNetworkRef": false,
+        "toolCount": 0
+      },
+      "skillName": "ui-styling",
+      "sourceId": "ui_ux_pro_max",
+      "sourceType": "git",
+      "warnings": [
+        "license: declared \"MIT\" but detected \"Apache-2.0\" upstream"
+      ]
+    },
+    {
+      "canonicalInvocation": "/ui-ux-pro-max",
+      "description": "UI/UX design intelligence for web, mobile, and desktop. This skill should be used when designing, building, reviewing, or fixing interfaces, including pages, components, design systems, accessibility, interaction, responsive layout, typography, color, charts, and stack-specific UI implementation. Searchable local data: 79 searchable styles (50 active), 192 product palettes and reasoning profiles, 74 font pairings, 119 UX guidelines, 105 icons, 17 GSAP presets, 25 chart types, and 22 stacks.",
+      "digest": "185f1286a07f8f23893f9664569ec225c890a9892660714b8df1f9687cfbe68b",
+      "frontmatter": {
+        "description": "UI/UX design intelligence for web, mobile, and desktop. This skill should be used when designing, building, reviewing, or fixing interfaces, including pages, components, design systems, accessibility, interaction, responsive layout, typography, color, charts, and stack-specific UI implementation. Searchable local data: 79 searchable styles (50 active), 192 product palettes and reasoning profiles, 74 font pairings, 119 UX guidelines, 105 icons, 17 GSAP presets, 25 chart types, and 22 stacks.",
+        "name": "ui-ux-pro-max"
+      },
+      "fullPagePath": "docs/skills/ui-ux-pro-max/ui-ux-pro-max.md",
+      "generated": true,
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT",
+        "matchesDeclaration": true,
+        "redistribution": "full"
+      },
+      "namespacedInvocations": [
+        "/ui-ux-pro-max"
+      ],
+      "pack": "ui-ux-pro-max",
+      "redistribution": "full",
+      "ref": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "relativePath": ".claude/skills/ui-ux-pro-max/SKILL.md",
+      "repo": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
+      "resolvedRevision": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "security": {
+        "flags": [],
+        "hasAgents": false,
+        "hasBashOrPowershell": false,
+        "hasCredentialRef": false,
+        "hasDynamicShell": false,
+        "hasExecutable": false,
+        "hasHiddenFiles": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasNetworkRef": false,
+        "toolCount": 0
+      },
+      "skillName": "ui-ux-pro-max",
+      "sourceId": "ui_ux_pro_max",
+      "sourceType": "git",
+      "warnings": []
     }
   ],
   "sources": [
+    {
+      "displayName": "Agent-Reach (Panniantong/Agent-Reach)",
+      "id": "agent_reach",
+      "pack": "agent-reach",
+      "redistribution": "full",
+      "ref": "a19a171fa980a0785849596492e0af4db800c82f",
+      "repo": "https://github.com/Panniantong/Agent-Reach.git",
+      "resolvedRevision": "a19a171fa980a0785849596492e0af4db800c82f",
+      "runtimeOnly": false,
+      "skillCount": 1,
+      "type": "git"
+    },
     {
       "displayName": "Anthropic skills (anthropics/skills)",
       "id": "anthropic",
@@ -8232,6 +8725,30 @@
       "resolvedRevision": "8a1541c4a3ffa5a20a5a91de0dcf3f0bab1d1ef4",
       "runtimeOnly": false,
       "skillCount": 8,
+      "type": "git"
+    },
+    {
+      "displayName": "BRAG Full Runtime (latent-spaces/brag)",
+      "id": "brag_full",
+      "pack": "brag",
+      "redistribution": "metadata-only",
+      "ref": "c893c5ed52aed84e3e2ee56787de869fccdae6b0",
+      "repo": "https://github.com/latent-spaces/brag.git",
+      "resolvedRevision": "c893c5ed52aed84e3e2ee56787de869fccdae6b0",
+      "runtimeOnly": false,
+      "skillCount": 1,
+      "type": "git"
+    },
+    {
+      "displayName": "BRAG Slim (latent-spaces/brag)",
+      "id": "brag_slim",
+      "pack": "brag",
+      "redistribution": "full",
+      "ref": "c893c5ed52aed84e3e2ee56787de869fccdae6b0",
+      "repo": "https://github.com/latent-spaces/brag.git",
+      "resolvedRevision": "c893c5ed52aed84e3e2ee56787de869fccdae6b0",
+      "runtimeOnly": false,
+      "skillCount": 1,
       "type": "git"
     },
     {
@@ -8342,13 +8859,25 @@
       "runtimeOnly": false,
       "skillCount": 13,
       "type": "git"
+    },
+    {
+      "displayName": "UI/UX Pro Max (nextlevelbuilder/ui-ux-pro-max-skill)",
+      "id": "ui_ux_pro_max",
+      "pack": "ui-ux-pro-max",
+      "redistribution": "full",
+      "ref": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "repo": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
+      "resolvedRevision": "09170eec67eefd46a7ae85de61b40c194020f997",
+      "runtimeOnly": false,
+      "skillCount": 7,
+      "type": "git"
     }
   ],
   "totals": {
-    "redistributable": 135,
+    "redistributable": 144,
     "runtimeOnly": 3,
-    "skills": 145,
-    "sources": 11,
+    "skills": 155,
+    "sources": 15,
     "warnings": 0
   }
 }

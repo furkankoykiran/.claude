@@ -50,6 +50,10 @@ feedback/
 shell-snapshots/
 projects/
 plugins/
+# Repo-scoped portable Agent Plugin marketplace generated from marketplace.toml.
+!/.agents/
+!/.agents/plugins/
+!/.agents/plugins/marketplace.json
 
 # Memory and state (personal data, but templates are tracked)
 memory/*.md

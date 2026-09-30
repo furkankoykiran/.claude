@@ -1,0 +1,63 @@
+# mcp-registry.toml - curated starter MCP servers for portable plugins.
+#
+# This file is source data for generated plugin mcp.json files and the `fkt mcp`
+# registry UX. Keep credentials out of git: auth-required servers are registered
+# here for discovery, but portable plugin manifests enable only no-auth entries.
+# Users complete OAuth/API-key setup in Claude Code or Codex native storage.
+
+schema_version = 1
+
+[[servers]]
+id = "openaiDeveloperDocs"
+plugin = "fk-toolkit-ops"
+display_name = "OpenAI Developer Docs"
+description = "Search and read official OpenAI developer documentation."
+url = "https://developers.openai.com/mcp"
+transport = "http"
+auth = "none"
+default_enabled = true
+source_url = "https://developers.openai.com/learn/docs-mcp"
+
+[[servers]]
+id = "github"
+plugin = "fk-toolkit-ops"
+display_name = "GitHub"
+description = "Use GitHub repository, issue, pull request, code, and workflow tools through GitHub's official remote MCP server."
+url = "https://api.githubcopilot.com/mcp/"
+transport = "http"
+auth = "api-key"
+default_enabled = false
+source_url = "https://github.com/github/github-mcp-server"
+
+[[servers]]
+id = "linear"
+plugin = "fk-toolkit-ops"
+display_name = "Linear"
+description = "Find, create, and update Linear issues, projects, and comments through Linear's official remote MCP server."
+url = "https://mcp.linear.app/mcp"
+transport = "streamable-http"
+auth = "oauth"
+default_enabled = false
+source_url = "https://linear.app/docs/mcp"
+
+[[servers]]
+id = "notion"
+plugin = "fk-toolkit-ops"
+display_name = "Notion"
+description = "Read, search, create, and update Notion workspace content through Notion's hosted MCP server."
+url = "https://mcp.notion.com/mcp"
+transport = "streamable-http"
+auth = "oauth"
+default_enabled = false
+source_url = "https://developers.notion.com/guides/mcp/get-started-with-mcp"
+
+[[servers]]
+id = "sentry"
+plugin = "fk-toolkit-ops"
+display_name = "Sentry"
+description = "Search errors, triage issues, analyze performance, and manage projects through Sentry's hosted MCP server."
+url = "https://mcp.sentry.dev/mcp"
+transport = "streamable-http"
+auth = "oauth"
+default_enabled = false
+source_url = "https://mcp.sentry.dev/"

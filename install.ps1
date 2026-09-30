@@ -43,6 +43,9 @@ Set-StrictMode -Version Latest
 
 $RepoUrl   = 'https://github.com/furkankoykiran/.claude.git'
 $GstackRepo = 'https://github.com/garrytan/gstack.git'
+$AgentReachRepo = 'https://github.com/Panniantong/Agent-Reach.git'
+$UiUxProMaxRepo = 'https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git'
+$BragRepo = 'https://github.com/latent-spaces/brag.git'
 $ClaudeDir = if ($env:CLAUDE_DIR) { $env:CLAUDE_DIR } else { Join-Path $HOME '.claude' }
 $IsMinimal = $Minimal.IsPresent -or ($env:CLAUDE_BOOTSTRAP_MINIMAL -eq '1')
 $Channel   = if ($env:CLAUDE_BOOTSTRAP_CHANNEL) { $env:CLAUDE_BOOTSTRAP_CHANNEL } else { 'stable' }
@@ -452,21 +455,102 @@ function Set-Provider {
         }
     }
 
-    Install-CcsProfile
 }
 
-# Add a `ccs` function to the user's PowerShell profile (idempotent).
-# CurrentUserAllHosts so it loads in both Windows PowerShell and pwsh.
-function Install-CcsProfile {
-    $profilePath = $PROFILE.CurrentUserAllHosts
-    $profileDir  = Split-Path $profilePath -Parent
-    if (-not (Test-Path $profileDir)) { New-Item -ItemType Directory -Path $profileDir -Force | Out-Null }
-    if (-not (Test-Path $profilePath)) { New-Item -ItemType File -Path $profilePath -Force | Out-Null }
-    $existing = Get-Content -LiteralPath $profilePath -Raw -ErrorAction SilentlyContinue
-    if ($existing -match 'cc-provider') { return }
-    $entry = "`r`n# Claude Code provider switcher (managed by ~/.claude/install.ps1)`r`nfunction ccs { & `"$HOME\.claude\bin\cc-provider.ps1`" @args }`r`n"
-    Add-Content -LiteralPath $profilePath -Value $entry
-    Write-Step "Added 'ccs' function to $profilePath (open a new shell)"
+# Install real ccs/fkt commands instead of profile-only functions.
+function ConvertTo-PsSingleQuoted {
+    param([Parameter(Mandatory)][string]$Value)
+    return "'$($Value -replace "'", "''")'"
+}
+
+function Remove-LegacyCommandProfile {
+    $profilePaths = @($PROFILE.CurrentUserAllHosts) | Where-Object { $_ } | Select-Object -Unique
+    foreach ($profilePath in $profilePaths) {
+        if (-not (Test-Path -LiteralPath $profilePath)) { continue }
+        $existing = Get-Content -LiteralPath $profilePath -Raw -ErrorAction SilentlyContinue
+        if ($null -eq $existing) { continue }
+        $updated = [regex]::Replace(
+            $existing,
+            "(?ms)(?:`r?`n)?# Claude Code provider switcher \(managed by ~/.claude/install\.ps1\)`r?`nfunction ccs \{[^`r`n]*\}`r?`n?",
+            ''
+        )
+        if ($updated -ne $existing) {
+            Set-Content -LiteralPath $profilePath -Value $updated -Encoding ASCII
+        }
+    }
+}
+
+function Add-UserPathDirectory {
+    param([Parameter(Mandatory)][string]$Directory)
+    $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
+    $parts = @()
+    if ($userPath) { $parts = $userPath -split ';' | Where-Object { $_ } }
+    $alreadyUser = $false
+    foreach ($part in $parts) {
+        if ([string]::Equals($part, $Directory, [System.StringComparison]::OrdinalIgnoreCase)) {
+            $alreadyUser = $true
+            break
+        }
+    }
+    if (-not $alreadyUser) {
+        $newPath = (@($parts) + $Directory) -join ';'
+        [Environment]::SetEnvironmentVariable('Path', $newPath, 'User')
+    }
+
+    $sessionParts = @()
+    if ($env:Path) { $sessionParts = $env:Path -split ';' | Where-Object { $_ } }
+    $alreadySession = $false
+    foreach ($part in $sessionParts) {
+        if ([string]::Equals($part, $Directory, [System.StringComparison]::OrdinalIgnoreCase)) {
+            $alreadySession = $true
+            break
+        }
+    }
+    if (-not $alreadySession) { $env:Path = (@($Directory) + $sessionParts) -join ';' }
+}
+
+function Install-UserCommand {
+    $binDir = Join-Path $HOME '.local\bin'
+    New-Item -ItemType Directory -Force -Path $binDir | Out-Null
+    Remove-LegacyCommandProfile
+    Add-UserPathDirectory $binDir
+
+    $defaultToolkit = if ($ClaudeDir -eq (Join-Path $HOME '.claude')) { "Join-Path `$HOME '.claude'" } else { ConvertTo-PsSingleQuoted $ClaudeDir }
+
+    @(
+        '$ErrorActionPreference = ''Stop'''
+        "if (`$env:CLAUDE_DIR) { `$toolkit = `$env:CLAUDE_DIR } else { `$toolkit = $defaultToolkit }"
+        '& (Join-Path $toolkit ''bin\cc-provider.ps1'') @args'
+        'if ($LASTEXITCODE -ne $null) { exit $LASTEXITCODE }'
+    ) | Set-Content -LiteralPath (Join-Path $binDir 'ccs.ps1') -Encoding ASCII
+
+    @(
+        '$ErrorActionPreference = ''Stop'''
+        'if ($env:FKT_HOME) {'
+        '    $toolkit = $env:FKT_HOME'
+        '} elseif ($env:CLAUDE_DIR) {'
+        '    $toolkit = $env:CLAUDE_DIR'
+        "} else { `$toolkit = $defaultToolkit }"
+        '$candidates = @('
+        '    (Join-Path $env:ProgramFiles ''Git\bin\bash.exe'')'
+        '    (Join-Path ${env:ProgramFiles(x86)} ''Git\bin\bash.exe'')'
+        '    (Join-Path $env:LOCALAPPDATA ''Programs\Git\bin\bash.exe'')'
+        ')'
+        '$bash = $null'
+        'foreach ($candidate in $candidates) {'
+        '    if ($candidate -and (Test-Path -LiteralPath $candidate)) { $bash = $candidate; break }'
+        '}'
+        'if (-not $bash) {'
+        '    $cmd = Get-Command bash -ErrorAction SilentlyContinue'
+        '    if ($cmd -and $cmd.Source -and ($cmd.Source -notmatch ''\\Windows\\System32\\bash\.exe$'')) { $bash = $cmd.Source }'
+        '}'
+        'if (-not $bash) { throw ''Git Bash is required to run fkt on native Windows. Install Git for Windows, then re-run install.ps1.'' }'
+        '$env:FKT_HOME = $toolkit'
+        '& $bash (Join-Path $toolkit ''bin\fkt'') @args'
+        'exit $LASTEXITCODE'
+    ) | Set-Content -LiteralPath (Join-Path $binDir 'fkt.ps1') -Encoding ASCII
+
+    Write-Step "Installed 'ccs' and 'fkt' commands in $binDir"
 }
 
 # ---------------------------------------------------------------------------
@@ -720,6 +804,58 @@ function Install-ImpeccableSkill {
     }
 }
 
+function Copy-ManagedSkillDir {
+    param(
+        [Parameter(Mandatory)][string]$Source,
+        [Parameter(Mandatory)][string]$DestName,
+        [Parameter(Mandatory)][string]$Marker,
+        [Parameter(Mandatory)][string]$StageDir
+    )
+    if (-not (Test-Path (Join-Path $Source 'SKILL.md'))) {
+        Write-Warn "upstream skill not found: $Source"
+        return $false
+    }
+    $dest = Join-Path $ClaudeDir "skills\$DestName"
+    if ((Test-Path $dest) -and -not (Test-Path (Join-Path $dest $Marker))) {
+        Write-Warn "skipping collision (not from this pack): $DestName"
+        return $true
+    }
+    Copy-SkillDir $Source $DestName
+    New-Item -ItemType File -Force -Path (Join-Path $dest $Marker) | Out-Null
+    $lic = Join-Path $StageDir 'LICENSE'
+    if (Test-Path $lic) { Copy-Item $lic (Join-Path $dest 'UPSTREAM_LICENSE') -Force }
+    foreach ($component in @('LICENSE', 'LICENSE.txt')) {
+        $componentLicense = Join-Path $Source $component
+        if (Test-Path $componentLicense) {
+            Copy-Item $componentLicense (Join-Path $dest 'UPSTREAM_COMPONENT_LICENSE') -Force
+        }
+    }
+    Write-Step "Synced upstream skill: $DestName"
+    return $true
+}
+
+function Install-AgentReachSkill {
+    $stage = Join-Path $SkillSrcDir 'agent_reach'
+    Update-SkillStage $AgentReachRepo $stage -SourceId 'agent_reach'
+    [void](Copy-ManagedSkillDir (Join-Path $stage 'agent_reach\skill') 'agent-reach' '.from_agent_reach' $stage)
+}
+
+function Install-UiUxProMaxSkillSet {
+    $stage = Join-Path $SkillSrcDir 'ui_ux_pro_max'
+    Update-SkillStage $UiUxProMaxRepo $stage -SourceId 'ui_ux_pro_max'
+    $count = 0
+    foreach ($name in @('banner-design', 'brand', 'design', 'design-system', 'slides', 'ui-styling', 'ui-ux-pro-max')) {
+        if (Copy-ManagedSkillDir (Join-Path $stage ".claude\skills\$name") $name '.from_ui_ux_pro_max' $stage) { $count++ }
+    }
+    Write-Step "Synced $count UI/UX Pro Max skills"
+}
+
+function Install-BragSlimSkill {
+    $stage = Join-Path $SkillSrcDir 'brag_slim'
+    Update-SkillStage $BragRepo $stage -SourceId 'brag_slim'
+    [void](Copy-ManagedSkillDir (Join-Path $stage 'skills\brag-slim') 'brag-slim' '.from_brag_slim' $stage)
+}
+
 # Curated always-on subset from anthropics/skills (office docs + authoring +
 # meta). The rest of the repo stays on-demand via the plugin marketplace. Skips
 # `claude-api` (name-collides with an existing skill) and skills that overlap
@@ -806,6 +942,7 @@ function Invoke-Main {
     Initialize-Repo
     Invoke-Step 'config seeding'   { Set-SeedConfig }
     Invoke-Step 'local overrides'  { Set-SeedLocalOverride }
+    Invoke-Step 'commands'         { Install-UserCommand }
     # Runs in minimal mode too: an install that once had the packs still carries
     # the misplaced clones, and leaving them behind keeps the duplicate plugins.
     Invoke-Step 'staging migration' { Move-LegacySkillStage }
@@ -836,6 +973,9 @@ function Invoke-Main {
                 -SourceId 'taste' -Marker '.from_taste' -RequireSkillMd
         }
         Invoke-Step 'anthropic skills' { Install-AnthropicSkill }
+        Invoke-Step 'Agent-Reach skill' { Install-AgentReachSkill }
+        Invoke-Step 'UI/UX Pro Max skills' { Install-UiUxProMaxSkillSet }
+        Invoke-Step 'BRAG slim skill' { Install-BragSlimSkill }
         Invoke-Step 'graphify' { Install-Graphify }
         Invoke-Step 'plugin marketplaces' { Register-PluginMarketplace }
     }

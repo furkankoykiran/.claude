@@ -117,6 +117,7 @@ setup_fixture() {
   # below resolve them relative to FKT_HOME, exactly as a real install does.
   cp "$FKT" "$seed/bin/fkt"
   cp "$REPO_ROOT/hooks/session-start-update-notice.sh" "$seed/hooks/"
+  cp "$REPO_ROOT/mcp-registry.toml" "$seed/mcp-registry.toml"
   git_q "$seed" add -A
   git_q "$seed" commit -m v0.1.0
   git_q "$seed" tag v0.1.0
@@ -150,6 +151,10 @@ setup_fixture
 assert_contains "0.1.0" "version reports the checked-out VERSION" -- version
 assert_contains "channel        stable" "status defaults to the stable channel" -- status
 assert_exit 2 "unknown command is a usage error" -- frobnicate
+assert_contains "openaiDeveloperDocs" "mcp status lists the no-auth docs server" -- mcp status
+assert_contains "login-required" "mcp status shows auth-required entries disabled until login" -- mcp status
+assert_contains "codex mcp login notion" "mcp auth explains native Codex OAuth login" -- mcp auth notion
+assert_contains "default enabled   1 no-auth server" "mcp doctor reports only no-auth defaults" -- mcp doctor
 
 # --- channels -------------------------------------------------------------
 run_fkt channel edge >/dev/null

@@ -82,7 +82,7 @@ describe("install.sh lock extraction", () => {
   it("pins every git source that install.sh stages", async () => {
     const sh = await readFile(INSTALL_SH, "utf8");
     const lock = JSON.parse(await readFile(LOCK_PATH, "utf8")) as Lockfile;
-    const staged = [...sh.matchAll(/stage_source "([a-z0-9-]+)"/g)].map((m) => m[1]!);
+    const staged = [...sh.matchAll(/stage_source "([a-z0-9_-]+)"/g)].map((m) => m[1]!);
     expect(staged.length).toBeGreaterThan(0);
     for (const id of staged) {
       const src = lock.sources.find((s) => s.id === id);

@@ -64,9 +64,7 @@ independently updatable:
 | `fk-eng-agents` | researcher · planner · code-reviewer · debugger subagents | **0** |
 | `fk-toolkit-ops` | Wire an MCP server from a pasted config; manage toolkit updates | 161 chars |
 
-Plugins carry **no hooks, no MCP servers and no executables** — only skills and
-agents. Everything with capability surface lives in the bootstrap layer below,
-where you can see it before it runs.
+Plugins carry **no hooks and no executables**. `fk-toolkit-ops` carries the generated no-auth OpenAI Developer Docs MCP manifest; auth-required MCP starters stay disabled in the registry until native host login. Everything else with capability surface lives in the bootstrap layer below, where you can see it before it runs.
 
 ### The whole toolkit
 
@@ -251,6 +249,7 @@ Measurement, method and the full before/after in
 <!-- root-layout:start -->
 ```text
 .claude-plugin/  generated marketplace manifest
+AGENTS.md       shared cross-agent repository instructions
 bin/             executables on PATH (cc-provider, fkt)
 catalog/         catalog toolchain (src, tests, cache, generated)
 docs/            documentation — start at docs/README.md
@@ -264,6 +263,7 @@ utils/           shared Python helpers
 install.sh       installer for Linux/macOS/WSL — public URL, do not move
 install.ps1      installer for native Windows — public URL, do not move
 marketplace.toml          plugin marketplace source of truth
+mcp-registry.toml         curated portable MCP registry
 skills-sources.toml       declarative source manifest
 skills-source.lock.json   pinned revisions and digests
 security-advisories.tsv   advisory feed consumed by `fkt`

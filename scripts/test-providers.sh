@@ -18,8 +18,26 @@ bad()  { printf '  \033[1;31mFAIL\033[0m %s\n' "$*" >&2; FAIL=$((FAIL + 1)); }
 head_() { printf '\n\033[1;34m==>\033[0m %s\n' "$*"; }
 
 SANDBOX=$(mktemp -d)
-trap 'rm -rf "$SANDBOX"' EXIT
-mkdir -p "$SANDBOX/providers"
+trap 'if [ -f "$SANDBOX/state/codex-gateway.pid" ]; then kill "$(cat "$SANDBOX/state/codex-gateway.pid")" 2>/dev/null || true; fi; rm -rf "$SANDBOX"' EXIT
+mkdir -p "$SANDBOX/providers" "$SANDBOX/bin"
+cat > "$SANDBOX/bin/codex" <<'EOF'
+#!/usr/bin/env bash
+case "${1:-}" in
+  login|status|logout) printf 'codex %s fixture\n' "$1" ;;
+  app-server) while IFS= read -r _line; do :; done ;;
+  *) printf 'codex fixture\n' ;;
+esac
+EOF
+chmod +x "$SANDBOX/bin/codex"
+cat > "$SANDBOX/bin/bun" <<'EOF'
+#!/usr/bin/env bash
+if [ "${1:-}" = "run" ] && [ "${3:-}" = "serve" ]; then
+  while :; do sleep 60; done
+fi
+exec /root/.bun/bin/bun "$@"
+EOF
+chmod +x "$SANDBOX/bin/bun"
+export PATH="$SANDBOX/bin:$PATH"
 cp "$REPO_DIR"/providers/*.json.example "$SANDBOX/providers/"
 cp "$REPO_DIR"/providers/*.yaml.example "$SANDBOX/providers/" 2>/dev/null || true
 cp "$REPO_DIR/settings.base.json" "$SANDBOX/"
@@ -31,6 +49,8 @@ ccs() { CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "$@"; }
 say() { CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "$@" 2>&1 || true; }
 # Exit status only, with output discarded.
 rc() { CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "$@" >/dev/null 2>&1; }
+# Like say(), but feeds a fake API key through the noninteractive test path.
+say_key() { CC_PROVIDER_API_KEY="$1" CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "${@:2}" 2>&1 || true; }
 
 # --- templates are well-formed and self-consistent -------------------------
 head_ "Provider templates"
@@ -125,7 +145,7 @@ fi
 # --- discovery -------------------------------------------------------------
 head_ "Discovery (list)"
 listed=$(ccs list)
-for want in anthropic zai nvidia nvidia-nim deepseek kimi minimax openrouter; do
+for want in anthropic zai nvidia nvidia-nim deepseek kimi minimax openrouter codex; do
   if printf '%s\n' "$listed" | grep -qxF "$want"; then
     ok "list includes $want"
   else
@@ -143,6 +163,93 @@ else
   bad "dropped-in template was not discovered"
 fi
 rm -f "$SANDBOX/providers/madeup.json.example" "$SANDBOX/providers/madeup.json"
+
+# --- CLI UX and auth modes -------------------------------------------------
+head_ "CLI UX and auth modes"
+
+out=$(say use anthropic)
+case "$out" in
+  *"Active provider: anthropic"*) ok "ccs use <provider> activates a provider" ;;
+  *) bad "ccs use anthropic did not activate: $out" ;;
+esac
+out=$(say zai)
+case "$out" in
+  *"Active provider: zai"*) ok "ccs <provider> shorthand remains compatible" ;;
+  *) bad "ccs zai shorthand did not activate: $out" ;;
+esac
+
+printf '{"env":{"ANTHROPIC_BASE_URL":"https://authmade.invalid","ANTHROPIC_AUTH_TOKEN":"<AUTHMADE_KEY>","STALE":"gone"}}\n' \
+  > "$SANDBOX/providers/authmade.json.example"
+out=$(say_key 'sk-authmade-secret-1234' api authmade)
+case "$out" in
+  *"sk-authmade-secret"*) bad "api command echoed the full API key" ;;
+  *"****1234"*) ok "api command redacts the API key it writes" ;;
+  *) bad "api command did not report a redacted update: $out" ;;
+esac
+if [ "$(jq -r '.env.ANTHROPIC_AUTH_TOKEN' "$SANDBOX/providers/authmade.json")" = 'sk-authmade-secret-1234' ]; then
+  ok "api command writes the API key into the local provider file"
+else
+  bad "api command did not write the API key into the provider file"
+fi
+mode=$(stat -c '%a' "$SANDBOX/providers/authmade.json")
+if [ "$mode" = "600" ]; then
+  ok "local provider file is chmod 0600 after auth"
+else
+  bad "local provider file mode is $mode, expected 600"
+fi
+out=$(say use authmade)
+case "$out" in
+  *"sk-authmade-secret"*) bad "activation echoed a configured API key" ;;
+  *"Active provider: authmade"*) ok "authed local provider can be activated" ;;
+  *) bad "authed local provider did not activate: $out" ;;
+esac
+out=$(say status)
+case "$out" in
+  *"sk-authmade-secret"*) bad "status leaked the configured API key" ;;
+  *"****1234"*) ok "status reports auth with a redacted key" ;;
+  *) bad "status did not include redacted auth state: $out" ;;
+esac
+
+# Switching away must remove provider-owned env wholesale, including live keys
+# and stale custom env values from the previous provider.
+ccs use anthropic >/dev/null 2>&1
+if jq -e '.env.ANTHROPIC_AUTH_TOKEN? or .env.STALE?' "$SANDBOX/settings.json" >/dev/null 2>&1; then
+  bad "switching away from an API provider left stale env values behind"
+else
+  ok "switching away from an API provider removes stale env values"
+fi
+
+out=$(say logout authmade)
+case "$out" in
+  *"sk-authmade-secret"*) bad "logout echoed the API key it cleared" ;;
+  *"Cleared API key"*) ok "logout clears a local API key without echoing it" ;;
+  *) bad "logout did not report clearing the key: $out" ;;
+esac
+if [ "$(jq -r '.env.ANTHROPIC_AUTH_TOKEN' "$SANDBOX/providers/authmade.json")" = "" ]; then
+  ok "logout blanks the local API key field"
+else
+  bad "logout did not blank the local API key field"
+fi
+
+out=$(say auth chatgpt)
+case "$out" in
+  *"ChatGPT entitlement"*"no API key is copied"*) ok "ChatGPT auth mode delegates to Codex entitlement" ;;
+  *) bad "ChatGPT auth mode did not explain Codex entitlement: $out" ;;
+esac
+out=$(say api chatgpt)
+case "$out" in
+  *"not an API key"*) ok "ChatGPT api mode refuses to copy entitlement tokens" ;;
+  *) bad "ChatGPT api mode did not refuse API-key flow: $out" ;;
+esac
+
+# A successful auth flow must not weaken the repo-owned safety controls.
+ccs use authmade >/dev/null 2>&1
+if [ "$(jq '[.permissions.deny[]] | length' "$SANDBOX/settings.json")" = "$(jq '.permissions.deny | length' "$REPO_DIR/settings.base.json")" ] \
+   && jq -e '[.hooks[]?[]?.hooks[]?.command] | index("rtk hook claude") != null' "$SANDBOX/settings.json" >/dev/null; then
+  ok "auth and activation preserve safety denies and provider hooks"
+else
+  bad "auth and activation lost safety denies or provider hooks"
+fi
 
 # --- activation ------------------------------------------------------------
 head_ "Activation"
@@ -215,7 +322,7 @@ fi
 # An install that never picks a provider still has to end up guarded, so the
 # seed is base + example rather than either one alone.
 seeded=$(jq -s '.[0] * (.[1] // {}) | del(._comment) | del(.["$comment"])' "$BASE" "$EXAMPLE")
-if [ "$(printf '%s' "$seeded" | jq '.permissions.deny | length')" = "$(jq '.permissions.deny | length' "$BASE")" ] \
+if [ "$(printf '%s' "$seeded" | jq '.permissions.deny | length')" = "$(jq '.permissions.deny | length' "$REPO_DIR/settings.base.json")" ] \
    && [ "$(printf '%s' "$seeded" | jq -r '[.hooks[]?[]?.hooks[]?.command] | length')" = "4" ] \
    && [ "$(printf '%s' "$seeded" | jq -r 'has("statusLine")')" = "true" ]; then
   ok "the seeded settings.json carries both the safety config and the optional extras"
@@ -249,10 +356,10 @@ else
   bad "a path deny rule uses a single leading slash and resolves relative to cwd"
 fi
 
-for p in anthropic zai; do
+for p in anthropic zai codex; do
   ccs "$p" >/dev/null 2>&1
   n=$(jq '[.permissions.deny[]] | length' "$SANDBOX/settings.json" 2>/dev/null || echo 0)
-  if [ "$n" = "$(jq '.permissions.deny | length' "$BASE")" ]; then
+  if [ "$n" = "$(jq '.permissions.deny | length' "$REPO_DIR/settings.base.json")" ]; then
     ok "$p: every deny rule from settings.base.json is registered"
   else
     bad "$p: settings.json has $n deny rule(s), expected $(jq '.permissions.deny | length' "$BASE")"
@@ -279,6 +386,20 @@ if [ "$(jq -r '.cleanupPeriodDays' "$SANDBOX/settings.json")" = "$(jq -r '.clean
   ok "cleanupPeriodDays survives a provider switch"
 else
   bad "cleanupPeriodDays did not survive a provider switch"
+fi
+
+
+# User-level effort and plugin policy must survive provider switching. Old local
+# provider files may still carry these keys; the switcher ignores them.
+jq '. + {effortLevel:"low", enabledPlugins:{"local-plugin":true}}' "$SANDBOX/settings.json" > "$SANDBOX/s.tmp" \
+  && mv "$SANDBOX/s.tmp" "$SANDBOX/settings.json"
+ccs zai >/dev/null 2>&1
+ccs anthropic >/dev/null 2>&1
+if [ "$(jq -r '.effortLevel' "$SANDBOX/settings.json")" = "low" ] \
+   && [ "$(jq -r '.enabledPlugins["local-plugin"]' "$SANDBOX/settings.json")" = "true" ]; then
+  ok "effortLevel and enabledPlugins survive provider switching"
+else
+  bad "provider switching overwrote effortLevel or enabledPlugins"
 fi
 
 # Keys Claude Code and other tools write into settings.json are not the
@@ -397,7 +518,7 @@ esac
 cp "$REPO_DIR/settings.base.json" "$SANDBOX/settings.base.json"
 ccs zai >/dev/null 2>&1
 
-# A loopback provider with nothing listening is the NVIDIA-gateway footgun.
+# Loopback providers with nothing listening are gateway footguns.
 head_ "Local gateway detection"
 
 # The real template points at :4000, and on a machine that is actually using the
@@ -428,9 +549,49 @@ else
   bad "shipped nvidia template is no longer loopback; the gateway check is dead code"
 fi
 # A remote provider must never trip the loopback check.
+codex_out=$(say codex)
+case "$codex_out" in
+  *"Codex gateway"*"port 4545"*) ok "codex starts or reuses its app-server gateway on activation" ;;
+  *) bad "codex did not manage the app-server gateway: $codex_out" ;;
+esac
+codex_model_out=$(say codex-model gpt-5.5 medium)
+case "$codex_model_out" in
+  *"Codex model set to gpt-5.5"*) ok "codex-model reports the selected Codex model" ;;
+  *) bad "codex-model did not report the selected model: $codex_model_out" ;;
+esac
+if [ "$(jq -r '.env.CODEX_GATEWAY_MODEL' "$SANDBOX/providers/codex.json")" = "gpt-5.5" ] \
+   && [ "$(jq -r '.env.CODEX_GATEWAY_REASONING_EFFORT' "$SANDBOX/providers/codex.json")" = "medium" ]; then
+  ok "codex-model writes the Codex model and reasoning effort"
+else
+  bad "codex-model did not persist the Codex model settings"
+fi
+if [ "$(jq -r '.model' "$SANDBOX/providers/codex.json")" = "claude-sonnet-4-5" ]; then
+  ok "codex-model keeps Claude-facing aliases separate from Codex model ids"
+else
+  bad "codex-model wrote a Codex model id into Claude-facing model selection"
+fi
 case "$(say deepseek)" in
   *"nothing is listening"*) bad "a remote provider was wrongly checked for a local listener" ;;
   *) ok "remote providers skip the local-listener check" ;;
+esac
+
+head_ "Doctor"
+out=$(say doctor)
+case "$out" in
+  *"Provider doctor"*"jq: ok"*) ok "doctor reports core provider setup" ;;
+  *) bad "doctor did not report core provider setup: $out" ;;
+esac
+case "$out" in
+  *"safety deny rules:"*"hook handlers:"*) ok "doctor reports safety and hook counts" ;;
+  *) bad "doctor did not report safety and hook counts: $out" ;;
+esac
+case "$out" in
+  *"gateway check:"*) ok "doctor checks gateway state when the nvidia provider exists" ;;
+  *) bad "doctor did not check gateway state: $out" ;;
+esac
+case "$out" in
+  *"sk-authmade-secret"*) bad "doctor leaked a configured API key" ;;
+  *) ok "doctor output does not leak API keys" ;;
 esac
 
 # --- summary ---------------------------------------------------------------

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "fk-manim-video",
+  "version": "0.6.2",
+  "description": "Build Manim animations with synced spoken narration using edge-tts and ffmpeg. Ships a NarratedScene base class, reusable visuals, and a screenshot-asset pipeline.",
+  "author": {
+    "name": "Furkan Köykıran",
+    "url": "https://github.com/furkankoykiran"
+  },
+  "homepage": "https://github.com/furkankoykiran/.claude",
+  "repository": "https://github.com/furkankoykiran/.claude",
+  "license": "MIT",
+  "keywords": [
+    "manim",
+    "video",
+    "narration",
+    "tts",
+    "animation"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Narrated Manim Video",
+        "shortDescription": "Build Manim animations with synced spoken narration using edge-tts and ffmpeg. Ships a NarratedScene base class, reusable visuals, and a screenshot-asset pipeline.",
+        "developerName": "Furkan Köykıran",
+        "category": "media"
+      }
+    }
+  }
+}

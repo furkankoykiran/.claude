@@ -50,6 +50,8 @@ CHECK_CACHE="$FKT_STATE_DIR/update-check"
 SNOOZE_FILE="$FKT_STATE_DIR/snooze"
 ADVISORY_CACHE="$FKT_STATE_DIR/advisories.tsv"
 MIGRATION_DIR="$FKT_STATE_DIR/migrations"
+MCP_REGISTRY="$FKT_HOME/mcp-registry.toml"
+MCP_MANIFEST="$FKT_HOME/skills/fk-toolkit-ops/mcp.json"
 
 DEFAULT_CHANNEL="stable"
 DEFAULT_TTL_MINUTES=720            # 12h; a config repo does not move hourly
@@ -988,6 +990,116 @@ do_config() {
   say "$1 = $2"
 }
 
+
+mcp_registry_rows() {
+  [ -r "$MCP_REGISTRY" ] || return 0
+  awk '
+    function val(line) {
+      sub(/^[^=]*=[[:space:]]*/, "", line)
+      sub(/[[:space:]]*#.*/, "", line)
+      gsub(/^[[:space:]]+|[[:space:]]+$/, "", line)
+      if (line ~ /^".*"$/) { sub(/^"/, "", line); sub(/"$/, "", line) }
+      return line
+    }
+    function flush() {
+      if (id != "") printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", id, plugin, auth, def, transport, url, display, source
+    }
+    /^\[\[servers\]\]/ { flush(); id=plugin=auth=def=transport=url=display=source=""; next }
+    /^[[:space:]]*id[[:space:]]*=/ { id=val($0); next }
+    /^[[:space:]]*plugin[[:space:]]*=/ { plugin=val($0); next }
+    /^[[:space:]]*display_name[[:space:]]*=/ { display=val($0); next }
+    /^[[:space:]]*url[[:space:]]*=/ { url=val($0); next }
+    /^[[:space:]]*transport[[:space:]]*=/ { transport=val($0); next }
+    /^[[:space:]]*auth[[:space:]]*=/ { auth=val($0); next }
+    /^[[:space:]]*default_enabled[[:space:]]*=/ { def=val($0); next }
+    /^[[:space:]]*source_url[[:space:]]*=/ { source=val($0); next }
+    END { flush() }
+  ' "$MCP_REGISTRY"
+}
+
+mcp_state_for() {
+  local auth="$1" def="$2"
+  if [ "$auth" = "none" ] && [ "$def" = "true" ]; then
+    printf 'enabled'
+  elif [ "$auth" = "none" ]; then
+    printf 'disabled'
+  else
+    printf 'login-required'
+  fi
+}
+
+do_mcp() {
+  local sub="${1:-status}"
+  [ $# -gt 0 ] && shift
+  case "$sub" in
+    list|status)
+      if [ ! -r "$MCP_REGISTRY" ]; then
+        err "MCP registry not found: $MCP_REGISTRY"
+        return "$EX_USAGE"
+      fi
+      say "MCP starter registry ($MCP_REGISTRY)"
+      printf '%-22s %-8s %-15s %s\n' "id" "auth" "state" "url"
+      mcp_registry_rows | while IFS=$'\t' read -r id _plugin auth def _transport url _display _source; do
+        [ -n "$id" ] || continue
+        printf '%-22s %-8s %-15s %s\n' "$id" "$auth" "$(mcp_state_for "$auth" "$def")" "$url"
+      done
+      ;;
+    auth)
+      local want="${1:-}" found=0
+      [ -n "$want" ] || { err "usage: fkt mcp auth <id>"; return "$EX_USAGE"; }
+      while IFS=$'\t' read -r id _plugin auth def transport url display source; do
+        [ "$id" = "$want" ] || continue
+        found=1
+        say "$display ($id)"
+        say "  url       $url"
+        say "  transport $transport"
+        say "  auth      $auth"
+        say "  state     $(mcp_state_for "$auth" "$def")"
+        [ -n "$source" ] && say "  docs      $source"
+        case "$auth" in
+          none)
+            say "  login     no login required"
+            ;;
+          oauth)
+            say "  Claude    claude mcp add --transport http $id $url; then run /mcp"
+            say "  Codex     codex mcp add $id --url $url; then run: codex mcp login $id"
+            ;;
+          api-key)
+            say "  Claude    add with claude mcp, then store the token through Claude's MCP auth flow"
+            say "  Codex     add with codex mcp, then use Codex's native MCP auth/token flow"
+            ;;
+        esac
+      done <<EOF_MCP_ROWS
+$(mcp_registry_rows)
+EOF_MCP_ROWS
+      [ "$found" = "1" ] || { err "unknown MCP server: $want"; return "$EX_USAGE"; }
+      ;;
+    doctor)
+      local rows enabled bad_auth_enabled missing_manifest=0
+      rows="$(mcp_registry_rows)"
+      if [ -z "$rows" ]; then
+        err "MCP registry is empty or unreadable: $MCP_REGISTRY"
+        return "$EX_USAGE"
+      fi
+      enabled="$(printf '%s\n' "$rows" | awk -F '\t' '$3 == "none" && $4 == "true" { n++ } END { print n+0 }')"
+      bad_auth_enabled="$(printf '%s\n' "$rows" | awk -F '\t' '$3 != "none" && $4 == "true" { n++ } END { print n+0 }')"
+      [ "$bad_auth_enabled" = "0" ] || { err "auth-required MCP entries must not be default_enabled=true"; return "$EX_USAGE"; }
+      [ -f "$MCP_MANIFEST" ] || missing_manifest=1
+      say "registry entries  $(printf '%s\n' "$rows" | grep -c .)"
+      say "default enabled   $enabled no-auth server(s)"
+      if [ "$missing_manifest" = "1" ]; then
+        warn "generated plugin MCP manifest missing: $MCP_MANIFEST"
+      else
+        say "plugin manifest   $MCP_MANIFEST"
+      fi
+      ;;
+    *)
+      err "usage: fkt mcp [list|status|auth <id>|doctor]"
+      return "$EX_USAGE"
+      ;;
+  esac
+}
+
 usage() {
   cat <<'EOF'
 fkt — FK Claude Toolkit updater (bootstrap layer only)
@@ -1007,6 +1119,7 @@ fkt — FK Claude Toolkit updater (bootstrap layer only)
   fkt snooze [HOURS]         hide the current update for a while (default 168)
   fkt enable | disable       turn update checks on or off
   fkt config [KEY VALUE]     show or set configuration
+  fkt mcp [list|auth|doctor] curated MCP starter registry and auth state
 
 Channels:
   stable  latest v* release tag  (default)
@@ -1036,6 +1149,7 @@ main() {
     enable)          do_enable "$@" ;;
     disable)         do_disable "$@" ;;
     config)          do_config "$@" ;;
+    mcp)             do_mcp "$@" ;;
     -h|--help|help)  usage ;;
     *)               err "unknown command: $cmd"; usage >&2; return "$EX_USAGE" ;;
   esac

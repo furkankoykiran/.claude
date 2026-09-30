@@ -112,6 +112,17 @@ const scenario = (o: {
   vars: { ENABLE_SKILLS_AUTOMATION: o.enabled ?? "" },
 });
 
+describe("update workflow: version-bearing manifests", () => {
+  it("stages every generated manifest that embeds VERSION", () => {
+    const match = readFileSync(WORKFLOW, "utf8").match(/VERSION_PATHS: >-\n([\s\S]*?)\n\s*jobs:/);
+    expect(match, "VERSION_PATHS block not found").toBeTruthy();
+    const paths = match![1]!;
+    expect(paths).toContain(".claude-plugin/marketplace.json");
+    expect(paths).toContain("skills/*/.claude-plugin/plugin.json");
+    expect(paths).toContain("skills/*/plugin.json");
+  });
+});
+
 describe("update workflow: every mutating step is guarded", () => {
   it("declares an `if:` on every mutating step", () => {
     for (const name of MUTATING) {

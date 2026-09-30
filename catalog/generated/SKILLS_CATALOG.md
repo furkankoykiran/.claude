@@ -6,10 +6,19 @@
 Generated index of every Claude Code skill, command, and runtime component represented by `furkankoykiran/.claude`.
 Resolver version 1 · schema v1.
 
-- **Sources:** 11
-- **Skills / entries:** 145
-- **Redistributable (full body):** 135
+- **Sources:** 15
+- **Skills / entries:** 155
+- **Redistributable (full body):** 144
 - **Runtime-only:** 3
+
+## Agent-Reach (Panniantong/Agent-Reach)
+
+type: `git` · pack: `agent-reach` · skills: 1 · redistribution: full
+repo: https://github.com/Panniantong/Agent-Reach.git · ref: `a19a171fa980a0785849596492e0af4db800c82f` · revision: `a19a171fa980`
+
+| invocation | description | redistribution |
+| --- | --- | --- |
+| [/agent-reach](../../docs/skills/agent-reach/agent-reach.md) | MUST USE when user wants to 调研/research/搜索/search/查/找/look up anything on the internet — e.g. 全网调研 X / 帮我调研一下 X / 查一下 X  | full |
 
 ## Anthropic skills (anthropics/skills)
 
@@ -26,6 +35,24 @@ repo: https://github.com/anthropics/skills.git · ref: `origin/HEAD` · revision
 | [/skill-creator](../../docs/skills/anthropic/skill-creator.md) | Create new skills, modify and improve existing skills, and measure skill performance. Use when users want to create a sk | full |
 | [/web-artifacts-builder](../../docs/skills/anthropic/web-artifacts-builder.md) | Suite of tools for creating elaborate, multi-component claude.ai HTML artifacts using modern frontend web technologies ( | full |
 | [/xlsx](../../docs/skills/anthropic/xlsx.md) | Use this skill any time a spreadsheet file is the primary input or output. This means any task where the user wants to:  | metadata-only |
+
+## BRAG Full Runtime (latent-spaces/brag)
+
+type: `git` · pack: `brag` · skills: 1 · redistribution: metadata-only
+repo: https://github.com/latent-spaces/brag.git · ref: `c893c5ed52aed84e3e2ee56787de869fccdae6b0` · revision: `c893c5ed52ae`
+
+| invocation | description | redistribution |
+| --- | --- | --- |
+| [/brag](../../docs/skills/brag-full/brag.md) | Turn the current project website into a short, polished, shareable launch video using Hyperframes. Use when someone says | metadata-only |
+
+## BRAG Slim (latent-spaces/brag)
+
+type: `git` · pack: `brag` · skills: 1 · redistribution: full
+repo: https://github.com/latent-spaces/brag.git · ref: `c893c5ed52aed84e3e2ee56787de869fccdae6b0` · revision: `c893c5ed52ae`
+
+| invocation | description | redistribution |
+| --- | --- | --- |
+| [/brag-slim](../../docs/skills/brag-slim/brag-slim.md) | Turn a project directory or a website URL into a short, shareable launch video with music, motion, and share copy. One f | full |
 
 ## graphify (PyPI: graphifyy)
 
@@ -242,6 +269,21 @@ repo: https://github.com/Leonxlnx/taste-skill.git · ref: `origin/HEAD` · revis
 | [/minimalist-ui](../../docs/skills/taste/minimalist-ui.md) | Clean editorial-style interfaces. Warm monochrome palette, typographic contrast, flat bento grids, muted pastels. No gra | full |
 | [/redesign-existing-projects](../../docs/skills/taste/redesign-existing-projects.md) | Upgrades existing websites and apps to premium quality. Audits current design, identifies generic AI patterns, and appli | full |
 | [/stitch-design-taste](../../docs/skills/taste/stitch-design-taste.md) | Semantic Design System Skill for Google Stitch. Generates agent-friendly DESIGN.md files that enforce premium, anti-gene | full |
+
+## UI/UX Pro Max (nextlevelbuilder/ui-ux-pro-max-skill)
+
+type: `git` · pack: `ui-ux-pro-max` · skills: 7 · redistribution: full
+repo: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git · ref: `09170eec67eefd46a7ae85de61b40c194020f997` · revision: `09170eec67ee`
+
+| invocation | description | redistribution |
+| --- | --- | --- |
+| [/banner-design](../../docs/skills/ui-ux-pro-max/banner-design.md) | Design banners for social media, ads, website heroes, creative assets, and print. Multiple art direction options with op | full |
+| [/brand](../../docs/skills/ui-ux-pro-max/brand.md) | Brand voice, visual identity, messaging frameworks, asset management, brand consistency. Activate for branded content, t | full |
+| [/design](../../docs/skills/ui-ux-pro-max/design.md) | Comprehensive design skill: brand identity, design tokens, UI styling, logo generation (55 styles, Gemini, Atlas Cloud,  | full |
+| [/design-system](../../docs/skills/ui-ux-pro-max/design-system.md) | Token architecture, component specifications, and slide generation. Three-layer tokens (primitive→semantic→component), C | full |
+| [/slides](../../docs/skills/ui-ux-pro-max/slides.md) | Create strategic HTML presentations with Chart.js, design tokens, responsive layouts, copywriting formulas, and contextu | full |
+| [/ui-styling](../../docs/skills/ui-ux-pro-max/ui-styling.md) | Create beautiful, accessible user interfaces with shadcn/ui components (built on Radix UI + Tailwind), Tailwind CSS util | full |
+| [/ui-ux-pro-max](../../docs/skills/ui-ux-pro-max/ui-ux-pro-max.md) | UI/UX design intelligence for web, mobile, and desktop. This skill should be used when designing, building, reviewing, o | full |
 
 ---
 
