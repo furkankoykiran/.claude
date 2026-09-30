@@ -43,6 +43,9 @@ Set-StrictMode -Version Latest
 
 $RepoUrl   = 'https://github.com/furkankoykiran/.claude.git'
 $GstackRepo = 'https://github.com/garrytan/gstack.git'
+$AgentReachRepo = 'https://github.com/Panniantong/Agent-Reach.git'
+$UiUxProMaxRepo = 'https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git'
+$BragRepo = 'https://github.com/latent-spaces/brag.git'
 $ClaudeDir = if ($env:CLAUDE_DIR) { $env:CLAUDE_DIR } else { Join-Path $HOME '.claude' }
 $IsMinimal = $Minimal.IsPresent -or ($env:CLAUDE_BOOTSTRAP_MINIMAL -eq '1')
 $Channel   = if ($env:CLAUDE_BOOTSTRAP_CHANNEL) { $env:CLAUDE_BOOTSTRAP_CHANNEL } else { 'stable' }
@@ -801,6 +804,58 @@ function Install-ImpeccableSkill {
     }
 }
 
+function Copy-ManagedSkillDir {
+    param(
+        [Parameter(Mandatory)][string]$Source,
+        [Parameter(Mandatory)][string]$DestName,
+        [Parameter(Mandatory)][string]$Marker,
+        [Parameter(Mandatory)][string]$StageDir
+    )
+    if (-not (Test-Path (Join-Path $Source 'SKILL.md'))) {
+        Write-Warn "upstream skill not found: $Source"
+        return $false
+    }
+    $dest = Join-Path $ClaudeDir "skills\$DestName"
+    if ((Test-Path $dest) -and -not (Test-Path (Join-Path $dest $Marker))) {
+        Write-Warn "skipping collision (not from this pack): $DestName"
+        return $true
+    }
+    Copy-SkillDir $Source $DestName
+    New-Item -ItemType File -Force -Path (Join-Path $dest $Marker) | Out-Null
+    $lic = Join-Path $StageDir 'LICENSE'
+    if (Test-Path $lic) { Copy-Item $lic (Join-Path $dest 'UPSTREAM_LICENSE') -Force }
+    foreach ($component in @('LICENSE', 'LICENSE.txt')) {
+        $componentLicense = Join-Path $Source $component
+        if (Test-Path $componentLicense) {
+            Copy-Item $componentLicense (Join-Path $dest 'UPSTREAM_COMPONENT_LICENSE') -Force
+        }
+    }
+    Write-Step "Synced upstream skill: $DestName"
+    return $true
+}
+
+function Install-AgentReachSkill {
+    $stage = Join-Path $SkillSrcDir 'agent_reach'
+    Update-SkillStage $AgentReachRepo $stage -SourceId 'agent_reach'
+    [void](Copy-ManagedSkillDir (Join-Path $stage 'agent_reach\skill') 'agent-reach' '.from_agent_reach' $stage)
+}
+
+function Install-UiUxProMaxSkillSet {
+    $stage = Join-Path $SkillSrcDir 'ui_ux_pro_max'
+    Update-SkillStage $UiUxProMaxRepo $stage -SourceId 'ui_ux_pro_max'
+    $count = 0
+    foreach ($name in @('banner-design', 'brand', 'design', 'design-system', 'slides', 'ui-styling', 'ui-ux-pro-max')) {
+        if (Copy-ManagedSkillDir (Join-Path $stage ".claude\skills\$name") $name '.from_ui_ux_pro_max' $stage) { $count++ }
+    }
+    Write-Step "Synced $count UI/UX Pro Max skills"
+}
+
+function Install-BragSlimSkill {
+    $stage = Join-Path $SkillSrcDir 'brag_slim'
+    Update-SkillStage $BragRepo $stage -SourceId 'brag_slim'
+    [void](Copy-ManagedSkillDir (Join-Path $stage 'skills\brag-slim') 'brag-slim' '.from_brag_slim' $stage)
+}
+
 # Curated always-on subset from anthropics/skills (office docs + authoring +
 # meta). The rest of the repo stays on-demand via the plugin marketplace. Skips
 # `claude-api` (name-collides with an existing skill) and skills that overlap
@@ -918,6 +973,9 @@ function Invoke-Main {
                 -SourceId 'taste' -Marker '.from_taste' -RequireSkillMd
         }
         Invoke-Step 'anthropic skills' { Install-AnthropicSkill }
+        Invoke-Step 'Agent-Reach skill' { Install-AgentReachSkill }
+        Invoke-Step 'UI/UX Pro Max skills' { Install-UiUxProMaxSkillSet }
+        Invoke-Step 'BRAG slim skill' { Install-BragSlimSkill }
         Invoke-Step 'graphify' { Install-Graphify }
         Invoke-Step 'plugin marketplaces' { Register-PluginMarketplace }
     }

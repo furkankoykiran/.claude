@@ -10,13 +10,14 @@ The audit started at `baf86d8`, version `0.6.1`, on
 `codex-parity-20260912`. Implementation uses `feat/cross-agent-modernization`.
 Existing untracked `codex/`, `hooks/codex/`,
 `scripts/install-codex-parity.sh`, `scripts/codex-mcp-headers-helper.js`, and
-`state/` were re-inspected during the PR #70 resume. They remain preserved as
-local workspace material rather than committed PR output: the tracked portable
-marketplace generator already owns plugin and MCP manifests, `mcp-registry.toml`
-already enforces auth-required defaults, and the untracked parity installer
-would duplicate that path while enabling personal Claude HTTP MCP entries outside
-the registry review. The generated live gateway log created during acceptance
-testing was removed; `state/mcp-discover-verdicts.json` was left untouched.
+`state/mcp-discover-verdicts.json` were re-inspected during the PR #70 final
+pass. They were removed from the workspace rather than committed: the tracked
+portable marketplace generator owns plugin and MCP manifests, `mcp-registry.toml`
+now owns reviewed MCP discovery, the untracked installer copied personal Claude
+HTTP MCP headers into Codex config, the hook bundle depended on unverified Codex
+hook semantics and hardcoded `/root/.claude`, and the agent TOMLs duplicated
+tracked repository agent skills. The generated live gateway log created during
+acceptance testing was also removed.
 
 The mandatory baseline command passed:
 
@@ -168,9 +169,9 @@ kept ASCII-only and covered by shell-side parity tests where possible.
 
 ## Wave 3 evidence
 
-Wave 3 adds portable plugin manifests and a curated MCP registry without duplicating skill bodies. `marketplace.toml` remains the plugin inventory; the generator now writes Claude manifests, portable root `plugin.json` files, the repo-scoped `.agents/plugins/marketplace.json`, and plugin `mcp.json` files where `mcp-registry.toml` assigns no-auth default servers. The default MCP is OpenAI Developer Docs at `https://developers.openai.com/mcp`; auth-required MCP entries are not emitted into portable defaults.
+Wave 3 adds portable plugin manifests and a curated MCP registry without duplicating skill bodies. `marketplace.toml` remains the plugin inventory; the generator now writes Claude manifests, portable root `plugin.json` files, the repo-scoped `.agents/plugins/marketplace.json`, and plugin `mcp.json` files where `mcp-registry.toml` assigns no-auth default servers. The default MCP is OpenAI Developer Docs at `https://developers.openai.com/mcp`; auth-required MCP entries remain in the canonical registry and `fkt mcp` UX, but are not emitted into portable defaults.
 
-The requested upstreams are catalog-only and pinned to immutable revisions: Agent-Reach `a19a171fa980a0785849596492e0af4db800c82f`, UI/UX Pro Max `09170eec67eefd46a7ae85de61b40c194020f997`, and BRAG `c893c5ed52aed84e3e2ee56787de869fccdae6b0`. Agent-Reach, UI/UX Pro Max, and BRAG slim are redistributable from the catalog. Full BRAG remains metadata-only because its runtime and bundled media boundary is not safe to redistribute automatically. None of these sources is installed into every bootstrap by default.
+The requested upstreams are now installer-managed in full bootstrap and pinned to immutable revisions: Agent-Reach `a19a171fa980a0785849596492e0af4db800c82f`, UI/UX Pro Max `09170eec67eefd46a7ae85de61b40c194020f997`, and BRAG slim from BRAG `c893c5ed52aed84e3e2ee56787de869fccdae6b0`. Agent-Reach installs only `agent_reach/skill`; bootstrap never runs its browser, cookie, runtime, or `--system` installer path. UI/UX Pro Max installs the approved `.claude/skills` set. BRAG slim installs the lightweight `skills/brag-slim` skill. Full BRAG remains metadata-only because its runtime and bundled media boundary is not safe to redistribute or install automatically.
 
 The ChatGPT Project prompt-architect bundle now routes by target runtime: Claude Code, Codex, or cross-agent. It uses `AGENTS.md` as shared policy, `CLAUDE.md` as the Claude adapter, current Codex/GPT-6 and Agent Plugin guidance for Codex prompts, and keeps generated implementation prompts in English with runnable verification.
 

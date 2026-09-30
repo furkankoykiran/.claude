@@ -48,6 +48,9 @@ MARKETING_REPO="https://github.com/coreyhaines31/marketingskills.git"
 IMPECCABLE_REPO="https://github.com/pbakaus/impeccable.git"
 TASTE_REPO="https://github.com/Leonxlnx/taste-skill.git"
 ANTHROPIC_SKILLS_REPO="https://github.com/anthropics/skills.git"
+AGENT_REACH_REPO="https://github.com/Panniantong/Agent-Reach.git"
+UI_UX_PRO_MAX_REPO="https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git"
+BRAG_REPO="https://github.com/latent-spaces/brag.git"
 
 log()  { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m!!\033[0m %s\n'  "$*" >&2; }
@@ -919,6 +922,60 @@ install_taste_skills() {
   log "Synced $count taste skills"
 }
 
+# Copy one managed upstream skill directory, replacing only copies this
+# installer owns. This keeps reruns idempotent without clobbering a user's skill
+# that happens to use the same directory name.
+install_managed_skill_dir() {
+  local src="$1" name="$2" marker="$3" stage="$4"
+  local target="$CLAUDE_DIR/skills/$name"
+  [ -f "$src/SKILL.md" ] || { warn "upstream skill not found: $src"; return 1; }
+  if [ -d "$target" ] && [ ! -f "$target/$marker" ]; then
+    warn "skipping collision (not from this pack): $name"
+    return 0
+  fi
+  mkdir -p "$target"
+  cp -r "$src"/. "$target/"
+  touch "$target/$marker"
+  [ -f "$stage/LICENSE" ] && cp "$stage/LICENSE" "$target/UPSTREAM_LICENSE"
+  [ -f "$src/LICENSE" ] && cp "$src/LICENSE" "$target/UPSTREAM_COMPONENT_LICENSE"
+  [ -f "$src/LICENSE.txt" ] && cp "$src/LICENSE.txt" "$target/UPSTREAM_COMPONENT_LICENSE"
+  log "Synced upstream skill: $name"
+}
+
+# ---------------------------------------------------------------------------
+# 7f. Agent-Reach safe Agent Skill. The upstream runtime installer can alter
+#     browsers, cookies, media tools and system state, so bootstrap copies only
+#     agent_reach/skill and never runs its runtime installer or --system mode.
+# ---------------------------------------------------------------------------
+install_agent_reach_skill() {
+  local stage="$SKILL_SRC_DIR/agent_reach"
+  stage_source "agent_reach" "$AGENT_REACH_REPO" "$stage" || warn "Panniantong/Agent-Reach staging failed — using whatever is on disk"
+  install_managed_skill_dir "$stage/agent_reach/skill" "agent-reach" ".from_agent_reach" "$stage"
+}
+
+# ---------------------------------------------------------------------------
+# 7g. UI/UX Pro Max approved skill set from .claude/skills.
+# ---------------------------------------------------------------------------
+install_ui_ux_pro_max_skills() {
+  local stage="$SKILL_SRC_DIR/ui_ux_pro_max"
+  stage_source "ui_ux_pro_max" "$UI_UX_PRO_MAX_REPO" "$stage" || warn "nextlevelbuilder/ui-ux-pro-max-skill staging failed — using whatever is on disk"
+  local name count=0
+  for name in banner-design brand design design-system slides ui-styling ui-ux-pro-max; do
+    install_managed_skill_dir "$stage/.claude/skills/$name" "$name" ".from_ui_ux_pro_max" "$stage" && count=$((count+1))
+  done
+  log "Synced $count UI/UX Pro Max skills"
+}
+
+# ---------------------------------------------------------------------------
+# 7h. BRAG slim. The full BRAG runtime/media skill remains metadata-only; this
+#     installs only the lightweight brag-slim skill body.
+# ---------------------------------------------------------------------------
+install_brag_slim_skill() {
+  local stage="$SKILL_SRC_DIR/brag_slim"
+  stage_source "brag_slim" "$BRAG_REPO" "$stage" || warn "latent-spaces/brag staging failed — using whatever is on disk"
+  install_managed_skill_dir "$stage/skills/brag-slim" "brag-slim" ".from_brag_slim" "$stage"
+}
+
 # ---------------------------------------------------------------------------
 # 8. Install graphify (safishamsi/graphify) — knowledge-graph skill
 # ---------------------------------------------------------------------------
@@ -1075,6 +1132,9 @@ main() {
     run_step "impeccable skill"  install_impeccable_skill
     run_step "taste skills"      install_taste_skills
     run_step "anthropic skills"  install_anthropic_skills
+    run_step "Agent-Reach skill" install_agent_reach_skill
+    run_step "UI/UX Pro Max skills" install_ui_ux_pro_max_skills
+    run_step "BRAG slim skill"   install_brag_slim_skill
     run_step "graphify"          install_graphify
     run_step "plugin marketplaces" register_plugin_marketplaces
   fi

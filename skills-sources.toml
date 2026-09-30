@@ -163,10 +163,9 @@ notes = "Per-skill LICENSE.txt (Apache-2.0); claude-api skipped (name collision)
 
 
 # ---------------------------------------------------------------------------
-# Agent-Reach (Panniantong/Agent-Reach) — MIT. Catalog-only: the skill is
-# useful for URL and web-content workflows, but the optional runtime can touch
-# browsers, cookies, network services, media tools, and system install modes.
-# Bootstrap must not run the runtime or system-changing install automatically.
+# Agent-Reach (Panniantong/Agent-Reach) — MIT. Installs only the safe
+# Agent Skill. The optional runtime can touch browsers, cookies, network
+# services, media tools, and system install modes, so bootstrap never runs it.
 # ---------------------------------------------------------------------------
 [sources.agent_reach]
 type = "git"
@@ -177,17 +176,16 @@ pack = "agent-reach"
 license = "MIT"
 redistribution = "full"
 license_notice_files = ["LICENSE"]
-install_step = "catalog_only"
-catalog_only = true
+install_step = "install_agent_reach_skill"
 selection.kind = "subpath"
 selection.path = "agent_reach/skill"
 selection.dest = "skills/agent-reach"
-notes = "Catalog-only. Optional runtime credentials stay in Agent-Reach private storage; system-changing install mode is never run by bootstrap."
+notes = "Full bootstrap installs only agent_reach/skill. Runtime credentials stay in Agent-Reach private storage; system-changing install mode is never run by bootstrap."
 
 # ---------------------------------------------------------------------------
 # UI/UX Pro Max (nextlevelbuilder/ui-ux-pro-max-skill) — MIT root with
-# component-level overrides. Catalog-only to avoid adding a large design pack to
-# always-loaded context. The resolver records ui-styling's Apache-2.0 license.
+# component-level overrides. Full bootstrap installs the reviewed skill set from
+# the current .claude/skills source layout.
 # ---------------------------------------------------------------------------
 [sources.ui_ux_pro_max]
 type = "git"
@@ -198,12 +196,11 @@ pack = "ui-ux-pro-max"
 license = "MIT"
 redistribution = "full"
 license_notice_files = ["LICENSE"]
-install_step = "catalog_only"
-catalog_only = true
+install_step = "install_ui_ux_pro_max_skills"
 selection.kind = "named"
 selection.root = ".claude/skills"
 selection.names = ["banner-design", "brand", "design", "design-system", "slides", "ui-styling", "ui-ux-pro-max"]
-notes = "Catalog-only. Current CLI is uipro; generated platform artifacts are not hand-edited here. Component licenses override the root license where present."
+notes = "Full bootstrap installs the approved skill set. Current CLI is uipro; generated platform artifacts are not hand-edited here. Component licenses override the root license where present."
 
 # ---------------------------------------------------------------------------
 # BRAG (latent-spaces/brag) — MIT. The slim skill is redistributable; the full
@@ -219,12 +216,11 @@ pack = "brag"
 license = "MIT"
 redistribution = "full"
 license_notice_files = ["LICENSE"]
-install_step = "catalog_only"
-catalog_only = true
+install_step = "install_brag_slim_skill"
 selection.kind = "subpath"
 selection.path = "skills/brag-slim"
 selection.dest = "skills/brag-slim"
-notes = "Catalog-only lightweight BRAG skill; no runtime or media dependencies are installed."
+notes = "Full bootstrap installs only the lightweight BRAG slim skill; no runtime or media dependencies are installed."
 
 [sources.brag_full]
 type = "git"

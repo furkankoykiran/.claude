@@ -35,6 +35,8 @@ check() {
 }
 
 git_q() { git -C "$1" "${@:2}" >/dev/null 2>&1; }
+file_status() { if [ -f "$1" ]; then printf '0\n'; else printf '1\n'; fi; }
+dir_status() { if [ -d "$1" ]; then printf '0\n'; else printf '1\n'; fi; }
 
 # Build a git repository with two commits; the first is tagged v1.0.0.
 # Prints the SHA of the FIRST commit, which is what the lock will pin.
@@ -265,7 +267,7 @@ mkdir -p "$CLAUDE_DIR"
 printf '{"mine":true}\n' > "$CLAUDE_DIR/config.json.example"
 printf '{"mine":true}\n' > "$CLAUDE_DIR/settings.json.example"
 seed_configs >/dev/null 2>&1
-check "config.json is seeded when absent" "0" "$([ -f "$CLAUDE_DIR/config.json" ]; echo $?)"
+check "config.json is seeded when absent" "0" "$(file_status "$CLAUDE_DIR/config.json")"
 
 printf '{"edited":true}\n' > "$CLAUDE_DIR/config.json"
 seed_configs >/dev/null 2>&1
@@ -273,7 +275,7 @@ check "an existing config.json is never overwritten" \
   '{"edited":true}' "$(cat "$CLAUDE_DIR/config.json")"
 
 seed_local_overrides >/dev/null 2>&1
-check "CLAUDE.local.md is seeded" "0" "$([ -f "$CLAUDE_DIR/CLAUDE.local.md" ]; echo $?)"
+check "CLAUDE.local.md is seeded" "0" "$(file_status "$CLAUDE_DIR/CLAUDE.local.md")"
 printf 'my notes\n' > "$CLAUDE_DIR/CLAUDE.local.md"
 seed_local_overrides >/dev/null 2>&1
 check "an existing CLAUDE.local.md is never overwritten" "my notes" "$(cat "$CLAUDE_DIR/CLAUDE.local.md")"
@@ -287,10 +289,10 @@ mkdir -p "$CLAUDE_DIR/skills/.marketing_upstream_src/.claude-plugin"
 printf '{}\n' > "$CLAUDE_DIR/skills/.marketing_upstream_src/.claude-plugin/plugin.json"
 migrate_skill_staging >/dev/null 2>&1
 check "a legacy staging clone is moved out of skills/" "1" \
-  "$([ -d "$CLAUDE_DIR/skills/.marketing_upstream_src" ]; echo $?)"
-check "and lands under .cache/skill-src" "0" "$([ -d "$SKILL_SRC_DIR/marketing" ]; echo $?)"
+  "$(dir_status "$CLAUDE_DIR/skills/.marketing_upstream_src")"
+check "and lands under .cache/skill-src" "0" "$(dir_status "$SKILL_SRC_DIR/marketing")"
 migrate_skill_staging >/dev/null 2>&1
-check "the migration is idempotent" "0" "$([ -d "$SKILL_SRC_DIR/marketing" ]; echo $?)"
+check "the migration is idempotent" "0" "$(dir_status "$SKILL_SRC_DIR/marketing")"
 
 # ---------------------------------------------------------------------------
 # migration 0001: retires superseded directories without destroying them
@@ -305,7 +307,7 @@ printf 'MINE — not the shipped one\n' > "$CLAUDE_DIR/skills/humanizer/SKILL.md
 
 FKT_HOME="$CLAUDE_DIR" bash "$REPO_ROOT/migrations/0001-plugin-layout.sh" >/dev/null 2>&1
 check "the superseded directory is gone from skills/" "1" \
-  "$([ -d "$CLAUDE_DIR/skills/humanizer" ]; echo $?)"
+  "$(dir_status "$CLAUDE_DIR/skills/humanizer")"
 check "but its content was moved, not deleted" "MINE — not the shipped one" \
   "$(cat "$CLAUDE_DIR/.cache/superseded-skills/humanizer/SKILL.md" 2>/dev/null)"
 
@@ -327,6 +329,89 @@ git_q "$CLAUDE_DIR" commit -m tracked
 FKT_HOME="$CLAUDE_DIR" bash "$REPO_ROOT/migrations/0001-plugin-layout.sh" >/dev/null 2>&1
 check "a git-tracked legacy copy is left in place" "tracked" \
   "$(cat "$CLAUDE_DIR/skills/add-mcp/SKILL.md" 2>/dev/null)"
+
+# ---------------------------------------------------------------------------
+# full-bootstrap upstream packs: Agent-Reach, UI/UX Pro Max, BRAG slim
+# ---------------------------------------------------------------------------
+make_skill_repo() {
+  local dir="$1" first
+  shift
+  mkdir -p "$dir"
+  git_q "$dir" init -b main
+  git_q "$dir" config user.email t@example.invalid
+  git_q "$dir" config user.name Test
+  printf 'MIT\n' > "$dir/LICENSE"
+  while [ "$#" -gt 0 ]; do
+    local rel="$1" body="$2"
+    shift 2
+    mkdir -p "$dir/$(dirname "$rel")"
+    printf -- '%s\n' "$body" > "$dir/$rel"
+  done
+  git_q "$dir" add -A
+  git_q "$dir" commit -m first
+  first="$(git -C "$dir" rev-parse HEAD)"
+  printf 'head-only\n' > "$dir/HEAD_ONLY.txt"
+  git_q "$dir" add -A
+  git_q "$dir" commit -m second
+  printf '%s\n' "$first"
+}
+
+AGENT_UP="$WORK/agent-reach-upstream"
+AGENT_SHA="$(make_skill_repo "$AGENT_UP" \
+  agent_reach/skill/SKILL.md $'---\nname: agent-reach\ndescription: pinned agent reach\n---\npinned\n' \
+  agent_reach/install.sh 'runtime installer must not be copied')"
+
+UIUX_UP="$WORK/uiux-upstream"
+UIUX_SHA="$(make_skill_repo "$UIUX_UP" \
+  .claude/skills/banner-design/SKILL.md $'---\nname: banner-design\ndescription: pinned banner\n---\npinned\n' \
+  .claude/skills/brand/SKILL.md $'---\nname: brand\ndescription: pinned brand\n---\npinned\n' \
+  .claude/skills/design/SKILL.md $'---\nname: design\ndescription: pinned design\n---\npinned\n' \
+  .claude/skills/design-system/SKILL.md $'---\nname: design-system\ndescription: pinned design system\n---\npinned\n' \
+  .claude/skills/slides/SKILL.md $'---\nname: slides\ndescription: pinned slides\n---\npinned\n' \
+  .claude/skills/ui-styling/SKILL.md $'---\nname: ui-styling\ndescription: pinned styling\n---\npinned\n' \
+  .claude/skills/ui-ux-pro-max/SKILL.md $'---\nname: ui-ux-pro-max\ndescription: pinned pro max\n---\npinned\n')"
+
+BRAG_UP="$WORK/brag-upstream"
+BRAG_SHA="$(make_skill_repo "$BRAG_UP" \
+  skills/brag-slim/SKILL.md $'---\nname: brag-slim\ndescription: pinned slim\n---\npinned\n' \
+  skills/brag/SKILL.md $'---\nname: brag\ndescription: full runtime\n---\nfull\n')"
+
+CLAUDE_DIR="$WORK/full-bootstrap-packs"
+SKILL_SRC_DIR="$CLAUDE_DIR/.cache/skill-src"
+LOCK_FILE="$CLAUDE_DIR/skills-source.lock.json"
+mkdir -p "$CLAUDE_DIR"
+cat > "$LOCK_FILE" <<EOF
+{
+  "schemaVersion": 1,
+  "resolverVersion": "1",
+  "sources": [
+    {"id":"agent_reach","type":"git","repo":"$AGENT_UP","resolvedRevision":"$AGENT_SHA","selectedPaths":[],"canonicalSkills":[]},
+    {"id":"ui_ux_pro_max","type":"git","repo":"$UIUX_UP","resolvedRevision":"$UIUX_SHA","selectedPaths":[],"canonicalSkills":[]},
+    {"id":"brag_slim","type":"git","repo":"$BRAG_UP","resolvedRevision":"$BRAG_SHA","selectedPaths":[],"canonicalSkills":[]}
+  ],
+  "skills": []
+}
+EOF
+AGENT_REACH_REPO="$AGENT_UP" CLAUDE_BOOTSTRAP_CHANNEL=stable install_agent_reach_skill >/dev/null 2>&1
+UI_UX_PRO_MAX_REPO="$UIUX_UP" CLAUDE_BOOTSTRAP_CHANNEL=stable install_ui_ux_pro_max_skills >/dev/null 2>&1
+BRAG_REPO="$BRAG_UP" CLAUDE_BOOTSTRAP_CHANNEL=stable install_brag_slim_skill >/dev/null 2>&1
+
+check "Agent-Reach safe skill installs from the locked revision" "0" \
+  "$(grep -q '^pinned$' "$CLAUDE_DIR/skills/agent-reach/SKILL.md" 2>/dev/null; echo $?)"
+check "Agent-Reach runtime installer is not copied" "1" \
+  "$(file_status "$CLAUDE_DIR/skills/agent-reach/install.sh")"
+check "UI/UX Pro Max approved skill set installs" "7" \
+  "$(find "$CLAUDE_DIR/skills" -maxdepth 2 -name .from_ui_ux_pro_max | wc -l | tr -d ' ')"
+check "BRAG slim installs by default" "0" \
+  "$(grep -q '^pinned$' "$CLAUDE_DIR/skills/brag-slim/SKILL.md" 2>/dev/null; echo $?)"
+check "BRAG full runtime stays out of full bootstrap" "1" \
+  "$(file_status "$CLAUDE_DIR/skills/brag/SKILL.md")"
+check "PowerShell installer has Agent-Reach parity" "0" \
+  "$(grep -q 'Install-AgentReachSkill' "$REPO_ROOT/install.ps1"; echo $?)"
+check "PowerShell installer has UI/UX Pro Max parity" "0" \
+  "$(grep -q 'Install-UiUxProMaxSkillSet' "$REPO_ROOT/install.ps1"; echo $?)"
+check "PowerShell installer has BRAG slim parity" "0" \
+  "$(grep -q 'Install-BragSlimSkill' "$REPO_ROOT/install.ps1"; echo $?)"
 
 # ---------------------------------------------------------------------------
 # user commands: ccs/fkt must be real commands in a clean shell

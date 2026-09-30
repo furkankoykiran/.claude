@@ -2389,7 +2389,7 @@
         "declared": "MIT",
         "detected": "MIT"
       },
-      "notes": "Catalog-only. Optional runtime credentials stay in Agent-Reach private storage; system-changing install mode is never run by bootstrap.",
+      "notes": "Full bootstrap installs only agent_reach/skill. Runtime credentials stay in Agent-Reach private storage; system-changing install mode is never run by bootstrap.",
       "redistribution": "full",
       "repo": "https://github.com/Panniantong/Agent-Reach.git",
       "resolvedRevision": "a19a171fa980a0785849596492e0af4db800c82f",
@@ -2423,7 +2423,7 @@
         "declared": "MIT",
         "detected": "MIT"
       },
-      "notes": "Catalog-only. Current CLI is uipro; generated platform artifacts are not hand-edited here. Component licenses override the root license where present.",
+      "notes": "Full bootstrap installs the approved skill set. Current CLI is uipro; generated platform artifacts are not hand-edited here. Component licenses override the root license where present.",
       "redistribution": "full",
       "repo": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
       "resolvedRevision": "09170eec67eefd46a7ae85de61b40c194020f997",
@@ -2452,7 +2452,7 @@
         "declared": "MIT",
         "detected": "MIT"
       },
-      "notes": "Catalog-only lightweight BRAG skill; no runtime or media dependencies are installed.",
+      "notes": "Full bootstrap installs only the lightweight BRAG slim skill; no runtime or media dependencies are installed.",
       "redistribution": "full",
       "repo": "https://github.com/latent-spaces/brag.git",
       "resolvedRevision": "c893c5ed52aed84e3e2ee56787de869fccdae6b0",

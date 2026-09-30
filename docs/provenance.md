@@ -25,9 +25,9 @@ bun run catalog:check      # parity, digests, licences, determinism
 | [impeccable](https://github.com/pbakaus/impeccable) | git | Apache-2.0 / Apache-2.0 | full | 1 | `d272b9bd5dcf` |
 | [taste-skill](https://github.com/Leonxlnx/taste-skill) | git | MIT / MIT | full | 13 | `e988add20dab` |
 | [anthropics/skills](https://github.com/anthropics/skills) | git | Apache-2.0 / unknown | metadata-only | 8 | `b29e7cf65e5c` |
-| [Agent-Reach](https://github.com/Panniantong/Agent-Reach) | git, catalog-only | MIT / MIT | full | 1 | `a19a171fa980` |
-| [ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) | git, catalog-only | MIT / MIT plus component licences | full | 7 | `09170eec67ee` |
-| [BRAG slim](https://github.com/latent-spaces/brag) | git, catalog-only | MIT / MIT | full | 1 | `c893c5ed52ae` |
+| [Agent-Reach](https://github.com/Panniantong/Agent-Reach) | git | MIT / MIT | full | 1 | `a19a171fa980` |
+| [ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) | git | MIT / MIT plus component licences | full | 7 | `09170eec67ee` |
+| [BRAG slim](https://github.com/latent-spaces/brag) | git | MIT / MIT | full | 1 | `c893c5ed52ae` |
 | [BRAG full](https://github.com/latent-spaces/brag) | git, catalog-only | MIT / MIT | metadata-only | 1 | `c893c5ed52ae` |
 | [graphifyy](https://pypi.org/project/graphifyy/) | runtime | Apache-2.0 | metadata-only | — | *PyPI version* |
 | [rtk](https://github.com/rtk-ai/rtk) | runtime | — | metadata-only | — | *installer script* |
@@ -82,7 +82,7 @@ would be defensible, but it publishes someone else's work under our marketplace
 identity and makes our manifest depend on repositories we do not control. See
 [the architecture record](architecture-distribution.md) for the full reasoning.
 
-Third-party packs therefore stay installer-fetched or catalog-only, pinned to the reviewed SHAs above. Catalog-only sources are not copied into every bootstrap install; they exist so provenance, license, capability and routing data are reviewable without expanding the always-loaded skill set.
+Third-party packs therefore stay installer-fetched or catalog-only, pinned to the reviewed SHAs above. The full bootstrap installs the reviewed safe subsets for Agent-Reach, UI/UX Pro Max, and BRAG slim. Catalog-only sources, such as full BRAG, are not copied into every bootstrap install; they exist so provenance, license, capability and routing data are reviewable without expanding the always-loaded skill set or crossing unresolved runtime boundaries.
 
 ## Licence and notice files
 
@@ -96,6 +96,9 @@ skill:
 | marketingskills | `LICENSE` |
 | impeccable | `LICENSE`, `NOTICE.md` |
 | taste-skill | `LICENSE` |
+| Agent-Reach | `LICENSE` |
+| ui-ux-pro-max-skill | `LICENSE`, component `LICENSE`/`LICENSE.txt` where present |
+| BRAG slim | `LICENSE` |
 
 `catalog/tests/license.test.ts` asserts the declared notice files exist in the
 committed cache for every source that declares them, so a source cannot quietly

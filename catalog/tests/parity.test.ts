@@ -6,6 +6,9 @@ const INSTALL_SH = `#!/usr/bin/env bash
 REPO_URL="https://github.com/furkankoykiran/.claude.git"
 GSTACK_REPO="https://github.com/garrytan/gstack.git"
 MANIM_UPSTREAM_REPO="https://github.com/adithya-s-k/manim_skill.git"
+AGENT_REACH_REPO="https://github.com/Panniantong/Agent-Reach.git"
+UI_UX_PRO_MAX_REPO="https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git"
+BRAG_REPO="https://github.com/latent-spaces/brag.git"
 RTK_INSTALLER="https://raw.githubusercontent.com/rtk-ai/rtk/master/install.sh"
 
 sync_repo() {
@@ -40,6 +43,9 @@ describe("parity", () => {
     const ext = extractInstallerSources(INSTALL_SH);
     expect(ext.gitRepos).toContain("https://github.com/garrytan/gstack.git");
     expect(ext.gitRepos).toContain("https://github.com/adithya-s-k/manim_skill.git");
+    expect(ext.gitRepos).toContain("https://github.com/Panniantong/Agent-Reach.git");
+    expect(ext.gitRepos).toContain("https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git");
+    expect(ext.gitRepos).toContain("https://github.com/latent-spaces/brag.git");
     expect(ext.gitRepos).not.toContain("https://github.com/furkankoykiran/.claude.git"); // repo itself excluded
     expect(ext.installers).toContain("https://raw.githubusercontent.com/rtk-ai/rtk/master/install.sh");
     expect(ext.marketplaces.sort()).toEqual([
