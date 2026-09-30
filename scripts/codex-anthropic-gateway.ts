@@ -92,6 +92,55 @@ export type GatewayState = {
   emittedErrors: Set<string>;
 };
 
+
+export type CodexModelCatalogEntry = Record<string, unknown> & {
+  id?: unknown;
+  model?: unknown;
+  displayName?: unknown;
+  hidden?: unknown;
+};
+
+export type CodexModelListResult = {
+  data?: CodexModelCatalogEntry[];
+  nextCursor?: string | null;
+};
+
+export function toAnthropicModelsList(result: CodexModelListResult): Record<string, unknown> {
+  const data = Array.isArray(result.data) ? result.data : [];
+  return {
+    object: "list",
+    data: data
+      .filter((model) => model.hidden !== true)
+      .map((model) => {
+        const id = typeof model.id === "string"
+          ? model.id
+          : typeof model.model === "string"
+            ? model.model
+            : "unknown-codex-model";
+        return {
+          id,
+          object: "model",
+          display_name: typeof model.displayName === "string" ? model.displayName : id,
+          metadata: {
+            codex_model: typeof model.model === "string" ? model.model : id,
+            description: typeof model.description === "string" ? model.description : null,
+            default_reasoning_effort: typeof model.defaultReasoningEffort === "string" ? model.defaultReasoningEffort : null,
+            supported_reasoning_efforts: Array.isArray(model.supportedReasoningEfforts)
+              ? model.supportedReasoningEfforts
+              : [],
+            input_modalities: Array.isArray(model.inputModalities) ? model.inputModalities : [],
+            service_tiers: Array.isArray(model.serviceTiers) ? model.serviceTiers : [],
+            default_service_tier: typeof model.defaultServiceTier === "string" ? model.defaultServiceTier : null,
+            upgrade: typeof model.upgrade === "string" ? model.upgrade : null,
+            upgrade_info: model.upgradeInfo ?? null,
+            is_default: model.isDefault === true,
+          },
+        };
+      }),
+  };
+}
+
+
 export function createGatewayState(): GatewayState {
   return {
     seenRequestKeys: new Set(),
@@ -605,6 +654,11 @@ class CodexJsonRpcClient {
     });
   }
 
+  async models(): Promise<CodexModelListResult> {
+    await this.initialize();
+    return (await this.request(`models-${++this.seq}`, "model/list", {})) as CodexModelListResult;
+  }
+
   async interruptAll(): Promise<void> {
     const active = Array.from(this.activeByTurn.entries()).map(([turnId, turn]) => [turnId, { threadId: turn.threadId }] as [string, { threadId: string }]);
     for (const request of cleanShutdownRequests(active)) {
@@ -764,12 +818,12 @@ async function serve(): Promise<void> {
         });
       }
       if (url.pathname === "/v1/models") {
-        return Response.json({
-          object: "list",
-          data: [
-            { id: process.env.CODEX_GATEWAY_MODEL || process.env.CODEX_MODEL || "user-selected-codex-model", object: "model" },
-          ],
-        });
+        try {
+          return Response.json(toAnthropicModelsList(await client.models()));
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          return Response.json({ type: "error", error: { type: "api_error", message } }, { status: 502 });
+        }
       }
       if (url.pathname !== "/v1/messages" || req.method !== "POST") {
         return new Response("not found", { status: 404 });

@@ -215,6 +215,30 @@ status_codex_gateway() {
   fi
 }
 
+list_codex_models() {
+  is_provider codex || die "codex provider template is missing"
+  command -v curl >/dev/null 2>&1 || die "curl is required to query the Codex model catalog"
+  if ! codex_gateway_running; then
+    start_codex_gateway >/dev/null
+  fi
+  local url json
+  url="http://127.0.0.1:$(codex_gateway_port)/v1/models"
+  json=$(curl -fsS "$url") || die "failed to query Codex model catalog at $url"
+  if command -v jq >/dev/null 2>&1; then
+    printf '%s\n' "$json" | jq -r '
+      if .data then
+        .data[]
+        | [.id, (.display_name // .id), (.metadata.default_reasoning_effort // ""), ((.metadata.supported_reasoning_efforts // []) | map(.reasoningEffort // .) | join(",")), (if .metadata.is_default then "default" else "" end)]
+        | @tsv
+      else
+        error(.error.message // "invalid Codex model catalog response")
+      end
+    ' | awk 'BEGIN { printf "%-22s %-22s %-8s %-28s %s\n", "id", "display", "default", "efforts", "notes" } { printf "%-22s %-22s %-8s %-28s %s\n", $1, $2, $3, $4, $5 }'
+  else
+    printf '%s\n' "$json"
+  fi
+}
+
 set_codex_model() {
   local model="${1:-}" effort="${2:-medium}" tmp
   [ -n "$model" ] || die "codex-model requires a Codex model id (example: ccs codex-model gpt-5.5 medium)"
@@ -613,7 +637,7 @@ doctor() {
 }
 
 usage() {
-  printf 'usage: cc-provider [list|status|doctor|use <provider>|auth <provider>|login <provider>|api <provider>|logout <provider>|codex-start|codex-stop|codex-status|codex-model <model> [effort]|<provider>]\n' >&2
+  printf 'usage: cc-provider [list|status|doctor|models|model <model> [effort]|use <provider>|auth <provider>|login <provider>|api <provider>|logout <provider>|codex-start|codex-stop|codex-status|codex-model <model> [effort]|<provider>]\n' >&2
   printf '  list              list available providers\n' >&2
   printf '  status            print the active provider (default) and auth summary on stderr\n' >&2
   printf '  use <provider>    activate it (compatibility shorthand: cc-provider <provider>)\n' >&2
@@ -622,6 +646,8 @@ usage() {
   printf '  api <provider>    fill an API key in providers/<provider>.json\n' >&2
   printf '  logout <provider> clear a local API key; codex/chatgpt delegates to codex logout\n' >&2
   printf '  doctor            check provider setup, safety merge and local gateway state\n' >&2
+  printf '  models            list live Codex models from the local gateway catalog\n' >&2
+  printf '  model             set Codex model id and reasoning effort (alias: codex-model)\n' >&2
   printf '  codex-start       start the local Codex app-server gateway\n' >&2
   printf '  codex-stop        stop the local Codex app-server gateway\n' >&2
   printf '  codex-status      print Codex gateway state and selected model\n' >&2
@@ -636,6 +662,8 @@ case "$cmd" in
   status)    [ "${2:-}" = "" ] || die "status accepts no provider argument"; status ;;
   list)      [ "${2:-}" = "" ] || die "list accepts no provider argument"; list_providers ;;
   doctor)    [ "${2:-}" = "" ] || die "doctor accepts no provider argument"; doctor ;;
+  models)    [ "${2:-}" = "" ] || die "models accepts no arguments"; list_codex_models ;;
+  model)     set_codex_model "${2:-}" "${3:-medium}"; [ "${4:-}" = "" ] || die "model accepts at most model and effort" ;;
   codex-start) [ "${2:-}" = "" ] || die "codex-start accepts no arguments"; start_codex_gateway ;;
   codex-stop) [ "${2:-}" = "" ] || die "codex-stop accepts no arguments"; stop_codex_gateway ;;
   codex-status) [ "${2:-}" = "" ] || die "codex-status accepts no arguments"; status_codex_gateway ;;

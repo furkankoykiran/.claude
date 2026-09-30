@@ -7,6 +7,7 @@ import {
   shouldForwardWithRetryDedupe,
   resolveCodexModel,
   shouldStreamAnthropicResponse,
+  toAnthropicModelsList,
   toAnthropicStreamEvents,
   toCodexRequests,
   type AnthropicMessagesRequest,
@@ -132,6 +133,48 @@ describe("experimental Codex Anthropic gateway", () => {
     ]);
   });
 
+
+  it("maps Codex model/list into Anthropic-compatible model objects", () => {
+    expect(
+      toAnthropicModelsList({
+        data: [
+          {
+            id: "gpt-6.1-sol",
+            model: "gpt-6.1-sol",
+            displayName: "GPT-6.1-Sol",
+            description: "Latest workhorse model for coding and everyday work.",
+            hidden: false,
+            supportedReasoningEfforts: [{ reasoningEffort: "low", description: "Fast" }],
+            defaultReasoningEffort: "low",
+            inputModalities: ["text", "image"],
+            isDefault: true,
+          },
+          { id: "internal-hidden", hidden: true },
+        ],
+      }),
+    ).toEqual({
+      object: "list",
+      data: [
+        {
+          id: "gpt-6.1-sol",
+          object: "model",
+          display_name: "GPT-6.1-Sol",
+          metadata: {
+            codex_model: "gpt-6.1-sol",
+            description: "Latest workhorse model for coding and everyday work.",
+            default_reasoning_effort: "low",
+            supported_reasoning_efforts: [{ reasoningEffort: "low", description: "Fast" }],
+            input_modalities: ["text", "image"],
+            service_tiers: [],
+            default_service_tier: null,
+            upgrade: null,
+            upgrade_info: null,
+            is_default: true,
+          },
+        },
+      ],
+    });
+  });
 
   it("keeps Codex model choice independent from Claude aliases", () => {
     expect(resolveCodexModel("claude-3-5-sonnet-latest", "gpt-5.5")).toBe("gpt-5.5");
