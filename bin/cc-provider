@@ -108,8 +108,13 @@ start_codex_gateway() {
   port=$(codex_gateway_port)
   model=$(jq -r '.env.CODEX_GATEWAY_MODEL // empty' "$PDIR/codex.json")
   effort=$(jq -r '.env.CODEX_GATEWAY_REASONING_EFFORT // empty' "$PDIR/codex.json")
-  CODEX_GATEWAY_PORT="$port" CODEX_GATEWAY_MODEL="$model" CODEX_GATEWAY_REASONING_EFFORT="$effort" \
-    nohup bun run "$CLAUDE_DIR/scripts/codex-anthropic-gateway.ts" serve >"$CODEX_GATEWAY_LOG" 2>&1 &
+  if command -v setsid >/dev/null 2>&1; then
+    nohup setsid env CODEX_GATEWAY_PORT="$port" CODEX_GATEWAY_MODEL="$model" CODEX_GATEWAY_REASONING_EFFORT="$effort" \
+      bun run "$CLAUDE_DIR/scripts/codex-anthropic-gateway.ts" serve >"$CODEX_GATEWAY_LOG" 2>&1 &
+  else
+    CODEX_GATEWAY_PORT="$port" CODEX_GATEWAY_MODEL="$model" CODEX_GATEWAY_REASONING_EFFORT="$effort" \
+      nohup bun run "$CLAUDE_DIR/scripts/codex-anthropic-gateway.ts" serve >"$CODEX_GATEWAY_LOG" 2>&1 &
+  fi
   printf '%s\n' "$!" > "$CODEX_GATEWAY_PID"
   sleep 1
   if codex_gateway_running; then
