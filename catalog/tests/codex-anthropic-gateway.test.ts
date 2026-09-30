@@ -5,6 +5,8 @@ import {
   codexAppServerCommand,
   createGatewayState,
   shouldForwardWithRetryDedupe,
+  resolveCodexModel,
+  shouldStreamAnthropicResponse,
   toAnthropicStreamEvents,
   toCodexRequests,
   type AnthropicMessagesRequest,
@@ -27,7 +29,7 @@ describe("experimental Codex Anthropic gateway", () => {
   });
 
   it("translates an Anthropic request into a fail-closed Codex turn/start request", () => {
-    const batch = toCodexRequests(baseRequest, { cwd: "/workspace", requestId: "r1" });
+    const batch = toCodexRequests(baseRequest, { cwd: "/workspace", requestId: "r1", model: "gpt-5.5", reasoningEffort: "medium" });
 
     expect(batch.threadId).toBeNull();
     expect(batch.unsupported).toEqual([]);
@@ -38,11 +40,12 @@ describe("experimental Codex Anthropic gateway", () => {
       method: "turn/start",
       params: {
         cwd: "/workspace",
-        model: "claude-3-5-sonnet-latest",
-        environments: [],
+        model: "gpt-5.5",
+        effort: "medium",
         input: [{ type: "text", text: "user: Say hello.", text_elements: [] }],
       },
     });
+    expect(String(batch.requests[0]?.params["threadId"])).toMatch(/^urn:uuid:[0-9a-f-]+$/);
     expect(batch.requests[0]?.params["additionalContext"]).toEqual({
       "anthropic-system": {
         kind: "application",
@@ -51,7 +54,7 @@ describe("experimental Codex Anthropic gateway", () => {
     });
   });
 
-  it("uses turn/steer for multi-turn requests carrying a Codex thread id", () => {
+  it("uses turn/start for multi-turn requests carrying a Codex thread id", () => {
     const batch = toCodexRequests(
       {
         ...baseRequest,
@@ -62,12 +65,12 @@ describe("experimental Codex Anthropic gateway", () => {
           { role: "user", content: "Third" },
         ],
       },
-      { cwd: "/workspace", requestId: 7 },
+      { cwd: "/workspace", requestId: 7, model: "gpt-5.5" },
     );
 
     expect(batch.requests[0]).toMatchObject({
       id: 7,
-      method: "turn/steer",
+      method: "turn/start",
       params: {
         threadId: "thread-123",
         input: [
@@ -77,7 +80,6 @@ describe("experimental Codex Anthropic gateway", () => {
             text_elements: [],
           },
         ],
-        environments: [],
       },
     });
   });
@@ -107,7 +109,7 @@ describe("experimental Codex Anthropic gateway", () => {
           },
         ],
       },
-      { cwd: "/workspace" },
+      { cwd: "/workspace", model: "gpt-5.5" },
     );
 
     const context = batch.requests[0]?.params["additionalContext"] as Record<string, { value: string }>;
@@ -128,6 +130,21 @@ describe("experimental Codex Anthropic gateway", () => {
         text_elements: [],
       },
     ]);
+  });
+
+
+  it("keeps Codex model choice independent from Claude aliases", () => {
+    expect(resolveCodexModel("claude-3-5-sonnet-latest", "gpt-5.5")).toBe("gpt-5.5");
+    expect(resolveCodexModel("gpt-5.5")).toBe("gpt-5.5");
+    expect(() => resolveCodexModel("claude-3-5-sonnet-latest")).toThrow(
+      "set CODEX_GATEWAY_MODEL to a Codex model id",
+    );
+  });
+
+  it("defaults Anthropic-compatible responses to non-streaming unless stream is true", () => {
+    expect(shouldStreamAnthropicResponse(baseRequest)).toBe(false);
+    expect(shouldStreamAnthropicResponse({ ...baseRequest, stream: false })).toBe(false);
+    expect(shouldStreamAnthropicResponse({ ...baseRequest, stream: true })).toBe(true);
   });
 
   it("maps Codex streaming deltas and dynamic tool calls to Anthropic SSE events", () => {
@@ -158,6 +175,10 @@ describe("experimental Codex Anthropic gateway", () => {
         },
       },
       {
+        method: "item/commandExecution/outputDelta",
+        params: { threadId: "t1", turnId: "turn1", itemId: "cmd1", delta: "TOOL_OK" },
+      },
+      {
         method: "turn/completed",
         params: { threadId: "t1", turn: { id: "turn1" } },
       },
@@ -170,6 +191,9 @@ describe("experimental Codex Anthropic gateway", () => {
       "content_block_delta",
       "content_block_stop",
       "content_block_start",
+      "content_block_stop",
+      "content_block_start",
+      "content_block_delta",
       "content_block_stop",
       "message_delta",
       "message_stop",
@@ -189,11 +213,16 @@ describe("experimental Codex Anthropic gateway", () => {
         input: { query: "alpha" },
       },
     });
+    expect(events[8]?.data).toEqual({
+      type: "content_block_delta",
+      index: 2,
+      delta: { type: "text_delta", text: "TOOL_OK" },
+    });
   });
 
   it("deduplicates retried forwards and repeated Codex errors", () => {
     const state = createGatewayState();
-    const batch = toCodexRequests(baseRequest, { cwd: "/workspace", requestId: "first" });
+    const batch = toCodexRequests(baseRequest, { cwd: "/workspace", requestId: "first", model: "gpt-5.5" });
     const retry = { ...batch.requests[0]!, id: "second" };
 
     expect(shouldForwardWithRetryDedupe(state, batch.requests[0]!)).toBe(true);
@@ -240,8 +269,8 @@ describe("experimental Codex Anthropic gateway", () => {
   });
 
   it("fails closed on unsupported Codex notifications and malformed Anthropic requests", () => {
-    expect(() => toAnthropicStreamEvents([{ method: "thread/name/updated", params: {} }])).toThrow(
-      "Unsupported Codex notification: thread/name/updated",
+    expect(() => toAnthropicStreamEvents([{ method: "thread/unknown/event", params: {} }])).toThrow(
+      "Unsupported Codex notification: thread/unknown/event",
     );
     expect(() =>
       toCodexRequests({ ...baseRequest, messages: [] }, { cwd: "/workspace" }),

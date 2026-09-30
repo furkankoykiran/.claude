@@ -10,7 +10,13 @@ The audit started at `baf86d8`, version `0.6.1`, on
 `codex-parity-20260912`. Implementation uses `feat/cross-agent-modernization`.
 Existing untracked `codex/`, `hooks/codex/`,
 `scripts/install-codex-parity.sh`, `scripts/codex-mcp-headers-helper.js`, and
-`state/` belong to the local checkout and are excluded from this change.
+`state/` were re-inspected during the PR #70 resume. They remain preserved as
+local workspace material rather than committed PR output: the tracked portable
+marketplace generator already owns plugin and MCP manifests, `mcp-registry.toml`
+already enforces auth-required defaults, and the untracked parity installer
+would duplicate that path while enabling personal Claude HTTP MCP entries outside
+the registry review. The generated live gateway log created during acceptance
+testing was removed; `state/mcp-discover-verdicts.json` was left untouched.
 
 The mandatory baseline command passed:
 
@@ -106,19 +112,29 @@ not README guesses.
 Wave 2 adds the provider/auth command surface, real command shims for `ccs` and
 `fkt`, and an isolated experimental Codex gateway adapter.
 
-`ccs codex` is now a provider switch. It writes Claude Code routing variables for
-a loopback gateway at `127.0.0.1:4545`, disables documented nonessential
-Anthropic surfaces where practical, and preserves the repo-owned safety denies
-and hooks. It does not copy Codex or ChatGPT tokens. `ccs login codex` delegates
-to the official `codex login` flow; `ccs api codex` is rejected because ChatGPT
-entitlement is not an API-key billing path.
+`ccs codex` is now a provider switch and gateway supervisor. It writes Claude
+Code routing variables for a loopback gateway at `127.0.0.1:4545`, starts or
+reuses the Codex app-server bridge, disables documented nonessential Anthropic
+surfaces where practical, and preserves the repo-owned safety denies and hooks.
+It does not copy Codex or ChatGPT tokens. `ccs login codex` delegates to the
+official `codex login` flow; `ccs api codex` is rejected because ChatGPT
+entitlement is not an API-key billing path. Claude Code keeps a known
+Claude-facing model alias for local catalog compatibility while
+`CODEX_GATEWAY_MODEL` carries the user-selected Codex model id such as
+`gpt-5.5`, so Codex model choice is independent from Claude aliases.
 
-The Codex gateway code is still experimental. Current implementation covers the
-translation boundary with fixtures for streaming, system instructions, multi-turn
-state, client tool calls, tool results, duplicate retries, errors, cancellation,
-and clean shutdown. It does not yet prove a live Claude Code session succeeded
-through Codex while Anthropic destinations were unavailable. Until that process
-level test passes, this repository must not claim zero-Anthropic operation.
+The Codex gateway code is still experimental, but it now runs a real local
+Codex app-server loopback. Current implementation covers the translation
+boundary with fixtures for streaming, system instructions, multi-turn state,
+client tool calls, tool results, command-output deltas, duplicate retries,
+errors, cancellation, and clean shutdown. Live acceptance on 2026-09-30 ran
+`ccs codex` with `CODEX_GATEWAY_MODEL=gpt-5.5` and
+`CODEX_GATEWAY_REASONING_EFFORT=medium`, then ran `claude -p` through the
+loopback provider. Claude Code executed a shell-command turn through the Codex
+gateway and returned exactly `CODEX_GATEWAY_CLAUDE_TOOL_OK`. The gateway health
+endpoint reported `provider=codex-app-server`, `model=gpt-5.5`, and
+`reasoning_effort=medium`; no Anthropic API key or ChatGPT token file was read
+or copied.
 
 The old installer-managed shell functions are migrated away. Unix, WSL, and Git
 Bash installs now write `~/.local/bin/ccs` and `~/.local/bin/fkt`; native Windows

@@ -18,8 +18,26 @@ bad()  { printf '  \033[1;31mFAIL\033[0m %s\n' "$*" >&2; FAIL=$((FAIL + 1)); }
 head_() { printf '\n\033[1;34m==>\033[0m %s\n' "$*"; }
 
 SANDBOX=$(mktemp -d)
-trap 'rm -rf "$SANDBOX"' EXIT
-mkdir -p "$SANDBOX/providers"
+trap 'if [ -f "$SANDBOX/state/codex-gateway.pid" ]; then kill "$(cat "$SANDBOX/state/codex-gateway.pid")" 2>/dev/null || true; fi; rm -rf "$SANDBOX"' EXIT
+mkdir -p "$SANDBOX/providers" "$SANDBOX/bin"
+cat > "$SANDBOX/bin/codex" <<'EOF'
+#!/usr/bin/env bash
+case "${1:-}" in
+  login|status|logout) printf 'codex %s fixture\n' "$1" ;;
+  app-server) while IFS= read -r _line; do :; done ;;
+  *) printf 'codex fixture\n' ;;
+esac
+EOF
+chmod +x "$SANDBOX/bin/codex"
+cat > "$SANDBOX/bin/bun" <<'EOF'
+#!/usr/bin/env bash
+if [ "${1:-}" = "run" ] && [ "${3:-}" = "serve" ]; then
+  while :; do sleep 60; done
+fi
+exec /root/.bun/bin/bun "$@"
+EOF
+chmod +x "$SANDBOX/bin/bun"
+export PATH="$SANDBOX/bin:$PATH"
 cp "$REPO_DIR"/providers/*.json.example "$SANDBOX/providers/"
 cp "$REPO_DIR"/providers/*.yaml.example "$SANDBOX/providers/" 2>/dev/null || true
 cp "$REPO_DIR/settings.base.json" "$SANDBOX/"
@@ -533,9 +551,25 @@ fi
 # A remote provider must never trip the loopback check.
 codex_out=$(say codex)
 case "$codex_out" in
-  *"nothing is listening"*"codex-anthropic-gateway.ts"*) ok "codex warns when its experimental gateway is not running" ;;
-  *) bad "codex did not warn about the missing experimental gateway: $codex_out" ;;
+  *"Codex gateway"*"port 4545"*) ok "codex starts or reuses its app-server gateway on activation" ;;
+  *) bad "codex did not manage the app-server gateway: $codex_out" ;;
 esac
+codex_model_out=$(say codex-model gpt-5.5 medium)
+case "$codex_model_out" in
+  *"Codex model set to gpt-5.5"*) ok "codex-model reports the selected Codex model" ;;
+  *) bad "codex-model did not report the selected model: $codex_model_out" ;;
+esac
+if [ "$(jq -r '.env.CODEX_GATEWAY_MODEL' "$SANDBOX/providers/codex.json")" = "gpt-5.5" ] \
+   && [ "$(jq -r '.env.CODEX_GATEWAY_REASONING_EFFORT' "$SANDBOX/providers/codex.json")" = "medium" ]; then
+  ok "codex-model writes the Codex model and reasoning effort"
+else
+  bad "codex-model did not persist the Codex model settings"
+fi
+if [ "$(jq -r '.model' "$SANDBOX/providers/codex.json")" = "claude-sonnet-4-5" ]; then
+  ok "codex-model keeps Claude-facing aliases separate from Codex model ids"
+else
+  bad "codex-model wrote a Codex model id into Claude-facing model selection"
+fi
 case "$(say deepseek)" in
   *"nothing is listening"*) bad "a remote provider was wrongly checked for a local listener" ;;
   *) ok "remote providers skip the local-listener check" ;;

@@ -30,6 +30,8 @@ CLAUDE_DIR="${CLAUDE_DIR:-$HOME/.claude}"
 PDIR="$CLAUDE_DIR/providers"
 SETTINGS="$CLAUDE_DIR/settings.json"
 BASE_SETTINGS="$CLAUDE_DIR/settings.base.json"
+CODEX_GATEWAY_PID="$CLAUDE_DIR/state/codex-gateway.pid"
+CODEX_GATEWAY_LOG="$CLAUDE_DIR/state/codex-gateway.log"
 PLACEHOLDER_RE='<[A-Z_]+>'
 
 # Keys the ACTIVE PROVIDER owns outright. Each is taken from the provider file
@@ -72,6 +74,99 @@ redact_secret() {
   else
     suffix=${v: -4}
     printf 'configured (****%s)' "$suffix"
+  fi
+}
+
+
+codex_gateway_port() {
+  if [ -f "$PDIR/codex.json" ] && command -v jq >/dev/null 2>&1; then
+    jq -r '.env.CODEX_GATEWAY_PORT // "4545"' "$PDIR/codex.json" 2>/dev/null || printf '4545'
+  else
+    printf '4545'
+  fi
+}
+
+codex_gateway_running() {
+  [ -f "$CODEX_GATEWAY_PID" ] || return 1
+  local pid
+  pid=$(cat "$CODEX_GATEWAY_PID" 2>/dev/null || true)
+  [ -n "$pid" ] || return 1
+  kill -0 "$pid" 2>/dev/null
+}
+
+start_codex_gateway() {
+  is_provider codex || die "codex provider template is missing"
+  ensure_provider_file codex
+  command -v bun >/dev/null 2>&1 || die "bun is required to run the Codex gateway"
+  command -v codex >/dev/null 2>&1 || die "codex CLI is required; install it and run: ccs login codex"
+  mkdir -p "$(dirname "$CODEX_GATEWAY_PID")"
+  if codex_gateway_running; then
+    printf 'Codex gateway already running (pid %s, port %s).\n' "$(cat "$CODEX_GATEWAY_PID")" "$(codex_gateway_port)"
+    return 0
+  fi
+  local port model effort
+  port=$(codex_gateway_port)
+  model=$(jq -r '.env.CODEX_GATEWAY_MODEL // empty' "$PDIR/codex.json")
+  effort=$(jq -r '.env.CODEX_GATEWAY_REASONING_EFFORT // empty' "$PDIR/codex.json")
+  CODEX_GATEWAY_PORT="$port" CODEX_GATEWAY_MODEL="$model" CODEX_GATEWAY_REASONING_EFFORT="$effort" \
+    nohup bun run "$CLAUDE_DIR/scripts/codex-anthropic-gateway.ts" serve >"$CODEX_GATEWAY_LOG" 2>&1 &
+  printf '%s\n' "$!" > "$CODEX_GATEWAY_PID"
+  sleep 1
+  if codex_gateway_running; then
+    printf 'Codex gateway started (pid %s, port %s, model %s, effort %s).\n' "$(cat "$CODEX_GATEWAY_PID")" "$port" "${model:-unset}" "${effort:-default}"
+  else
+    rm -f "$CODEX_GATEWAY_PID"
+    die "Codex gateway failed to start; see $CODEX_GATEWAY_LOG"
+  fi
+}
+
+stop_codex_gateway() {
+  if ! codex_gateway_running; then
+    rm -f "$CODEX_GATEWAY_PID"
+    printf 'Codex gateway is not running.\n'
+    return 0
+  fi
+  local pid
+  pid=$(cat "$CODEX_GATEWAY_PID")
+  kill "$pid" 2>/dev/null || true
+  rm -f "$CODEX_GATEWAY_PID"
+  printf 'Codex gateway stopped (pid %s).\n' "$pid"
+}
+
+status_codex_gateway() {
+  if codex_gateway_running; then
+    printf 'Codex gateway: running (pid %s, port %s)\n' "$(cat "$CODEX_GATEWAY_PID")" "$(codex_gateway_port)"
+  else
+    printf 'Codex gateway: stopped\n'
+  fi
+  if [ -f "$PDIR/codex.json" ] && command -v jq >/dev/null 2>&1; then
+    printf 'Codex model: %s\n' "$(jq -r '.env.CODEX_GATEWAY_MODEL // "unset"' "$PDIR/codex.json")"
+    printf 'Codex reasoning effort: %s\n' "$(jq -r '.env.CODEX_GATEWAY_REASONING_EFFORT // "default"' "$PDIR/codex.json")"
+  fi
+}
+
+set_codex_model() {
+  local model="${1:-}" effort="${2:-medium}" tmp
+  [ -n "$model" ] || die "codex-model requires a Codex model id (example: ccs codex-model gpt-5.5 medium)"
+  case "$effort" in low|medium|high|xhigh|none) ;; *) die "reasoning effort must be one of: none, low, medium, high, xhigh" ;; esac
+  ensure_provider_file codex
+  command -v jq >/dev/null 2>&1 || die "jq is required to update providers/codex.json"
+  tmp="$(mktemp "$PDIR/.codex.json.XXXXXX")"
+  jq --arg model "$model" --arg effort "$effort" '
+    .model = "claude-sonnet-4-5"
+    | .env.ANTHROPIC_DEFAULT_HAIKU_MODEL = "claude-sonnet-4-5"
+    | .env.ANTHROPIC_DEFAULT_SONNET_MODEL = "claude-sonnet-4-5"
+    | .env.ANTHROPIC_DEFAULT_OPUS_MODEL = "claude-sonnet-4-5"
+    | .env.CLAUDE_CODE_SUBAGENT_MODEL = "claude-sonnet-4-5"
+    | .env.CODEX_GATEWAY_MODEL = $model
+    | .env.CODEX_GATEWAY_REASONING_EFFORT = $effort
+  ' "$PDIR/codex.json" > "$tmp"
+  chmod 600 "$tmp"
+  mv -f "$tmp" "$PDIR/codex.json"
+  printf 'Codex model set to %s (reasoning effort %s).\n' "$model" "$effort"
+  if [ -f "$PDIR/.active" ] && [ "$(cat "$PDIR/.active")" = "codex" ]; then
+    stop_codex_gateway >/dev/null 2>&1 || true
+    activate codex
   fi
 }
 
@@ -361,7 +456,11 @@ activate() {
 
   printf '%s\n' "$p" > "$PDIR/.active"
   printf 'Active provider: %s\n' "$p"
-  warn_if_local_endpoint_down "$p"
+  if [ "$p" = "codex" ]; then
+    start_codex_gateway
+  else
+    warn_if_local_endpoint_down "$p"
+  fi
   printf 'Restart Claude Code for the change to take effect (env is read at startup).\n'
 }
 
@@ -431,6 +530,7 @@ doctor() {
     printf 'safety deny rules: %s\n' "$deny_count"
     printf 'hook handlers: %s\n' "$hook_count"
   fi
+  status_codex_gateway
   if [ -f "$PDIR/nvidia.json" ] || [ -f "$PDIR/nvidia.json.example" ] || [ -f "$CLAUDE_DIR/scripts/nim-gateway.sh" ]; then
     printf 'gateway check: '
     if [ -f "$PDIR/nvidia.json" ]; then
@@ -443,7 +543,7 @@ doctor() {
 }
 
 usage() {
-  printf 'usage: cc-provider [list|status|doctor|use <provider>|auth <provider>|login <provider>|api <provider>|logout <provider>|<provider>]\n' >&2
+  printf 'usage: cc-provider [list|status|doctor|use <provider>|auth <provider>|login <provider>|api <provider>|logout <provider>|codex-start|codex-stop|codex-status|codex-model <model> [effort]|<provider>]\n' >&2
   printf '  list              list available providers\n' >&2
   printf '  status            print the active provider (default) and auth summary on stderr\n' >&2
   printf '  use <provider>    activate it (compatibility shorthand: cc-provider <provider>)\n' >&2
@@ -452,6 +552,10 @@ usage() {
   printf '  api <provider>    fill an API key in providers/<provider>.json\n' >&2
   printf '  logout <provider> clear a local API key; codex/chatgpt delegates to codex logout\n' >&2
   printf '  doctor            check provider setup, safety merge and local gateway state\n' >&2
+  printf '  codex-start       start the local Codex app-server gateway\n' >&2
+  printf '  codex-stop        stop the local Codex app-server gateway\n' >&2
+  printf '  codex-status      print Codex gateway state and selected model\n' >&2
+  printf '  codex-model       set Codex model id and reasoning effort (default: medium)\n' >&2
   printf '\navailable providers:\n' >&2
   local p
   for p in $(list_providers); do printf '  %s\n' "$p" >&2; done
@@ -462,6 +566,10 @@ case "$cmd" in
   status)    [ "${2:-}" = "" ] || die "status accepts no provider argument"; status ;;
   list)      [ "${2:-}" = "" ] || die "list accepts no provider argument"; list_providers ;;
   doctor)    [ "${2:-}" = "" ] || die "doctor accepts no provider argument"; doctor ;;
+  codex-start) [ "${2:-}" = "" ] || die "codex-start accepts no arguments"; start_codex_gateway ;;
+  codex-stop) [ "${2:-}" = "" ] || die "codex-stop accepts no arguments"; stop_codex_gateway ;;
+  codex-status) [ "${2:-}" = "" ] || die "codex-status accepts no arguments"; status_codex_gateway ;;
+  codex-model) set_codex_model "${2:-}" "${3:-medium}"; [ "${4:-}" = "" ] || die "codex-model accepts at most model and effort" ;;
   use)       need_provider_arg use "${2:-}" "${3:-}"; is_provider "$2" || die "unknown provider: $2"; activate "$2" ;;
   auth)
     need_provider_arg auth "${2:-}" "${3:-}"
