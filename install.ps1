@@ -460,7 +460,7 @@ function ConvertTo-PsSingleQuoted {
     return "'$($Value -replace "'", "''")'"
 }
 
-function Remove-LegacyCommandProfiles {
+function Remove-LegacyCommandProfile {
     $profilePaths = @($PROFILE.CurrentUserAllHosts) | Where-Object { $_ } | Select-Object -Unique
     foreach ($profilePath in $profilePaths) {
         if (-not (Test-Path -LiteralPath $profilePath)) { continue }
@@ -506,10 +506,10 @@ function Add-UserPathDirectory {
     if (-not $alreadySession) { $env:Path = (@($Directory) + $sessionParts) -join ';' }
 }
 
-function Install-UserCommands {
+function Install-UserCommand {
     $binDir = Join-Path $HOME '.local\bin'
     New-Item -ItemType Directory -Force -Path $binDir | Out-Null
-    Remove-LegacyCommandProfiles
+    Remove-LegacyCommandProfile
     Add-UserPathDirectory $binDir
 
     $defaultToolkit = if ($ClaudeDir -eq (Join-Path $HOME '.claude')) { "Join-Path `$HOME '.claude'" } else { ConvertTo-PsSingleQuoted $ClaudeDir }
@@ -887,7 +887,7 @@ function Invoke-Main {
     Initialize-Repo
     Invoke-Step 'config seeding'   { Set-SeedConfig }
     Invoke-Step 'local overrides'  { Set-SeedLocalOverride }
-    Invoke-Step 'commands'         { Install-UserCommands }
+    Invoke-Step 'commands'         { Install-UserCommand }
     # Runs in minimal mode too: an install that once had the packs still carries
     # the misplaced clones, and leaving them behind keeps the duplicate plugins.
     Invoke-Step 'staging migration' { Move-LegacySkillStage }

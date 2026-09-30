@@ -42,10 +42,10 @@ $Active   = Join-Path $PDir '.active'
 # about which routing keys a switch is allowed to carry over.
 $ProviderKeys = @('env', 'model', 'apiKeyHelper')
 
-function Assert-ProviderArg($cmd, $args) {
-  if ($args.Count -lt 1 -or [string]::IsNullOrWhiteSpace($args[0])) { throw "$cmd requires a provider name" }
-  if ($args.Count -gt 1) { throw "$cmd accepts exactly one provider name" }
-  return $args[0]
+function Assert-ProviderArg($cmd, $ProviderArgs) {
+  if ($ProviderArgs.Count -lt 1 -or [string]::IsNullOrWhiteSpace($ProviderArgs[0])) { throw "$cmd requires a provider name" }
+  if ($ProviderArgs.Count -gt 1) { throw "$cmd accepts exactly one provider name" }
+  return $ProviderArgs[0]
 }
 
 function Test-CodexEntitlement($p) {
@@ -68,7 +68,7 @@ function Protect-ProviderFile($path) {
   if (Get-Command chmod -ErrorAction SilentlyContinue) { & chmod 600 $path 2>$null }
 }
 
-function Redact-Secret($value) {
+function Format-SecretRedaction($value) {
   if ([string]::IsNullOrEmpty($value)) { return 'empty' }
   if ($value.Length -le 4) { return 'configured (****)' }
   return "configured (****$($value.Substring($value.Length - 4)))"
@@ -124,7 +124,7 @@ function Write-ProviderAuthStatus($p) {
   if ([string]::IsNullOrEmpty($value) -or $value -match '^<') {
     "Auth mode: API key required in $key (not configured)."
   } else {
-    "Auth mode: API key in $key is $(Redact-Secret $value)."
+    "Auth mode: API key in $key is $(Format-SecretRedaction $value)."
   }
 }
 
@@ -151,7 +151,7 @@ function Set-ProviderApiKey($p) {
   $data['env'][$key] = $secret
   Set-Content -LiteralPath $f -Value ($data | ConvertTo-Json -Depth 32) -Encoding utf8NoBOM
   Protect-ProviderFile $f
-  "Updated providers/$p.json (${key}: $(Redact-Secret $secret))."
+  "Updated providers/$p.json (${key}: $(Format-SecretRedaction $secret))."
   if ((Test-Path -LiteralPath $Active) -and ((Get-Content -LiteralPath $Active -Raw).Trim() -eq $p)) {
     Enable-Provider $p
   } else {
