@@ -42,15 +42,15 @@ cp "$REPO_DIR"/providers/*.json.example "$SANDBOX/providers/"
 cp "$REPO_DIR"/providers/*.yaml.example "$SANDBOX/providers/" 2>/dev/null || true
 cp "$REPO_DIR/settings.base.json" "$SANDBOX/"
 
-ccs() { CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "$@"; }
+ccs() { CODEX_CONFIG="$SANDBOX/codex-config.toml" CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "$@"; }
 # Merged stdout+stderr as a string. Captured rather than piped: under `set -o
 # pipefail` a non-zero exit from cc-provider (which `ccs bogus` is supposed to
 # return) would mask a successful grep and make the assertion lie.
-say() { CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "$@" 2>&1 || true; }
+say() { CODEX_CONFIG="$SANDBOX/codex-config.toml" CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "$@" 2>&1 || true; }
 # Exit status only, with output discarded.
-rc() { CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "$@" >/dev/null 2>&1; }
+rc() { CODEX_CONFIG="$SANDBOX/codex-config.toml" CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "$@" >/dev/null 2>&1; }
 # Like say(), but feeds a fake API key through the noninteractive test path.
-say_key() { CC_PROVIDER_API_KEY="$1" CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "${@:2}" 2>&1 || true; }
+say_key() { CC_PROVIDER_API_KEY="$1" CODEX_CONFIG="$SANDBOX/codex-config.toml" CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "${@:2}" 2>&1 || true; }
 
 # --- templates are well-formed and self-consistent -------------------------
 head_ "Provider templates"
@@ -549,11 +549,40 @@ else
   bad "shipped nvidia template is no longer loopback; the gateway check is dead code"
 fi
 # A remote provider must never trip the loopback check.
+cat > "$SANDBOX/codex-config.toml" <<EOF_CODEX_CONFIG
+model = "gpt-5.5"
+
+[mcp_servers."github"]
+url = "https://api.githubcopilot.com/mcp/"
+enabled = true
+http_headers_helper = "$SANDBOX/scripts/codex-mcp-headers-helper.js github"
+
+[mcp_servers."context7"]
+url = "https://mcp.context7.com/mcp"
+enabled = true
+http_headers_helper = "$SANDBOX/scripts/codex-mcp-headers-helper.js context7"
+
+[mcp_servers."localOnly"]
+command = "example-mcp"
+enabled = true
+EOF_CODEX_CONFIG
+mkdir -p "$SANDBOX/scripts"
+
 codex_out=$(say codex)
 case "$codex_out" in
   *"Codex gateway"*"port 4545"*) ok "codex starts or reuses its app-server gateway on activation" ;;
   *) bad "codex did not manage the app-server gateway: $codex_out" ;;
 esac
+if grep -q "codex-mcp-headers-helper" "$SANDBOX/codex-config.toml"; then
+  bad "codex activation left stale bridge MCP headers helpers in native Codex config"
+else
+  ok "codex activation removes stale Claude-owned bridge MCP helpers"
+fi
+if grep -q "localOnly" "$SANDBOX/codex-config.toml"; then
+  ok "codex activation preserves user-owned native Codex MCP servers"
+else
+  bad "codex activation removed a user-owned native Codex MCP server"
+fi
 codex_model_out=$(say codex-model gpt-5.5 medium)
 case "$codex_model_out" in
   *"Codex model set to gpt-5.5"*) ok "codex-model reports the selected Codex model" ;;

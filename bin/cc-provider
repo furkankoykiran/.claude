@@ -32,6 +32,7 @@ SETTINGS="$CLAUDE_DIR/settings.json"
 BASE_SETTINGS="$CLAUDE_DIR/settings.base.json"
 CODEX_GATEWAY_PID="$CLAUDE_DIR/state/codex-gateway.pid"
 CODEX_GATEWAY_LOG="$CLAUDE_DIR/state/codex-gateway.log"
+CODEX_CONFIG="${CODEX_CONFIG:-$HOME/.codex/config.toml}"
 PLACEHOLDER_RE='<[A-Z_]+>'
 
 # Keys the ACTIVE PROVIDER owns outright. Each is taken from the provider file
@@ -94,12 +95,76 @@ codex_gateway_running() {
   kill -0 "$pid" 2>/dev/null
 }
 
+scrub_codex_bridge_mcp_config() {
+  # In ccs codex bridge mode, Claude Code owns Claude-side MCP tools. Older
+  # toolkit builds also registered github/context7 inside native Codex with a
+  # now-deleted HTTP headers helper, which makes Codex app-server stall before
+  # the first useful response. Remove only those toolkit bridge duplicates and
+  # preserve any user-owned Codex MCP entries.
+  [ -f "$CODEX_CONFIG" ] || return 0
+  command -v awk >/dev/null 2>&1 || return 0
+
+  local tmp backup removed
+  tmp="$(mktemp "${TMPDIR:-/tmp}/codex-config.XXXXXX")" || return 0
+  removed="$({
+    awk -v helper="codex-mcp-headers-helper.js" '
+      function is_header(line) { return line ~ /^\[mcp_servers\."[^"]+"\]/ }
+      function is_bridge_name(header) {
+        return header == "[mcp_servers.\"github\"]" || header == "[mcp_servers.\"context7\"]"
+      }
+      function flush(    block_text) {
+        if (!in_block) return
+        block_text = block
+        if (is_bridge_name(block_header) && index(block_text, helper) > 0) {
+          removed = 1
+        } else {
+          printf "%s", block
+        }
+        in_block = 0
+        block = ""
+        block_header = ""
+      }
+      is_header($0) {
+        flush()
+        in_block = 1
+        block_header = $0
+        block = $0 ORS
+        next
+      }
+      /^\[/ {
+        flush()
+        print
+        next
+      }
+      in_block {
+        block = block $0 ORS
+        next
+      }
+      { print }
+      END {
+        flush()
+        if (removed) print "removed" > "/dev/stderr"
+      }
+    ' "$CODEX_CONFIG" > "$tmp"
+  } 2>&1)"
+  if printf "%s\n" "$removed" | grep -qxF removed; then
+    backup="$CODEX_CONFIG.bak.$(date -u +%Y%m%d-%H%M%S)"
+    cp "$CODEX_CONFIG" "$backup" 2>/dev/null || true
+    chmod --reference="$CODEX_CONFIG" "$tmp" 2>/dev/null || chmod 600 "$tmp"
+    mv -f "$tmp" "$CODEX_CONFIG"
+    printf "Removed duplicate Claude-owned Codex MCP registrations from %s (backup: %s).\n" "$CODEX_CONFIG" "$backup"
+  else
+    rm -f "$tmp"
+  fi
+}
+
 start_codex_gateway() {
   is_provider codex || die "codex provider template is missing"
   ensure_provider_file codex
   command -v bun >/dev/null 2>&1 || die "bun is required to run the Codex gateway"
   command -v codex >/dev/null 2>&1 || die "codex CLI is required; install it and run: ccs login codex"
   mkdir -p "$(dirname "$CODEX_GATEWAY_PID")"
+  scrub_codex_bridge_mcp_config
   if codex_gateway_running; then
     printf 'Codex gateway already running (pid %s, port %s).\n' "$(cat "$CODEX_GATEWAY_PID")" "$(codex_gateway_port)"
     return 0
