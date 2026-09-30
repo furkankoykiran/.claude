@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "fk-writing-kit",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Turn raw material into publishable writing: strip AI tells from drafts, and build blog posts or LinkedIn copy from a chat, a URL, or a GitHub profile.",
   "author": {
     "name": "Furkan Köykıran",

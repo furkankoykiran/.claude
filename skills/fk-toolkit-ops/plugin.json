@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "fk-toolkit-ops",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Operate the toolkit itself: check for and apply toolkit updates on the stable or edge channel, and wire an MCP server into Claude Code from a pasted config block.",
   "author": {
     "name": "Furkan Köykıran",
