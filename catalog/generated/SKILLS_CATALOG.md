@@ -7,8 +7,8 @@ Generated index of every Claude Code skill, command, and runtime component repre
 Resolver version 1 · schema v1.
 
 - **Sources:** 15
-- **Skills / entries:** 155
-- **Redistributable (full body):** 144
+- **Skills / entries:** 156
+- **Redistributable (full body):** 145
 - **Runtime-only:** 3
 
 ## Agent-Reach (Panniantong/Agent-Reach)
@@ -65,8 +65,8 @@ _Runtime-only — see notes below._
 
 ## gstack (garrytan/gstack)
 
-type: `git` · pack: `gstack` · skills: 54 · redistribution: full
-repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `65bfb0ce49da`
+type: `git` · pack: `gstack` · skills: 55 · redistribution: full
+repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `96764e80a641`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -88,7 +88,7 @@ repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: 
 | [/devex-review](../../docs/skills/gstack/devex-review.md) | Live developer experience audit. (gstack) | full |
 | [/diagram](../../docs/skills/gstack/diagram.md) | Turn an English description (or mermaid source) into a diagram triplet: the source, an editable .excalidraw file you can | full |
 | [/document-generate](../../docs/skills/gstack/document-generate.md) | Generate missing documentation from scratch for a feature, module, or entire project. (gstack) | full |
-| [/document-release](../../docs/skills/gstack/document-release.md) | Post-ship documentation update. (gstack) | full |
+| [/document-release](../../docs/skills/gstack/document-release.md) | Release documentation audit. (gstack) | full |
 | [/freeze](../../docs/skills/gstack/freeze.md) | Restrict file edits to a specific directory for the session. (gstack) | full |
 | [/gstack-upgrade](../../docs/skills/gstack/gstack-upgrade.md) | Upgrade gstack to the latest version. | full |
 | [/guard](../../docs/skills/gstack/guard.md) | Full safety mode: destructive command warnings + directory-scoped edits. (gstack) | full |
@@ -111,8 +111,8 @@ repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: 
 | [/plan-devex-review](../../docs/skills/gstack/plan-devex-review.md) | Interactive developer experience plan review. (gstack) | full |
 | [/plan-eng-review](../../docs/skills/gstack/plan-eng-review.md) | Eng manager-mode plan review. (gstack) | full |
 | [/plan-tune](../../docs/skills/gstack/plan-tune.md) | Self-tuning question sensitivity + developer psychographic for gstack (v1: observational). (gstack) | full |
-| [/qa](../../docs/skills/gstack/qa.md) | Systematically QA test a web application and fix bugs found. (gstack) | full |
-| [/qa-only](../../docs/skills/gstack/qa-only.md) | Report-only QA testing. (gstack) | full |
+| [/qa](../../docs/skills/gstack/qa.md) | Fix browser/API/CLI/job/worker/webhook bugs. (gstack) | full |
+| [/qa-only](../../docs/skills/gstack/qa-only.md) | Report browser/API/CLI/job/worker/webhook bugs. (gstack) | full |
 | [/retro](../../docs/skills/gstack/retro.md) | Weekly engineering retrospective. (gstack) | full |
 | [/review](../../docs/skills/gstack/review.md) | Pre-landing PR review. (gstack) | full |
 | [/scrape](../../docs/skills/gstack/scrape.md) | Pull data from a web page through the Aside browser — your real, already signed-in sessions. (gstack) | full |
@@ -123,12 +123,13 @@ repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: 
 | [/skillify](../../docs/skills/gstack/skillify.md) | Codify the most recent successful /scrape flow into a permanent browser-skill on disk. (gstack) | full |
 | [/spec](../../docs/skills/gstack/spec.md) | Turn vague intent into a precise, executable spec in five phases. (gstack) | full |
 | [/sync-gbrain](../../docs/skills/gstack/sync-gbrain.md) | Keep gbrain current with this repo's code and refresh agent search guidance in CLAUDE.md. (gstack) | full |
+| [/test-audit](../../docs/skills/gstack/test-audit.md) | Find low-value or duplicate tests and the test-only code they keep alive. (gstack) | full |
 | [/unfreeze](../../docs/skills/gstack/unfreeze.md) | Clear the freeze boundary set by /freeze, allowing edits to all directories again. (gstack) | full |
 
 ## Impeccable (pbakaus/impeccable)
 
 type: `git` · pack: `impeccable` · skills: 1 · redistribution: full
-repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `114ea1d3838f`
+repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `e04353da8938`
 
 | invocation | description | redistribution |
 | --- | --- | --- |

@@ -1122,8 +1122,7 @@
       "kind": "added",
       "manualReviewRequired": true,
       "reasons": [
-        "new-skill-capability:bash/powershell",
-        "new-skill-capability:network-access"
+        "new-skill-capability:bash/powershell"
       ],
       "securitySensitive": true,
       "sourceId": "gstack"
@@ -1133,8 +1132,7 @@
       "kind": "added",
       "manualReviewRequired": true,
       "reasons": [
-        "new-skill-capability:bash/powershell",
-        "new-skill-capability:network-access"
+        "new-skill-capability:bash/powershell"
       ],
       "securitySensitive": true,
       "sourceId": "gstack"
@@ -1362,6 +1360,16 @@
       "sourceId": "gstack"
     },
     {
+      "key": "/test-audit",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
+      "sourceId": "gstack"
+    },
+    {
       "key": "/ui-styling",
       "kind": "added",
       "manualReviewRequired": true,
@@ -1420,7 +1428,7 @@
   ],
   "schemaVersion": 2,
   "summary": {
-    "added": 155,
+    "added": 156,
     "licenseRestricted": 11,
     "manualReviewRequired": true,
     "massChange": false,
@@ -1434,7 +1442,7 @@
       "new-skill-capability:network-access"
     ],
     "runtimeOnly": 3,
-    "securitySensitive": 71,
+    "securitySensitive": 72,
     "updated": 0
   }
 }
