@@ -136,14 +136,14 @@
     },
     {
       "canonicalInvocation": "/autoplan",
-      "digest": "7744cd00900eeb4a489bd580dd53140e3e4bcc158ede79a7e1e3d89d98d85464",
+      "digest": "cc4c55e00642a0e4dd467b6c2ab2a30b67ef5d12c19c1df1a0693a644987d730",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "autoplan/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -155,43 +155,43 @@
       },
       "redistribution": "full",
       "relativePath": "benchmark-models/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/benchmark",
-      "digest": "e031e16d31b8eb5a8b949cfc8c3b69aba7462f1fab2f426f5296f43b5ae67687",
+      "digest": "511430f8a35d809278c48d41f995a83db90992cd07f9f218e28479c314918c92",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "benchmark/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/browse",
-      "digest": "fa1349689695b3fa9d04c4e9fa24bcbc17b3b9f15eee3b4da6215082a4042c55",
+      "digest": "85ef8e3f428395554b2805f90c29a934ae37c90a449ff3d5a157300f8c1f9bed",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "browse/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/canary",
-      "digest": "77f31c879a9a29b665861e19d9dee12c7c6f45ba135781340ceb7f2f0a17252d",
+      "digest": "cd209569d24d5f51d93de5b3851ef55fe31114b6035d6b0fd95bde4a6a6f0667",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "canary/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -203,7 +203,7 @@
       },
       "redistribution": "full",
       "relativePath": "careful/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -215,7 +215,7 @@
       },
       "redistribution": "full",
       "relativePath": "codex/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -227,7 +227,7 @@
       },
       "redistribution": "full",
       "relativePath": "context-restore/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -239,7 +239,7 @@
       },
       "redistribution": "full",
       "relativePath": "context-save/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -251,19 +251,19 @@
       },
       "redistribution": "full",
       "relativePath": "cso/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/design-consultation",
-      "digest": "959b7cafb65ffb9898b2fa3fc683947a6f677f76c60e18bfbf50538e80f6de53",
+      "digest": "4f4d4ecb2280bbfc2b3f3f3dec2e0e33f7ba694e304399e674bcdda87841d424",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "design-consultation/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -275,19 +275,19 @@
       },
       "redistribution": "full",
       "relativePath": "design-html/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/design-review",
-      "digest": "f44932d74fb3954148e041980ba8f1e19b0cf04c67cfb9657e1b93dc4051fd88",
+      "digest": "2dd4a216542cc22cab2edd4825ef4788d850a4302b3ca981493278adf8d80da1",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "design-review/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -299,7 +299,7 @@
       },
       "redistribution": "full",
       "relativePath": "design-shotgun/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -311,19 +311,19 @@
       },
       "redistribution": "full",
       "relativePath": "deslop-shared-libs/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/devex-review",
-      "digest": "b9730aca0fe05a1bc526a7cd5edab31e9818a6889d01a301f8b8014f9cae502f",
+      "digest": "c74f608e61aa70307de0b61a24a3a5893b203a86a0d216830234108ec52e4ae0",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "devex-review/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -335,7 +335,7 @@
       },
       "redistribution": "full",
       "relativePath": "diagram/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -347,19 +347,19 @@
       },
       "redistribution": "full",
       "relativePath": "document-generate/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/document-release",
-      "digest": "7288325c0a6aebfbdabdb2bbff2424f15957efbf7abededff3bd8fcdf4d28613",
+      "digest": "04a637d84782eb2ec6c1b4f41d260eeb6a1d727d87ea9f43bd3bca6c2f2743b8",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "document-release/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -371,7 +371,7 @@
       },
       "redistribution": "full",
       "relativePath": "freeze/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -383,7 +383,7 @@
       },
       "redistribution": "full",
       "relativePath": "gstack-upgrade/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -395,7 +395,7 @@
       },
       "redistribution": "full",
       "relativePath": "guard/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -407,19 +407,19 @@
       },
       "redistribution": "full",
       "relativePath": "health/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/investigate",
-      "digest": "89bf6d3d9cff544a2ce88ad21b7a0d0b56a8fa8b1e5e2c58e71729258492f505",
+      "digest": "6c7b4a8d666fe51698771f878d5f1764eb9a5b05c70a70246e1e91e7f2371e45",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "investigate/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -431,7 +431,7 @@
       },
       "redistribution": "full",
       "relativePath": "ios-clean/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -443,7 +443,7 @@
       },
       "redistribution": "full",
       "relativePath": "ios-design-review/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -455,7 +455,7 @@
       },
       "redistribution": "full",
       "relativePath": "ios-fix/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -467,7 +467,7 @@
       },
       "redistribution": "full",
       "relativePath": "ios-qa/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -479,19 +479,19 @@
       },
       "redistribution": "full",
       "relativePath": "ios-sync/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/land-and-deploy",
-      "digest": "3c382dc06c6057f02d1e871c4404eca48824d7c48259ed5738d18e706e9a1ef6",
+      "digest": "0be4c994bd782cd4f6598fc76b3b1e8aac166a2f945c105a5449f6217732b217",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "land-and-deploy/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -503,7 +503,7 @@
       },
       "redistribution": "full",
       "relativePath": "landing-report/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -515,7 +515,7 @@
       },
       "redistribution": "full",
       "relativePath": "learn/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -527,19 +527,19 @@
       },
       "redistribution": "full",
       "relativePath": "make-pdf/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/office-hours",
-      "digest": "a16692ad06c54247cff8cef02e1aac7bdb653a0e96a41b98659896ca88aaa41f",
+      "digest": "35b499d03de217ce466c10238e9b33837cece0cc0b4b243fe14fc24fb6cb47c9",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "office-hours/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -551,7 +551,7 @@
       },
       "redistribution": "full",
       "relativePath": "open-gstack-browser/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -563,19 +563,19 @@
       },
       "redistribution": "full",
       "relativePath": "pair-agent/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/plan-ceo-review",
-      "digest": "6d527f8c62922ff496e8424b680fdf43898efe4b7dca1fc2e81910d079146d7d",
+      "digest": "2dc81eb6460c440c1b74f157aa98bcd06db1a13fc5a4a0f663faac1ed79cee7b",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "plan-ceo-review/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -587,31 +587,31 @@
       },
       "redistribution": "full",
       "relativePath": "plan-design-review/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/plan-devex-review",
-      "digest": "4b3ab62242be6791d41aeafb82071fac7f0dacc2501bcfcf078172e411aaa105",
+      "digest": "026f6bad5f671126a2cdf79473f4a4792176e41f994ccfeabd7b6668a1898266",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "plan-devex-review/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/plan-eng-review",
-      "digest": "7bd0cf56384597973b21f9a1d3ceaed65a4fdaeb0238cb4b10841d6f41d3c0fc",
+      "digest": "3b12b10d224af23704e13bba704bb0a2fa517b5fd063de7c12b40693744be9f2",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "plan-eng-review/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -623,31 +623,31 @@
       },
       "redistribution": "full",
       "relativePath": "plan-tune/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/qa-only",
-      "digest": "c3b6fef548a2137e808ac5dd9ef9ecc6743873bf0e96cc196e1269e7d672806d",
+      "digest": "66603d53f6213b3b6734ee8cb7e7c6c28cf60750e53c10e853a1c8a6f8c2294e",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "qa-only/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/qa",
-      "digest": "408daf67dcd5c57e52ada635f22281def6e243a83fc1af2c18df587ae9ccf2d0",
+      "digest": "cef2f11468e75dac35573489d65401eae109511740c800f06640d8e9f555207a",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "qa/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -659,31 +659,31 @@
       },
       "redistribution": "full",
       "relativePath": "retro/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/review",
-      "digest": "4afc918a914f931699da984d507c4f383ac0493e730fc32336fb52c86e3fc500",
+      "digest": "dae4252363c95c0cec82306e782e3f1a6a9cb367fb0e9d443fdf3e4e1d540388",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "review/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/scrape",
-      "digest": "9ad2abd972eedbc1ab0cf7c70cd3cb821815c1b8251e0f0552c38ff642c1e9d9",
+      "digest": "21241e97dcfa321be70bd65ac0c74f7497e0b8ec8cda754174d3622c40536930",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "scrape/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -695,7 +695,7 @@
       },
       "redistribution": "full",
       "relativePath": "setup-browser-cookies/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -707,7 +707,7 @@
       },
       "redistribution": "full",
       "relativePath": "setup-deploy/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -719,19 +719,19 @@
       },
       "redistribution": "full",
       "relativePath": "setup-gbrain/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/ship",
-      "digest": "63c81c8d6b2a7c841db159a80c6d2f4811e23310a8aef1eedf85f4f2a3496e3e",
+      "digest": "2c820a584d2f1c3948feaa9c859aa89df9bba53a320ebe3ccfb758ff68994651",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "ship/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -743,7 +743,7 @@
       },
       "redistribution": "full",
       "relativePath": "skillify/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -755,7 +755,7 @@
       },
       "redistribution": "full",
       "relativePath": "spec/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -767,7 +767,19 @@
       },
       "redistribution": "full",
       "relativePath": "sync-gbrain/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
+      "sourceId": "gstack"
+    },
+    {
+      "canonicalInvocation": "/test-audit",
+      "digest": "8c11db0bfd14f114a4407fb44439ca07e256d9b887de1a8a4c33665ce3af1860",
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT"
+      },
+      "redistribution": "full",
+      "relativePath": "test-audit/SKILL.md",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -779,7 +791,7 @@
       },
       "redistribution": "full",
       "relativePath": "unfreeze/SKILL.md",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "sourceId": "gstack"
     },
     {
@@ -1439,7 +1451,7 @@
       },
       "redistribution": "full",
       "relativePath": ".claude/skills/impeccable/SKILL.md",
-      "resolvedRevision": "114ea1d3838fca73b253af45f873b9c4f5f213c8",
+      "resolvedRevision": "e04353da8938ef991e944625268175560a3ad21a",
       "sourceId": "impeccable"
     },
     {
@@ -1909,6 +1921,7 @@
         "skillify",
         "spec",
         "sync-gbrain",
+        "test-audit",
         "unfreeze"
       ],
       "canonicalSkills": [
@@ -1965,6 +1978,7 @@
         "/skillify",
         "/spec",
         "/sync-gbrain",
+        "/test-audit",
         "/unfreeze"
       ],
       "configuredRef": "origin/HEAD",
@@ -1976,7 +1990,7 @@
       "notes": "Flat layout (top-level */SKILL.md). SKILL.md are rendered from SKILL.md.tmpl upstream; deterministic per SHA.",
       "redistribution": "full",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "65bfb0ce49da807698359ca033a05709e342c684",
+      "resolvedRevision": "96764e80a641e28141ec8297223768029f5bf483",
       "selectedPaths": [
         "autoplan",
         "benchmark",
@@ -2031,6 +2045,7 @@
         "skillify",
         "spec",
         "sync-gbrain",
+        "test-audit",
         "unfreeze"
       ],
       "type": "git"
@@ -2259,7 +2274,7 @@
       },
       "redistribution": "full",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "114ea1d3838fca73b253af45f873b9c4f5f213c8",
+      "resolvedRevision": "e04353da8938ef991e944625268175560a3ad21a",
       "selectedPaths": [
         ".claude/skills/impeccable"
       ],

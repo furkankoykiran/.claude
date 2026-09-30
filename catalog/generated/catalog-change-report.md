@@ -2,16 +2,16 @@
 
 # Catalog change report
 
-- added: 155
+- added: 156
 - updated: 0
 - removed: 0
 - renamed: 0
 - license-restricted: 11
 - runtime-only: 3
-- security-sensitive: 71
+- security-sensitive: 72
 - **manual-review-required: true**
 
-## Added (155)
+## Added (156)
 
 - `/ab-testing`
 - `/ad-creative`
@@ -162,6 +162,7 @@
 - `/spec`
 - `/stitch-design-taste`
 - `/sync-gbrain`
+- `/test-audit`
 - `/ui-styling`
 - `/ui-ux-pro-max`
 - `/unfreeze`
@@ -169,7 +170,7 @@
 - `/web-artifacts-builder`
 - `/xlsx`
 
-## Security-sensitive (71)
+## Security-sensitive (72)
 
 - `/agent-reach`
 - `/autoplan`
@@ -238,12 +239,13 @@
 - `/social`
 - `/spec`
 - `/sync-gbrain`
+- `/test-audit`
 - `/ui-styling`
 - `/unfreeze`
 - `/web-artifacts-builder`
 - `/xlsx`
 
-## Manual-review-required (71)
+## Manual-review-required (72)
 
 - `/agent-reach`
 - `/autoplan`
@@ -312,6 +314,7 @@
 - `/social`
 - `/spec`
 - `/sync-gbrain`
+- `/test-audit`
 - `/ui-styling`
 - `/unfreeze`
 - `/web-artifacts-builder`
