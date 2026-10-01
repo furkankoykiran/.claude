@@ -124,10 +124,22 @@ setup_fixture() {
   git_q "$seed" config user.email t@example.invalid
   git_q "$seed" config user.name Test
   printf '0.1.0\n' > "$seed/VERSION"
-  mkdir -p "$seed/migrations" "$seed/bin" "$seed/hooks"
+  mkdir -p "$seed/migrations" "$seed/bin" "$seed/hooks" "$seed/providers"
+  printf '{}\n' > "$seed/settings.json"
+  printf 'anthropic\n' > "$seed/providers/.active"
+  printf '{}\n' > "$seed/providers/codex.json"
   # A realistic checkout ships the updater and the hook; the SessionStart tests
   # below resolve them relative to FKT_HOME, exactly as a real install does.
   cp "$FKT" "$seed/bin/fkt"
+  cat > "$seed/bin/cc-provider" <<'CCS'
+#!/usr/bin/env bash
+printf '%s\n' "$*" >> "$CLAUDE_DIR/cc-provider.log"
+case "$1" in
+  model) printf '{"model":"%s","effort":"%s"}\n' "$2" "${3:-medium}" > "$CLAUDE_DIR/model-choice.json" ;;
+  *) mkdir -p "$CLAUDE_DIR/providers"; printf '%s\n' "$1" > "$CLAUDE_DIR/providers/.active" ;;
+esac
+CCS
+  chmod +x "$seed/bin/cc-provider"
   cp "$REPO_ROOT/hooks/session-start-update-notice.sh" "$seed/hooks/"
   cp "$REPO_ROOT/mcp-registry.toml" "$seed/mcp-registry.toml"
   git_q "$seed" add -A
@@ -190,7 +202,22 @@ if [ "$(config_get update_check unset)" = "true" ]; then
 else
   fail "configure --yes can enable update checks" "config: $(cat "$CONFIG_FILE" 2>/dev/null)"
 fi
-if ls "$STATE_DIR"/backups/config.*.bak >/dev/null 2>&1; then
+run_fkt setup --yes --provider codex >/dev/null
+if [ "$(cat "$HOME_DIR/providers/.active")" = "codex" ] && grep -qxF "codex" "$HOME_DIR/cc-provider.log"; then
+  pass "setup --yes can apply provider through ccs"
+else
+  fail "setup --yes can apply provider through ccs" "log: $(cat "$HOME_DIR/cc-provider.log" 2>/dev/null)"
+fi
+run_fkt configure --yes --model gpt-5.5 --effort medium >/dev/null
+if grep -qxF "model gpt-5.5 medium" "$HOME_DIR/cc-provider.log"; then
+  pass "configure --yes can apply model through ccs"
+else
+  fail "configure --yes can apply model through ccs" "log: $(cat "$HOME_DIR/cc-provider.log" 2>/dev/null)"
+fi
+if ls "$STATE_DIR"/backups/config.*.bak >/dev/null 2>&1 \
+   && ls "$STATE_DIR"/backups/settings.json.*.bak >/dev/null 2>&1 \
+   && ls "$STATE_DIR"/backups/providers.active.*.bak >/dev/null 2>&1 \
+   && ls "$STATE_DIR"/backups/provider.codex.json.*.bak >/dev/null 2>&1; then
   pass "setup/configure write mode creates config backups"
 else
   fail "setup/configure write mode creates config backups"

@@ -968,9 +968,10 @@ Options:
   --non-interactive       require all choices to be explicit or defaulted
   --yes                   apply the implemented safe subset
 
-Dry-run writes nothing and never touches credentials. Write mode currently only
-applies --updates enabled|disabled to fkt's own config, after backing up the
-previous config file when one exists. Other choices remain preview-only.
+Dry-run writes nothing and never touches credentials. Write mode currently
+applies --updates enabled|disabled to fkt's own config and delegates provider
+or model changes to ccs after backing up runtime config files. Other choices
+remain preview-only.
 EOF
 }
 
@@ -988,19 +989,36 @@ normalize_profile() {
   esac
 }
 
-backup_config_file() {
-  [ -f "$CONFIG_FILE" ] || return 0
+backup_file_once() {
+  local file="$1" label="$2" stamp backup
+  [ -f "$file" ] || return 0
   mkdir -p "$FKT_STATE_DIR/backups"
-  local stamp backup
   stamp="$(date +%Y%m%d%H%M%S)"
-  backup="$FKT_STATE_DIR/backups/config.$stamp.bak"
-  cp "$CONFIG_FILE" "$backup"
+  backup="$FKT_STATE_DIR/backups/$label.$stamp.bak"
+  cp "$file" "$backup"
   chmod 600 "$backup" 2>/dev/null || true
   say "  backup          $backup"
 }
 
+backup_config_file() {
+  backup_file_once "$CONFIG_FILE" config
+}
+
+backup_runtime_config_files() {
+  local provider="$1"
+  backup_file_once "$FKT_HOME/settings.json" settings.json
+  backup_file_once "$FKT_HOME/providers/.active" providers.active
+  [ -n "$provider" ] && backup_file_once "$FKT_HOME/providers/$provider.json" "provider.$provider.json"
+}
+
+ccs_command() {
+  local ccs="$FKT_HOME/bin/cc-provider"
+  [ -x "$ccs" ] || { err "ccs provider switcher not found or not executable: $ccs"; return "$EX_USAGE"; }
+  CLAUDE_DIR="$FKT_HOME" "$ccs" "$@"
+}
+
 do_setup_preview() {
-  local mode="$1" dry_run=0 yes=0 non_interactive=0 preset="recommended" profile="balanced"
+  local mode="$1" dry_run=0 yes=0 non_interactive=0 provider_requested=0 preset="recommended" profile="balanced"
   local provider="$( [ -f "$FKT_HOME/providers/.active" ] && tr -d '[:space:]' < "$FKT_HOME/providers/.active" || printf 'anthropic' )"
   local model="" effort="" permission_mode="" compaction="" updates="" skill_packs="" mcps=""
   while [ $# -gt 1 ]; do
@@ -1011,7 +1029,7 @@ do_setup_preview() {
       --non-interactive) non_interactive=1 ;;
       --preset) shift; preset="$(normalize_preset "${1:-}")" || { err "invalid preset: ${1:-}"; return "$EX_USAGE"; } ;;
       --profile) shift; profile="$(normalize_profile "${1:-}")" || { err "invalid profile: ${1:-}"; return "$EX_USAGE"; } ;;
-      --provider) shift; provider="${1:-}"; [ -n "$provider" ] || { err "--provider requires a value"; return "$EX_USAGE"; } ;;
+      --provider) shift; provider="${1:-}"; provider_requested=1; [ -n "$provider" ] || { err "--provider requires a value"; return "$EX_USAGE"; } ;;
       --model) shift; model="${1:-}"; [ -n "$model" ] || { err "--model requires a value"; return "$EX_USAGE"; } ;;
       --effort) shift; effort="${1:-}"; case "$effort" in low|medium|high|xhigh|none) ;; *) err "invalid effort: $effort"; return "$EX_USAGE" ;; esac ;;
       --permission-mode) shift; permission_mode="${1:-}"; case "$permission_mode" in manual|plan|acceptEdits|dontAsk|auto) ;; *) err "invalid permission mode: $permission_mode"; return "$EX_USAGE" ;; esac ;;
@@ -1034,8 +1052,8 @@ do_setup_preview() {
     return "$EX_USAGE"
   fi
 
-  if [ "$dry_run" != "1" ] && [ -z "$updates" ]; then
-    err "$mode write mode currently requires --updates enabled|disabled"
+  if [ "$dry_run" != "1" ] && [ -z "$updates" ] && [ "$provider_requested" != "1" ] && [ -z "$model" ]; then
+    err "$mode write mode currently requires --updates, --provider, or --model"
     return "$EX_USAGE"
   fi
 
@@ -1061,12 +1079,24 @@ do_setup_preview() {
     return 0
   fi
 
-  backup_config_file
-  case "$updates" in
-    enabled) config_set update_check true; say "  applied         update checks enabled" ;;
-    disabled) config_set update_check false; say "  applied         update checks disabled" ;;
-  esac
-  say "  not applied     provider/model/permission/compaction/skills/mcp choices are still preview-only"
+  if [ -n "$updates" ]; then
+    backup_config_file
+    case "$updates" in
+      enabled) config_set update_check true; say "  applied         update checks enabled" ;;
+      disabled) config_set update_check false; say "  applied         update checks disabled" ;;
+    esac
+  fi
+  if [ "$provider_requested" = "1" ]; then
+    backup_runtime_config_files "$provider"
+    ccs_command "$provider" >/dev/null
+    say "  applied         provider $provider"
+  fi
+  if [ -n "$model" ]; then
+    backup_runtime_config_files codex
+    ccs_command model "$model" "${effort:-medium}" >/dev/null
+    say "  applied         model $model (${effort:-medium})"
+  fi
+  say "  not applied     permission/compaction/skills/mcp choices are still preview-only"
 }
 
 # ---------------------------------------------------------------------------
