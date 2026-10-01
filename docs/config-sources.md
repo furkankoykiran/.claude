@@ -33,3 +33,7 @@ Future setup UX should preserve this split:
 2. canonical repository-owned preset/default source;
 3. generated runtime `settings.json`;
 4. backwards-compatible migration that keeps local credentials and runtime preferences intact.
+
+## Read-only UX commands
+
+`fkt presets` lists the product preset/profile vocabulary without changing files. `fkt doctor` prints a read-only summary of the checkout, settings files, active provider, safety deny count, hook count, model-picker count, and MCP registry state. These commands are scaffolding for the later interactive setup/configure flow; they do not write credentials or rewrite `settings.json`.

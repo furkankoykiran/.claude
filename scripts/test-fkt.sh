@@ -155,6 +155,10 @@ assert_contains "openaiDeveloperDocs" "mcp status lists the no-auth docs server"
 assert_contains "login-required" "mcp status shows auth-required entries disabled until login" -- mcp status
 assert_contains "codex mcp login notion" "mcp auth explains native Codex OAuth login" -- mcp auth notion
 assert_contains "default enabled   1 no-auth server" "mcp doctor reports only no-auth defaults" -- mcp doctor
+assert_contains "Install presets:" "presets lists install presets" -- presets
+assert_contains "Runtime profiles:" "presets lists runtime profiles" -- presets
+assert_contains "fkt doctor" "doctor prints a read-only health header" -- doctor
+assert_contains "active provider" "doctor reports active provider state" -- doctor
 
 # --- channels -------------------------------------------------------------
 run_fkt channel edge >/dev/null

@@ -886,6 +886,66 @@ do_disk() {
   return 0
 }
 
+
+# ---------------------------------------------------------------------------
+# setup UX diagnostics
+# ---------------------------------------------------------------------------
+do_presets() {
+  cat <<'EOF'
+Install presets:
+  Minimal      repo safety config, provider switcher, updater
+  Recommended Minimal plus curated skills, hooks, provider templates, MCP registry
+  Full         Recommended plus optional runtimes and broad skill packs
+  Custom       choose each install area explicitly
+
+Runtime profiles:
+  Safe         manual approvals, compact safety policy, no auto-resume claims
+  Balanced     normal toolkit defaults for daily development
+  Autonomous   broader tool allowance; review local policy before using
+  Long Session  preserve compaction controls and session ergonomics
+  Custom       choose model, effort, permissions, compaction, skills and MCPs
+
+These labels are product presets, not hidden magic. Current releases still use
+settings.base.json, settings.json.example, providers/*.json and ccs for the
+actual merge. See docs/config-sources.md.
+EOF
+}
+
+do_doctor() {
+  local active="none" deny_count="unknown" hook_count="unknown" picker_count="unknown"
+  say "fkt doctor"
+  say "  checkout        $FKT_HOME$(is_git_checkout || printf ' (not a git checkout)')"
+  say "  version         $(installed_version)"
+  say "  settings.base   $([ -f "$FKT_HOME/settings.base.json" ] && echo present || echo missing)"
+  say "  settings.json   $([ -f "$FKT_HOME/settings.json" ] && echo present || echo missing)"
+  say "  provider dir    $([ -d "$FKT_HOME/providers" ] && echo present || echo missing)"
+  if [ -f "$FKT_HOME/providers/.active" ]; then
+    active="$(tr -d '[:space:]' < "$FKT_HOME/providers/.active")"
+  fi
+  say "  active provider $active"
+  say "  ccs             $([ -x "$FKT_HOME/bin/cc-provider" ] && echo present || echo missing)"
+  say "  fkt config      $CONFIG_FILE"
+  say "  fkt state       $FKT_STATE_DIR"
+
+  if command -v jq >/dev/null 2>&1 && [ -f "$FKT_HOME/settings.json" ]; then
+    deny_count="$(jq -r '(.permissions.deny // []) | length' "$FKT_HOME/settings.json" 2>/dev/null || printf 'unknown')"
+    hook_count="$(jq -r '[.hooks[]?[]?.hooks[]?] | length' "$FKT_HOME/settings.json" 2>/dev/null || printf 'unknown')"
+    picker_count="$(jq -r '(.modelPicker.options // []) | length' "$FKT_HOME/settings.json" 2>/dev/null || printf 'unknown')"
+  fi
+  say "  safety denies   $deny_count"
+  say "  hooks           $hook_count"
+  say "  model picker    $picker_count"
+
+  if [ -r "$MCP_REGISTRY" ]; then
+    say "  mcp registry    $(mcp_registry_rows | grep -c .) entries"
+  else
+    say "  mcp registry    missing"
+  fi
+
+  say ""
+  say "Read-only check. To rebuild provider settings, run: ccs $(printf '%s' "$active" | sed 's/^none$/<provider>/')"
+}
+
 # ---------------------------------------------------------------------------
 # status / channel / snooze
 # ---------------------------------------------------------------------------
@@ -1114,6 +1174,8 @@ fkt — FK Claude Toolkit updater (bootstrap layer only)
                              fast-forward the checkout, then run migrations
   fkt disk                   what ~/.claude costs, and which of it core sweeps
                              on its own (read-only; deletes nothing)
+  fkt doctor                 read-only setup/config/provider health summary
+  fkt presets                list setup presets and runtime profiles
   fkt migrate                run pending migrations only
   fkt channel [stable|edge]  show or set the update channel
   fkt snooze [HOURS]         hide the current update for a while (default 168)
@@ -1142,6 +1204,8 @@ main() {
     schema-version)  printf '%s\n' "$FKT_VERSION_SCHEMA" ;;
     check)           do_check "$@" ;;
     disk)            do_disk "$@" ;;
+    doctor)          do_doctor "$@" ;;
+    presets)         do_presets "$@" ;;
     update|upgrade)  do_update "$@" ;;
     migrate)         do_migrate "$@" ;;
     channel)         do_channel "$@" ;;
