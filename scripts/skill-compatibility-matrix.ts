@@ -80,6 +80,9 @@ const hooks = walk(join(root, "hooks"), (path) => path.endsWith(".sh") || path.e
 const toolSkills = skills.filter((skill) => (skill.security?.toolCount ?? 0) > 0);
 const gstackSkills = ["spec", "review", "ship", "plan-devex-review"].filter((name) => byName.get(name)?.pack === "gstack");
 const ccsCodexHumanizerProbe = liveEvidence.probes?.find((probe) => probe.id === "ccs-codex-humanizer-explicit" && probe.status === "pass");
+const ccsCodexCarefulProbe = liveEvidence.probes?.find((probe) => probe.id === "ccs-codex-careful-explicit" && probe.status === "pass");
+const ccsCodexSessionStartHookProbe = liveEvidence.probes?.find((probe) => probe.id === "ccs-codex-sessionstart-hook-observed" && probe.status === "pass");
+const ccsCodexSubagentUnsupportedProbe = liveEvidence.probes?.find((probe) => probe.id === "ccs-codex-subagent-dispatch-unsupported" && probe.status === "unsupported");
 
 const rows: Row[] = [
   pass(
@@ -159,6 +162,33 @@ const rows: Row[] = [
     limitation: ccsCodexHumanizerProbe?.limitations ?? "Requires live Claude Code through ccs codex with a small explicit skill prompt.",
   },
   {
+    id: "live-ccs-codex-explicit-gstack",
+    area: "ccs codex E2E",
+    status: ccsCodexCarefulProbe ? "pass" : "pending-live-proof",
+    evidence: ccsCodexCarefulProbe
+      ? `${ccsCodexCarefulProbe.backend} explicit invocation of ${ccsCodexCarefulProbe.skill} passed`
+      : "not run in this static checker",
+    limitation: ccsCodexCarefulProbe?.limitations ?? "Requires live Claude Code through ccs codex with a small explicit gstack skill prompt.",
+  },
+  {
+    id: "live-ccs-codex-hook-lifecycle",
+    area: "ccs codex hook surface",
+    status: ccsCodexSessionStartHookProbe ? "pass" : "pending-live-proof",
+    evidence: ccsCodexSessionStartHookProbe
+      ? `${ccsCodexSessionStartHookProbe.backend} emitted SessionStart hook lifecycle events`
+      : "not run in this static checker",
+    limitation: ccsCodexSessionStartHookProbe?.limitations ?? "Requires live Claude Code stream-json output with hook events included.",
+  },
+  {
+    id: "live-ccs-codex-subagent-boundary",
+    area: "ccs codex subagents",
+    status: ccsCodexSubagentUnsupportedProbe ? "pass" : "pending-live-proof",
+    evidence: ccsCodexSubagentUnsupportedProbe
+      ? `${ccsCodexSubagentUnsupportedProbe.backend} probe recorded subagent dispatch as unsupported`
+      : "not run in this static checker",
+    limitation: ccsCodexSubagentUnsupportedProbe?.limitations ?? "Requires live Claude Code through ccs codex with a custom agent prompt.",
+  },
+  {
     id: "live-native-claude",
     area: "Native Claude backend E2E",
     status: "pending-live-proof",
@@ -169,8 +199,8 @@ const rows: Row[] = [
     id: "live-ccs-codex-broad-parity",
     area: "ccs codex broad skill parity",
     status: "pending-live-proof",
-    evidence: "not run in this static checker",
-    limitation: "Still needs automatic selection, references/assets/scripts, hooks, subagents, and representative gstack live probes.",
+    evidence: "partial live evidence only",
+    limitation: "Still needs automatic selection, references/assets/scripts execution, and native Claude comparison. Subagent dispatch is explicitly unsupported in the current bridge.",
   },
 ];
 

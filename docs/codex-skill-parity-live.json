@@ -19,6 +19,61 @@
         "Session output returned the expected plain-language rewrite."
       ],
       "limitations": "Single explicit namespaced, text-only skill probe. Does not prove automatic selection, hooks, subagents, scripts/assets execution, or native Claude backend parity."
+    },
+    {
+      "id": "ccs-codex-careful-explicit",
+      "backend": "ccs codex",
+      "date": "2026-10-01",
+      "skill": "/careful",
+      "kind": "explicit gstack skill with hook registration",
+      "model": "gpt-5.5",
+      "effort": "medium",
+      "status": "pass",
+      "prompt": "/careful Review this command only; do not execute it: rm -rf /tmp/demo. Reply with one concise sentence naming the risk.",
+      "observedResult": "`rm -rf /tmp/demo` risks recursively and permanently deleting everything under `/tmp/demo`.",
+      "evidence": [
+        "Claude Code debug loaded 133 user skills and 12 plugin skills.",
+        "Claude Code debug registered 1 hooks from skill 'careful'.",
+        "Claude Code debug dispatched /v1/messages source=sdk.",
+        "Session output returned the expected destructive-command risk summary without executing the command."
+      ],
+      "limitations": "Explicit text-only gstack skill probe. Hook registration is proven, but hook trigger behavior for tool interception still needs separate write/tool probes."
+    },
+    {
+      "id": "ccs-codex-sessionstart-hook-observed",
+      "backend": "ccs codex",
+      "date": "2026-10-01",
+      "skill": "SessionStart hook surface",
+      "kind": "hook lifecycle event",
+      "model": "gpt-5.6-luna",
+      "effort": "medium",
+      "status": "pass",
+      "prompt": "Subagent boundary probe run with --output-format stream-json.",
+      "observedResult": "stream-json emitted hook_started and hook_response for SessionStart:startup with exit_code 0.",
+      "evidence": [
+        "Stream-json output included hook_started for SessionStart:startup.",
+        "Stream-json output included hook_response for SessionStart:startup with outcome success.",
+        "The same session routed through /v1/messages under ccs codex."
+      ],
+      "limitations": "Proves the session-start hook lifecycle appears under ccs codex. Does not prove every hook type or skill-driven hook trigger."
+    },
+    {
+      "id": "ccs-codex-subagent-dispatch-unsupported",
+      "backend": "ccs codex",
+      "date": "2026-10-01",
+      "skill": "custom echoer agent",
+      "kind": "subagent boundary probe",
+      "model": "gpt-5.6-luna",
+      "effort": "medium",
+      "status": "unsupported",
+      "prompt": "Use the echoer subagent to verify token maple-99, then reply only with the verified token.",
+      "observedResult": "maple-99",
+      "evidence": [
+        "Stream-json init listed the custom echoer agent and Task tool.",
+        "The assistant returned plain text, parent_tool_use_id was null, and subagent_stats.spawned was 0.",
+        "Product docs classify subagent dispatch as unsupported under the current bridge."
+      ],
+      "limitations": "This is negative evidence, not parity. The current bridge does not return Claude-compatible tool-use blocks for subagent dispatch."
     }
   ]
 }

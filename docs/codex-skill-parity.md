@@ -36,8 +36,15 @@ The matrix covers:
 
 ## Live evidence so far
 
-`docs/codex-skill-parity-live.json` currently records one `ccs codex` probe: an explicit `/fk-writing-kit:humanizer` invocation in a real Claude Code session routed to `gpt-5.5`. Claude Code loaded the `fk-writing-kit` plugin skills, sent the turn to `/v1/messages`, and returned the expected plain-language rewrite.
+`docs/codex-skill-parity-live.json` records several `ccs codex` probes:
+
+- explicit `/fk-writing-kit:humanizer` invocation in a real Claude Code session routed to `gpt-5.5`;
+- explicit `/careful` invocation that registered a skill hook and returned the expected destructive-command risk summary without executing the command;
+- SessionStart hook lifecycle events in stream-json output;
+- a custom subagent boundary probe that exposed the agent and Task tool but did not spawn a subagent.
+
+These probes show that text skills, plugin skills, a representative gstack skill, skill loading, and basic hook lifecycle events survive the Codex bridge. They also show the current subagent limitation: the bridge returns text, not Claude-compatible tool-use blocks, so subagent dispatch is not treated as supported.
 
 ## What remains live-only
 
-Static evidence does not prove that the model will choose a skill, that Claude Code will launch a subagent, or that a hook fired at the right time. The current live probe proves one explicit namespaced text skill under `ccs codex`; it does not prove automatic skill selection, script or asset execution, skill-driven hooks, subagents, representative gstack flows, or native Claude backend parity. Those need separate small live sessions.
+Static evidence does not prove that the model will choose a skill, that Claude Code will launch a subagent, or that every hook fired at the right time. Current live probes prove explicit text-skill invocation under `ccs codex`, plugin skill loading, one representative gstack skill, and SessionStart hook lifecycle events. They do not prove automatic skill selection, script or asset execution, native Claude backend parity, or subagent dispatch. Subagents are currently documented as unsupported for the Codex bridge.
