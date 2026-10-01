@@ -1451,7 +1451,7 @@
       },
       "redistribution": "full",
       "relativePath": ".claude/skills/impeccable/SKILL.md",
-      "resolvedRevision": "e04353da8938ef991e944625268175560a3ad21a",
+      "resolvedRevision": "c74755d920985f7a92cef691ca970ba95f90126e",
       "sourceId": "impeccable"
     },
     {
@@ -2274,7 +2274,7 @@
       },
       "redistribution": "full",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "e04353da8938ef991e944625268175560a3ad21a",
+      "resolvedRevision": "c74755d920985f7a92cef691ca970ba95f90126e",
       "selectedPaths": [
         ".claude/skills/impeccable"
       ],
