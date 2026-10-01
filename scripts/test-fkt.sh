@@ -238,6 +238,22 @@ if grep -qxF "model gpt-5.5 medium" "$HOME_DIR/cc-provider.log"; then
 else
   fail "configure --yes can apply model through ccs" "log: $(cat "$HOME_DIR/cc-provider.log" 2>/dev/null)"
 fi
+run_fkt configure --yes --permission-mode manual --compaction off >/dev/null
+if [ "$(jq -r '.permissions.defaultMode' "$HOME_DIR/settings.json")" = "default" ] \
+   && [ "$(jq -r '.autoCompactEnabled' "$HOME_DIR/settings.json")" = "false" ]; then
+  pass "configure --yes can apply manual permissions and disable auto-compaction"
+else
+  fail "configure --yes can apply manual permissions and disable auto-compaction" "settings: $(jq -c . "$HOME_DIR/settings.json" 2>/dev/null)"
+fi
+run_fkt setup --yes --permission-mode plan --compaction auto >/dev/null
+if [ "$(jq -r '.permissions.defaultMode' "$HOME_DIR/settings.json")" = "plan" ] \
+   && [ "$(jq -r '.autoCompactEnabled' "$HOME_DIR/settings.json")" = "true" ] \
+   && [ "$(jq -r 'has("autoCompactWindow")' "$HOME_DIR/settings.json")" = "false" ]; then
+  pass "setup --yes can apply plan permissions and enable default auto-compaction"
+else
+  fail "setup --yes can apply plan permissions and enable default auto-compaction" "settings: $(jq -c . "$HOME_DIR/settings.json" 2>/dev/null)"
+fi
+assert_exit 2 "token-window compaction is not written without a token value" -- setup --yes --compaction tokens
 if ls "$STATE_DIR"/backups/config.*.bak >/dev/null 2>&1 \
    && ls "$STATE_DIR"/backups/settings.json.*.bak >/dev/null 2>&1 \
    && ls "$STATE_DIR"/backups/providers.active.*.bak >/dev/null 2>&1 \

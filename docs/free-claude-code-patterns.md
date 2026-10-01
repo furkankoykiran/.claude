@@ -19,7 +19,7 @@ That is a different product shape from this toolkit. Free Claude Code is a repla
 | Clear provider capability metadata | Existing Codex docs now separate text inference, modes, usage telemetry, model switching, MCP ownership, continuation, and image generation. |
 | Health/doctor commands | `ccs doctor`, `fkt doctor`, and `fkt mcp doctor` report current state without pretending unsupported features work. |
 | Setup and reconfiguration UX | `fkt presets`, `fkt setup --dry-run`, and `fkt configure --dry-run` use the same product idea of guided configuration, but write mode remains incremental and backed by tests. |
-| Auto-compaction as a tunable preference | The setup preview distinguishes compaction preferences from disabling `/compact`; actual writes remain pending until documented settings are applied safely. |
+| Auto-compaction as a tunable preference | `fkt setup/configure --yes --compaction auto|off` writes documented auto-compaction settings and keeps manual `/compact` available; token-window tuning remains pending until it has an explicit value. |
 | Provider-specific caveats | Docs call out ChatGPT/Codex entitlement limits, the unproven ImageGen bridge boundary, and usage telemetry boundaries. |
 
 ## Rejected patterns

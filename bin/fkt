@@ -955,8 +955,8 @@ setup_usage() {
   cat <<'EOF'
 usage: fkt setup --dry-run [options]
        fkt configure --dry-run [options]
-       fkt setup --yes --updates enabled|disabled [options]
-       fkt configure --yes --updates enabled|disabled [options]
+       fkt setup --yes [options]
+       fkt configure --yes [options]
 
 Options:
   --preset minimal|recommended|full|custom
@@ -972,10 +972,11 @@ Options:
   --non-interactive       require all choices to be explicit or defaulted
   --yes                   apply the implemented safe subset
 
-Dry-run writes nothing and never touches credentials. Write mode currently
-applies --updates enabled|disabled to fkt's own config and delegates provider
-or model changes to ccs after backing up runtime config files. Other choices
-remain preview-only.
+Dry-run writes nothing and never touches credentials. Write mode applies
+--updates enabled|disabled to fkt's own config, delegates provider or model
+changes to ccs, and safely updates documented permission/default compaction
+settings after backing up runtime config files. Skill choices and token-window
+compaction remain preview-only.
 EOF
 }
 
@@ -1021,6 +1022,53 @@ ccs_command() {
   CLAUDE_DIR="$FKT_HOME" "$ccs" "$@"
 }
 
+settings_json_update() {
+  local tmp src
+  command -v jq >/dev/null 2>&1 || { err "jq is required to update settings.json safely"; return "$EX_USAGE"; }
+  mkdir -p "$FKT_HOME"
+  tmp="$(mktemp "$FKT_HOME/.settings.json.XXXXXX")"
+  src="$FKT_HOME/settings.json"
+  if [ ! -f "$src" ]; then
+    printf '{}\n' > "$tmp.input"
+    src="$tmp.input"
+  fi
+  if ! jq "$@" "$src" > "$tmp"; then
+    rm -f "$tmp" "${tmp}.input"
+    err "failed to update settings.json; file is unchanged"
+    return "$EX_USAGE"
+  fi
+  rm -f "${tmp}.input"
+  chmod 600 "$tmp" 2>/dev/null || true
+  mv -f "$tmp" "$FKT_HOME/settings.json"
+}
+
+apply_permission_mode_setting() {
+  local requested="$1" mode
+  case "$requested" in
+    manual) mode="default" ;;
+    *) mode="$requested" ;;
+  esac
+  settings_json_update --arg mode "$mode" '.permissions = (.permissions // {}) | .permissions.defaultMode = $mode'
+  say "  applied         permission mode $requested"
+}
+
+apply_compaction_setting() {
+  case "$1" in
+    auto)
+      settings_json_update '.autoCompactEnabled = true | del(.autoCompactWindow)'
+      say "  applied         auto-compaction enabled"
+      ;;
+    off)
+      settings_json_update '.autoCompactEnabled = false | del(.autoCompactWindow)'
+      say "  applied         auto-compaction disabled; /compact remains available"
+      ;;
+    *)
+      err "compaction '$1' is preview-only until a token window is specified"
+      return "$EX_USAGE"
+      ;;
+  esac
+}
+
 do_setup_preview() {
   local mode="$1" dry_run=0 yes=0 non_interactive=0 provider_requested=0 preset="recommended" profile="balanced"
   local provider="$( [ -f "$FKT_HOME/providers/.active" ] && tr -d '[:space:]' < "$FKT_HOME/providers/.active" || printf 'anthropic' )"
@@ -1056,8 +1104,13 @@ do_setup_preview() {
     return "$EX_USAGE"
   fi
 
-  if [ "$dry_run" != "1" ] && [ -z "$updates" ] && [ "$provider_requested" != "1" ] && [ -z "$model" ]; then
-    err "$mode write mode currently requires --updates, --provider, or --model"
+  if [ "$dry_run" != "1" ] \
+     && [ -z "$updates" ] \
+     && [ "$provider_requested" != "1" ] \
+     && [ -z "$model" ] \
+     && [ -z "$permission_mode" ] \
+     && { [ -z "$compaction" ] || [ "$compaction" = "tokens" ]; }; then
+    err "$mode write mode currently requires --updates, --provider, --model, --permission-mode, or --compaction auto|off"
     return "$EX_USAGE"
   fi
 
@@ -1100,7 +1153,22 @@ do_setup_preview() {
     ccs_command model "$model" "${effort:-medium}" >/dev/null
     say "  applied         model $model (${effort:-medium})"
   fi
-  say "  not applied     permission/compaction/skills/mcp choices are still preview-only"
+  if [ -n "$permission_mode" ]; then
+    backup_file_once "$FKT_HOME/settings.json" settings.json
+    apply_permission_mode_setting "$permission_mode"
+  fi
+  if [ -n "$compaction" ]; then
+    case "$compaction" in
+      auto|off)
+        backup_file_once "$FKT_HOME/settings.json" settings.json
+        apply_compaction_setting "$compaction"
+        ;;
+      tokens)
+        say "  not applied     compaction tokens requires an explicit token window"
+        ;;
+    esac
+  fi
+  say "  not applied     skill and mcp setup choices are still preview-only"
 }
 
 # ---------------------------------------------------------------------------
