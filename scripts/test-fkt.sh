@@ -143,6 +143,8 @@ CCS
   chmod +x "$seed/bin/cc-provider"
   cp "$REPO_ROOT/hooks/session-start-update-notice.sh" "$seed/hooks/"
   cp "$REPO_ROOT/mcp-registry.toml" "$seed/mcp-registry.toml"
+  mkdir -p "$seed/skills/fk-toolkit-ops"
+  cp "$REPO_ROOT/skills/fk-toolkit-ops/mcp.json" "$seed/skills/fk-toolkit-ops/mcp.json"
   git_q "$seed" add -A
   git_q "$seed" commit -m v0.1.0
   git_q "$seed" tag v0.1.0
@@ -181,6 +183,18 @@ assert_contains "native-login" "mcp status shows native-login scope for auth-req
 assert_contains "ok" "mcp status reports duplicate state" -- mcp status
 assert_contains "codex mcp login notion" "mcp auth explains native Codex OAuth login" -- mcp auth notion
 assert_contains "enabled no-auth   1 server" "mcp doctor reports enabled no-auth defaults" -- mcp doctor
+assert_contains "manifest servers 1 valid" "mcp doctor validates generated plugin manifest" -- mcp doctor
+BAD_MCP_MANIFEST="$WORK/bad-mcp-manifest-home"
+cp -R "$HOME_DIR" "$BAD_MCP_MANIFEST"
+jq '.mcpServers.github = {"type":"streamable-http","url":"https://api.githubcopilot.com/mcp/"}' \
+  "$BAD_MCP_MANIFEST/skills/fk-toolkit-ops/mcp.json" > "$BAD_MCP_MANIFEST/skills/fk-toolkit-ops/mcp.tmp" \
+  && mv "$BAD_MCP_MANIFEST/skills/fk-toolkit-ops/mcp.tmp" "$BAD_MCP_MANIFEST/skills/fk-toolkit-ops/mcp.json"
+BAD_MCP_OUT="$(FKT_HOME="$BAD_MCP_MANIFEST" FKT_CONFIG_DIR="$CFG_DIR" FKT_STATE_DIR="$STATE_DIR" FKT_MCP_LIVE_CHECK=0 "$FKT" mcp doctor 2>&1)"; BAD_MCP_STATUS=$?
+if [ "$BAD_MCP_STATUS" = "2" ] && grep -qF "plugin MCP manifest drifted" <<<"$BAD_MCP_OUT"; then
+  pass "mcp doctor rejects manifest drift and auth endpoint leakage"
+else
+  fail "mcp doctor rejects manifest drift and auth endpoint leakage" "status $BAD_MCP_STATUS output: $BAD_MCP_OUT"
+fi
 assert_contains "mcp notion enabled = true" "mcp enable records an auth-required preference" -- mcp enable notion
 assert_contains "login requested   1 server" "mcp doctor counts enabled login-required preferences" -- mcp doctor
 assert_contains "mcp notion enabled = false" "mcp disable clears an auth-required preference" -- mcp disable notion
@@ -994,7 +1008,7 @@ reset_state
 # older one and a ./setup that records that it ran.
 setup_gstack() {
   local dirty="${1:-clean}"
-  rm -rf "$WORK/gstack-seed" "$WORK/gstack-remote.git" "$HOME_DIR/skills"
+  rm -rf "$WORK/gstack-seed" "$WORK/gstack-remote.git" "$HOME_DIR/skills/gstack"
   local seed="$WORK/gstack-seed"
   mkdir -p "$seed"
   git_q "$seed" init -b main
@@ -1036,6 +1050,7 @@ gstack_version_now() { tr -d '[:space:]' < "$HOME_DIR/skills/gstack/VERSION" 2>/
 # and drive the "already at" path — which is exactly the path that has to keep
 # gstack current, since most days there is no bootstrap update at all.
 git_q "$HOME_DIR" reset --hard v0.2.0
+git_q "$HOME_DIR" clean -fd
 run_fkt channel stable >/dev/null 2>&1
 
 setup_gstack
@@ -1140,7 +1155,7 @@ else
 fi
 
 # Not installed at all is a supported layout, not something to report about.
-rm -rf "$HOME_DIR/skills"
+rm -rf "$HOME_DIR/skills/gstack"
 out="$(run_fkt update -y 2>&1)"; status=$?
 if [ "$status" -eq 0 ] && ! grep -qiF "gstack" <<<"$out"; then
   pass "a toolkit without gstack says nothing about it"
@@ -1166,7 +1181,7 @@ else
   fail "the warning names the command that finishes the job by hand"
 fi
 
-rm -rf "$HOME_DIR/skills"
+rm -rf "$HOME_DIR/skills/gstack"
 reset_state
 
 # ---------------------------------------------------------------------------

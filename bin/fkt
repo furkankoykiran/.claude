@@ -1388,6 +1388,49 @@ EOF_MCP_ENABLED_URLS
 }
 
 
+mcp_validate_manifest() {
+  local rows="$1" tmp_dir expected actual auth_urls leaks expected_count actual_count
+  if [ ! -f "$MCP_MANIFEST" ]; then
+    say "manifest status  missing"
+    return 0
+  fi
+  command -v jq >/dev/null 2>&1 || { say "manifest status  unchecked (jq missing)"; return 0; }
+  tmp_dir="$(mktemp -d "${TMPDIR:-/tmp}/fkt-mcp-manifest.XXXXXX")"
+  expected="$tmp_dir/expected.tsv"
+  actual="$tmp_dir/actual.tsv"
+  auth_urls="$tmp_dir/auth.urls"
+  printf '%s\n' "$rows" | awk -F '\t' '
+    $2 == "fk-toolkit-ops" && $3 == "none" && $4 == "true" {
+      type = ($5 == "http" ? "streamable-http" : $5)
+      print $1 "\t" type "\t" $6
+    }
+  ' | sort > "$expected"
+  if ! jq -r '(.mcpServers // {}) | to_entries[] | [.key, (.value.type // ""), (.value.url // "")] | @tsv' "$MCP_MANIFEST" 2>/dev/null | sort > "$actual"; then
+    rm -rf "$tmp_dir"
+    err "plugin MCP manifest is not valid JSON: $MCP_MANIFEST"
+    return "$EX_USAGE"
+  fi
+  if ! cmp -s "$expected" "$actual"; then
+    err "plugin MCP manifest drifted from mcp-registry.toml: $MCP_MANIFEST"
+    err "regenerate catalog output with: bun run catalog:generate"
+    rm -rf "$tmp_dir"
+    return "$EX_USAGE"
+  fi
+  printf '%s\n' "$rows" | awk -F '\t' '$2 == "fk-toolkit-ops" && $3 != "none" { print $6 }' | sort -u > "$auth_urls"
+  leaks="$(awk 'FNR == NR { auth[$0]=1; next } NF && auth[$3] { n++ } END { print n+0 }' "$auth_urls" "$actual")"
+  if [ "$leaks" != "0" ]; then
+    err "plugin MCP manifest includes auth-required endpoint(s); keep those native-login only"
+    rm -rf "$tmp_dir"
+    return "$EX_USAGE"
+  fi
+  expected_count="$(mcp_count_lines < "$expected")"
+  actual_count="$(mcp_count_lines < "$actual")"
+  rm -rf "$tmp_dir"
+  say "manifest servers $actual_count valid (expected $expected_count)"
+  return 0
+}
+
+
 # ---------------------------------------------------------------------------
 # uninstall
 # ---------------------------------------------------------------------------
@@ -1646,6 +1689,7 @@ EOF_MCP_DOCTOR_ROWS
         warn "generated plugin MCP manifest missing: $MCP_MANIFEST"
       else
         say "plugin manifest   $MCP_MANIFEST"
+        mcp_validate_manifest "$rows"
       fi
       ;;
     *)

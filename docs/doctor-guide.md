@@ -50,7 +50,7 @@ claude mcp list
 codex mcp list
 ```
 
-The healthy `ccs codex` bridge shape is usually Claude Code owning Claude-side MCP servers and Codex native config having no duplicate copy of the same endpoint. If both hosts register the same URL, disable one side unless you have a specific reason to keep both.
+The healthy `ccs codex` bridge shape is usually Claude Code owning Claude-side MCP servers and Codex native config having no duplicate copy of the same endpoint. The doctor also checks that the portable plugin manifest matches the registry and contains only no-auth default servers. If both hosts register the same URL, disable one side unless you have a specific reason to keep both.
 
 Authenticate in the host that runs the server. For Claude Code, use `/mcp` or `claude mcp login <id>`. For Codex-native use, use `codex mcp login <id>` when the server supports OAuth. Do not copy tokens between hosts.
 
