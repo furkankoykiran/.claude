@@ -41,7 +41,7 @@ Both installers honour the same knobs:
 5. Installs [rtk](https://github.com/rtk-ai/rtk) and wires its PreToolUse hook.
 6. Seeds `providers/*.json` from every committed template and installs the `ccs`
    command, so [switching API providers](configuration.md#api-provider-switching) works
-   from a clean shell. Nothing is activated until you run `ccs <name>` yourself. Nothing is activated until you run `ccs <name>` yourself.
+   from a clean shell. Nothing is activated until you run `ccs <name>` yourself.
 7. Installs Python deps (`manim`, `edge-tts`) and `ffmpeg` for `manim-narration`.
 8. Clones five upstream skill packs into `~/.claude/skills/` (each git-ignored,
    auto-discovered by Claude Code):

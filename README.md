@@ -62,9 +62,9 @@ independently updatable:
 | `fk-writing-kit` | Strip AI tells from drafts; build blog posts or LinkedIn copy from a chat, URL or GitHub profile | 819 chars |
 | `fk-manim-video` | Manim animations with spoken narration synced to the animation | 248 chars |
 | `fk-eng-agents` | researcher · planner · code-reviewer · debugger subagents | **0** |
-| `fk-toolkit-ops` | Wire an MCP server from a pasted config; manage toolkit updates | 161 chars |
+| `fk-toolkit-ops` | Manage toolkit updates, MCP setup, and Codex-native ImageGen boundaries | 233 chars |
 
-Plugins carry **no hooks and no executables**. `fk-toolkit-ops` carries the generated no-auth OpenAI Developer Docs MCP manifest; auth-required MCP starters stay disabled in the registry until native host login. Everything else with capability surface lives in the bootstrap layer below, where you can see it before it runs.
+Plugins carry **no hooks and no executables**. `fk-toolkit-ops` carries the generated no-auth OpenAI Developer Docs MCP manifest; auth-required MCP starters stay disabled in the registry until native host login. Its image skill prefers Codex-native ImageGen when the host exposes it, and never claims ChatGPT-plan API image credits. Everything else with capability surface lives in the bootstrap layer below, where you can see it before it runs.
 
 ### The whole toolkit
 
@@ -131,7 +131,7 @@ Full detail — migrations, snoozing, opting out, security advisories — in
 | **Skill packs** | `skills/` | Installer-fetched upstream packs, pinned to reviewed commits |
 | **Hooks** | `hooks/` | Format on edit, secret scan on commit, pre-push verify, Docker volume protection, update notice |
 | **Updater** | `bin/fkt` | Fast-forward-only bootstrap updates on a `stable` or `edge` channel |
-| **Providers** | `providers/`, `bin/cc-provider` | Switch Claude Code between Anthropic, NVIDIA, DeepSeek, Kimi, MiniMax, OpenRouter, Z.ai |
+| **Providers** | `providers/`, `bin/cc-provider` | Switch Claude Code between Anthropic, Codex, NVIDIA, DeepSeek, Kimi, MiniMax, OpenRouter, Z.ai |
 | **Utilities** | `utils/` | Shared Python helpers and profile-aware config |
 | **Catalog** | `catalog/` | Deterministic resolver + generator producing the verifiable skills catalog |
 

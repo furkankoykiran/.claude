@@ -80,6 +80,17 @@
       "sourceId": "repository"
     },
     {
+      "canonicalInvocation": "/fk-toolkit-ops:openai-image",
+      "digest": "028f908f414103bcb8435166f353131713ea89170b84e148968838765dabf9d0",
+      "license": {
+        "declared": "repository-owned",
+        "detected": "repository-owned"
+      },
+      "redistribution": "full",
+      "relativePath": "skills/fk-toolkit-ops/skills/openai-image/SKILL.md",
+      "sourceId": "repository"
+    },
+    {
       "canonicalInvocation": "/fk-toolkit-ops:toolkit-update",
       "digest": "a32cb953de4a7a40e09e89c784cc99367f6c9146196ed61c20944b944bfec032",
       "license": {
@@ -1837,6 +1848,7 @@
         "/fk-gh-flow:solve-issue",
         "/fk-manim-video:manim-narration",
         "/fk-toolkit-ops:add-mcp",
+        "/fk-toolkit-ops:openai-image",
         "/fk-toolkit-ops:toolkit-update",
         "/fk-writing-kit:blog-from-chat",
         "/fk-writing-kit:github-profile-blog",
@@ -1857,6 +1869,7 @@
         "skills/fk-gh-flow/skills/solve-issue",
         "skills/fk-manim-video/skills/manim-narration",
         "skills/fk-toolkit-ops/skills/add-mcp",
+        "skills/fk-toolkit-ops/skills/openai-image",
         "skills/fk-toolkit-ops/skills/toolkit-update",
         "skills/fk-writing-kit/skills/blog-from-chat",
         "skills/fk-writing-kit/skills/github-profile-blog",
