@@ -20,7 +20,7 @@ That is a different product shape from this toolkit. Free Claude Code is a repla
 | Health/doctor commands | `ccs doctor`, `fkt doctor`, and `fkt mcp doctor` report current state without pretending unsupported features work. |
 | Setup and reconfiguration UX | `fkt presets`, `fkt setup --dry-run`, and `fkt configure --dry-run` use the same product idea of guided configuration, but write mode remains incremental and backed by tests. |
 | Auto-compaction as a tunable preference | The setup preview distinguishes compaction preferences from disabling `/compact`; actual writes remain pending until documented settings are applied safely. |
-| Provider-specific caveats | Docs call out ChatGPT/Codex entitlement limits, unsupported image generation through Codex App Server, and usage telemetry boundaries. |
+| Provider-specific caveats | Docs call out ChatGPT/Codex entitlement limits, the unproven ImageGen bridge boundary, and usage telemetry boundaries. |
 
 ## Rejected patterns
 
@@ -33,7 +33,7 @@ That is a different product shape from this toolkit. Free Claude Code is a repla
 | Automatic failover chains | Silent fallback can mask provider failures and alter model behavior. The current policy is explicit provider/model choice and honest failures. |
 | Remote Discord/Telegram bot control | That expands the attack surface and does not serve the core Claude Code desktop/terminal setup. |
 | Key pooling or token copying | Credentials stay in native provider storage. OAuth tokens are not copied between Claude Code, Codex, or OpenAI API paths. |
-| Claiming ChatGPT-plan media generation | Official OpenAI docs currently make Codex App Server image generation unsupported for ChatGPT-plan usage, so only a separate OpenAI API-key path is offered. |
+| Claiming Claude Code gateway media generation | Native Codex ImageGen is the preferred path when the host exposes it. The rejected pattern is pretending the Claude Code `ccs codex` gateway can call it before a live App Server `imageGeneration` item proves that route. |
 
 ## Product decisions carried forward
 

@@ -9,7 +9,7 @@ Use Codex-native ImageGen when the running Codex host exposes it. Do not make th
 There are two different surfaces that are easy to mix up:
 
 - Codex/ChatGPT host tools can expose a native image-generation tool, commonly surfaced to agents as ImageGen or `$imagegen`. That path uses the signed-in Codex/ChatGPT environment, not an `OPENAI_API_KEY` in this repository.
-- The Claude Code gateway path runs through Codex App Server. Official ChatGPT-plan App Server preview limitations still list hosted Responses image generation as unsupported for that route.
+- The Claude Code gateway path runs through Codex App Server. Official ChatGPT-plan App Server docs describe text inference over Responses, and the current preview limitation page still lists hosted Responses image generation as unsupported for that route.
 
 So the product stance is: prefer host-native ImageGen where the current Codex runtime actually exposes it; do not tunnel image generation through the Claude Code `ccs codex` gateway until a supported App Server request path is proven; keep OpenAI API image generation only as an explicit, separate fallback when the user asks for API-key billing.
 
@@ -33,7 +33,8 @@ Official OpenAI documentation checked for this decision:
 
 - ChatGPT plan preview limitations list image generation as unsupported for the App Server / Sign in with ChatGPT plan route. See `https://developers.openai.com/siwc/token-sharing-open-source/preview-limitations`.
 - Codex App Server documentation describes text inference through Responses with a ChatGPT-plan OAuth token and says `model/list` is catalog data, not entitlement proof. See `https://developers.openai.com/siwc/token-sharing-open-source/codex-app-server`.
-- OpenAI image generation docs describe the separate API-backed image-generation tools and Image API. See `https://developers.openai.com/api/docs/guides/image-generation`.
+- OpenAI image generation docs describe image generation through the Image API and the Responses API image-generation tool. Those docs are about API-backed access and billing, not proof that the Claude Code gateway can invoke Codex host-native ImageGen. See `https://developers.openai.com/api/docs/guides/image-generation`.
+- The Codex help article says ChatGPT image-generation limits are separate from Codex usage limits, which is another reason this toolkit must not present API billing as the default Codex path. See `https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan`.
 
 Local evidence checked for this decision:
 
