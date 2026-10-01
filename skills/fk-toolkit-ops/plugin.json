@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "fk-toolkit-ops",
   "version": "0.7.0",
-  "description": "Operate the toolkit itself: check for and apply toolkit updates on the stable or edge channel, and wire an MCP server into Claude Code from a pasted config block.",
+  "description": "Operate the toolkit itself: check for and apply toolkit updates, wire MCP servers into Claude Code, and use optional OpenAI API-backed image generation with clear billing boundaries.",
   "author": {
     "name": "Furkan Köykıran",
     "url": "https://github.com/furkankoykiran"
@@ -14,13 +14,14 @@
     "mcp",
     "updates",
     "maintenance",
-    "bootstrap"
+    "bootstrap",
+    "image-generation"
   ],
   "extensions": {
     "com.openai": {
       "interface": {
         "displayName": "Toolkit Ops",
-        "shortDescription": "Operate the toolkit itself: check for and apply toolkit updates on the stable or edge channel, and wire an MCP server into Claude Code from a pasted config block.",
+        "shortDescription": "Operate the toolkit itself: check for and apply toolkit updates, wire MCP servers into Claude Code, and use optional OpenAI API-backed image generation with clear billing boundaries.",
         "developerName": "Furkan Köykıran",
         "category": "development"
       }

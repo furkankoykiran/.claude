@@ -80,7 +80,7 @@
       "name": "fk-toolkit-ops",
       "source": "./skills/fk-toolkit-ops",
       "displayName": "Toolkit Ops",
-      "description": "Operate the toolkit itself: check for and apply toolkit updates on the stable or edge channel, and wire an MCP server into Claude Code from a pasted config block.",
+      "description": "Operate the toolkit itself: check for and apply toolkit updates, wire MCP servers into Claude Code, and use optional OpenAI API-backed image generation with clear billing boundaries.",
       "version": "0.7.0",
       "author": {
         "name": "Furkan Köykıran",
@@ -94,7 +94,8 @@
         "mcp",
         "updates",
         "maintenance",
-        "bootstrap"
+        "bootstrap",
+        "image-generation"
       ]
     },
     {
