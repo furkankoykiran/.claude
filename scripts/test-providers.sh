@@ -404,16 +404,22 @@ fi
 
 # Keys Claude Code and other tools write into settings.json are not the
 # switcher's to delete. Before the merge, `ccs` silently dropped the gstack Stop
-# hook, tui and agentPushNotifEnabled on every switch.
-jq '. + {tui:"fullscreen", agentPushNotifEnabled:true}
+# hook, tui and agentPushNotifEnabled on every switch. Keep usage-limit
+# continuation as a carried user/runtime preference too; the toolkit documents
+# its semantics separately and must not infer quota state from it.
+jq '. + {tui:"fullscreen", agentPushNotifEnabled:true, autoContinueAtUsageLimit:true}
+    | .modelSettings = {"local-choice":{"effort":"low"}}
     | .hooks.Stop = [{"hooks":[{"type":"command","command":"gstack/timeline-stop-hook"}]}]' \
   "$SANDBOX/settings.json" > "$SANDBOX/s.tmp" && mv "$SANDBOX/s.tmp" "$SANDBOX/settings.json"
 ccs anthropic >/dev/null 2>&1
 if [ "$(jq -r '.tui // "gone"' "$SANDBOX/settings.json")" = "fullscreen" ] \
+   && [ "$(jq -r '.agentPushNotifEnabled // false' "$SANDBOX/settings.json")" = "true" ] \
+   && [ "$(jq -r '.autoContinueAtUsageLimit // false' "$SANDBOX/settings.json")" = "true" ] \
+   && [ "$(jq -r '.modelSettings["local-choice"].effort // "gone"' "$SANDBOX/settings.json")" = "low" ] \
    && [ "$(jq -r '[.hooks.Stop[]?.hooks[]?.command] | join(",")' "$SANDBOX/settings.json")" = "gstack/timeline-stop-hook" ]; then
-  ok "unrelated settings and third-party hooks are carried across a switch"
+  ok "unrelated settings, runtime preferences and third-party hooks are carried across a switch"
 else
-  bad "a switch destroyed unrelated settings or a third-party hook"
+  bad "a switch destroyed unrelated settings, runtime preferences or a third-party hook"
 fi
 
 # Provider-owned keys are OBJECTS, and a recursive merge would blend them: a
