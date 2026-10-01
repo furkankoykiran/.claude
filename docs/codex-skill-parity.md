@@ -41,10 +41,11 @@ The matrix covers:
 - explicit `/fk-writing-kit:humanizer` invocation in a real Claude Code session routed to `gpt-5.5`;
 - explicit `/careful` invocation that registered a skill hook and returned the expected destructive-command risk summary without executing the command;
 - SessionStart hook lifecycle events in stream-json output;
-- a custom subagent boundary probe that exposed the agent and Task tool but did not spawn a subagent.
+- a custom subagent boundary probe that exposed the agent and Task tool but did not spawn a subagent;
+- a native Claude comparison attempt for `/fk-writing-kit:humanizer` that loaded the skill surface but stopped before inference because the Claude OAuth session was expired.
 
-These probes show that text skills, plugin skills, a representative gstack skill, skill loading, and basic hook lifecycle events survive the Codex bridge. They also show the current subagent limitation: the bridge returns text, not Claude-compatible tool-use blocks, so subagent dispatch is not treated as supported.
+These probes show that text skills, plugin skills, a representative gstack skill, skill loading, and basic hook lifecycle events survive the Codex bridge. They also show the current subagent limitation: the bridge returns text, not Claude-compatible tool-use blocks, so subagent dispatch is not treated as supported. The native Claude comparison is recorded as attempted but not proven; an expired OAuth session is not parity evidence.
 
 ## What remains live-only
 
-Static evidence does not prove that the model will choose a skill, that Claude Code will launch a subagent, or that every hook fired at the right time. Current live probes prove explicit text-skill invocation under `ccs codex`, plugin skill loading, one representative gstack skill, and SessionStart hook lifecycle events. They do not prove automatic skill selection, script or asset execution, native Claude backend parity, or subagent dispatch. Subagents are currently documented as unsupported for the Codex bridge.
+Static evidence does not prove that the model will choose a skill, that Claude Code will launch a subagent, or that every hook fired at the right time. Current live probes prove explicit text-skill invocation under `ccs codex`, plugin skill loading, one representative gstack skill, and SessionStart hook lifecycle events. They do not prove automatic skill selection, script or asset execution, or native Claude backend parity. Subagents are currently documented as unsupported for the Codex bridge.

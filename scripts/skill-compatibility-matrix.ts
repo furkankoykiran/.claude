@@ -83,6 +83,7 @@ const ccsCodexHumanizerProbe = liveEvidence.probes?.find((probe) => probe.id ===
 const ccsCodexCarefulProbe = liveEvidence.probes?.find((probe) => probe.id === "ccs-codex-careful-explicit" && probe.status === "pass");
 const ccsCodexSessionStartHookProbe = liveEvidence.probes?.find((probe) => probe.id === "ccs-codex-sessionstart-hook-observed" && probe.status === "pass");
 const ccsCodexSubagentUnsupportedProbe = liveEvidence.probes?.find((probe) => probe.id === "ccs-codex-subagent-dispatch-unsupported" && probe.status === "unsupported");
+const nativeClaudeProbe = liveEvidence.probes?.find((probe) => probe.id === "native-claude-humanizer-auth-expired");
 
 const rows: Row[] = [
   pass(
@@ -192,8 +193,10 @@ const rows: Row[] = [
     id: "live-native-claude",
     area: "Native Claude backend E2E",
     status: "pending-live-proof",
-    evidence: "not run in this static checker",
-    limitation: "Requires a live Claude Code session on an Anthropic/Claude backend.",
+    evidence: nativeClaudeProbe
+      ? `${nativeClaudeProbe.backend} explicit ${nativeClaudeProbe.skill} comparison attempted but did not reach inference`
+      : "not run in this static checker",
+    limitation: nativeClaudeProbe?.limitations ?? "Requires a live Claude Code session on an Anthropic/Claude backend.",
   },
   {
     id: "live-ccs-codex-broad-parity",

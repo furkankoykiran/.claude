@@ -74,6 +74,24 @@
         "Product docs classify subagent dispatch as unsupported under the current bridge."
       ],
       "limitations": "This is negative evidence, not parity. The current bridge does not return Claude-compatible tool-use blocks for subagent dispatch."
+    },
+    {
+      "id": "native-claude-humanizer-auth-expired",
+      "backend": "native Claude",
+      "date": "2026-10-01",
+      "skill": "/fk-writing-kit:humanizer",
+      "kind": "native backend explicit namespaced skill comparison attempt",
+      "model": "claude-opus-5[1m]",
+      "status": "blocked-auth",
+      "prompt": "/fk-writing-kit:humanizer Rewrite this sentence in plain language and return only the rewrite: Additionally, this pivotal solution underscores the importance of a robust developer ecosystem.",
+      "observedResult": "Failed to authenticate: OAuth session expired and could not be refreshed",
+      "evidence": [
+        "Temporarily switched provider to anthropic with ./bin/cc-provider anthropic.",
+        "Stream-json init listed fk-writing-kit plugin skills, Claude-owned GitHub/Context7 MCP servers, and model claude-opus-5[1m].",
+        "The request returned authentication_failed before inference, so no native Claude skill output was produced.",
+        "Provider was restored with ./bin/cc-provider codex and ./bin/cc-provider model gpt-5.5 medium; codex-status showed GPT-5.5 medium running."
+      ],
+      "limitations": "Native Claude backend E2E comparison remains unproven in this environment because the Claude OAuth session is expired. Do not count this as native parity."
     }
   ]
 }
