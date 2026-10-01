@@ -10,6 +10,7 @@
 | [Provenance](provenance.md) | Every source, its licence, what is redistributed and what is only pointed at |
 | [Skill context economy](skill-context-economy.md) | What the skill listing costs, how it was measured, the enforced budget |
 | [Codex skill parity](codex-skill-parity.md) | Static skill compatibility matrix and live-parity evidence boundaries for `ccs codex` |
+| [Codex mode parity](codex-mode-parity.md) | Permission and model-mode support boundaries for `ccs codex` |
 | [ChatGPT project prompting](chatgpt-project.md) | Turning rough intent into Claude Code or Codex prompts: files to upload, instructions, verification |
 | [Distribution architecture](architecture-distribution.md) | Why the toolkit ships this way: the decisions, the evidence, what was rejected |
 | [Modernization evidence](modernization-evidence.md) | Cross-agent work boundaries, baseline checks, and runtime proof limits |
