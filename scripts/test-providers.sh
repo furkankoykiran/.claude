@@ -594,10 +594,20 @@ if [ "$(jq -r '.env.CODEX_GATEWAY_MODEL' "$SANDBOX/providers/codex.json")" = "gp
 else
   bad "codex-model did not persist the Codex model settings"
 fi
-if [ "$(jq -r '.model' "$SANDBOX/providers/codex.json")" = "claude-sonnet-4-5" ]; then
-  ok "codex-model keeps Claude-facing aliases separate from Codex model ids"
+if [ "$(jq -r '.model' "$SANDBOX/providers/codex.json")" = "gpt-5.5" ] \
+   && [ "$(jq -r '.env.ANTHROPIC_DEFAULT_SONNET_MODEL' "$SANDBOX/providers/codex.json")" = "gpt-5.5" ] \
+   && [ "$(jq -r '.modelDiscoveryEnabled' "$SANDBOX/providers/codex.json")" = "true" ]; then
+  ok "codex-model writes Claude picker defaults to the selected Codex model"
 else
-  bad "codex-model wrote a Codex model id into Claude-facing model selection"
+  bad "codex-model did not update Claude picker defaults for Codex"
+fi
+if [ "$(jq -r '.model' "$SANDBOX/settings.json")" = "gpt-5.5" ] \
+   && [ "$(jq -r '.modelDiscoveryEnabled' "$SANDBOX/settings.json")" = "true" ] \
+   && [ "$(jq -r '.inferenceModelPricingEnabled' "$SANDBOX/settings.json")" = "false" ] \
+   && [ "$(jq -r '.modelPicker.options[0].behavesAs' "$SANDBOX/settings.json")" = "claude-sonnet-4-5" ]; then
+  ok "codex activation carries model discovery settings into settings.json"
+else
+  bad "codex activation did not carry model discovery settings into settings.json"
 fi
 case "$(say deepseek)" in
   *"nothing is listening"*) bad "a remote provider was wrongly checked for a local listener" ;;

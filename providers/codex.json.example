@@ -15,10 +15,10 @@
   "env": {
     "ANTHROPIC_BASE_URL": "http://127.0.0.1:4545",
     "ANTHROPIC_AUTH_TOKEN": "local-codex-gateway",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-sonnet-4-5",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-5",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-sonnet-4-5",
-    "CLAUDE_CODE_SUBAGENT_MODEL": "claude-sonnet-4-5",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "gpt-5.5",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "gpt-5.5",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "gpt-5.5",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "gpt-5.5",
     "CODEX_GATEWAY_MODEL": "gpt-5.5",
     "CODEX_GATEWAY_REASONING_EFFORT": "medium",
     "CODEX_GATEWAY_PORT": "4545",
@@ -28,5 +28,26 @@
     "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "1",
     "CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY": "1",
     "API_TIMEOUT_MS": "3000000"
+  },
+  "model": "gpt-5.5",
+  "modelDiscoveryEnabled": true,
+  "inferenceModelPricingEnabled": false,
+  "inferenceModels": [
+    {
+      "name": "gpt-5.5",
+      "labelOverride": "GPT-5.5",
+      "anthropicFamilyTier": "sonnet",
+      "isFamilyDefault": true
+    }
+  ],
+  "modelPicker": {
+    "options": [
+      {
+        "model": "gpt-5.5",
+        "label": "GPT-5.5",
+        "description": "Legacy coding model.",
+        "behavesAs": "claude-sonnet-4-5"
+      }
+    ]
   }
 }

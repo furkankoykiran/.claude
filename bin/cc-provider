@@ -39,7 +39,7 @@ PLACEHOLDER_RE='<[A-Z_]+>'
 # and removed when that file does not set it, so stale routing credentials cannot
 # outlive a switch. UX policy such as effortLevel and enabledPlugins is carried
 # over from the user's settings instead of being reset by provider templates.
-PROVIDER_KEYS='["env","model","apiKeyHelper"]'
+PROVIDER_KEYS='["env","model","apiKeyHelper","modelDiscoveryEnabled","modelPrefer1mContext","inferenceModels","inferenceModelPricingEnabled","inferenceModelPricing","inferenceModelPricingMultiplier","modelPicker"]'
 
 die() { printf 'cc-provider: %s\n' "$*" >&2; exit 1; }
 
@@ -215,15 +215,62 @@ status_codex_gateway() {
   fi
 }
 
-list_codex_models() {
+codex_models_json() {
   is_provider codex || die "codex provider template is missing"
   command -v curl >/dev/null 2>&1 || die "curl is required to query the Codex model catalog"
   if ! codex_gateway_running; then
     start_codex_gateway >/dev/null
   fi
-  local url json
+  local url
   url="http://127.0.0.1:$(codex_gateway_port)/v1/models"
-  json=$(curl -fsS "$url") || die "failed to query Codex model catalog at $url"
+  curl -fsS "$url" || die "failed to query Codex model catalog at $url"
+}
+
+refresh_codex_model_discovery() {
+  ensure_provider_file codex
+  command -v jq >/dev/null 2>&1 || return 0
+  local json tmp selected
+  json=$(codex_models_json) || return 0
+  selected=$(jq -r '.env.CODEX_GATEWAY_MODEL // "gpt-5.5"' "$PDIR/codex.json")
+  tmp="$(mktemp "$PDIR/.codex.json.XXXXXX")"
+  jq --argjson catalog "$json" --arg selected "$selected" '
+    def catalog_models:
+      ($catalog.data // []) | map(select((.id // "") != ""));
+    def known_models:
+      catalog_models
+      | map(
+          {
+            name: .id,
+            labelOverride: (.display_name // .id)
+          }
+          + (if .id == $selected or (.metadata.is_default == true) then {anthropicFamilyTier: "sonnet"} else {} end)
+          + (if .id == $selected then {isFamilyDefault: true} else {} end)
+        );
+    def picker_models:
+      catalog_models
+      | map({
+          model: .id,
+          label: (.display_name // .id),
+          description: (.metadata.description // .description // "Codex model"),
+          behavesAs: "claude-sonnet-4-5"
+        });
+    .modelDiscoveryEnabled = true
+    | .inferenceModelPricingEnabled = false
+    | .model = $selected
+    | .env.ANTHROPIC_DEFAULT_HAIKU_MODEL = $selected
+    | .env.ANTHROPIC_DEFAULT_SONNET_MODEL = $selected
+    | .env.ANTHROPIC_DEFAULT_OPUS_MODEL = $selected
+    | .env.CLAUDE_CODE_SUBAGENT_MODEL = $selected
+    | .inferenceModels = known_models
+    | .modelPicker = {options: picker_models}
+  ' "$PDIR/codex.json" > "$tmp" || { rm -f "$tmp"; return 0; }
+  chmod 600 "$tmp"
+  mv -f "$tmp" "$PDIR/codex.json"
+}
+
+list_codex_models() {
+  local json
+  json=$(codex_models_json)
   if command -v jq >/dev/null 2>&1; then
     printf '%s\n' "$json" | jq -r '
       if .data then
@@ -247,11 +294,13 @@ set_codex_model() {
   command -v jq >/dev/null 2>&1 || die "jq is required to update providers/codex.json"
   tmp="$(mktemp "$PDIR/.codex.json.XXXXXX")"
   jq --arg model "$model" --arg effort "$effort" '
-    .model = "claude-sonnet-4-5"
-    | .env.ANTHROPIC_DEFAULT_HAIKU_MODEL = "claude-sonnet-4-5"
-    | .env.ANTHROPIC_DEFAULT_SONNET_MODEL = "claude-sonnet-4-5"
-    | .env.ANTHROPIC_DEFAULT_OPUS_MODEL = "claude-sonnet-4-5"
-    | .env.CLAUDE_CODE_SUBAGENT_MODEL = "claude-sonnet-4-5"
+    .model = $model
+    | .modelDiscoveryEnabled = true
+    | .inferenceModelPricingEnabled = false
+    | .env.ANTHROPIC_DEFAULT_HAIKU_MODEL = $model
+    | .env.ANTHROPIC_DEFAULT_SONNET_MODEL = $model
+    | .env.ANTHROPIC_DEFAULT_OPUS_MODEL = $model
+    | .env.CLAUDE_CODE_SUBAGENT_MODEL = $model
     | .env.CODEX_GATEWAY_MODEL = $model
     | .env.CODEX_GATEWAY_REASONING_EFFORT = $effort
   ' "$PDIR/codex.json" > "$tmp"
@@ -552,6 +601,15 @@ activate() {
   printf 'Active provider: %s\n' "$p"
   if [ "$p" = "codex" ]; then
     start_codex_gateway
+    refresh_codex_model_discovery
+    tmp="$(mktemp "$CLAUDE_DIR/.settings.json.XXXXXX")"
+    if merge_settings "$PDIR/$p.json" "$tmp"; then
+      chmod 600 "$tmp"
+      mv -f "$tmp" "$SETTINGS"
+    else
+      rm -f "$tmp"
+      die "failed to refresh Codex model discovery settings; settings.json is unchanged"
+    fi
   else
     warn_if_local_endpoint_down "$p"
   fi
