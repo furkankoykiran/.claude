@@ -965,7 +965,7 @@ Options:
   --model MODEL
   --effort low|medium|high|xhigh|none
   --permission-mode manual|plan|acceptEdits|dontAsk|auto
-  --compaction auto|off|tokens
+  --compaction auto|off
   --updates enabled|disabled
   --auth login|skip
   --skill-pack NAME       repeatable
@@ -978,8 +978,8 @@ Dry-run writes nothing and never touches credentials. Write mode applies
 or authentication changes to ccs, and safely updates documented permission/default compaction
 settings after backing up runtime config files. --skill-pack records setup
 preferences for later installer/reconfiguration decisions; it does not install or
-delete third-party packs. MCP choices and token-window compaction remain
-preview-only.
+delete third-party packs. MCP choices remain preview-only in the combined setup
+flow.
 EOF
 }
 
@@ -1073,10 +1073,6 @@ apply_compaction_setting() {
       settings_json_update '.autoCompactEnabled = false | del(.autoCompactWindow)'
       say "  applied         auto-compaction disabled; /compact remains available"
       ;;
-    *)
-      err "compaction '$1' is preview-only until a token window is specified"
-      return "$EX_USAGE"
-      ;;
   esac
 }
 
@@ -1096,7 +1092,7 @@ do_setup_preview() {
       --model) shift; model="${1:-}"; [ -n "$model" ] || { err "--model requires a value"; return "$EX_USAGE"; } ;;
       --effort) shift; effort="${1:-}"; case "$effort" in low|medium|high|xhigh|none) ;; *) err "invalid effort: $effort"; return "$EX_USAGE" ;; esac ;;
       --permission-mode) shift; permission_mode="${1:-}"; case "$permission_mode" in manual|plan|acceptEdits|dontAsk|auto) ;; *) err "invalid permission mode: $permission_mode"; return "$EX_USAGE" ;; esac ;;
-      --compaction) shift; compaction="${1:-}"; case "$compaction" in auto|off|tokens) ;; *) err "invalid compaction: $compaction"; return "$EX_USAGE" ;; esac ;;
+      --compaction) shift; compaction="${1:-}"; case "$compaction" in auto|off) ;; *) err "invalid compaction: $compaction"; return "$EX_USAGE" ;; esac ;;
       --updates) shift; updates="${1:-}"; case "$updates" in enabled|disabled) ;; *) err "invalid updates setting: $updates"; return "$EX_USAGE" ;; esac ;;
       --auth) shift; auth="${1:-}"; case "$auth" in login|skip) ;; *) err "invalid auth setting: $auth"; return "$EX_USAGE" ;; esac ;;
       --skill-pack)
@@ -1133,7 +1129,7 @@ do_setup_preview() {
      && [ -z "$permission_mode" ] \
      && [ -z "$auth" ] \
      && [ -z "$skill_packs" ] \
-     && { [ -z "$compaction" ] || [ "$compaction" = "tokens" ]; }; then
+     && [ -z "$compaction" ]; then
     err "$mode write mode currently requires --updates, --provider, --model, --auth, --permission-mode, --skill-pack, or --compaction auto|off"
     return "$EX_USAGE"
   fi
@@ -1199,9 +1195,6 @@ do_setup_preview() {
       auto|off)
         backup_file_once "$FKT_HOME/settings.json" settings.json
         apply_compaction_setting "$compaction"
-        ;;
-      tokens)
-        say "  not applied     compaction tokens requires an explicit token window"
         ;;
     esac
   fi

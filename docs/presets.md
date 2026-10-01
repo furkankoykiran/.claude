@@ -43,8 +43,9 @@ These choices remain preview-only in the combined setup flow:
 
 - skill pack installation/removal beyond recording the preference;
 - auth flows that require fully non-interactive credential entry;
-- MCP installation from setup, although `fkt mcp enable|disable|auth|doctor` already manage MCP preferences and diagnostics;
-- token-window compaction through `--compaction tokens`, until the command accepts an explicit token window value.
+- MCP installation from setup, although `fkt mcp enable|disable|auth|doctor` already manage MCP preferences and diagnostics.
+
+There is intentionally no token-window compaction flag. Current setup writes only the documented on/off automatic compaction setting and leaves manual `/compact` available.
 
 ## Dry run examples
 

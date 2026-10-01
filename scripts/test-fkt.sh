@@ -277,7 +277,7 @@ if [ "$(jq -r '.permissions.defaultMode' "$HOME_DIR/settings.json")" = "plan" ] 
 else
   fail "setup --yes can apply plan permissions and enable default auto-compaction" "settings: $(jq -c . "$HOME_DIR/settings.json" 2>/dev/null)"
 fi
-assert_exit 2 "token-window compaction is not written without a token value" -- setup --yes --compaction tokens
+assert_exit 2 "unsupported token-window compaction is rejected" -- setup --yes --compaction tokens
 run_fkt setup --yes --skill-pack gstack --skill-pack fk-writing-kit >/dev/null
 if [ "$(config_get skill_pack_gstack_enabled unset)" = "true" ] \
    && [ "$(config_get skill_pack_fk_writing_kit_enabled unset)" = "true" ]; then
