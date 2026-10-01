@@ -6,6 +6,10 @@
 | [Updates](updates.md) | The two update layers, `fkt`, channels, migrations, advisories, opting out |
 | [Migrating to plugins](migration-plugins.md) | The namespace change, what to update, how to install only what you want |
 | [Configuration](configuration.md) | Personalization, API provider switching, MCP servers, plugin marketplaces |
+| [Provider capability matrix](provider-capability-matrix.md) | What each provider path supports, what is live-proven, and what remains experimental |
+| [Setup presets](presets.md) | `fkt setup` presets, runtime profiles, supported write flags, and backup behavior |
+| [Doctor guide](doctor-guide.md) | Which diagnostic command to run for provider, MCP, updater, installer, and catalog issues |
+| [Extending the toolkit](extending-toolkit.md) | How to add a provider, skill pack, MCP server, or public doc without breaking provenance or credentials |
 | [Installer parity](installer-parity.md) | Current POSIX, updater, PowerShell, PATH, upgrade, and uninstall evidence boundaries |
 | [Security model](security-model.md) | Trust model, credentials, the supply-chain gate, third-party licensing |
 | [Provenance](provenance.md) | Every source, its licence, what is redistributed and what is only pointed at |
