@@ -83,6 +83,10 @@ ccs codex-status
 
 `ccs codex-model <model> <effort>` accepts a Codex model id and one of `none`, `low`, `medium`, `high`, or `xhigh`. The example above sets `CODEX_GATEWAY_MODEL=gpt-5.5` and `CODEX_GATEWAY_REASONING_EFFORT=medium`. `ccs codex` switches Claude Code to the loopback provider and starts or reuses `scripts/codex-anthropic-gateway.ts`, which supervises `codex app-server --stdio` behind `127.0.0.1:4545`. `ccs codex-start`, `ccs codex-stop`, and `ccs codex-status` expose the same lifecycle without switching providers.
 
+`ccs models` reads the live Codex App Server catalog through the local gateway. When `ccs codex` activates the provider, it also refreshes Claude Code's `modelPicker` rows from that catalog so `/model` can show the current Codex choices. Those rows use Claude Code's supported `behavesAs` mapping for provider-specific model ids, and local pricing estimates stay disabled because ChatGPT/Codex entitlement is not Anthropic API billing.
+
+The current mode boundary is deliberately conservative. Manual mode and Plan mode are Claude Code client behavior and work through the Codex bridge. Auto mode is model-dependent in Claude Code; with the verified `gpt-5.5` setup, Claude Code reports Auto as unavailable for that model. Fast mode is an Opus 5 usage-credit feature and is not treated as a Codex capability.
+
 The live zero-Anthropic acceptance test proves a narrow boundary: with Anthropic inference unavailable/observed, Claude Code sent a text prompt and a shell-tool turn through the Codex gateway and received the expected result. It does not prove every Claude Code feature, every MCP server, every model, or production-grade availability. Treat the Codex app-server bridge as experimental until upstream stabilizes it.
 
 ### How it works
