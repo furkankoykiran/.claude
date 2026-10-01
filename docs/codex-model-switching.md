@@ -23,10 +23,16 @@ Live probes on 2026-10-01 used an active gateway with default `gpt-5.5` and effo
 
 - A `/v1/messages` request with `model: "gpt-5.6-luna"` returned `model: "gpt-5.6-luna"` and the expected text.
 - A `/v1/messages` request with `model: "claude-sonnet-4-5"` returned `model: "gpt-5.5"` and the expected text.
+- A multi-message `/v1/messages` request preserved prior assistant context and returned the remembered token `basalt-17`.
+- A synthetic `tool_result` content block was flattened into the Codex turn and returned the expected value `amber-42`.
+- A persisted Claude Code print session created with `--session-id` resumed with `--resume` and returned the remembered token `cedar-314`.
+- The same resumed session accepted `--model gpt-5.6-luna`, preserved the token `cedar-314`, and reported `modelUsage.gpt-5.6-luna`.
 - Unit coverage asserts both `turn/start` and `thread/start` use the same resolver.
 
 ## Limits
 
-This is a gateway-routing guarantee, not full semantic proof for every Claude Code workflow. Claude Code normally carries multi-turn context in the message history it sends to `/v1/messages`, so text turns are safe at the bridge boundary. Tool execution remains intentionally read-only on the Codex App Server side, and subagent/model-change boundaries still need live Claude Code probes before broader parity claims.
+This is a gateway-routing and text-session guarantee, not full semantic proof for every Claude Code workflow. Claude Code carries multi-turn context in the message history it sends to `/v1/messages`, and the persisted `--resume` probe preserved that history across a model switch. Tool-result text survives the bridge because tool result blocks are flattened into the Codex input.
+
+Subagent dispatch is not proven. A live `--agents` probe exposed the `echoer` agent and Task tool to Claude Code, but the Codex-backed turn returned plain text and `subagent_stats.spawned` stayed `0`. Treat subagents as unsupported under `ccs codex` until the bridge can return Claude-compatible tool-use blocks or another supported mechanism is proven. Tool execution also remains intentionally read-only on the Codex App Server side.
 
 If a model change ever appears to confuse a resumed session, use `ccs codex-model <model> <effort>`, restart with `ccs codex`, and resume from Claude Code so the default and picker state agree.
