@@ -6,6 +6,7 @@
 | [Updates](updates.md) | The two update layers, `fkt`, channels, migrations, advisories, opting out |
 | [Migrating to plugins](migration-plugins.md) | The namespace change, what to update, how to install only what you want |
 | [Configuration](configuration.md) | Personalization, API provider switching, MCP servers, plugin marketplaces |
+| [Installer parity](installer-parity.md) | Current POSIX, updater, PowerShell, PATH, upgrade, and uninstall evidence boundaries |
 | [Security model](security-model.md) | Trust model, credentials, the supply-chain gate, third-party licensing |
 | [Provenance](provenance.md) | Every source, its licence, what is redistributed and what is only pointed at |
 | [Skill context economy](skill-context-economy.md) | What the skill listing costs, how it was measured, the enforced budget |
