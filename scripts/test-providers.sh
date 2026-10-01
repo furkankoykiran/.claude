@@ -629,6 +629,14 @@ case "$out" in
   *) bad "doctor did not check gateway state: $out" ;;
 esac
 case "$out" in
+  *"Codex picker catalog:"*"Claude /model Codex rows:"*"Codex gateway discovery:"*) ok "doctor reports Codex picker and gateway-discovery state" ;;
+  *) bad "doctor did not report Codex picker state: $out" ;;
+esac
+case "$out" in
+  *"Codex pricing estimate: false"*) ok "doctor reports Codex pricing estimates are disabled" ;;
+  *) bad "doctor did not report disabled Codex pricing estimates: $out" ;;
+esac
+case "$out" in
   *"sk-authmade-secret"*) bad "doctor leaked a configured API key" ;;
   *) ok "doctor output does not leak API keys" ;;
 esac
