@@ -84,6 +84,17 @@ run_fkt_env() {
 
 git_q() { git -C "$1" "${@:2}" >/dev/null 2>&1; }
 
+config_get() {
+  local key="$1" default="${2-}" line
+  if [ -f "$CONFIG_FILE" ]; then
+    line="$(sed -n "s/^[[:space:]]*${key}[[:space:]]*=[[:space:]]*\(.*\)$/\1/p" "$CONFIG_FILE" | tail -1)"
+    line="${line%%#*}"
+    line="${line%"${line##*[![:space:]]}"}"
+    if [ -n "$line" ]; then printf '%s\n' "$line"; return 0; fi
+  fi
+  printf '%s\n' "$default"
+}
+
 # Write a migration that appends a marker to the state dir when fkt runs it.
 # The quoted heredoc keeps $FKT_STATE_DIR unexpanded until then — that variable
 # is set by fkt for the migration, and is not this script's to resolve.
@@ -105,6 +116,7 @@ setup_fixture() {
   HOME_DIR="$WORK/claude"
   CFG_DIR="$WORK/config"
   STATE_DIR="$WORK/state"
+  CONFIG_FILE="$CFG_DIR/config"
 
   local seed="$WORK/seed"
   mkdir -p "$seed"
@@ -162,8 +174,27 @@ assert_contains "active provider" "doctor reports active provider state" -- doct
 assert_contains "fkt setup preview" "setup dry-run prints a preview" -- setup --dry-run --preset minimal --profile safe --provider codex --model gpt-5.5 --effort medium --updates enabled --non-interactive
 assert_contains "No files changed" "setup dry-run is explicitly non-mutating" -- setup --dry-run --preset minimal
 assert_contains "fkt configure preview" "configure dry-run prints a preview" -- configure --dry-run --profile balanced --permission-mode manual --compaction auto
-assert_exit 2 "setup write mode is refused until implemented" -- setup --preset minimal
+assert_exit 2 "setup write mode requires explicit yes" -- setup --preset minimal --updates disabled
+assert_exit 2 "setup write mode requires an implemented write option" -- setup --yes --preset minimal
+assert_exit 2 "setup rejects dry-run and yes together" -- setup --dry-run --yes --updates disabled
 assert_exit 2 "invalid setup preset is rejected" -- setup --dry-run --preset enormous
+run_fkt setup --yes --updates disabled >/dev/null
+if [ "$(config_get update_check unset)" = "false" ]; then
+  pass "setup --yes can disable update checks"
+else
+  fail "setup --yes can disable update checks" "config: $(cat "$CONFIG_FILE" 2>/dev/null)"
+fi
+run_fkt configure --yes --updates enabled >/dev/null
+if [ "$(config_get update_check unset)" = "true" ]; then
+  pass "configure --yes can enable update checks"
+else
+  fail "configure --yes can enable update checks" "config: $(cat "$CONFIG_FILE" 2>/dev/null)"
+fi
+if ls "$STATE_DIR"/backups/config.*.bak >/dev/null 2>&1; then
+  pass "setup/configure write mode creates config backups"
+else
+  fail "setup/configure write mode creates config backups"
+fi
 
 # --- channels -------------------------------------------------------------
 run_fkt channel edge >/dev/null

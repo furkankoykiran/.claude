@@ -951,6 +951,8 @@ setup_usage() {
   cat <<'EOF'
 usage: fkt setup --dry-run [options]
        fkt configure --dry-run [options]
+       fkt setup --yes --updates enabled|disabled [options]
+       fkt configure --yes --updates enabled|disabled [options]
 
 Options:
   --preset minimal|recommended|full|custom
@@ -964,9 +966,11 @@ Options:
   --skill-pack NAME       repeatable
   --mcp ID                repeatable
   --non-interactive       require all choices to be explicit or defaulted
+  --yes                   apply the implemented safe subset
 
-Current implementation is preview-only. It writes nothing and never touches
-credentials. Use ccs/fkt commands shown in the preview for manual application.
+Dry-run writes nothing and never touches credentials. Write mode currently only
+applies --updates enabled|disabled to fkt's own config, after backing up the
+previous config file when one exists. Other choices remain preview-only.
 EOF
 }
 
@@ -984,14 +988,26 @@ normalize_profile() {
   esac
 }
 
+backup_config_file() {
+  [ -f "$CONFIG_FILE" ] || return 0
+  mkdir -p "$FKT_STATE_DIR/backups"
+  local stamp backup
+  stamp="$(date +%Y%m%d%H%M%S)"
+  backup="$FKT_STATE_DIR/backups/config.$stamp.bak"
+  cp "$CONFIG_FILE" "$backup"
+  chmod 600 "$backup" 2>/dev/null || true
+  say "  backup          $backup"
+}
+
 do_setup_preview() {
-  local mode="$1" dry_run=0 non_interactive=0 preset="recommended" profile="balanced"
+  local mode="$1" dry_run=0 yes=0 non_interactive=0 preset="recommended" profile="balanced"
   local provider="$( [ -f "$FKT_HOME/providers/.active" ] && tr -d '[:space:]' < "$FKT_HOME/providers/.active" || printf 'anthropic' )"
   local model="" effort="" permission_mode="" compaction="" updates="" skill_packs="" mcps=""
   while [ $# -gt 1 ]; do
     shift
     case "$1" in
       --dry-run|--preview) dry_run=1 ;;
+      --yes) yes=1 ;;
       --non-interactive) non_interactive=1 ;;
       --preset) shift; preset="$(normalize_preset "${1:-}")" || { err "invalid preset: ${1:-}"; return "$EX_USAGE"; } ;;
       --profile) shift; profile="$(normalize_profile "${1:-}")" || { err "invalid profile: ${1:-}"; return "$EX_USAGE"; } ;;
@@ -1008,12 +1024,22 @@ do_setup_preview() {
     esac
   done
 
-  if [ "$dry_run" != "1" ]; then
-    err "$mode is currently preview-only; re-run with --dry-run"
+  if [ "$dry_run" = "1" ] && [ "$yes" = "1" ]; then
+    err "$mode accepts either --dry-run or --yes, not both"
     return "$EX_USAGE"
   fi
 
-  say "fkt $mode preview"
+  if [ "$dry_run" != "1" ] && [ "$yes" != "1" ]; then
+    err "$mode write mode requires --yes, or use --dry-run to preview"
+    return "$EX_USAGE"
+  fi
+
+  if [ "$dry_run" != "1" ] && [ -z "$updates" ]; then
+    err "$mode write mode currently requires --updates enabled|disabled"
+    return "$EX_USAGE"
+  fi
+
+  say "fkt $mode $([ "$dry_run" = "1" ] && echo preview || echo apply)"
   say "  preset          $preset"
   say "  profile         $profile"
   say "  provider        $provider"
@@ -1026,11 +1052,21 @@ do_setup_preview() {
   say "  mcp             ${mcps:-keep-current}"
   say "  non-interactive $([ "$non_interactive" = "1" ] && echo yes || echo no)"
   say ""
-  say "No files changed. Manual commands this preview may imply:"
-  say "  ccs $provider"
-  [ -n "$model" ] && say "  ccs model $model ${effort:-medium}"
-  [ "$updates" = "disabled" ] && say "  fkt disable"
-  [ "$updates" = "enabled" ] && say "  fkt enable"
+  if [ "$dry_run" = "1" ]; then
+    say "No files changed. Manual commands this preview may imply:"
+    say "  ccs $provider"
+    [ -n "$model" ] && say "  ccs model $model ${effort:-medium}"
+    [ "$updates" = "disabled" ] && say "  fkt disable"
+    [ "$updates" = "enabled" ] && say "  fkt enable"
+    return 0
+  fi
+
+  backup_config_file
+  case "$updates" in
+    enabled) config_set update_check true; say "  applied         update checks enabled" ;;
+    disabled) config_set update_check false; say "  applied         update checks disabled" ;;
+  esac
+  say "  not applied     provider/model/permission/compaction/skills/mcp choices are still preview-only"
 }
 
 # ---------------------------------------------------------------------------
