@@ -2,7 +2,7 @@
 
 | Document | What it covers |
 | --- | --- |
-| [Getting started](getting-started.md) | Platforms, installer flags, what installation changes, updating, uninstalling, verifying a release |
+| [Getting started](getting-started.md) | First run, setup preview, Codex activation, platforms, installer flags, updating, uninstalling, verifying a release |
 | [Updates](updates.md) | The two update layers, `fkt`, channels, migrations, advisories, opting out |
 | [Migrating to plugins](migration-plugins.md) | The namespace change, what to update, how to install only what you want |
 | [Configuration](configuration.md) | Personalization, API provider switching, MCP servers, plugin marketplaces |

@@ -5,6 +5,33 @@ Installing, updating, verifying and removing the toolkit.
 Every command is safe to re-run: the installer is idempotent and fail-soft, so a
 partial failure leaves your existing setup intact rather than half-migrated.
 
+## First run
+
+Install the bootstrap, then run the local doctor before changing providers:
+
+```bash
+fkt doctor
+fkt presets
+fkt setup --dry-run --preset recommended --profile balanced
+```
+
+`fkt setup --dry-run` prints the files and commands it would touch. Apply mode
+requires `--yes` and currently writes only the proven setup choices: update
+preference, provider, model/effort, permission mode, and auto/off compaction. It
+backs up changed runtime files first and never writes provider secrets.
+
+For Codex:
+
+```bash
+fkt setup --yes --provider codex --model gpt-5.5 --effort medium
+ccs login codex
+ccs codex
+ccs status
+```
+
+Codex login is delegated to the official `codex` CLI. The toolkit does not copy
+ChatGPT, Codex, Claude, or MCP OAuth tokens between tools.
+
 ## Platform support
 
 | Component | Linux | macOS | Windows (native) | Windows (WSL) |
@@ -69,6 +96,16 @@ printed in an end-of-run summary instead of aborting the bootstrap. Re-run
 `./install.sh` after fixing the cause — it picks up where it left off.
 
 ## Updating
+
+Use `fkt` for normal updates. It is fast-forward only and refuses to hide local
+work:
+
+```bash
+fkt check
+fkt update
+```
+
+Manual installer reruns still work when you are testing the checkout directly:
 
 ```bash
 cd ~/.claude && git pull && ./install.sh      # macOS/Linux
