@@ -283,7 +283,7 @@ codex_picker_status() {
     printf 'Claude /model Codex rows: %s cached in settings.json\n' "$settings_count"
     printf 'Codex pricing estimate: %s\n' "$pricing"
   fi
-  printf 'Codex gateway discovery: raw /v1/models may be filtered by Claude Code for opaque provider ids; /model uses generated modelPicker rows.\n'
+  printf 'Codex gateway discovery: Claude Code keeps only raw /v1/models ids containing claude or anthropic; Codex ids use generated modelPicker rows.\n'
 }
 
 list_codex_models() {

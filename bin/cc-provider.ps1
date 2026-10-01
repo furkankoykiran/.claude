@@ -241,7 +241,7 @@ function Write-CodexPickerStatus {
     "Claude /model Codex rows: $settingsCount cached in settings.json"
     "Codex pricing estimate: $pricing"
   }
-  'Codex gateway discovery: raw /v1/models may be filtered by Claude Code for opaque provider ids; /model uses generated modelPicker rows.'
+  'Codex gateway discovery: Claude Code keeps only raw /v1/models ids containing claude or anthropic; Codex ids use generated modelPicker rows.'
 }
 
 function Read-JsonMap($path) {

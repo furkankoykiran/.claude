@@ -629,7 +629,7 @@ case "$out" in
   *) bad "doctor did not check gateway state: $out" ;;
 esac
 case "$out" in
-  *"Codex picker catalog:"*"Claude /model Codex rows:"*"Codex gateway discovery:"*) ok "doctor reports Codex picker and gateway-discovery state" ;;
+  *"Codex picker catalog:"*"Claude /model Codex rows:"*"ids containing claude or anthropic"*) ok "doctor reports Codex picker and gateway-discovery state" ;;
   *) bad "doctor did not report Codex picker state: $out" ;;
 esac
 case "$out" in
