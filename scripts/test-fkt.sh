@@ -137,6 +137,7 @@ setup_fixture() {
 printf '%s\n' "$*" >> "$CLAUDE_DIR/cc-provider.log"
 case "$1" in
   model) printf '{"model":"%s","effort":"%s"}\n' "$2" "${3:-medium}" > "$CLAUDE_DIR/model-choice.json" ;;
+  login) printf 'login %s\n' "$2" >> "$CLAUDE_DIR/cc-provider.log" ;;
   *) mkdir -p "$CLAUDE_DIR/providers"; printf '%s\n' "$1" > "$CLAUDE_DIR/providers/.active" ;;
 esac
 CCS
@@ -221,7 +222,8 @@ assert_contains "Install presets:" "presets lists install presets" -- presets
 assert_contains "Runtime profiles:" "presets lists runtime profiles" -- presets
 assert_contains "fkt doctor" "doctor prints a read-only health header" -- doctor
 assert_contains "active provider" "doctor reports active provider state" -- doctor
-assert_contains "fkt setup preview" "setup dry-run prints a preview" -- setup --dry-run --preset minimal --profile safe --provider codex --model gpt-5.5 --effort medium --updates enabled --non-interactive
+assert_contains "fkt setup preview" "setup dry-run prints a preview" -- setup --dry-run --preset minimal --profile safe --provider codex --model gpt-5.5 --effort medium --updates enabled --auth skip --non-interactive
+assert_contains "ccs login codex" "setup dry-run previews native auth login" -- setup --dry-run --provider codex --auth login
 assert_contains "No files changed" "setup dry-run is explicitly non-mutating" -- setup --dry-run --preset minimal
 assert_contains "fkt configure preview" "configure dry-run prints a preview" -- configure --dry-run --profile balanced --permission-mode manual --compaction auto
 assert_exit 2 "setup write mode requires explicit yes" -- setup --preset minimal --updates disabled
@@ -229,6 +231,7 @@ assert_exit 2 "setup write mode requires an implemented write option" -- setup -
 assert_exit 2 "setup rejects dry-run and yes together" -- setup --dry-run --yes --updates disabled
 assert_exit 2 "invalid setup preset is rejected" -- setup --dry-run --preset enormous
 assert_exit 2 "invalid setup skill pack is rejected" -- setup --dry-run --skill-pack ../bad
+assert_exit 2 "non-interactive setup refuses auth login prompts" -- setup --yes --provider codex --auth login --non-interactive
 run_fkt setup --yes --updates disabled >/dev/null
 if [ "$(config_get update_check unset)" = "false" ]; then
   pass "setup --yes can disable update checks"
@@ -252,6 +255,12 @@ if grep -qxF "model gpt-5.5 medium" "$HOME_DIR/cc-provider.log"; then
   pass "configure --yes can apply model through ccs"
 else
   fail "configure --yes can apply model through ccs" "log: $(cat "$HOME_DIR/cc-provider.log" 2>/dev/null)"
+fi
+run_fkt setup --yes --provider codex --auth login >/dev/null
+if grep -qxF "login codex" "$HOME_DIR/cc-provider.log"; then
+  pass "setup --yes can delegate auth login through ccs"
+else
+  fail "setup --yes can delegate auth login through ccs" "log: $(cat "$HOME_DIR/cc-provider.log" 2>/dev/null)"
 fi
 run_fkt configure --yes --permission-mode manual --compaction off >/dev/null
 if [ "$(jq -r '.permissions.defaultMode' "$HOME_DIR/settings.json")" = "default" ] \

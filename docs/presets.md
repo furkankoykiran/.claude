@@ -33,15 +33,16 @@ fkt setup --yes --provider codex
 fkt configure --yes --model gpt-5.5 --effort medium
 fkt configure --yes --permission-mode manual|plan|acceptEdits|dontAsk|auto
 fkt configure --yes --compaction auto|off
+fkt setup --yes --auth login|skip
 fkt setup --yes --skill-pack gstack --skill-pack fk-writing-kit
 ```
 
-`--permission-mode manual` is stored as Claude Code's `default` mode. `--compaction off` writes `autoCompactEnabled=false`; it does not disable the manual `/compact` command. `--skill-pack` records a setup preference in `fkt` config so future installer/reconfiguration work has an explicit user choice; it does not install or remove third-party packs by itself.
+`--permission-mode manual` is stored as Claude Code's `default` mode. `--compaction off` writes `autoCompactEnabled=false`; it does not disable the manual `/compact` command. `--auth login` delegates to `ccs login <provider>`, so Codex still uses official `codex login` and API-key providers still use the existing masked `ccs` prompt. `--skill-pack` records a setup preference in `fkt` config so future installer/reconfiguration work has an explicit user choice; it does not install or remove third-party packs by itself.
 
 These choices remain preview-only in the combined setup flow:
 
 - skill pack installation/removal beyond recording the preference;
-- auth orchestration beyond delegating to native host commands;
+- auth flows that require fully non-interactive credential entry;
 - MCP installation from setup, although `fkt mcp enable|disable|auth|doctor` already manage MCP preferences and diagnostics;
 - token-window compaction through `--compaction tokens`, until the command accepts an explicit token window value.
 
