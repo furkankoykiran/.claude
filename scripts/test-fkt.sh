@@ -159,6 +159,11 @@ assert_contains "Install presets:" "presets lists install presets" -- presets
 assert_contains "Runtime profiles:" "presets lists runtime profiles" -- presets
 assert_contains "fkt doctor" "doctor prints a read-only health header" -- doctor
 assert_contains "active provider" "doctor reports active provider state" -- doctor
+assert_contains "fkt setup preview" "setup dry-run prints a preview" -- setup --dry-run --preset minimal --profile safe --provider codex --model gpt-5.5 --effort medium --updates enabled --non-interactive
+assert_contains "No files changed" "setup dry-run is explicitly non-mutating" -- setup --dry-run --preset minimal
+assert_contains "fkt configure preview" "configure dry-run prints a preview" -- configure --dry-run --profile balanced --permission-mode manual --compaction auto
+assert_exit 2 "setup write mode is refused until implemented" -- setup --preset minimal
+assert_exit 2 "invalid setup preset is rejected" -- setup --dry-run --preset enormous
 
 # --- channels -------------------------------------------------------------
 run_fkt channel edge >/dev/null

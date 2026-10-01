@@ -946,6 +946,93 @@ do_doctor() {
   say "Read-only check. To rebuild provider settings, run: ccs $(printf '%s' "$active" | sed 's/^none$/<provider>/')"
 }
 
+
+setup_usage() {
+  cat <<'EOF'
+usage: fkt setup --dry-run [options]
+       fkt configure --dry-run [options]
+
+Options:
+  --preset minimal|recommended|full|custom
+  --profile safe|balanced|autonomous|long-session|custom
+  --provider NAME
+  --model MODEL
+  --effort low|medium|high|xhigh|none
+  --permission-mode manual|plan|acceptEdits|dontAsk|auto
+  --compaction auto|off|tokens
+  --updates enabled|disabled
+  --skill-pack NAME       repeatable
+  --mcp ID                repeatable
+  --non-interactive       require all choices to be explicit or defaulted
+
+Current implementation is preview-only. It writes nothing and never touches
+credentials. Use ccs/fkt commands shown in the preview for manual application.
+EOF
+}
+
+normalize_preset() {
+  case "$1" in
+    minimal|recommended|full|custom) printf '%s\n' "$1" ;;
+    *) return 1 ;;
+  esac
+}
+
+normalize_profile() {
+  case "$1" in
+    safe|balanced|autonomous|long-session|custom) printf '%s\n' "$1" ;;
+    *) return 1 ;;
+  esac
+}
+
+do_setup_preview() {
+  local mode="$1" dry_run=0 non_interactive=0 preset="recommended" profile="balanced"
+  local provider="$( [ -f "$FKT_HOME/providers/.active" ] && tr -d '[:space:]' < "$FKT_HOME/providers/.active" || printf 'anthropic' )"
+  local model="" effort="" permission_mode="" compaction="" updates="" skill_packs="" mcps=""
+  while [ $# -gt 1 ]; do
+    shift
+    case "$1" in
+      --dry-run|--preview) dry_run=1 ;;
+      --non-interactive) non_interactive=1 ;;
+      --preset) shift; preset="$(normalize_preset "${1:-}")" || { err "invalid preset: ${1:-}"; return "$EX_USAGE"; } ;;
+      --profile) shift; profile="$(normalize_profile "${1:-}")" || { err "invalid profile: ${1:-}"; return "$EX_USAGE"; } ;;
+      --provider) shift; provider="${1:-}"; [ -n "$provider" ] || { err "--provider requires a value"; return "$EX_USAGE"; } ;;
+      --model) shift; model="${1:-}"; [ -n "$model" ] || { err "--model requires a value"; return "$EX_USAGE"; } ;;
+      --effort) shift; effort="${1:-}"; case "$effort" in low|medium|high|xhigh|none) ;; *) err "invalid effort: $effort"; return "$EX_USAGE" ;; esac ;;
+      --permission-mode) shift; permission_mode="${1:-}"; case "$permission_mode" in manual|plan|acceptEdits|dontAsk|auto) ;; *) err "invalid permission mode: $permission_mode"; return "$EX_USAGE" ;; esac ;;
+      --compaction) shift; compaction="${1:-}"; case "$compaction" in auto|off|tokens) ;; *) err "invalid compaction: $compaction"; return "$EX_USAGE" ;; esac ;;
+      --updates) shift; updates="${1:-}"; case "$updates" in enabled|disabled) ;; *) err "invalid updates setting: $updates"; return "$EX_USAGE" ;; esac ;;
+      --skill-pack) shift; skill_packs="${skill_packs}${skill_packs:+,}${1:-}"; [ -n "${1:-}" ] || { err "--skill-pack requires a value"; return "$EX_USAGE"; } ;;
+      --mcp) shift; mcps="${mcps}${mcps:+,}${1:-}"; [ -n "${1:-}" ] || { err "--mcp requires a value"; return "$EX_USAGE"; } ;;
+      -h|--help) setup_usage; return 0 ;;
+      *) err "unknown $mode option: $1"; setup_usage >&2; return "$EX_USAGE" ;;
+    esac
+  done
+
+  if [ "$dry_run" != "1" ]; then
+    err "$mode is currently preview-only; re-run with --dry-run"
+    return "$EX_USAGE"
+  fi
+
+  say "fkt $mode preview"
+  say "  preset          $preset"
+  say "  profile         $profile"
+  say "  provider        $provider"
+  say "  model           ${model:-keep-current}"
+  say "  effort          ${effort:-keep-current}"
+  say "  permission mode ${permission_mode:-keep-current}"
+  say "  compaction      ${compaction:-keep-current}"
+  say "  updates         ${updates:-keep-current}"
+  say "  skill packs     ${skill_packs:-keep-current}"
+  say "  mcp             ${mcps:-keep-current}"
+  say "  non-interactive $([ "$non_interactive" = "1" ] && echo yes || echo no)"
+  say ""
+  say "No files changed. Manual commands this preview may imply:"
+  say "  ccs $provider"
+  [ -n "$model" ] && say "  ccs model $model ${effort:-medium}"
+  [ "$updates" = "disabled" ] && say "  fkt disable"
+  [ "$updates" = "enabled" ] && say "  fkt enable"
+}
+
 # ---------------------------------------------------------------------------
 # status / channel / snooze
 # ---------------------------------------------------------------------------
@@ -1176,6 +1263,8 @@ fkt — FK Claude Toolkit updater (bootstrap layer only)
                              on its own (read-only; deletes nothing)
   fkt doctor                 read-only setup/config/provider health summary
   fkt presets                list setup presets and runtime profiles
+  fkt setup --dry-run        preview setup choices without writing files
+  fkt configure --dry-run    preview reconfiguration choices without writing files
   fkt migrate                run pending migrations only
   fkt channel [stable|edge]  show or set the update channel
   fkt snooze [HOURS]         hide the current update for a while (default 168)
@@ -1206,6 +1295,8 @@ main() {
     disk)            do_disk "$@" ;;
     doctor)          do_doctor "$@" ;;
     presets)         do_presets "$@" ;;
+    setup)           do_setup_preview setup "$@" ;;
+    configure)       do_setup_preview configure "$@" ;;
     update|upgrade)  do_update "$@" ;;
     migrate)         do_migrate "$@" ;;
     channel)         do_channel "$@" ;;

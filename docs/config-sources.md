@@ -36,4 +36,4 @@ Future setup UX should preserve this split:
 
 ## Read-only UX commands
 
-`fkt presets` lists the product preset/profile vocabulary without changing files. `fkt doctor` prints a read-only summary of the checkout, settings files, active provider, safety deny count, hook count, model-picker count, and MCP registry state. These commands are scaffolding for the later interactive setup/configure flow; they do not write credentials or rewrite `settings.json`.
+`fkt presets` lists the product preset/profile vocabulary without changing files. `fkt doctor` prints a read-only summary of the checkout, settings files, active provider, safety deny count, hook count, model-picker count, and MCP registry state. `fkt setup --dry-run` and `fkt configure --dry-run` preview setup choices and print the manual commands those choices imply. These commands are scaffolding for the later interactive setup/configure flow; they do not write credentials or rewrite `settings.json`. Write mode is intentionally refused until backups, migrations, and non-interactive semantics are fully implemented and tested.
