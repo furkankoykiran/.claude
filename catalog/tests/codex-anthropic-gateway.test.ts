@@ -196,6 +196,10 @@ describe("experimental Codex Anthropic gateway", () => {
   it("keeps Codex model choice independent from Claude aliases", () => {
     expect(resolveCodexModel("claude-3-5-sonnet-latest", "gpt-5.5")).toBe("gpt-5.5");
     expect(resolveCodexModel("gpt-5.5")).toBe("gpt-5.5");
+    expect(resolveCodexModel("gpt-5.6-luna", "gpt-5.5")).toBe("gpt-5.6-luna");
+    expect(codexThreadStartParams("/workspace", "gpt-5.5", "gpt-5.6-luna")).toMatchObject({
+      model: "gpt-5.6-luna",
+    });
     expect(() => resolveCodexModel("claude-3-5-sonnet-latest")).toThrow(
       "set CODEX_GATEWAY_MODEL to a Codex model id",
     );

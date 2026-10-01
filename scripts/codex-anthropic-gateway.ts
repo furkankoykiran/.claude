@@ -234,7 +234,7 @@ export function shouldStreamAnthropicResponse(request: Pick<AnthropicMessagesReq
 export function codexThreadStartParams(cwd: string, model: string | undefined, requestModel: string): Record<string, unknown> {
   return {
     cwd,
-    model: model ?? resolveCodexModel(requestModel),
+    model: resolveCodexModel(requestModel, model),
     ephemeral: true,
     threadSource: "fk-toolkit-codex-gateway",
     approvalPolicy: "never",
@@ -244,19 +244,19 @@ export function codexThreadStartParams(cwd: string, model: string | undefined, r
 }
 
 export function resolveCodexModel(requestModel: string, selectedModel?: string): string {
+  if (!requestModel.startsWith("claude-")) {
+    return requestModel;
+  }
   if (selectedModel && selectedModel.length > 0) {
     return selectedModel;
   }
-  if (requestModel.startsWith("claude-")) {
-    const envModel = process.env.CODEX_GATEWAY_MODEL || process.env.CODEX_MODEL;
-    if (envModel) {
-      return envModel;
-    }
-    throw new Error(
-      "Claude model aliases cannot be forwarded to Codex directly; set CODEX_GATEWAY_MODEL to a Codex model id",
-    );
+  const envModel = process.env.CODEX_GATEWAY_MODEL || process.env.CODEX_MODEL;
+  if (envModel) {
+    return envModel;
   }
-  return requestModel;
+  throw new Error(
+    "Claude model aliases cannot be forwarded to Codex directly; set CODEX_GATEWAY_MODEL to a Codex model id",
+  );
 }
 
 export function toAnthropicStreamEvents(
