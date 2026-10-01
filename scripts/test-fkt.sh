@@ -66,6 +66,7 @@ run_fkt() {
   FKT_CONFIG_DIR="$CFG_DIR" \
   FKT_STATE_DIR="$STATE_DIR" \
   FKT_ADVISORY_URL_BASE="file://$WORK/feed" \
+  FKT_MCP_LIVE_CHECK="${FKT_MCP_LIVE_CHECK:-0}" \
   "$FKT" "$@"
 }
 
@@ -184,6 +185,24 @@ assert_contains "mcp notion enabled = true" "mcp enable records an auth-required
 assert_contains "login requested   1 server" "mcp doctor counts enabled login-required preferences" -- mcp doctor
 assert_contains "mcp notion enabled = false" "mcp disable clears an auth-required preference" -- mcp disable notion
 assert_contains "login requested   0 server" "mcp doctor reports cleared login-required preferences" -- mcp doctor
+FAKE_CLAUDE="$WORK/fake-claude"
+FAKE_CODEX="$WORK/fake-codex"
+cat > "$FAKE_CLAUDE" <<'EOF_CLAUDE_MCP'
+#!/usr/bin/env bash
+printf '%s\n' 'Checking MCP server health...'
+printf '%s\n' 'github: https://api.githubcopilot.com/mcp/ (HTTP) - Connected'
+printf '%s\n' 'openaiDeveloperDocs: https://developers.openai.com/mcp (HTTP) - Connected'
+EOF_CLAUDE_MCP
+cat > "$FAKE_CODEX" <<'EOF_CODEX_MCP'
+#!/usr/bin/env bash
+printf '%s\n' 'github https://api.githubcopilot.com/mcp/'
+EOF_CODEX_MCP
+chmod +x "$FAKE_CLAUDE" "$FAKE_CODEX"
+MCP_LIVE_OUT="$(run_fkt_env FKT_MCP_LIVE_CHECK=1 FKT_CLAUDE_BIN="$FAKE_CLAUDE" FKT_CODEX_BIN="$FAKE_CODEX" -- mcp doctor 2>&1)"
+if grep -qF "claude mcp urls   2" <<<"$MCP_LIVE_OUT"; then pass "mcp doctor can count live Claude MCP urls"; else fail "mcp doctor can count live Claude MCP urls" "$MCP_LIVE_OUT"; fi
+if grep -qF "codex mcp urls    1" <<<"$MCP_LIVE_OUT"; then pass "mcp doctor can count live Codex MCP urls"; else fail "mcp doctor can count live Codex MCP urls" "$MCP_LIVE_OUT"; fi
+if grep -qF "cross-host dupes  1" <<<"$MCP_LIVE_OUT"; then pass "mcp doctor reports cross-host duplicate endpoints"; else fail "mcp doctor reports cross-host duplicate endpoints" "$MCP_LIVE_OUT"; fi
+if grep -qF "enabled dupes     1" <<<"$MCP_LIVE_OUT"; then pass "mcp doctor reports enabled registry endpoints already native"; else fail "mcp doctor reports enabled registry endpoints already native" "$MCP_LIVE_OUT"; fi
 assert_contains "Install presets:" "presets lists install presets" -- presets
 assert_contains "Runtime profiles:" "presets lists runtime profiles" -- presets
 assert_contains "fkt doctor" "doctor prints a read-only health header" -- doctor

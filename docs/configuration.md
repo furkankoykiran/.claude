@@ -246,7 +246,7 @@ The current starter registry is:
 | `notion` | OAuth | login-required | `https://mcp.notion.com/mcp` |
 | `sentry` | OAuth | login-required | `https://mcp.sentry.dev/mcp` |
 
-Use `fkt mcp status`, `fkt mcp auth <id>`, `fkt mcp enable <id>`, `fkt mcp disable <id>`, and `fkt mcp doctor` to inspect and record those preferences. Complete login in the host that will use the server: Claude Code users add the server with `claude mcp add --transport http ...` and run `/mcp`; Codex users use `codex mcp add ... --url ...` and `codex mcp login <id>` when the server supports OAuth. Tokens stay in native host storage, never in this repository.
+Use `fkt mcp status`, `fkt mcp auth <id>`, `fkt mcp enable <id>`, `fkt mcp disable <id>`, and `fkt mcp doctor` to inspect and record those preferences. `fkt mcp doctor` also checks live `claude mcp list` and `codex mcp list` output when those CLIs are available, then reports cross-host and enabled-endpoint duplicates by URL. Complete login in the host that will use the server: Claude Code users add the server with `claude mcp add --transport http ...` and run `/mcp`; Codex users use `codex mcp add ... --url ...` and `codex mcp login <id>` when the server supports OAuth. Tokens stay in native host storage, never in this repository.
 
 `scripts/setup-mcp.sh` still configures the two older Claude-local examples, `github` and `context7`, for users who want that path. Those tokens are stored in `~/.claude.json` (mode `600`).
 

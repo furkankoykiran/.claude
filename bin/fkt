@@ -35,6 +35,8 @@
 #   FKT_GSTACK_UPDATE 0 skips the skills/gstack fast-forward during `fkt update`
 #   FKT_OFFLINE      1 forbids all network access
 #   FKT_ADVISORY_URL_BASE  base URL for the advisory feed (testing/air-gapped)
+#   FKT_MCP_LIVE_CHECK 0 skips live claude/codex MCP CLI inspection
+#   FKT_CLAUDE_BIN, FKT_CODEX_BIN  host CLI overrides for MCP diagnostics
 #   FKT_CHECK_TTL_MINUTES, FKT_SNOOZE_HOURS  cache tuning (testing)
 
 set -euo pipefail
@@ -52,6 +54,8 @@ ADVISORY_CACHE="$FKT_STATE_DIR/advisories.tsv"
 MIGRATION_DIR="$FKT_STATE_DIR/migrations"
 MCP_REGISTRY="$FKT_HOME/mcp-registry.toml"
 MCP_MANIFEST="$FKT_HOME/skills/fk-toolkit-ops/mcp.json"
+CLAUDE_BIN="${FKT_CLAUDE_BIN:-claude}"
+CODEX_BIN="${FKT_CODEX_BIN:-codex}"
 
 DEFAULT_CHANNEL="stable"
 DEFAULT_TTL_MINUTES=720            # 12h; a config repo does not move hourly
@@ -1273,6 +1277,48 @@ mcp_known_id() {
   mcp_registry_rows | awk -F '	' -v want="$want" '$1 == want { found=1 } END { exit(found ? 0 : 1) }'
 }
 
+mcp_extract_urls() {
+  awk '{
+    line = $0
+    while (match(line, /https?:\/\/[^[:space:])]+/)) {
+      url = substr(line, RSTART, RLENGTH)
+      print url
+      line = substr(line, RSTART + RLENGTH)
+    }
+  }' | sort -u
+}
+
+mcp_host_urls() {
+  local host="$1" bin
+  [ "${FKT_MCP_LIVE_CHECK:-1}" != "0" ] || return 0
+  case "$host" in
+    claude) bin="$CLAUDE_BIN" ;;
+    codex) bin="$CODEX_BIN" ;;
+    *) return 0 ;;
+  esac
+  command -v "$bin" >/dev/null 2>&1 || return 0
+  "$bin" mcp list 2>/dev/null | mcp_extract_urls || true
+}
+
+mcp_count_lines() {
+  awk 'NF { n++ } END { print n+0 }'
+}
+
+mcp_intersection_count() {
+  awk 'FNR == NR { seen[$0]=1; next } NF && seen[$0] { n++ } END { print n+0 }' "$1" "$2"
+}
+
+mcp_enabled_urls() {
+  local rows="$1"
+  while IFS=$'\t' read -r id _plugin _auth def _transport url _display _source; do
+    [ -n "$id" ] || continue
+    [ "$(mcp_effective_enabled "$id" "$def")" = "true" ] || continue
+    printf '%s\n' "$url"
+  done <<EOF_MCP_ENABLED_URLS
+$rows
+EOF_MCP_ENABLED_URLS
+}
+
 do_mcp() {
   local sub="${1:-status}"
   [ $# -gt 0 ] && shift
@@ -1337,6 +1383,8 @@ EOF_MCP_ROWS
       ;;
     doctor)
       local rows enabled=0 requested_login=0 bad_auth_enabled missing_manifest=0 duplicates=0
+      local claude_urls codex_urls enabled_urls tmp_dir claude_file codex_file enabled_file
+      local claude_count codex_count cross_host_duplicates enabled_host_duplicates
       rows="$(mcp_registry_rows)"
       if [ -z "$rows" ]; then
         err "MCP registry is empty or unreadable: $MCP_REGISTRY"
@@ -1359,11 +1407,35 @@ EOF_MCP_DOCTOR_ROWS
 ' "$rows" | awk -F '	' '{ urls[$6]++ } END { for (u in urls) if (urls[u] > 1) n++ ; print n+0 }')"
       [ "$bad_auth_enabled" = "0" ] || { err "auth-required MCP entries must not be default_enabled=true"; return "$EX_USAGE"; }
       [ -f "$MCP_MANIFEST" ] || missing_manifest=1
+      claude_urls="$(mcp_host_urls claude)"
+      codex_urls="$(mcp_host_urls codex)"
+      enabled_urls="$(mcp_enabled_urls "$rows")"
+      claude_count="$(printf '%s
+' "$claude_urls" | mcp_count_lines)"
+      codex_count="$(printf '%s
+' "$codex_urls" | mcp_count_lines)"
+      tmp_dir="$(mktemp -d "${TMPDIR:-/tmp}/fkt-mcp.XXXXXX")"
+      claude_file="$tmp_dir/claude.urls"
+      codex_file="$tmp_dir/codex.urls"
+      enabled_file="$tmp_dir/enabled.urls"
+      printf '%s
+' "$claude_urls" > "$claude_file"
+      printf '%s
+' "$codex_urls" > "$codex_file"
+      printf '%s
+' "$enabled_urls" > "$enabled_file"
+      cross_host_duplicates="$(mcp_intersection_count "$claude_file" "$codex_file")"
+      enabled_host_duplicates="$(( $(mcp_intersection_count "$enabled_file" "$claude_file") + $(mcp_intersection_count "$enabled_file" "$codex_file") ))"
+      rm -rf "$tmp_dir"
       say "registry entries  $(printf '%s
 ' "$rows" | grep -c .)"
       say "enabled no-auth   $enabled server(s)"
       say "login requested   $requested_login server(s)"
       say "duplicate urls    $duplicates"
+      say "claude mcp urls   $claude_count"
+      say "codex mcp urls    $codex_count"
+      say "cross-host dupes  $cross_host_duplicates"
+      say "enabled dupes     $enabled_host_duplicates"
       if [ "$missing_manifest" = "1" ]; then
         warn "generated plugin MCP manifest missing: $MCP_MANIFEST"
       else
