@@ -16,6 +16,7 @@
 | [Codex model switching](codex-model-switching.md) | Default model selection, generated `/model` rows, and switching limits for `ccs codex` |
 | [Codex continuation](codex-continuation.md) | Supported resume primitives and the current boundary for usage-limit continuation under `ccs codex` |
 | [Codex image generation](codex-image-generation.md) | Why ChatGPT-plan Codex App Server image generation is unsupported, and the separate OpenAI API-key path |
+| [Free Claude Code pattern review](free-claude-code-patterns.md) | Adopted and rejected product patterns from the current Free Claude Code project |
 | [ChatGPT project prompting](chatgpt-project.md) | Turning rough intent into Claude Code or Codex prompts: files to upload, instructions, verification |
 | [Distribution architecture](architecture-distribution.md) | Why the toolkit ships this way: the decisions, the evidence, what was rejected |
 | [Modernization evidence](modernization-evidence.md) | Cross-agent work boundaries, baseline checks, and runtime proof limits |
