@@ -1230,15 +1230,47 @@ mcp_registry_rows() {
   ' "$MCP_REGISTRY"
 }
 
+mcp_effective_enabled() {
+  local id="$1" def="$2" override
+  override="$(config_get "mcp_${id}_enabled" "")"
+  case "$override" in
+    true|false) printf '%s\n' "$override" ;;
+    *) printf '%s\n' "$def" ;;
+  esac
+}
+
 mcp_state_for() {
-  local auth="$1" def="$2"
-  if [ "$auth" = "none" ] && [ "$def" = "true" ]; then
-    printf 'enabled'
-  elif [ "$auth" = "none" ]; then
+  local id="$1" auth="$2" def="$3" enabled
+  enabled="$(mcp_effective_enabled "$id" "$def")"
+  if [ "$enabled" != "true" ]; then
     printf 'disabled'
+  elif [ "$auth" = "none" ]; then
+    printf 'enabled'
   else
     printf 'login-required'
   fi
+}
+
+mcp_scope_for() {
+  local auth="$1" def="$2"
+  if [ "$auth" = "none" ] && [ "$def" = "true" ]; then
+    printf 'portable'
+  elif [ "$auth" = "none" ]; then
+    printf 'optional'
+  else
+    printf 'native-login'
+  fi
+}
+
+mcp_duplicate_for() {
+  local url="$1" rows="$2" count
+  count="$(printf '%s\n' "$rows" | awk -F '	' -v url="$url" '$6 == url { n++ } END { print n+0 }')"
+  [ "$count" -gt 1 ] && printf 'duplicate' || printf 'ok'
+}
+
+mcp_known_id() {
+  local want="$1"
+  mcp_registry_rows | awk -F '	' -v want="$want" '$1 == want { found=1 } END { exit(found ? 0 : 1) }'
 }
 
 do_mcp() {
@@ -1250,11 +1282,16 @@ do_mcp() {
         err "MCP registry not found: $MCP_REGISTRY"
         return "$EX_USAGE"
       fi
+      local rows
+      rows="$(mcp_registry_rows)"
       say "MCP starter registry ($MCP_REGISTRY)"
-      printf '%-22s %-8s %-15s %s\n' "id" "auth" "state" "url"
-      mcp_registry_rows | while IFS=$'\t' read -r id _plugin auth def _transport url _display _source; do
+      printf '%-22s %-15s %-12s %-8s %-15s %-9s %s
+' "id" "owner" "scope" "auth" "state" "duplicate" "url"
+      printf '%s
+' "$rows" | while IFS=$'	' read -r id plugin auth def _transport url _display _source; do
         [ -n "$id" ] || continue
-        printf '%-22s %-8s %-15s %s\n' "$id" "$auth" "$(mcp_state_for "$auth" "$def")" "$url"
+        printf '%-22s %-15s %-12s %-8s %-15s %-9s %s
+' "$id" "$plugin" "$(mcp_scope_for "$auth" "$def")" "$auth" "$(mcp_state_for "$id" "$auth" "$def")" "$(mcp_duplicate_for "$url" "$rows")" "$url"
       done
       ;;
     auth)
@@ -1267,7 +1304,7 @@ do_mcp() {
         say "  url       $url"
         say "  transport $transport"
         say "  auth      $auth"
-        say "  state     $(mcp_state_for "$auth" "$def")"
+        say "  state     $(mcp_state_for "$id" "$auth" "$def")"
         [ -n "$source" ] && say "  docs      $source"
         case "$auth" in
           none)
@@ -1287,19 +1324,46 @@ $(mcp_registry_rows)
 EOF_MCP_ROWS
       [ "$found" = "1" ] || { err "unknown MCP server: $want"; return "$EX_USAGE"; }
       ;;
+    enable|disable)
+      local want="${1:-}" value="true"
+      [ -n "$want" ] || { err "usage: fkt mcp $sub <id>"; return "$EX_USAGE"; }
+      [ "$sub" = "disable" ] && value="false"
+      mcp_known_id "$want" || { err "unknown MCP server: $want"; return "$EX_USAGE"; }
+      config_set "mcp_${want}_enabled" "$value"
+      say "mcp $want enabled = $value"
+      if [ "$value" = "true" ]; then
+        "$0" mcp auth "$want"
+      fi
+      ;;
     doctor)
-      local rows enabled bad_auth_enabled missing_manifest=0
+      local rows enabled=0 requested_login=0 bad_auth_enabled missing_manifest=0 duplicates=0
       rows="$(mcp_registry_rows)"
       if [ -z "$rows" ]; then
         err "MCP registry is empty or unreadable: $MCP_REGISTRY"
         return "$EX_USAGE"
       fi
-      enabled="$(printf '%s\n' "$rows" | awk -F '\t' '$3 == "none" && $4 == "true" { n++ } END { print n+0 }')"
-      bad_auth_enabled="$(printf '%s\n' "$rows" | awk -F '\t' '$3 != "none" && $4 == "true" { n++ } END { print n+0 }')"
+      while IFS=$'	' read -r id _plugin auth def _transport _url _display _source; do
+        [ -n "$id" ] || continue
+        [ "$(mcp_effective_enabled "$id" "$def")" = "true" ] || continue
+        if [ "$auth" = "none" ]; then
+          enabled=$((enabled + 1))
+        else
+          requested_login=$((requested_login + 1))
+        fi
+      done <<EOF_MCP_DOCTOR_ROWS
+$rows
+EOF_MCP_DOCTOR_ROWS
+      bad_auth_enabled="$(printf '%s
+' "$rows" | awk -F '	' '$3 != "none" && $4 == "true" { n++ } END { print n+0 }')"
+      duplicates="$(printf '%s
+' "$rows" | awk -F '	' '{ urls[$6]++ } END { for (u in urls) if (urls[u] > 1) n++ ; print n+0 }')"
       [ "$bad_auth_enabled" = "0" ] || { err "auth-required MCP entries must not be default_enabled=true"; return "$EX_USAGE"; }
       [ -f "$MCP_MANIFEST" ] || missing_manifest=1
-      say "registry entries  $(printf '%s\n' "$rows" | grep -c .)"
-      say "default enabled   $enabled no-auth server(s)"
+      say "registry entries  $(printf '%s
+' "$rows" | grep -c .)"
+      say "enabled no-auth   $enabled server(s)"
+      say "login requested   $requested_login server(s)"
+      say "duplicate urls    $duplicates"
       if [ "$missing_manifest" = "1" ]; then
         warn "generated plugin MCP manifest missing: $MCP_MANIFEST"
       else
@@ -1307,7 +1371,7 @@ EOF_MCP_ROWS
       fi
       ;;
     *)
-      err "usage: fkt mcp [list|status|auth <id>|doctor]"
+      err "usage: fkt mcp [list|status|auth <id>|enable <id>|disable <id>|doctor]"
       return "$EX_USAGE"
       ;;
   esac
@@ -1336,7 +1400,8 @@ fkt — FK Claude Toolkit updater (bootstrap layer only)
   fkt snooze [HOURS]         hide the current update for a while (default 168)
   fkt enable | disable       turn update checks on or off
   fkt config [KEY VALUE]     show or set configuration
-  fkt mcp [list|auth|doctor] curated MCP starter registry and auth state
+  fkt mcp [list|auth|enable|disable|doctor]
+                             curated MCP starter registry and auth state
 
 Channels:
   stable  latest v* release tag  (default)

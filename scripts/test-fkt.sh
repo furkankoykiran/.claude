@@ -176,9 +176,14 @@ assert_contains "0.1.0" "version reports the checked-out VERSION" -- version
 assert_contains "channel        stable" "status defaults to the stable channel" -- status
 assert_exit 2 "unknown command is a usage error" -- frobnicate
 assert_contains "openaiDeveloperDocs" "mcp status lists the no-auth docs server" -- mcp status
-assert_contains "login-required" "mcp status shows auth-required entries disabled until login" -- mcp status
+assert_contains "native-login" "mcp status shows native-login scope for auth-required entries" -- mcp status
+assert_contains "ok" "mcp status reports duplicate state" -- mcp status
 assert_contains "codex mcp login notion" "mcp auth explains native Codex OAuth login" -- mcp auth notion
-assert_contains "default enabled   1 no-auth server" "mcp doctor reports only no-auth defaults" -- mcp doctor
+assert_contains "enabled no-auth   1 server" "mcp doctor reports enabled no-auth defaults" -- mcp doctor
+assert_contains "mcp notion enabled = true" "mcp enable records an auth-required preference" -- mcp enable notion
+assert_contains "login requested   1 server" "mcp doctor counts enabled login-required preferences" -- mcp doctor
+assert_contains "mcp notion enabled = false" "mcp disable clears an auth-required preference" -- mcp disable notion
+assert_contains "login requested   0 server" "mcp doctor reports cleared login-required preferences" -- mcp doctor
 assert_contains "Install presets:" "presets lists install presets" -- presets
 assert_contains "Runtime profiles:" "presets lists runtime profiles" -- presets
 assert_contains "fkt doctor" "doctor prints a read-only health header" -- doctor
