@@ -200,6 +200,9 @@ export function toCodexRequests(
     cwd: options.cwd,
     model: resolveCodexModel(request.model, options.model),
     additionalContext: mergeNullableRecords(additionalContext, toolInstructions),
+    approvalPolicy: "never",
+    approvalsReviewer: "user",
+    sandboxPolicy: { type: "readOnly", networkAccess: false },
   };
   if (options.reasoningEffort) {
     params["effort"] = options.reasoningEffort;
@@ -226,6 +229,18 @@ export function toCodexRequests(
 
 export function shouldStreamAnthropicResponse(request: Pick<AnthropicMessagesRequest, "stream">): boolean {
   return request.stream === true;
+}
+
+export function codexThreadStartParams(cwd: string, model: string | undefined, requestModel: string): Record<string, unknown> {
+  return {
+    cwd,
+    model: model ?? resolveCodexModel(requestModel),
+    ephemeral: true,
+    threadSource: "fk-toolkit-codex-gateway",
+    approvalPolicy: "never",
+    approvalsReviewer: "user",
+    sandbox: "read-only",
+  };
 }
 
 export function resolveCodexModel(requestModel: string, selectedModel?: string): string {
@@ -607,6 +622,33 @@ type PendingTurn = {
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
+export function failClosedClientRequestResult(method: string): Record<string, unknown> | null {
+  if (method === "item/commandExecution/requestApproval") {
+    return { decision: "decline" };
+  }
+  if (method === "item/fileChange/requestApproval") {
+    return { decision: "decline" };
+  }
+  if (method === "execCommandApproval") {
+    return { decision: { denied: { rejection: "Codex gateway keeps Claude Code as the tool-permission owner." } } };
+  }
+  if (method === "item/permissions/requestApproval") {
+    return { permissions: {}, scope: "turn", strictAutoReview: true };
+  }
+  if (method === "item/tool/call") {
+    return {
+      success: false,
+      contentItems: [
+        {
+          type: "inputText",
+          text: "Codex gateway does not execute Codex-side dynamic tools; Claude Code owns client tools.",
+        },
+      ],
+    };
+  }
+  return null;
+}
+
 class CodexJsonRpcClient {
   private seq = 0;
   private initialized = false;
@@ -632,12 +674,11 @@ class CodexJsonRpcClient {
     });
     const rpc = batch.requests[0];
     if (rpc && batch.threadId === null) {
-      const response = await this.request(`thread-${this.seq}`, "thread/start", {
-        cwd,
-        model: selectedModel ?? resolveCodexModel(request.model),
-        ephemeral: true,
-        threadSource: "fk-toolkit-codex-gateway",
-      });
+      const response = await this.request(
+        `thread-${this.seq}`,
+        "thread/start",
+        codexThreadStartParams(cwd, selectedModel, request.model),
+      );
       const thread = (response as { thread?: { id?: string } }).thread;
       if (!thread?.id) throw new Error("Codex thread/start returned no thread id");
       rpc.params.threadId = thread.id;
@@ -732,8 +773,19 @@ class CodexJsonRpcClient {
     }
   }
 
+  private respondToClientRequest(id: string | number, method: string): boolean {
+    const result = failClosedClientRequestResult(method);
+    if (!result) return false;
+    void this.writeJson({ jsonrpc: "2.0", id, result });
+    return true;
+  }
+
   private handleMessage(message: JsonRpcNotification | JsonRpcRequest): void {
     const record = message as Record<string, unknown>;
+    if ("id" in record && "method" in record) {
+      const handled = this.respondToClientRequest(record["id"] as string | number, String(record["method"]));
+      if (handled) return;
+    }
     if ("id" in record && !("method" in record)) {
       const id = record["id"] as string | number;
       const rpc = this.rpcPending.get(id);

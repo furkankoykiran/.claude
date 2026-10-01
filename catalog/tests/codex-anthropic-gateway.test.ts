@@ -3,6 +3,8 @@ import {
   cancellationRequest,
   cleanShutdownRequests,
   codexAppServerCommand,
+  codexThreadStartParams,
+  failClosedClientRequestResult,
   createGatewayState,
   shouldForwardWithRetryDedupe,
   resolveCodexModel,
@@ -44,6 +46,9 @@ describe("experimental Codex Anthropic gateway", () => {
         model: "gpt-5.5",
         effort: "medium",
         input: [{ type: "text", text: "user: Say hello.", text_elements: [] }],
+        approvalPolicy: "never",
+        approvalsReviewer: "user",
+        sandboxPolicy: { type: "readOnly", networkAccess: false },
       },
     });
     expect(String(batch.requests[0]?.params["threadId"])).toMatch(/^urn:uuid:[0-9a-f-]+$/);
@@ -52,6 +57,18 @@ describe("experimental Codex Anthropic gateway", () => {
         kind: "application",
         value: "You are a careful coding assistant.",
       },
+    });
+  });
+
+  it("starts Codex threads with read-only execution settings", () => {
+    expect(codexThreadStartParams("/workspace", "gpt-5.5", "claude-sonnet-4-5")).toEqual({
+      cwd: "/workspace",
+      model: "gpt-5.5",
+      ephemeral: true,
+      threadSource: "fk-toolkit-codex-gateway",
+      approvalPolicy: "never",
+      approvalsReviewer: "user",
+      sandbox: "read-only",
     });
   });
 
@@ -182,6 +199,22 @@ describe("experimental Codex Anthropic gateway", () => {
     expect(() => resolveCodexModel("claude-3-5-sonnet-latest")).toThrow(
       "set CODEX_GATEWAY_MODEL to a Codex model id",
     );
+  });
+
+
+  it("declines Codex-side approval and dynamic tool requests", () => {
+    expect(failClosedClientRequestResult("item/commandExecution/requestApproval")).toEqual({ decision: "decline" });
+    expect(failClosedClientRequestResult("item/fileChange/requestApproval")).toEqual({ decision: "decline" });
+    expect(failClosedClientRequestResult("execCommandApproval")).toEqual({
+      decision: { denied: { rejection: "Codex gateway keeps Claude Code as the tool-permission owner." } },
+    });
+    expect(failClosedClientRequestResult("item/permissions/requestApproval")).toEqual({
+      permissions: {},
+      scope: "turn",
+      strictAutoReview: true,
+    });
+    expect(failClosedClientRequestResult("item/tool/call")).toMatchObject({ success: false });
+    expect(failClosedClientRequestResult("thread/unknown")).toBeNull();
   });
 
   it("defaults Anthropic-compatible responses to non-streaming unless stream is true", () => {
