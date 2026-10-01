@@ -228,6 +228,7 @@ assert_exit 2 "setup write mode requires explicit yes" -- setup --preset minimal
 assert_exit 2 "setup write mode requires an implemented write option" -- setup --yes --preset minimal
 assert_exit 2 "setup rejects dry-run and yes together" -- setup --dry-run --yes --updates disabled
 assert_exit 2 "invalid setup preset is rejected" -- setup --dry-run --preset enormous
+assert_exit 2 "invalid setup skill pack is rejected" -- setup --dry-run --skill-pack ../bad
 run_fkt setup --yes --updates disabled >/dev/null
 if [ "$(config_get update_check unset)" = "false" ]; then
   pass "setup --yes can disable update checks"
@@ -268,6 +269,13 @@ else
   fail "setup --yes can apply plan permissions and enable default auto-compaction" "settings: $(jq -c . "$HOME_DIR/settings.json" 2>/dev/null)"
 fi
 assert_exit 2 "token-window compaction is not written without a token value" -- setup --yes --compaction tokens
+run_fkt setup --yes --skill-pack gstack --skill-pack fk-writing-kit >/dev/null
+if [ "$(config_get skill_pack_gstack_enabled unset)" = "true" ] \
+   && [ "$(config_get skill_pack_fk_writing_kit_enabled unset)" = "true" ]; then
+  pass "setup --yes can record skill pack preferences"
+else
+  fail "setup --yes can record skill pack preferences" "config: $(cat "$CONFIG_FILE" 2>/dev/null)"
+fi
 if ls "$STATE_DIR"/backups/config.*.bak >/dev/null 2>&1 \
    && ls "$STATE_DIR"/backups/settings.json.*.bak >/dev/null 2>&1 \
    && ls "$STATE_DIR"/backups/providers.active.*.bak >/dev/null 2>&1 \

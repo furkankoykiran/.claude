@@ -975,8 +975,10 @@ Options:
 Dry-run writes nothing and never touches credentials. Write mode applies
 --updates enabled|disabled to fkt's own config, delegates provider or model
 changes to ccs, and safely updates documented permission/default compaction
-settings after backing up runtime config files. Skill choices and token-window
-compaction remain preview-only.
+settings after backing up runtime config files. --skill-pack records setup
+preferences for later installer/reconfiguration decisions; it does not install or
+delete third-party packs. MCP choices and token-window compaction remain
+preview-only.
 EOF
 }
 
@@ -992,6 +994,14 @@ normalize_profile() {
     safe|balanced|autonomous|long-session|custom) printf '%s\n' "$1" ;;
     *) return 1 ;;
   esac
+}
+
+normalize_config_id() {
+  local raw="$1" normalized
+  [ -n "$raw" ] || return 1
+  case "$raw" in (*[!A-Za-z0-9._-]*) return 1 ;; esac
+  normalized="$(printf '%s' "$raw" | tr '.-' '__')"
+  printf '%s\n' "$normalized"
 }
 
 backup_file_once() {
@@ -1087,7 +1097,12 @@ do_setup_preview() {
       --permission-mode) shift; permission_mode="${1:-}"; case "$permission_mode" in manual|plan|acceptEdits|dontAsk|auto) ;; *) err "invalid permission mode: $permission_mode"; return "$EX_USAGE" ;; esac ;;
       --compaction) shift; compaction="${1:-}"; case "$compaction" in auto|off|tokens) ;; *) err "invalid compaction: $compaction"; return "$EX_USAGE" ;; esac ;;
       --updates) shift; updates="${1:-}"; case "$updates" in enabled|disabled) ;; *) err "invalid updates setting: $updates"; return "$EX_USAGE" ;; esac ;;
-      --skill-pack) shift; skill_packs="${skill_packs}${skill_packs:+,}${1:-}"; [ -n "${1:-}" ] || { err "--skill-pack requires a value"; return "$EX_USAGE"; } ;;
+      --skill-pack)
+        shift
+        [ -n "${1:-}" ] || { err "--skill-pack requires a value"; return "$EX_USAGE"; }
+        normalize_config_id "${1:-}" >/dev/null || { err "invalid skill pack: ${1:-}"; return "$EX_USAGE"; }
+        skill_packs="${skill_packs}${skill_packs:+,}${1:-}"
+        ;;
       --mcp) shift; mcps="${mcps}${mcps:+,}${1:-}"; [ -n "${1:-}" ] || { err "--mcp requires a value"; return "$EX_USAGE"; } ;;
       -h|--help) setup_usage; return 0 ;;
       *) err "unknown $mode option: $1"; setup_usage >&2; return "$EX_USAGE" ;;
@@ -1109,8 +1124,9 @@ do_setup_preview() {
      && [ "$provider_requested" != "1" ] \
      && [ -z "$model" ] \
      && [ -z "$permission_mode" ] \
+     && [ -z "$skill_packs" ] \
      && { [ -z "$compaction" ] || [ "$compaction" = "tokens" ]; }; then
-    err "$mode write mode currently requires --updates, --provider, --model, --permission-mode, or --compaction auto|off"
+    err "$mode write mode currently requires --updates, --provider, --model, --permission-mode, --skill-pack, or --compaction auto|off"
     return "$EX_USAGE"
   fi
 
@@ -1168,7 +1184,20 @@ do_setup_preview() {
         ;;
     esac
   fi
-  say "  not applied     skill and mcp setup choices are still preview-only"
+  if [ -n "$skill_packs" ]; then
+    backup_config_file
+    local old_ifs="$IFS" pack key
+    IFS=','
+    for pack in $skill_packs; do
+      key="skill_pack_$(normalize_config_id "$pack")_enabled"
+      config_set "$key" true
+      say "  applied         skill pack preference $pack"
+    done
+    IFS="$old_ifs"
+  fi
+  if [ -n "$mcps" ]; then
+    say "  not applied     mcp setup choices use: fkt mcp enable <id>"
+  fi
 }
 
 # ---------------------------------------------------------------------------
