@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "probes": [
+    {
+      "id": "ccs-codex-humanizer-explicit",
+      "backend": "ccs codex",
+      "date": "2026-10-01",
+      "skill": "/fk-writing-kit:humanizer",
+      "kind": "explicit namespaced text skill",
+      "model": "gpt-5.5",
+      "effort": "medium",
+      "status": "pass",
+      "prompt": "Rewrite this sentence in plain language and return only the rewrite: Additionally, this pivotal solution underscores the importance of a robust developer ecosystem.",
+      "observedResult": "This solution shows why a strong developer ecosystem matters.",
+      "evidence": [
+        "Claude Code debug loaded 4 skills from plugin fk-writing-kit.",
+        "Claude Code debug sent set_model model=gpt-5.5.",
+        "Claude Code debug dispatched /v1/messages source=repl_main_thread.",
+        "Session output returned the expected plain-language rewrite."
+      ],
+      "limitations": "Single explicit namespaced, text-only skill probe. Does not prove automatic selection, hooks, subagents, scripts/assets execution, or native Claude backend parity."
+    }
+  ]
+}

@@ -26,6 +26,10 @@ if (!existsSync(catalogPath)) {
   process.exit(1);
 }
 const catalog = JSON.parse(readFileSync(catalogPath, "utf8")) as { skills: CatalogSkill[] };
+const liveEvidencePath = join(root, "docs/codex-skill-parity-live.json");
+const liveEvidence = existsSync(liveEvidencePath)
+  ? JSON.parse(readFileSync(liveEvidencePath, "utf8")) as { probes?: Array<{ id: string; status: string; backend: string; skill: string; limitations?: string }> }
+  : { probes: [] };
 const skills = catalog.skills ?? [];
 const byName = new Map(skills.map((skill) => [skill.skillName, skill]));
 
@@ -75,6 +79,7 @@ const agents = walk(join(root, "skills"), (path) => /\/agents\/[^/]+\.md$/.test(
 const hooks = walk(join(root, "hooks"), (path) => path.endsWith(".sh") || path.endsWith(".md"));
 const toolSkills = skills.filter((skill) => (skill.security?.toolCount ?? 0) > 0);
 const gstackSkills = ["spec", "review", "ship", "plan-devex-review"].filter((name) => byName.get(name)?.pack === "gstack");
+const ccsCodexHumanizerProbe = liveEvidence.probes?.find((probe) => probe.id === "ccs-codex-humanizer-explicit" && probe.status === "pass");
 
 const rows: Row[] = [
   pass(
@@ -145,6 +150,15 @@ const rows: Row[] = [
   pass("brag-slim", "BRAG slim", byName.has("brag-slim"), "brag-slim is present in generated catalog"),
   pass("repo-humanizer", "Repo-owned humanizer", byName.has("fk-writing-kit:humanizer"), "fk-writing-kit:humanizer is present in generated catalog"),
   {
+    id: "live-ccs-codex-explicit-humanizer",
+    area: "ccs codex E2E",
+    status: ccsCodexHumanizerProbe ? "pass" : "pending-live-proof",
+    evidence: ccsCodexHumanizerProbe
+      ? `${ccsCodexHumanizerProbe.backend} explicit invocation of ${ccsCodexHumanizerProbe.skill} passed`
+      : "not run in this static checker",
+    limitation: ccsCodexHumanizerProbe?.limitations ?? "Requires live Claude Code through ccs codex with a small explicit skill prompt.",
+  },
+  {
     id: "live-native-claude",
     area: "Native Claude backend E2E",
     status: "pending-live-proof",
@@ -152,11 +166,11 @@ const rows: Row[] = [
     limitation: "Requires a live Claude Code session on an Anthropic/Claude backend.",
   },
   {
-    id: "live-ccs-codex",
-    area: "ccs codex E2E",
+    id: "live-ccs-codex-broad-parity",
+    area: "ccs codex broad skill parity",
     status: "pending-live-proof",
     evidence: "not run in this static checker",
-    limitation: "Requires live Claude Code through ccs codex with small skill invocation prompts.",
+    limitation: "Still needs automatic selection, references/assets/scripts, hooks, subagents, and representative gstack live probes.",
   },
 ];
 

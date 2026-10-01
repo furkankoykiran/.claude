@@ -17,7 +17,7 @@ For a table view:
 bun ./scripts/skill-compatibility-matrix.ts --markdown
 ```
 
-The checker is intentionally conservative. It passes only the static rows it can prove from the generated catalog and files on disk. The live rows for native Claude and `ccs codex` stay marked as pending until a real Claude Code session exercises them.
+The checker is intentionally conservative. It passes the static rows it can prove from the generated catalog and files on disk, and it reads tracked live probes from `docs/codex-skill-parity-live.json`. Any live surface without tracked evidence stays marked as pending.
 
 ## Current static coverage
 
@@ -34,6 +34,10 @@ The matrix covers:
 - representative gstack skills: `spec`, `review`, `ship`, and `plan-devex-review`;
 - Agent-Reach, UI/UX Pro Max, BRAG slim, and the repo-owned humanizer.
 
+## Live evidence so far
+
+`docs/codex-skill-parity-live.json` currently records one `ccs codex` probe: an explicit `/fk-writing-kit:humanizer` invocation in a real Claude Code session routed to `gpt-5.5`. Claude Code loaded the `fk-writing-kit` plugin skills, sent the turn to `/v1/messages`, and returned the expected plain-language rewrite.
+
 ## What remains live-only
 
-Static evidence does not prove that the model will choose a skill, that Claude Code will launch a subagent, or that a hook fired at the right time. Those need small live sessions under both a native Claude backend, where available, and `ccs codex`. Until those sessions are run, the matrix should be read as structural readiness, not full parity.
+Static evidence does not prove that the model will choose a skill, that Claude Code will launch a subagent, or that a hook fired at the right time. The current live probe proves one explicit namespaced text skill under `ccs codex`; it does not prove automatic skill selection, script or asset execution, skill-driven hooks, subagents, representative gstack flows, or native Claude backend parity. Those need separate small live sessions.
