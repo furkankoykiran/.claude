@@ -79,12 +79,19 @@ cd ~/.claude; git pull; .\install.ps1          # Windows
 
 ## Uninstall
 
+Preview first:
+
 ```bash
-rm -rf ~/.claude ~/.claude.json ~/.gstack    # macOS/Linux; rtk binary: ~/.local/bin/rtk
+fkt uninstall --dry-run
 ```
-```powershell
-Remove-Item -Recurse -Force $HOME\.claude, $HOME\.claude.json, $HOME\.gstack   # Windows
+
+Apply when the plan looks right:
+
+```bash
+fkt uninstall --yes
 ```
+
+The command removes toolkit-owned `ccs`/`fkt` shims and moves the bootstrap checkout plus `fkt` config/state into a timestamped backup under `~/.local/state/fk-toolkit-uninstall/`. It preserves Claude Code auth/session state (`~/.claude.json`), MCP OAuth state, Codex auth, and gstack state. On native Windows, run the same command through the installed `fkt.ps1`; PowerShell execution still needs live Windows verification.
 
 ## Verifying a release
 

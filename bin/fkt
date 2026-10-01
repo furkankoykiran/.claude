@@ -1387,6 +1387,144 @@ $rows
 EOF_MCP_ENABLED_URLS
 }
 
+
+# ---------------------------------------------------------------------------
+# uninstall
+# ---------------------------------------------------------------------------
+uninstall_usage() {
+  cat <<'EOF'
+usage: fkt uninstall --dry-run
+       fkt uninstall --yes
+
+Safe uninstall removes toolkit-owned command shims and moves the bootstrap
+checkout plus fkt config/state into a timestamped backup directory. It does not
+delete Claude Code auth/session state, MCP OAuth state, Codex auth, or gstack
+state.
+EOF
+}
+
+path_is_within() {
+  case "$1" in
+    "$2"|"$2"/*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+shim_owned_by_toolkit() {
+  local file="$1" name="$2"
+  [ -f "$file" ] || return 1
+  case "$name" in
+    ccs)
+      grep -q 'exec "$toolkit_dir/bin/cc-provider" "$@"' "$file" 2>/dev/null || return 1
+      ;;
+    fkt)
+      grep -q 'exec "$toolkit_dir/bin/fkt" "$@"' "$file" 2>/dev/null || return 1
+      ;;
+    ccs.ps1)
+      grep -q "bin\\cc-provider" "$file" 2>/dev/null || grep -q "bin/cc-provider" "$file" 2>/dev/null || return 1
+      ;;
+    fkt.ps1)
+      grep -q "bin\\fkt" "$file" 2>/dev/null || grep -q "bin/fkt" "$file" 2>/dev/null || return 1
+      ;;
+    *) return 1 ;;
+  esac
+  return 0
+}
+
+move_if_exists() {
+  local src="$1" dest_dir="$2" label="$3" base dest
+  [ -e "$src" ] || return 0
+  mkdir -p "$dest_dir"
+  base="$(basename "$src")"
+  dest="$dest_dir/$label-$base"
+  if [ -e "$dest" ]; then
+    dest="$dest.$$"
+  fi
+  mv "$src" "$dest"
+  say "  moved           $src -> $dest"
+}
+
+remove_shim_if_owned() {
+  local file="$1" name="$2"
+  [ -e "$file" ] || return 0
+  if shim_owned_by_toolkit "$file" "$name"; then
+    rm -f "$file"
+    say "  removed         $file"
+  else
+    say "  preserved       $file (not a toolkit-owned shim)"
+  fi
+}
+
+do_uninstall() {
+  local dry_run=1 yes=0 stamp backup_root user_bin
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --dry-run|--preview) dry_run=1 ;;
+      --yes) yes=1; dry_run=0 ;;
+      -h|--help) uninstall_usage; return 0 ;;
+      *) err "unknown uninstall option: $1"; uninstall_usage >&2; return "$EX_USAGE" ;;
+    esac
+    shift
+  done
+  if [ "$yes" != "1" ] && [ "$dry_run" != "1" ]; then
+    err "uninstall requires --dry-run or --yes"
+    return "$EX_USAGE"
+  fi
+
+  stamp="$(date +%Y%m%d%H%M%S)"
+  backup_root="${XDG_STATE_HOME:-$HOME/.local/state}/fk-toolkit-uninstall/$stamp"
+  user_bin="$HOME/.local/bin"
+
+  say "fkt uninstall $([ "$dry_run" = "1" ] && echo preview || echo apply)"
+  say "  toolkit        $FKT_HOME"
+  say "  backup         $backup_root"
+  say "  remove shims   $user_bin/ccs, $user_bin/fkt, $user_bin/ccs.ps1, $user_bin/fkt.ps1 when toolkit-owned"
+  say "  move checkout  $FKT_HOME"
+  say "  move config    $FKT_CONFIG_DIR"
+  say "  move state     $FKT_STATE_DIR"
+  say "  preserve       $HOME/.claude.json (Claude auth, MCP OAuth, sessions)"
+  say "  preserve       $HOME/.gstack (gstack state/cache)"
+  say ""
+
+  if [ "$dry_run" = "1" ]; then
+    say "No files changed. Re-run with: fkt uninstall --yes"
+    return 0
+  fi
+
+  if [ -n "$FKT_HOME" ] && { [ "$FKT_HOME" = "/" ] || [ "$FKT_HOME" = "$HOME" ]; }; then
+    err "refusing to uninstall unsafe toolkit path: $FKT_HOME"
+    return "$EX_REFUSED"
+  fi
+  if [ -n "$FKT_CONFIG_DIR" ] && { [ "$FKT_CONFIG_DIR" = "/" ] || [ "$FKT_CONFIG_DIR" = "$HOME" ]; }; then
+    err "refusing to uninstall unsafe config path: $FKT_CONFIG_DIR"
+    return "$EX_REFUSED"
+  fi
+  if [ -n "$FKT_STATE_DIR" ] && { [ "$FKT_STATE_DIR" = "/" ] || [ "$FKT_STATE_DIR" = "$HOME" ]; }; then
+    err "refusing to uninstall unsafe state path: $FKT_STATE_DIR"
+    return "$EX_REFUSED"
+  fi
+  if path_is_within "$backup_root" "$FKT_HOME"; then
+    err "backup path must not be inside toolkit checkout"
+    return "$EX_REFUSED"
+  fi
+  if path_is_within "$backup_root" "$FKT_STATE_DIR"; then
+    err "backup path must not be inside fkt state directory"
+    return "$EX_REFUSED"
+  fi
+
+  mkdir -p "$backup_root"
+  remove_shim_if_owned "$user_bin/ccs" ccs
+  remove_shim_if_owned "$user_bin/fkt" fkt
+  remove_shim_if_owned "$user_bin/ccs.ps1" ccs.ps1
+  remove_shim_if_owned "$user_bin/fkt.ps1" fkt.ps1
+  move_if_exists "$FKT_CONFIG_DIR" "$backup_root" config
+  move_if_exists "$FKT_STATE_DIR" "$backup_root" state
+  move_if_exists "$FKT_HOME" "$backup_root" checkout
+  say "  preserved       $HOME/.claude.json"
+  say "  preserved       $HOME/.gstack"
+  say "Uninstall complete. Backup: $backup_root"
+}
+
 do_mcp() {
   local sub="${1:-status}"
   [ $# -gt 0 ] && shift
@@ -1531,6 +1669,7 @@ fkt — FK Claude Toolkit updater (bootstrap layer only)
                              fast-forward the checkout, then run migrations
   fkt disk                   what ~/.claude costs, and which of it core sweeps
                              on its own (read-only; deletes nothing)
+  fkt uninstall --dry-run    preview safe uninstall; --yes moves files to backup
   fkt doctor                 read-only setup/config/provider health summary
   fkt presets                list setup presets and runtime profiles
   fkt setup --dry-run        preview setup choices without writing files
@@ -1564,6 +1703,7 @@ main() {
     schema-version)  printf '%s\n' "$FKT_VERSION_SCHEMA" ;;
     check)           do_check "$@" ;;
     disk)            do_disk "$@" ;;
+    uninstall)       do_uninstall "$@" ;;
     doctor)          do_doctor "$@" ;;
     presets)         do_presets "$@" ;;
     setup)           do_setup_preview setup "$@" ;;

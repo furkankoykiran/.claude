@@ -263,6 +263,50 @@ else
   fail "setup/configure write mode creates config backups"
 fi
 
+UN_HOME="$WORK/uninstall-home"
+UN_TOOLKIT="$UN_HOME/.claude"
+UN_CFG="$UN_HOME/.config/fk-toolkit"
+UN_STATE="$UN_HOME/.local/state/fk-toolkit"
+mkdir -p "$UN_TOOLKIT/bin" "$UN_CFG" "$UN_STATE" "$UN_HOME/.local/bin" "$UN_HOME/.gstack"
+printf 'x\n' > "$UN_TOOLKIT/README"
+printf 'x\n' > "$UN_CFG/config"
+printf 'x\n' > "$UN_STATE/update-check"
+printf 'secret-ish but preserved\n' > "$UN_HOME/.claude.json"
+cat > "$UN_HOME/.local/bin/fkt" <<EOF_UN_FKT
+#!/usr/bin/env bash
+toolkit_dir=\${FKT_HOME:-\${CLAUDE_DIR:-$UN_TOOLKIT}}
+exec "\$toolkit_dir/bin/fkt" "\$@"
+EOF_UN_FKT
+cat > "$UN_HOME/.local/bin/ccs" <<EOF_UN_CCS
+#!/usr/bin/env bash
+toolkit_dir=\${CLAUDE_DIR:-$UN_TOOLKIT}
+exec "\$toolkit_dir/bin/cc-provider" "\$@"
+EOF_UN_CCS
+chmod +x "$UN_HOME/.local/bin/fkt" "$UN_HOME/.local/bin/ccs"
+UN_DRY_OUT="$(HOME="$UN_HOME" FKT_HOME="$UN_TOOLKIT" FKT_CONFIG_DIR="$UN_CFG" FKT_STATE_DIR="$UN_STATE" "$FKT" uninstall --dry-run 2>&1)"
+if grep -qF "No files changed" <<<"$UN_DRY_OUT" \
+   && [ -d "$UN_TOOLKIT" ] \
+   && [ -f "$UN_HOME/.local/bin/fkt" ]; then
+  pass "uninstall dry-run is non-mutating"
+else
+  fail "uninstall dry-run is non-mutating" "$UN_DRY_OUT"
+fi
+UN_OUT="$(HOME="$UN_HOME" FKT_HOME="$UN_TOOLKIT" FKT_CONFIG_DIR="$UN_CFG" FKT_STATE_DIR="$UN_STATE" "$FKT" uninstall --yes 2>&1)"; UN_STATUS=$?
+UN_BACKUP_PARENT="$UN_HOME/.local/state/fk-toolkit-uninstall"
+if [ "$UN_STATUS" = "0" ] \
+   && [ ! -e "$UN_TOOLKIT" ] \
+   && [ ! -e "$UN_CFG" ] \
+   && [ ! -e "$UN_STATE" ] \
+   && [ ! -e "$UN_HOME/.local/bin/fkt" ] \
+   && [ ! -e "$UN_HOME/.local/bin/ccs" ] \
+   && [ -f "$UN_HOME/.claude.json" ] \
+   && [ -d "$UN_HOME/.gstack" ] \
+   && find "$UN_BACKUP_PARENT" -mindepth 2 -maxdepth 2 -type d | grep -q .; then
+  pass "uninstall --yes moves toolkit files to backup and preserves credentials"
+else
+  fail "uninstall --yes moves toolkit files to backup and preserves credentials" "status $UN_STATUS output: $UN_OUT"
+fi
+
 # --- channels -------------------------------------------------------------
 run_fkt channel edge >/dev/null
 assert_contains "edge" "channel persists to config" -- channel
