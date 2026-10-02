@@ -163,6 +163,29 @@ describe("experimental Codex Anthropic gateway", () => {
     expect(codexDynamicToolsForTurn(tools, [
       { role: "assistant", content: "Available tools include Agent and Write." },
       { role: "user", content: "Call Bash with a harmless command." },
+      { role: "user", content: "<system-reminder>\n# Environment\nAvailable tools include Agent and Write.\n</system-reminder>" },
+    ]).map((tool) => tool.name)).toEqual(["Bash"]);
+  });
+
+  it("ignores tool result user blocks when narrowing mentioned tools", () => {
+    const tools = [
+      { name: "Bash", input_schema: { type: "object" } },
+      { name: "Write", input_schema: { type: "object" } },
+    ];
+
+    expect(codexDynamicToolsForTurn(tools, [
+      { role: "user", content: "Call Bash with exact JSON input." },
+      {
+        role: "user",
+        content: [
+          {
+            type: "tool_result",
+            tool_use_id: "call_1",
+            content: "InputValidationError: Write failed",
+            is_error: true,
+          },
+        ],
+      },
     ]).map((tool) => tool.name)).toEqual(["Bash"]);
   });
 

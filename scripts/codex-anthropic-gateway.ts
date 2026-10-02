@@ -321,10 +321,20 @@ function latestUserMessageText(messages: AnthropicMessage[]): string {
   for (let index = messages.length - 1; index >= 0; index -= 1) {
     const message = messages[index];
     if (message?.role === "user") {
-      return flattenContent(message.content);
+      const text = flattenContent(message.content);
+      if (isActionableUserText(text)) {
+        return text;
+      }
     }
   }
   return "";
+}
+
+function isActionableUserText(text: string): boolean {
+  const trimmed = text.trimStart();
+  return trimmed.length > 0
+    && !trimmed.startsWith("<system-reminder>")
+    && !trimmed.startsWith('{"type":"tool_result"');
 }
 
 export function codexDynamicToolInputSchema(toolName: string, inputSchema: unknown): unknown {
