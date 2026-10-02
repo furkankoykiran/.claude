@@ -12,6 +12,7 @@ import {
   toAnthropicModelsList,
   toAnthropicStreamEvents,
   toCodexRequests,
+  nonStreamingAnthropicResponseFromEvents,
   type AnthropicMessagesRequest,
 } from "../../scripts/codex-anthropic-gateway.ts";
 
@@ -316,6 +317,42 @@ describe("experimental Codex Anthropic gateway", () => {
       state,
     );
 
+    expect(events.filter((event) => event.event === "error")).toHaveLength(1);
+  });
+
+  it("does not translate failed or interrupted Codex turns into successful Claude turns", () => {
+    const failed = toAnthropicStreamEvents([
+      {
+        method: "turn/completed",
+        params: { threadId: "t1", turn: { id: "turn1", status: "failed", error: { message: "tool failed" } } },
+      },
+    ]);
+    const interrupted = toAnthropicStreamEvents([
+      {
+        method: "turn/interrupted",
+        params: { threadId: "t1", turn: { id: "turn2", status: "interrupted" } },
+      },
+    ]);
+
+    expect(failed.filter((event) => event.event === "error")).toHaveLength(1);
+    expect(interrupted.filter((event) => event.event === "error")).toHaveLength(1);
+    expect(failed.some((event) => event.event === "message_delta")).toBe(false);
+    expect(interrupted.some((event) => event.event === "message_delta")).toBe(false);
+  });
+
+  it("returns one structured non-streaming failure instead of a false success for app-server errors", () => {
+    const state = createGatewayState();
+    const events = toAnthropicStreamEvents(
+      [
+        { method: "error", params: { message: "unknown MCP tool" } },
+        { method: "error", params: { message: "unknown MCP tool" } },
+      ],
+      state,
+    );
+
+    expect(() => nonStreamingAnthropicResponseFromEvents(baseRequest, events, "gpt-5.5")).toThrow(
+      "unknown MCP tool",
+    );
     expect(events.filter((event) => event.event === "error")).toHaveLength(1);
   });
 

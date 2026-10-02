@@ -86,6 +86,16 @@ export type AnthropicSseEvent = {
   data: Record<string, unknown>;
 };
 
+export type AnthropicMessagesResponse = {
+  id: string;
+  type: "message";
+  role: "assistant";
+  model: string;
+  content: AnthropicTextBlock[];
+  stop_reason: "end_turn";
+  usage: { input_tokens: number; output_tokens: number };
+};
+
 export type GatewayState = {
   seenRequestKeys: Set<string>;
   activeTurns: Map<string, { threadId: string }>;
@@ -351,7 +361,7 @@ export function toAnthropicStreamEvents(
       continue;
     }
 
-    if (notification.method === "turn/completed") {
+    if (notification.method === "turn/completed" || notification.method === "turn/failed" || notification.method === "turn/interrupted") {
       if (textOpen) {
         events.push({
           event: "content_block_stop",
@@ -359,6 +369,20 @@ export function toAnthropicStreamEvents(
         });
         contentIndex += 1;
         textOpen = false;
+      }
+      const terminalError = terminalTurnError(notification.method, params);
+      if (terminalError) {
+        events.push({
+          event: "error",
+          data: {
+            type: "error",
+            error: {
+              type: "api_error",
+              message: terminalError,
+            },
+          },
+        });
+        continue;
       }
       events.push({
         event: "message_delta",
@@ -400,6 +424,33 @@ export function toAnthropicStreamEvents(
   }
   events.push({ event: "message_stop", data: { type: "message_stop" } });
   return events;
+}
+
+export function nonStreamingAnthropicResponseFromEvents(
+  request: AnthropicMessagesRequest,
+  events: AnthropicSseEvent[],
+  selectedModel?: string,
+): AnthropicMessagesResponse {
+  const error = events.find((event) => event.event === "error");
+  if (error) {
+    throw new Error(errorMessageFromEvent(error));
+  }
+  const text = events
+    .filter((event) => event.event === "content_block_delta")
+    .map((event) => {
+      const delta = event.data["delta"] as { text?: string } | undefined;
+      return delta?.text ?? "";
+    })
+    .join("");
+  return {
+    id: "msg_codex_gateway",
+    type: "message",
+    role: "assistant",
+    model: resolveCodexModel(request.model, selectedModel),
+    content: [{ type: "text", text }],
+    stop_reason: "end_turn",
+    usage: { input_tokens: 0, output_tokens: 0 },
+  };
 }
 
 export function cancellationRequest(
@@ -466,6 +517,55 @@ function isIgnorableCodexNotification(method: string): boolean {
     || method === "configWarning"
     || method === "warning"
     || method === "deprecationNotice";
+}
+
+function terminalTurnError(method: string, params: Record<string, unknown>): string | null {
+  if (method === "turn/failed") {
+    return turnErrorMessage(params, "Codex turn failed");
+  }
+  if (method === "turn/interrupted") {
+    return turnErrorMessage(params, "Codex turn interrupted");
+  }
+  const turn = params["turn"];
+  if (turn && typeof turn === "object") {
+    const record = turn as Record<string, unknown>;
+    const status = record["status"];
+    if (status === "failed") {
+      return turnErrorMessage(params, "Codex turn failed");
+    }
+    if (status === "interrupted") {
+      return turnErrorMessage(params, "Codex turn interrupted");
+    }
+  }
+  return null;
+}
+
+function turnErrorMessage(params: Record<string, unknown>, fallback: string): string {
+  const direct = readString(params, "message");
+  if (direct) return direct;
+  const error = params["error"];
+  if (error && typeof error === "object") {
+    const message = (error as { message?: unknown }).message;
+    if (typeof message === "string" && message.length > 0) return message;
+  }
+  const turn = params["turn"];
+  if (turn && typeof turn === "object") {
+    const error = (turn as Record<string, unknown>)["error"];
+    if (error && typeof error === "object") {
+      const message = (error as { message?: unknown }).message;
+      if (typeof message === "string" && message.length > 0) return message;
+    }
+  }
+  return fallback;
+}
+
+function errorMessageFromEvent(event: AnthropicSseEvent): string {
+  const error = event.data["error"];
+  if (error && typeof error === "object") {
+    const message = (error as { message?: unknown }).message;
+    if (typeof message === "string" && message.length > 0) return message;
+  }
+  return "Codex app-server error";
 }
 
 function validateAnthropicRequest(request: AnthropicMessagesRequest): void {
@@ -818,7 +918,7 @@ class CodexJsonRpcClient {
     if (!pending) pending = Array.from(this.pending.values()).at(-1);
     if (!pending) return;
     pending.notifications.push(notification);
-    if (notification.method === "turn/completed" || notification.method === "error") {
+    if (notification.method === "turn/completed" || notification.method === "turn/failed" || notification.method === "turn/interrupted" || notification.method === "error") {
       try {
         pending.resolve(toAnthropicStreamEvents(pending.notifications, pending.state));
       } catch (error) {
@@ -897,22 +997,11 @@ async function serve(): Promise<void> {
             },
           });
         }
-        const text = events
-          .filter((event) => event.event === "content_block_delta")
-          .map((event) => {
-            const delta = event.data["delta"] as { text?: string } | undefined;
-            return delta?.text ?? "";
-          })
-          .join("");
-        return Response.json({
-          id: "msg_codex_gateway",
-          type: "message",
-          role: "assistant",
-          model: resolveCodexModel(body.model, process.env.CODEX_GATEWAY_MODEL || process.env.CODEX_MODEL),
-          content: [{ type: "text", text }],
-          stop_reason: "end_turn",
-          usage: { input_tokens: 0, output_tokens: 0 },
-        });
+        return Response.json(nonStreamingAnthropicResponseFromEvents(
+          body,
+          events,
+          process.env.CODEX_GATEWAY_MODEL || process.env.CODEX_MODEL,
+        ));
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         return Response.json({ type: "error", error: { type: "api_error", message } }, { status: 502 });
