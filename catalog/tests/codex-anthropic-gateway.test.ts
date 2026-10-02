@@ -17,6 +17,7 @@ import {
   toAnthropicStreamEvents,
   toCodexRequests,
   nonStreamingAnthropicResponseFromEvents,
+  promptlessInitialTurnError,
   type AnthropicMessagesRequest,
 } from "../../scripts/codex-anthropic-gateway.ts";
 
@@ -187,6 +188,39 @@ describe("experimental Codex Anthropic gateway", () => {
         ],
       },
     ]).map((tool) => tool.name)).toEqual(["Bash"]);
+  });
+
+  it("uses explicit turn text when Claude SDK moves the action prompt out of messages", () => {
+    const tools = [
+      { name: "Bash", input_schema: { type: "object" } },
+      { name: "Write", input_schema: { type: "object" } },
+    ];
+
+    expect(codexDynamicToolsForTurn(
+      tools,
+      [{ role: "user", content: "<system-reminder>Available tools include Bash and Write.</system-reminder>" }],
+      'Call the Bash tool with this exact JSON input: {"command":"printf ok","description":"print"}',
+    ).map((tool) => tool.name)).toEqual(["Bash"]);
+  });
+
+  it("fails closed when Claude forwards only system reminders without the user prompt", () => {
+    const request = {
+      ...baseRequest,
+      messages: [
+        {
+          role: "user" as const,
+          content: "<system-reminder>\n# Environment\nAvailable tools include Bash.\n</system-reminder>",
+        },
+      ],
+      tools: [
+        { name: "Bash", input_schema: { type: "object", properties: { command: { type: "string" } }, required: ["command"] } },
+      ],
+    };
+
+    expect(promptlessInitialTurnError(request)).toContain("did not forward an actionable user prompt");
+    expect(() => toCodexRequests(request, { cwd: "/workspace", model: "gpt-5.5" })).toThrow(
+      "did not forward an actionable user prompt",
+    );
   });
 
   it("prepares dynamic tool metadata independently of thread creation", () => {

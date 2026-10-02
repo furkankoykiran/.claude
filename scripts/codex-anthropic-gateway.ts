@@ -192,6 +192,11 @@ export function toCodexRequests(
 ): GatewayRequestBatch {
   validateAnthropicRequest(request);
 
+  const promptlessError = promptlessInitialTurnError(request, toolAliasesByOriginal);
+  if (promptlessError) {
+    throw new Error(promptlessError);
+  }
+
   const existingThreadId = options.threadId ?? stringMetadata(request, "codex_thread_id");
   const toolOutput = toolOutputFromMessages(request.messages, toolAliasesByOriginal);
   const input = toolOutput ? [] : flattenMessages(request);
@@ -253,6 +258,7 @@ export function codexThreadStartParams(
   aliases: Map<string, string> = new Map(),
   reverseAliases: Map<string, string> = new Map(),
   requiredArguments: Map<string, string[]> = new Map(),
+  turnText = "",
 ): Record<string, unknown> {
   const params: Record<string, unknown> = {
     cwd,
@@ -264,8 +270,8 @@ export function codexThreadStartParams(
     sandbox: "read-only",
   };
   if (tools.length > 0) {
-    const dynamicTools = codexDynamicToolSpecs(tools, messages, aliases, reverseAliases, requiredArguments);
-    traceDynamicTools(dynamicTools, messages);
+    const dynamicTools = codexDynamicToolSpecs(tools, messages, aliases, reverseAliases, requiredArguments, turnText);
+    traceDynamicTools(dynamicTools, messages, null);
     params["dynamicTools"] = dynamicTools;
   }
   return params;
@@ -277,8 +283,9 @@ export function codexDynamicToolSpecs(
   aliases: Map<string, string> = new Map(),
   reverseAliases: Map<string, string> = new Map(),
   requiredArguments: Map<string, string[]> = new Map(),
+  turnText = "",
 ): Record<string, unknown>[] {
-  return codexDynamicToolsForTurn(tools, messages).map((tool, index) => {
+  return codexDynamicToolsForTurn(tools, messages, turnText).map((tool, index) => {
     const name = codexDynamicToolName(tool.name, index);
     if (name !== tool.name) {
       aliases.set(name, tool.name);
@@ -295,8 +302,12 @@ export function codexDynamicToolSpecs(
   });
 }
 
-export function codexDynamicToolsForTurn(tools: AnthropicTool[], messages: AnthropicMessage[]): AnthropicTool[] {
-  const turnText = latestUserMessageText(messages).toLowerCase();
+export function codexDynamicToolsForTurn(tools: AnthropicTool[], messages: AnthropicMessage[], explicitTurnText = ""): AnthropicTool[] {
+  const turnText = (explicitTurnText || latestUserMessageText(messages)).toLowerCase();
+  const explicitJsonTools = tools.filter((tool) => explicitJsonInputForTool(turnText, tool.name));
+  if (explicitJsonTools.length > 0) {
+    return explicitJsonTools;
+  }
   const mentioned = tools.filter((tool) => turnText.includes(tool.name.toLowerCase()));
   if (mentioned.length > 0) {
     return mentioned;
@@ -314,7 +325,7 @@ export function codexDynamicToolName(name: string, index: number): string {
 }
 
 function flattenMessagesText(messages: AnthropicMessage[]): string {
-  return messages.map((message) => flattenContent(message.content)).join("\n");
+  return messages.map((message) => forwardableMessageText(message)).filter(Boolean).join("\n");
 }
 
 function latestUserMessageText(messages: AnthropicMessage[]): string {
@@ -328,6 +339,31 @@ function latestUserMessageText(messages: AnthropicMessage[]): string {
     }
   }
   return "";
+}
+
+function turnTextForRequest(request: AnthropicMessagesRequest): string {
+  const userText = latestUserMessageText(request.messages);
+  if (userText) {
+    return userText;
+  }
+  const systemText = flattenSystem(request.system) ?? "";
+  return hasExplicitJsonToolInput(systemText) ? systemText : "";
+}
+
+function hasExplicitJsonToolInput(text: string): boolean {
+  return /\bexact JSON input\s*:\s*\{[^\n]+\}/i.test(text);
+}
+
+export function promptlessInitialTurnError(
+  request: AnthropicMessagesRequest,
+  toolAliasesByOriginal: Map<string, string> = new Map(),
+): string | null {
+  if (toolOutputFromMessages(request.messages, toolAliasesByOriginal)) {
+    return null;
+  }
+  return flattenMessagesText(request.messages).trim().length > 0
+    ? null
+    : "Claude Code did not forward an actionable user prompt to the Codex gateway; refusing to run Codex on system reminders only.";
 }
 
 function isActionableUserText(text: string): boolean {
@@ -458,15 +494,43 @@ function codexDynamicToolDescription(tool: AnthropicTool, inputSchema: unknown):
   return base ? `${base}\n\n${contract}` : contract;
 }
 
-function traceDynamicTools(dynamicTools: Record<string, unknown>[], messages: AnthropicMessage[]): void {
+function traceDynamicTools(
+  dynamicTools: Record<string, unknown>[],
+  messages: AnthropicMessage[],
+  system: AnthropicMessagesRequest["system"] | null,
+): void {
   if (process.env.CODEX_GATEWAY_TRACE_TOOLS !== "1") {
     return;
   }
+  const systemText = flattenSystem(system ?? undefined);
   console.error(JSON.stringify({
     event: "codex-gateway.dynamicTools",
     toolNames: dynamicTools.map((tool) => tool["name"]).filter((name): name is string => typeof name === "string"),
     latestUserTextSnippet: latestUserMessageText(messages).slice(0, 240),
+    systemTextSnippet: (systemText ?? "").slice(0, 240),
     messageSummaries: messages.map((message) => ({
+      role: message.role,
+      snippet: flattenContent(message.content).slice(0, 160),
+    })).slice(-6),
+  }));
+}
+
+function traceRequestContext(request: AnthropicMessagesRequest): void {
+  if (process.env.CODEX_GATEWAY_TRACE_TOOLS !== "1") {
+    return;
+  }
+  const systemText = flattenSystem(request.system) ?? "";
+  const explicitJsonIndex = systemText.search(/\bexact JSON input\s*:/i);
+  console.error(JSON.stringify({
+    event: "codex-gateway.requestContext",
+    requestKeys: Object.keys(request as Record<string, unknown>).sort(),
+    metadataKeys: request.metadata ? Object.keys(request.metadata).sort() : [],
+    systemTextLength: systemText.length,
+    systemTextSnippet: systemText.slice(0, 500),
+    explicitJsonIndex,
+    explicitJsonSnippet: explicitJsonIndex >= 0 ? systemText.slice(Math.max(0, explicitJsonIndex - 160), explicitJsonIndex + 240) : "",
+    latestUserTextSnippet: latestUserMessageText(request.messages).slice(0, 240),
+    messageSummaries: request.messages.map((message) => ({
       role: message.role,
       snippet: flattenContent(message.content).slice(0, 160),
     })).slice(-6),
@@ -899,7 +963,7 @@ function validateAnthropicRequest(request: AnthropicMessagesRequest): void {
 function flattenMessages(request: AnthropicMessagesRequest): Record<string, unknown>[] {
   const lines: string[] = [];
   for (const message of request.messages) {
-    const text = flattenContent(message.content);
+    const text = forwardableMessageText(message);
     if (text) {
       lines.push(`${message.role}: ${text}`);
     }
@@ -908,6 +972,14 @@ function flattenMessages(request: AnthropicMessagesRequest): Record<string, unkn
     throw new Error("Anthropic request has no text or tool-result content to forward");
   }
   return [{ type: "text", text: lines.join("\n\n"), text_elements: [] }];
+}
+
+function forwardableMessageText(message: AnthropicMessage): string {
+  const text = flattenContent(message.content);
+  if (message.role === "user" && !isActionableUserText(text)) {
+    return "";
+  }
+  return text;
 }
 
 function flattenContent(content: string | AnthropicContentBlock[]): string {
@@ -1162,10 +1234,16 @@ class CodexJsonRpcClient {
   }
 
   async turn(request: AnthropicMessagesRequest, cwd: string): Promise<AnthropicSseEvent[]> {
+    const state = createGatewayState();
+    state.turnText = turnTextForRequest(request);
+    traceRequestContext(request);
+    const promptlessError = promptlessInitialTurnError(request, this.toolAliasesByOriginal);
+    if (promptlessError) {
+      return toAnthropicStreamEvents([{ method: "error", params: { message: promptlessError } }], state);
+    }
+
     await this.initialize();
     const id = `anthropic-${++this.seq}`;
-    const state = createGatewayState();
-    state.turnText = latestUserMessageText(request.messages);
     const selectedModel = process.env.CODEX_GATEWAY_MODEL || process.env.CODEX_MODEL;
     codexDynamicToolSpecs(
       request.tools ?? [],
@@ -1173,6 +1251,7 @@ class CodexJsonRpcClient {
       state.toolNameAliases,
       this.toolAliasesByOriginal,
       state.toolRequiredArguments,
+      state.turnText,
     );
     const batch = toCodexRequests(
       request,
@@ -1198,6 +1277,7 @@ class CodexJsonRpcClient {
           state.toolNameAliases,
           this.toolAliasesByOriginal,
           state.toolRequiredArguments,
+          state.turnText,
         ),
       );
       const thread = (response as { thread?: { id?: string } }).thread;
@@ -1464,6 +1544,16 @@ async function serve(): Promise<void> {
               connection: "keep-alive",
             },
           });
+        }
+        const eventError = events.find((event) => event.event === "error");
+        if (eventError) {
+          return Response.json({
+            type: "error",
+            error: {
+              type: "invalid_request_error",
+              message: errorMessageFromEvent(eventError),
+            },
+          }, { status: 400 });
         }
         return Response.json(nonStreamingAnthropicResponseFromEvents(
           body,
