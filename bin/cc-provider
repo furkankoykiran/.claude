@@ -506,6 +506,7 @@ codex_picker_status() {
     printf 'Codex pricing estimate: %s\n' "$pricing"
   fi
   printf 'Codex gateway discovery: Claude Code keeps only raw /v1/models ids containing claude or anthropic; Codex ids use generated modelPicker rows.\n'
+  printf 'Codex bridge prompt forwarding: pending; promptless Claude Code requests fail closed instead of running Codex on system reminders.\n'
 }
 
 list_codex_models() {

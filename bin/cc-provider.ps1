@@ -251,6 +251,7 @@ function Write-CodexPickerStatus {
     "Codex pricing estimate: $pricing"
   }
   'Codex gateway discovery: Claude Code keeps only raw /v1/models ids containing claude or anthropic; Codex ids use generated modelPicker rows.'
+  'Codex bridge prompt forwarding: pending; promptless Claude Code requests fail closed instead of running Codex on system reminders.'
 }
 
 function Get-MapValue($obj, $name, $default = $null) {
