@@ -837,6 +837,23 @@ class CodexJsonRpcClient {
     return (await this.request(`models-${++this.seq}`, "model/list", {})) as CodexModelListResult;
   }
 
+  async account(): Promise<unknown> {
+    await this.initialize();
+    return await this.request(`account-${++this.seq}`, "account/read", { refreshToken: false });
+  }
+
+  async accountRateLimits(): Promise<unknown> {
+    await this.initialize();
+    return await this.request(`rate-limits-${++this.seq}`, "account/rateLimits/read", {
+      excludeResetCreditDetails: false,
+    });
+  }
+
+  async accountUsage(threadId?: string | null): Promise<unknown> {
+    await this.initialize();
+    return await this.request(`usage-${++this.seq}`, "account/usage/read", threadId ? { threadId } : {});
+  }
+
   async interruptAll(): Promise<void> {
     const active = Array.from(this.activeByTurn.entries()).map(([turnId, turn]) => [turnId, { threadId: turn.threadId }] as [string, { threadId: string }]);
     for (const request of cleanShutdownRequests(active)) {
@@ -1009,6 +1026,30 @@ async function serve(): Promise<void> {
       if (url.pathname === "/v1/models") {
         try {
           return Response.json(toAnthropicModelsList(await client.models()));
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          return Response.json({ type: "error", error: { type: "api_error", message } }, { status: 502 });
+        }
+      }
+      if (url.pathname === "/codex/account") {
+        try {
+          return Response.json(await client.account());
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          return Response.json({ type: "error", error: { type: "api_error", message } }, { status: 502 });
+        }
+      }
+      if (url.pathname === "/codex/rate-limits") {
+        try {
+          return Response.json(await client.accountRateLimits());
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          return Response.json({ type: "error", error: { type: "api_error", message } }, { status: 502 });
+        }
+      }
+      if (url.pathname === "/codex/usage") {
+        try {
+          return Response.json(await client.accountUsage(url.searchParams.get("threadId")));
         } catch (error) {
           const message = error instanceof Error ? error.message : String(error);
           return Response.json({ type: "error", error: { type: "api_error", message } }, { status: 502 });

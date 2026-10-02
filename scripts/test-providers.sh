@@ -573,43 +573,72 @@ command = "example-mcp"
 enabled = true
 EOF_CODEX_CONFIG
 mkdir -p "$SANDBOX/scripts"
+FREE_CODEX_PORT=$(python3 -c "
+import socket
+s = socket.socket(); s.bind(('127.0.0.1', 0)); print(s.getsockname()[1]); s.close()")
+for codex_provider_file in "$SANDBOX/providers/codex.json" "$SANDBOX/providers/codex.json.example"; do
+  [ -f "$codex_provider_file" ] || continue
+  tmp_codex_provider="$(mktemp "$SANDBOX/providers/.codex-port.XXXXXX")"
+  jq --arg port "$FREE_CODEX_PORT" '.env.CODEX_GATEWAY_PORT = $port' "$codex_provider_file" > "$tmp_codex_provider"
+  mv -f "$tmp_codex_provider" "$codex_provider_file"
+done
 
 codex_out=$(say codex)
 case "$codex_out" in
-  *"Codex gateway"*"port 4545"*) ok "codex starts or reuses its app-server gateway on activation" ;;
+  *"Codex gateway"*"port $FREE_CODEX_PORT"*) ok "codex starts or reuses its app-server gateway on activation" ;;
   *) bad "codex did not manage the app-server gateway: $codex_out" ;;
 esac
 if [ -f "$SANDBOX/state/codex-gateway.pid" ]; then
   kill "$(cat "$SANDBOX/state/codex-gateway.pid")" 2>/dev/null || true
   rm -f "$SANDBOX/state/codex-gateway.pid"
 fi
-python3 - <<'PY' >/tmp/fkt-codex-health.log 2>&1 &
+FKT_TEST_CODEX_PORT="$FREE_CODEX_PORT" python3 - <<'PY' >/tmp/fkt-codex-health.log 2>&1 &
+import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/health":
             body = b'{"ok":true,"provider":"codex-app-server","model":"gpt-5.5"}'
+        elif self.path == "/codex/account":
+            body = b'{"account":{"type":"chatgpt","email":"sample@example.com","planType":"plus"},"requiresOpenaiAuth":false}'
+        elif self.path == "/codex/rate-limits":
+            body = b'{"ordinaryUsageAllowed":true,"rateLimitResetCredits":{"availableCount":2,"credits":null},"rateLimits":{"limitId":"codex","primary":{"usedPercent":25,"resetsAt":1790940000,"windowDurationMins":300},"secondary":{"usedPercent":60,"resetsAt":1791200000,"windowDurationMins":10080}}}'
+        elif self.path == "/codex/usage":
+            body = b'{"summary":{"lifetimeTokens":12345,"peakDailyTokens":456,"longestRunningTurnSec":78,"currentStreakDays":3,"longestStreakDays":5},"dailyUsageBuckets":[{"startDate":"2026-10-02","tokens":123}]}'
+        else:
+            self.send_response(404)
+            self.end_headers()
+            return
+        if body:
             self.send_response(200)
             self.send_header("content-type", "application/json")
             self.send_header("content-length", str(len(body)))
             self.end_headers()
             self.wfile.write(body)
             return
-        self.send_response(404)
-        self.end_headers()
     def log_message(self, *_args):
         pass
 
-HTTPServer(("127.0.0.1", 4545), Handler).serve_forever()
+HTTPServer(("127.0.0.1", int(os.environ["FKT_TEST_CODEX_PORT"])), Handler).serve_forever()
 PY
 HEALTH_PID=$!
 sleep 1
 codex_status_out=$(say codex-status)
+codex_account_out=$(say account)
+codex_usage_out=$(say usage)
 kill "$HEALTH_PID" 2>/dev/null || true
 case "$codex_status_out" in
-  *"Codex gateway: running (health, port 4545)"*) ok "codex-status recognizes a live gateway even without a pidfile" ;;
+  *"Codex gateway: running (health, port $FREE_CODEX_PORT)"*) ok "codex-status recognizes a live gateway even without a pidfile" ;;
   *) bad "codex-status reported a live pidless gateway incorrectly: $codex_status_out" ;;
+esac
+case "$codex_account_out" in
+  *"Codex account"*"Status: signed in"*"Account: sa***@example.com"*"Plan: plus"*"Model: gpt-5.5"*) ok "ccs account formats supported Codex account RPC fields with redaction" ;;
+  *) bad "ccs account did not format supported account fields: $codex_account_out" ;;
+esac
+case "$codex_usage_out" in
+  *"Codex usage"*"Ordinary usage: allowed"*"primary: used 25%"*"secondary: used 60%"*"Reset credits: 2"*"lifetimeTokens=12345"*) ok "ccs usage formats supported Codex usage and rate-limit RPC fields" ;;
+  *) bad "ccs usage did not format supported usage fields: $codex_usage_out" ;;
 esac
 if grep -q "codex-mcp-headers-helper" "$SANDBOX/codex-config.toml"; then
   bad "codex activation left stale bridge MCP headers helpers in native Codex config"
