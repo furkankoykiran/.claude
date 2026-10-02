@@ -563,6 +563,20 @@ export function toAnthropicStreamEvents(
     if (notification.method === "item/completed") {
       const toolUse = dynamicToolUseFromItem(params["item"], state.toolNameAliases);
       if (toolUse) {
+        const missingArguments = missingRequiredToolUseArguments(toolUse, state.toolRequiredArguments);
+        if (missingArguments) {
+          events.push({
+            event: "error",
+            data: {
+              type: "error",
+              error: {
+                type: "api_error",
+                message: missingArguments,
+              },
+            },
+          });
+          continue;
+        }
         if (state.emittedToolUseIds.has(toolUse.id)) {
           continue;
         }
@@ -964,6 +978,21 @@ function dynamicToolUseFromItem(item: unknown, aliases: Map<string, string> = ne
     name,
     input: dynamicToolInput(record),
   };
+}
+
+function missingRequiredToolUseArguments(toolUse: AnthropicToolUseBlock, requiredByTool: Map<string, string[]>): string | null {
+  const required = requiredByTool.get(toolUse.name) ?? [];
+  if (required.length === 0) {
+    return null;
+  }
+  const record = toolUse.input && typeof toolUse.input === "object" && !Array.isArray(toolUse.input)
+    ? toolUse.input as Record<string, unknown>
+    : {};
+  const missing = required.filter((name) => record[name] === undefined || record[name] === null);
+  if (missing.length === 0) {
+    return null;
+  }
+  return `Codex dynamic tool call ${toolUse.name} omitted required argument(s): ${missing.join(", ")}`;
 }
 
 function dynamicToolUseFromToolCallParams(params: Record<string, unknown>, aliases: Map<string, string> = new Map()): AnthropicToolUseBlock | null {

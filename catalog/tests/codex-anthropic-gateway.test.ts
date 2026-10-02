@@ -543,6 +543,42 @@ describe("experimental Codex Anthropic gateway", () => {
     });
   });
 
+  it("fails closed when a completed dynamic tool item omits required arguments", () => {
+    const state = createGatewayState();
+    state.toolRequiredArguments.set("Bash", ["command"]);
+    const events = toAnthropicStreamEvents([
+      {
+        method: "turn/started",
+        params: { threadId: "t1", turn: { id: "turn1" } },
+      },
+      {
+        method: "item/completed",
+        params: {
+          threadId: "t1",
+          turnId: "turn1",
+          item: {
+            id: "call_1",
+            type: "dynamic_tool_call",
+            toolName: "Bash",
+            arguments: "{}",
+          },
+        },
+      },
+      {
+        method: "turn/completed",
+        params: { threadId: "t1", turn: { id: "turn1" } },
+      },
+    ], state);
+
+    expect(events.filter((event) => event.event === "content_block_start")).toHaveLength(0);
+    expect(events.filter((event) => event.event === "error")).toHaveLength(1);
+    expect(events.find((event) => event.event === "error")?.data).toMatchObject({
+      error: {
+        message: "Codex dynamic tool call Bash omitted required argument(s): command",
+      },
+    });
+  });
+
   it("deduplicates retried forwards and repeated Codex errors", () => {
     const state = createGatewayState();
     const batch = toCodexRequests(baseRequest, { cwd: "/workspace", requestId: "first", model: "gpt-5.5" });
