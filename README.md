@@ -9,7 +9,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE "This repository's own code is MIT licensed")
 [![Platforms](https://img.shields.io/badge/platforms-Linux%20%7C%20macOS%20%7C%20Windows%20%7C%20WSL-lightgrey)](docs/getting-started.md "Supported platforms")
 
-[Getting started](docs/getting-started.md) · [Configuration](docs/configuration.md) · [Security](docs/security-model.md) · [Catalog](docs/catalog-architecture.md) · [FAQ](docs/faq.md)
+[Getting started](docs/getting-started.md) · [Setup presets](docs/presets.md) · [Providers](docs/provider-capability-matrix.md) · [Doctor](docs/doctor-guide.md) · [Security](docs/security-model.md) · [FAQ](docs/faq.md)
 
 </div>
 
@@ -17,14 +17,15 @@
 
 ## What this is
 
-Claude Code is far more capable once it has skills, agents and hooks wired in —
-but assembling those from a dozen upstream repositories, keeping them current,
-and knowing what you actually installed is tedious and easy to get wrong.
+Claude Code is the upstream harness. This toolkit keeps it that way, then adds
+a reproducible skills/configuration layer around it: curated skills, agents,
+hooks, MCP starters, provider switching, and the checks that tell you what is
+actually active.
 
-This toolkit does that assembly and keeps it honest:
+It is built for the boring parts that matter in a real setup:
 
 - **Install only what you want.** Five plugins, installable separately from a
-  Claude Code marketplace — or the full bootstrap in one command on Linux,
+  Claude Code marketplace, or the full bootstrap in one command on Linux,
   macOS, native Windows or WSL.
 - **Context cost is measured, not hoped for.** Claude Code budgets the skill
   listing at 2% of your context window and *silently* drops descriptions past
@@ -38,6 +39,9 @@ This toolkit does that assembly and keeps it honest:
 - **Upstream updates arrive as reviewed pull requests**, not silent overwrites.
   Routine changes merge automatically; anything carrying capability surface
   (hooks, agents, executables, credentials, network access) is held for a human.
+- **Provider switching without pretending.** Claude Code can stay on Anthropic
+  or route through supported Anthropic-compatible providers. Codex uses the
+  official Codex CLI/App Server path; tokens stay with their native owner.
 - **No telemetry, no account, no service.** Nothing phones home.
 
 > **Not an official Anthropic project.** It packages Anthropic's published
@@ -62,9 +66,9 @@ independently updatable:
 | `fk-writing-kit` | Strip AI tells from drafts; build blog posts or LinkedIn copy from a chat, URL or GitHub profile | 819 chars |
 | `fk-manim-video` | Manim animations with spoken narration synced to the animation | 248 chars |
 | `fk-eng-agents` | researcher · planner · code-reviewer · debugger subagents | **0** |
-| `fk-toolkit-ops` | Wire an MCP server from a pasted config; manage toolkit updates | 161 chars |
+| `fk-toolkit-ops` | Manage toolkit updates, MCP setup, and Codex-native ImageGen boundaries | 233 chars |
 
-Plugins carry **no hooks and no executables**. `fk-toolkit-ops` carries the generated no-auth OpenAI Developer Docs MCP manifest; auth-required MCP starters stay disabled in the registry until native host login. Everything else with capability surface lives in the bootstrap layer below, where you can see it before it runs.
+Plugins carry **no hooks and no executables**. `fk-toolkit-ops` carries the generated no-auth OpenAI Developer Docs MCP manifest; auth-required MCP starters stay disabled in the registry until native host login. Its image skill prefers Codex-native ImageGen when the host exposes it, and never claims ChatGPT-plan API image credits. Everything else with capability surface lives in the bootstrap layer below, where you can see it before it runs.
 
 ### The whole toolkit
 
@@ -99,7 +103,31 @@ Verify the install:
 
 ```bash
 bun install --frozen-lockfile && bun run catalog:check
+fkt doctor
 ```
+
+Then choose how much the toolkit should configure for you. Start with a preview:
+
+```bash
+fkt setup --dry-run --preset recommended --profile balanced
+```
+
+Apply only the choices you mean to apply. For example, this keeps setup
+non-interactive, selects Codex as the provider, uses GPT-5.5 medium effort, and
+leaves manual `/compact` available while turning off automatic compaction:
+
+```bash
+fkt setup --yes --provider codex --model gpt-5.5 --effort medium --permission-mode manual --compaction off
+ccs login codex
+ccs codex
+ccs status
+```
+
+Codex support is deliberately native-first: authentication stays in `codex`,
+models come from the live Codex App Server catalog, Claude-side MCP tools stay
+owned by Claude Code in bridge mode, and ImageGen is used only when the current
+host exposes native ImageGen. The optional OpenAI API image path is a separate
+API-key fallback, not a ChatGPT-plan credit claim.
 
 ### Updating
 
@@ -131,11 +159,36 @@ Full detail — migrations, snoozing, opting out, security advisories — in
 | **Skill packs** | `skills/` | Installer-fetched upstream packs, pinned to reviewed commits |
 | **Hooks** | `hooks/` | Format on edit, secret scan on commit, pre-push verify, Docker volume protection, update notice |
 | **Updater** | `bin/fkt` | Fast-forward-only bootstrap updates on a `stable` or `edge` channel |
-| **Providers** | `providers/`, `bin/cc-provider` | Switch Claude Code between Anthropic, NVIDIA, DeepSeek, Kimi, MiniMax, OpenRouter, Z.ai |
+| **Providers** | `providers/`, `bin/cc-provider` | Switch Claude Code between Anthropic, Codex, NVIDIA, DeepSeek, Kimi, MiniMax, OpenRouter, Z.ai |
 | **Utilities** | `utils/` | Shared Python helpers and profile-aware config |
 | **Catalog** | `catalog/` | Deterministic resolver + generator producing the verifiable skills catalog |
 
-## How it fits together
+## Runtime architecture
+
+```mermaid
+flowchart LR
+  U["developer"] --> CC["Claude Code upstream CLI"]
+  CC --> S["skills, agents, hooks"]
+  CC --> MCP["Claude-owned MCP servers"]
+  CC --> P{"active provider"}
+  P --> A["Anthropic"]
+  P --> C["Codex loopback gateway"]
+  P --> O["other Anthropic-compatible providers"]
+  C --> APP["official Codex App Server"]
+  APP --> CHATGPT["ChatGPT/Codex entitlement"]
+  C -. "no token copying" .-> MCP
+```
+
+Claude Code remains the executable you run. The toolkit changes configuration,
+not the harness. Provider adapters, MCP registry output, and setup presets are
+kept as generated or documented layers so you can inspect them before they touch
+your local credentials.
+
+See the [provider capability matrix](docs/provider-capability-matrix.md),
+[Codex mode parity](docs/codex-mode-parity.md), and
+[Codex skill parity](docs/codex-skill-parity.md) for the tested boundaries.
+
+## Catalog architecture
 
 ```mermaid
 flowchart LR

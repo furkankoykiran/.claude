@@ -92,6 +92,55 @@ export type GatewayState = {
   emittedErrors: Set<string>;
 };
 
+
+export type CodexModelCatalogEntry = Record<string, unknown> & {
+  id?: unknown;
+  model?: unknown;
+  displayName?: unknown;
+  hidden?: unknown;
+};
+
+export type CodexModelListResult = {
+  data?: CodexModelCatalogEntry[];
+  nextCursor?: string | null;
+};
+
+export function toAnthropicModelsList(result: CodexModelListResult): Record<string, unknown> {
+  const data = Array.isArray(result.data) ? result.data : [];
+  return {
+    object: "list",
+    data: data
+      .filter((model) => model.hidden !== true)
+      .map((model) => {
+        const id = typeof model.id === "string"
+          ? model.id
+          : typeof model.model === "string"
+            ? model.model
+            : "unknown-codex-model";
+        return {
+          id,
+          object: "model",
+          display_name: typeof model.displayName === "string" ? model.displayName : id,
+          metadata: {
+            codex_model: typeof model.model === "string" ? model.model : id,
+            description: typeof model.description === "string" ? model.description : null,
+            default_reasoning_effort: typeof model.defaultReasoningEffort === "string" ? model.defaultReasoningEffort : null,
+            supported_reasoning_efforts: Array.isArray(model.supportedReasoningEfforts)
+              ? model.supportedReasoningEfforts
+              : [],
+            input_modalities: Array.isArray(model.inputModalities) ? model.inputModalities : [],
+            service_tiers: Array.isArray(model.serviceTiers) ? model.serviceTiers : [],
+            default_service_tier: typeof model.defaultServiceTier === "string" ? model.defaultServiceTier : null,
+            upgrade: typeof model.upgrade === "string" ? model.upgrade : null,
+            upgrade_info: model.upgradeInfo ?? null,
+            is_default: model.isDefault === true,
+          },
+        };
+      }),
+  };
+}
+
+
 export function createGatewayState(): GatewayState {
   return {
     seenRequestKeys: new Set(),
@@ -151,6 +200,9 @@ export function toCodexRequests(
     cwd: options.cwd,
     model: resolveCodexModel(request.model, options.model),
     additionalContext: mergeNullableRecords(additionalContext, toolInstructions),
+    approvalPolicy: "never",
+    approvalsReviewer: "user",
+    sandboxPolicy: { type: "readOnly", networkAccess: false },
   };
   if (options.reasoningEffort) {
     params["effort"] = options.reasoningEffort;
@@ -179,20 +231,32 @@ export function shouldStreamAnthropicResponse(request: Pick<AnthropicMessagesReq
   return request.stream === true;
 }
 
+export function codexThreadStartParams(cwd: string, model: string | undefined, requestModel: string): Record<string, unknown> {
+  return {
+    cwd,
+    model: resolveCodexModel(requestModel, model),
+    ephemeral: true,
+    threadSource: "fk-toolkit-codex-gateway",
+    approvalPolicy: "never",
+    approvalsReviewer: "user",
+    sandbox: "read-only",
+  };
+}
+
 export function resolveCodexModel(requestModel: string, selectedModel?: string): string {
+  if (!requestModel.startsWith("claude-")) {
+    return requestModel;
+  }
   if (selectedModel && selectedModel.length > 0) {
     return selectedModel;
   }
-  if (requestModel.startsWith("claude-")) {
-    const envModel = process.env.CODEX_GATEWAY_MODEL || process.env.CODEX_MODEL;
-    if (envModel) {
-      return envModel;
-    }
-    throw new Error(
-      "Claude model aliases cannot be forwarded to Codex directly; set CODEX_GATEWAY_MODEL to a Codex model id",
-    );
+  const envModel = process.env.CODEX_GATEWAY_MODEL || process.env.CODEX_MODEL;
+  if (envModel) {
+    return envModel;
   }
-  return requestModel;
+  throw new Error(
+    "Claude model aliases cannot be forwarded to Codex directly; set CODEX_GATEWAY_MODEL to a Codex model id",
+  );
 }
 
 export function toAnthropicStreamEvents(
@@ -558,6 +622,33 @@ type PendingTurn = {
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
+export function failClosedClientRequestResult(method: string): Record<string, unknown> | null {
+  if (method === "item/commandExecution/requestApproval") {
+    return { decision: "decline" };
+  }
+  if (method === "item/fileChange/requestApproval") {
+    return { decision: "decline" };
+  }
+  if (method === "execCommandApproval") {
+    return { decision: { denied: { rejection: "Codex gateway keeps Claude Code as the tool-permission owner." } } };
+  }
+  if (method === "item/permissions/requestApproval") {
+    return { permissions: {}, scope: "turn", strictAutoReview: true };
+  }
+  if (method === "item/tool/call") {
+    return {
+      success: false,
+      contentItems: [
+        {
+          type: "inputText",
+          text: "Codex gateway does not execute Codex-side dynamic tools; Claude Code owns client tools.",
+        },
+      ],
+    };
+  }
+  return null;
+}
+
 class CodexJsonRpcClient {
   private seq = 0;
   private initialized = false;
@@ -583,12 +674,11 @@ class CodexJsonRpcClient {
     });
     const rpc = batch.requests[0];
     if (rpc && batch.threadId === null) {
-      const response = await this.request(`thread-${this.seq}`, "thread/start", {
-        cwd,
-        model: selectedModel ?? resolveCodexModel(request.model),
-        ephemeral: true,
-        threadSource: "fk-toolkit-codex-gateway",
-      });
+      const response = await this.request(
+        `thread-${this.seq}`,
+        "thread/start",
+        codexThreadStartParams(cwd, selectedModel, request.model),
+      );
       const thread = (response as { thread?: { id?: string } }).thread;
       if (!thread?.id) throw new Error("Codex thread/start returned no thread id");
       rpc.params.threadId = thread.id;
@@ -603,6 +693,11 @@ class CodexJsonRpcClient {
         reject(error instanceof Error ? error : new Error(String(error)));
       });
     });
+  }
+
+  async models(): Promise<CodexModelListResult> {
+    await this.initialize();
+    return (await this.request(`models-${++this.seq}`, "model/list", {})) as CodexModelListResult;
   }
 
   async interruptAll(): Promise<void> {
@@ -678,8 +773,19 @@ class CodexJsonRpcClient {
     }
   }
 
+  private respondToClientRequest(id: string | number, method: string): boolean {
+    const result = failClosedClientRequestResult(method);
+    if (!result) return false;
+    void this.writeJson({ jsonrpc: "2.0", id, result });
+    return true;
+  }
+
   private handleMessage(message: JsonRpcNotification | JsonRpcRequest): void {
     const record = message as Record<string, unknown>;
+    if ("id" in record && "method" in record) {
+      const handled = this.respondToClientRequest(record["id"] as string | number, String(record["method"]));
+      if (handled) return;
+    }
     if ("id" in record && !("method" in record)) {
       const id = record["id"] as string | number;
       const rpc = this.rpcPending.get(id);
@@ -764,12 +870,12 @@ async function serve(): Promise<void> {
         });
       }
       if (url.pathname === "/v1/models") {
-        return Response.json({
-          object: "list",
-          data: [
-            { id: process.env.CODEX_GATEWAY_MODEL || process.env.CODEX_MODEL || "user-selected-codex-model", object: "model" },
-          ],
-        });
+        try {
+          return Response.json(toAnthropicModelsList(await client.models()));
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          return Response.json({ type: "error", error: { type: "api_error", message } }, { status: 502 });
+        }
       }
       if (url.pathname !== "/v1/messages" || req.method !== "POST") {
         return new Response("not found", { status: 404 });

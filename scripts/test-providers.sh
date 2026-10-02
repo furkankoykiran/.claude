@@ -42,15 +42,15 @@ cp "$REPO_DIR"/providers/*.json.example "$SANDBOX/providers/"
 cp "$REPO_DIR"/providers/*.yaml.example "$SANDBOX/providers/" 2>/dev/null || true
 cp "$REPO_DIR/settings.base.json" "$SANDBOX/"
 
-ccs() { CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "$@"; }
+ccs() { CODEX_CONFIG="$SANDBOX/codex-config.toml" CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "$@"; }
 # Merged stdout+stderr as a string. Captured rather than piped: under `set -o
 # pipefail` a non-zero exit from cc-provider (which `ccs bogus` is supposed to
 # return) would mask a successful grep and make the assertion lie.
-say() { CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "$@" 2>&1 || true; }
+say() { CODEX_CONFIG="$SANDBOX/codex-config.toml" CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "$@" 2>&1 || true; }
 # Exit status only, with output discarded.
-rc() { CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "$@" >/dev/null 2>&1; }
+rc() { CODEX_CONFIG="$SANDBOX/codex-config.toml" CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "$@" >/dev/null 2>&1; }
 # Like say(), but feeds a fake API key through the noninteractive test path.
-say_key() { CC_PROVIDER_API_KEY="$1" CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "${@:2}" 2>&1 || true; }
+say_key() { CC_PROVIDER_API_KEY="$1" CODEX_CONFIG="$SANDBOX/codex-config.toml" CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "${@:2}" 2>&1 || true; }
 
 # --- templates are well-formed and self-consistent -------------------------
 head_ "Provider templates"
@@ -404,16 +404,22 @@ fi
 
 # Keys Claude Code and other tools write into settings.json are not the
 # switcher's to delete. Before the merge, `ccs` silently dropped the gstack Stop
-# hook, tui and agentPushNotifEnabled on every switch.
-jq '. + {tui:"fullscreen", agentPushNotifEnabled:true}
+# hook, tui and agentPushNotifEnabled on every switch. Keep usage-limit
+# continuation as a carried user/runtime preference too; the toolkit documents
+# its semantics separately and must not infer quota state from it.
+jq '. + {tui:"fullscreen", agentPushNotifEnabled:true, autoContinueAtUsageLimit:true}
+    | .modelSettings = {"local-choice":{"effort":"low"}}
     | .hooks.Stop = [{"hooks":[{"type":"command","command":"gstack/timeline-stop-hook"}]}]' \
   "$SANDBOX/settings.json" > "$SANDBOX/s.tmp" && mv "$SANDBOX/s.tmp" "$SANDBOX/settings.json"
 ccs anthropic >/dev/null 2>&1
 if [ "$(jq -r '.tui // "gone"' "$SANDBOX/settings.json")" = "fullscreen" ] \
+   && [ "$(jq -r '.agentPushNotifEnabled // false' "$SANDBOX/settings.json")" = "true" ] \
+   && [ "$(jq -r '.autoContinueAtUsageLimit // false' "$SANDBOX/settings.json")" = "true" ] \
+   && [ "$(jq -r '.modelSettings["local-choice"].effort // "gone"' "$SANDBOX/settings.json")" = "low" ] \
    && [ "$(jq -r '[.hooks.Stop[]?.hooks[]?.command] | join(",")' "$SANDBOX/settings.json")" = "gstack/timeline-stop-hook" ]; then
-  ok "unrelated settings and third-party hooks are carried across a switch"
+  ok "unrelated settings, runtime preferences and third-party hooks are carried across a switch"
 else
-  bad "a switch destroyed unrelated settings or a third-party hook"
+  bad "a switch destroyed unrelated settings, runtime preferences or a third-party hook"
 fi
 
 # Provider-owned keys are OBJECTS, and a recursive merge would blend them: a
@@ -549,11 +555,40 @@ else
   bad "shipped nvidia template is no longer loopback; the gateway check is dead code"
 fi
 # A remote provider must never trip the loopback check.
+cat > "$SANDBOX/codex-config.toml" <<EOF_CODEX_CONFIG
+model = "gpt-5.5"
+
+[mcp_servers."github"]
+url = "https://api.githubcopilot.com/mcp/"
+enabled = true
+http_headers_helper = "$SANDBOX/scripts/codex-mcp-headers-helper.js github"
+
+[mcp_servers."context7"]
+url = "https://mcp.context7.com/mcp"
+enabled = true
+http_headers_helper = "$SANDBOX/scripts/codex-mcp-headers-helper.js context7"
+
+[mcp_servers."localOnly"]
+command = "example-mcp"
+enabled = true
+EOF_CODEX_CONFIG
+mkdir -p "$SANDBOX/scripts"
+
 codex_out=$(say codex)
 case "$codex_out" in
   *"Codex gateway"*"port 4545"*) ok "codex starts or reuses its app-server gateway on activation" ;;
   *) bad "codex did not manage the app-server gateway: $codex_out" ;;
 esac
+if grep -q "codex-mcp-headers-helper" "$SANDBOX/codex-config.toml"; then
+  bad "codex activation left stale bridge MCP headers helpers in native Codex config"
+else
+  ok "codex activation removes stale Claude-owned bridge MCP helpers"
+fi
+if grep -q "localOnly" "$SANDBOX/codex-config.toml"; then
+  ok "codex activation preserves user-owned native Codex MCP servers"
+else
+  bad "codex activation removed a user-owned native Codex MCP server"
+fi
 codex_model_out=$(say codex-model gpt-5.5 medium)
 case "$codex_model_out" in
   *"Codex model set to gpt-5.5"*) ok "codex-model reports the selected Codex model" ;;
@@ -565,10 +600,20 @@ if [ "$(jq -r '.env.CODEX_GATEWAY_MODEL' "$SANDBOX/providers/codex.json")" = "gp
 else
   bad "codex-model did not persist the Codex model settings"
 fi
-if [ "$(jq -r '.model' "$SANDBOX/providers/codex.json")" = "claude-sonnet-4-5" ]; then
-  ok "codex-model keeps Claude-facing aliases separate from Codex model ids"
+if [ "$(jq -r '.model' "$SANDBOX/providers/codex.json")" = "gpt-5.5" ] \
+   && [ "$(jq -r '.env.ANTHROPIC_DEFAULT_SONNET_MODEL' "$SANDBOX/providers/codex.json")" = "gpt-5.5" ] \
+   && [ "$(jq -r '.modelDiscoveryEnabled' "$SANDBOX/providers/codex.json")" = "true" ]; then
+  ok "codex-model writes Claude picker defaults to the selected Codex model"
 else
-  bad "codex-model wrote a Codex model id into Claude-facing model selection"
+  bad "codex-model did not update Claude picker defaults for Codex"
+fi
+if [ "$(jq -r '.model' "$SANDBOX/settings.json")" = "gpt-5.5" ] \
+   && [ "$(jq -r '.modelDiscoveryEnabled' "$SANDBOX/settings.json")" = "true" ] \
+   && [ "$(jq -r '.inferenceModelPricingEnabled' "$SANDBOX/settings.json")" = "false" ] \
+   && [ "$(jq -r '.modelPicker.options[0].behavesAs' "$SANDBOX/settings.json")" = "claude-sonnet-4-5" ]; then
+  ok "codex activation carries model discovery settings into settings.json"
+else
+  bad "codex activation did not carry model discovery settings into settings.json"
 fi
 case "$(say deepseek)" in
   *"nothing is listening"*) bad "a remote provider was wrongly checked for a local listener" ;;
@@ -588,6 +633,14 @@ esac
 case "$out" in
   *"gateway check:"*) ok "doctor checks gateway state when the nvidia provider exists" ;;
   *) bad "doctor did not check gateway state: $out" ;;
+esac
+case "$out" in
+  *"Codex picker catalog:"*"Claude /model Codex rows:"*"ids containing claude or anthropic"*) ok "doctor reports Codex picker and gateway-discovery state" ;;
+  *) bad "doctor did not report Codex picker state: $out" ;;
+esac
+case "$out" in
+  *"Codex pricing estimate: false"*) ok "doctor reports Codex pricing estimates are disabled" ;;
+  *) bad "doctor did not report disabled Codex pricing estimates: $out" ;;
 esac
 case "$out" in
   *"sk-authmade-secret"*) bad "doctor leaked a configured API key" ;;

@@ -3,10 +3,13 @@ import {
   cancellationRequest,
   cleanShutdownRequests,
   codexAppServerCommand,
+  codexThreadStartParams,
+  failClosedClientRequestResult,
   createGatewayState,
   shouldForwardWithRetryDedupe,
   resolveCodexModel,
   shouldStreamAnthropicResponse,
+  toAnthropicModelsList,
   toAnthropicStreamEvents,
   toCodexRequests,
   type AnthropicMessagesRequest,
@@ -43,6 +46,9 @@ describe("experimental Codex Anthropic gateway", () => {
         model: "gpt-5.5",
         effort: "medium",
         input: [{ type: "text", text: "user: Say hello.", text_elements: [] }],
+        approvalPolicy: "never",
+        approvalsReviewer: "user",
+        sandboxPolicy: { type: "readOnly", networkAccess: false },
       },
     });
     expect(String(batch.requests[0]?.params["threadId"])).toMatch(/^urn:uuid:[0-9a-f-]+$/);
@@ -51,6 +57,18 @@ describe("experimental Codex Anthropic gateway", () => {
         kind: "application",
         value: "You are a careful coding assistant.",
       },
+    });
+  });
+
+  it("starts Codex threads with read-only execution settings", () => {
+    expect(codexThreadStartParams("/workspace", "gpt-5.5", "claude-sonnet-4-5")).toEqual({
+      cwd: "/workspace",
+      model: "gpt-5.5",
+      ephemeral: true,
+      threadSource: "fk-toolkit-codex-gateway",
+      approvalPolicy: "never",
+      approvalsReviewer: "user",
+      sandbox: "read-only",
     });
   });
 
@@ -133,12 +151,74 @@ describe("experimental Codex Anthropic gateway", () => {
   });
 
 
+  it("maps Codex model/list into Anthropic-compatible model objects", () => {
+    expect(
+      toAnthropicModelsList({
+        data: [
+          {
+            id: "gpt-6.1-sol",
+            model: "gpt-6.1-sol",
+            displayName: "GPT-6.1-Sol",
+            description: "Latest workhorse model for coding and everyday work.",
+            hidden: false,
+            supportedReasoningEfforts: [{ reasoningEffort: "low", description: "Fast" }],
+            defaultReasoningEffort: "low",
+            inputModalities: ["text", "image"],
+            isDefault: true,
+          },
+          { id: "internal-hidden", hidden: true },
+        ],
+      }),
+    ).toEqual({
+      object: "list",
+      data: [
+        {
+          id: "gpt-6.1-sol",
+          object: "model",
+          display_name: "GPT-6.1-Sol",
+          metadata: {
+            codex_model: "gpt-6.1-sol",
+            description: "Latest workhorse model for coding and everyday work.",
+            default_reasoning_effort: "low",
+            supported_reasoning_efforts: [{ reasoningEffort: "low", description: "Fast" }],
+            input_modalities: ["text", "image"],
+            service_tiers: [],
+            default_service_tier: null,
+            upgrade: null,
+            upgrade_info: null,
+            is_default: true,
+          },
+        },
+      ],
+    });
+  });
+
   it("keeps Codex model choice independent from Claude aliases", () => {
     expect(resolveCodexModel("claude-3-5-sonnet-latest", "gpt-5.5")).toBe("gpt-5.5");
     expect(resolveCodexModel("gpt-5.5")).toBe("gpt-5.5");
+    expect(resolveCodexModel("gpt-5.6-luna", "gpt-5.5")).toBe("gpt-5.6-luna");
+    expect(codexThreadStartParams("/workspace", "gpt-5.5", "gpt-5.6-luna")).toMatchObject({
+      model: "gpt-5.6-luna",
+    });
     expect(() => resolveCodexModel("claude-3-5-sonnet-latest")).toThrow(
       "set CODEX_GATEWAY_MODEL to a Codex model id",
     );
+  });
+
+
+  it("declines Codex-side approval and dynamic tool requests", () => {
+    expect(failClosedClientRequestResult("item/commandExecution/requestApproval")).toEqual({ decision: "decline" });
+    expect(failClosedClientRequestResult("item/fileChange/requestApproval")).toEqual({ decision: "decline" });
+    expect(failClosedClientRequestResult("execCommandApproval")).toEqual({
+      decision: { denied: { rejection: "Codex gateway keeps Claude Code as the tool-permission owner." } },
+    });
+    expect(failClosedClientRequestResult("item/permissions/requestApproval")).toEqual({
+      permissions: {},
+      scope: "turn",
+      strictAutoReview: true,
+    });
+    expect(failClosedClientRequestResult("item/tool/call")).toMatchObject({ success: false });
+    expect(failClosedClientRequestResult("thread/unknown")).toBeNull();
   });
 
   it("defaults Anthropic-compatible responses to non-streaming unless stream is true", () => {

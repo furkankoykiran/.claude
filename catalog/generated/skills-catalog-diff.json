@@ -546,6 +546,17 @@
       "sourceId": "repository"
     },
     {
+      "key": "/fk-toolkit-ops:openai-image",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
+      "sourceId": "repository"
+    },
+    {
       "key": "/fk-toolkit-ops:toolkit-update",
       "kind": "added",
       "manualReviewRequired": true,
@@ -1428,7 +1439,7 @@
   ],
   "schemaVersion": 2,
   "summary": {
-    "added": 156,
+    "added": 157,
     "licenseRestricted": 11,
     "manualReviewRequired": true,
     "massChange": false,
@@ -1442,7 +1453,7 @@
       "new-skill-capability:network-access"
     ],
     "runtimeOnly": 3,
-    "securitySensitive": 72,
+    "securitySensitive": 73,
     "updated": 0
   }
 }

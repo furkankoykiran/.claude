@@ -7603,6 +7603,57 @@
     {
       "allowedTools": [
         "Bash",
+        "Read"
+      ],
+      "canonicalInvocation": "/fk-toolkit-ops:openai-image",
+      "description": "Generate/edit images via Codex ImageGen.",
+      "digest": "b434696680a75348ef4016372e31141367721139123fd9cbef2512884c0fba88",
+      "frontmatter": {
+        "allowed-tools": [
+          "Bash",
+          "Read"
+        ],
+        "description": "Generate/edit images via Codex ImageGen.",
+        "name": "openai-image"
+      },
+      "fullPagePath": "docs/skills/repository/fk-toolkit-ops-openai-image.md",
+      "generated": true,
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT",
+        "matchesDeclaration": true,
+        "redistribution": "full"
+      },
+      "namespacedInvocations": [
+        "/fk-toolkit-ops:openai-image"
+      ],
+      "pack": "repository",
+      "redistribution": "full",
+      "relativePath": "skills/fk-toolkit-ops/skills/openai-image/SKILL.md",
+      "security": {
+        "flags": [
+          "bash/powershell tool",
+          "network-access"
+        ],
+        "hasAgents": false,
+        "hasBashOrPowershell": true,
+        "hasCredentialRef": false,
+        "hasDynamicShell": false,
+        "hasExecutable": false,
+        "hasHiddenFiles": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasNetworkRef": true,
+        "toolCount": 2
+      },
+      "skillName": "fk-toolkit-ops:openai-image",
+      "sourceId": "repository",
+      "sourceType": "repo-owned",
+      "warnings": []
+    },
+    {
+      "allowedTools": [
+        "Bash",
         "Read",
         "AskUserQuestion"
       ],
@@ -8905,7 +8956,7 @@
       "pack": "repository",
       "redistribution": "full",
       "runtimeOnly": false,
-      "skillCount": 12,
+      "skillCount": 13,
       "type": "repo-owned"
     },
     {
@@ -8944,9 +8995,9 @@
     }
   ],
   "totals": {
-    "redistributable": 145,
+    "redistributable": 146,
     "runtimeOnly": 3,
-    "skills": 156,
+    "skills": 157,
     "sources": 15,
     "warnings": 0
   }

@@ -412,6 +412,8 @@ check "PowerShell installer has UI/UX Pro Max parity" "0" \
   "$(grep -q 'Install-UiUxProMaxSkillSet' "$REPO_ROOT/install.ps1"; echo $?)"
 check "PowerShell installer has BRAG slim parity" "0" \
   "$(grep -q 'Install-BragSlimSkill' "$REPO_ROOT/install.ps1"; echo $?)"
+check "PowerShell installer has no-sync CI mode" "0" \
+  "$(grep -q 'CLAUDE_BOOTSTRAP_NO_SYNC' "$REPO_ROOT/install.ps1"; echo $?)"
 
 # ---------------------------------------------------------------------------
 # user commands: ccs/fkt must be real commands in a clean shell

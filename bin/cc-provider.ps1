@@ -40,7 +40,7 @@ $Active   = Join-Path $PDir '.active'
 # Keys the ACTIVE PROVIDER owns outright; see bin/cc-provider for the rationale.
 # Kept identical to the bash list on purpose - the two ports must not disagree
 # about which routing keys a switch is allowed to carry over.
-$ProviderKeys = @('env', 'model', 'apiKeyHelper')
+$ProviderKeys = @('env', 'model', 'apiKeyHelper', 'modelDiscoveryEnabled', 'modelPrefer1mContext', 'inferenceModels', 'inferenceModelPricingEnabled', 'inferenceModelPricing', 'inferenceModelPricingMultiplier', 'modelPicker')
 
 function Assert-ProviderArg($cmd, $ProviderArgs) {
   if ($ProviderArgs.Count -lt 1 -or [string]::IsNullOrWhiteSpace($ProviderArgs[0])) { throw "$cmd requires a provider name" }
@@ -205,6 +205,7 @@ function Invoke-Doctor {
     "safety deny rules: $denyCount"
     "hook handlers: $hookCount"
   }
+  Write-CodexPickerStatus
   $nvidia = Join-Path $PDir 'nvidia.json'
   $nvidiaExample = Join-Path $PDir 'nvidia.json.example'
   $gatewayScript = Join-Path $env:CLAUDE_DIR 'scripts\nim-gateway.ps1'
@@ -218,6 +219,30 @@ function Invoke-Doctor {
   }
 }
 
+
+function Write-CodexPickerStatus {
+  $codexFile = Join-Path $PDir 'codex.json'
+  if (Test-Path -LiteralPath $codexFile) {
+    $codex = Read-JsonMap $codexFile
+    $providerCount = 0
+    if ($codex.ContainsKey('modelPicker') -and $codex['modelPicker'].ContainsKey('options')) { $providerCount = @($codex['modelPicker']['options']).Count }
+    $selected = 'unset'
+    if ($codex.ContainsKey('env') -and $codex['env'].ContainsKey('CODEX_GATEWAY_MODEL')) { $selected = $codex['env']['CODEX_GATEWAY_MODEL'] }
+    elseif ($codex.ContainsKey('model')) { $selected = $codex['model'] }
+    "Codex picker catalog: $providerCount model(s) cached in providers/codex.json"
+    "Codex selected model: $selected"
+  }
+  if (Test-Path -LiteralPath $Settings) {
+    $settingsMap = Read-JsonMap $Settings
+    $settingsCount = 0
+    if ($settingsMap.ContainsKey('modelPicker') -and $settingsMap['modelPicker'].ContainsKey('options')) { $settingsCount = @($settingsMap['modelPicker']['options']).Count }
+    $pricing = 'false'
+    if ($settingsMap.ContainsKey('inferenceModelPricingEnabled')) { $pricing = [string]$settingsMap['inferenceModelPricingEnabled'] }
+    "Claude /model Codex rows: $settingsCount cached in settings.json"
+    "Codex pricing estimate: $pricing"
+  }
+  'Codex gateway discovery: Claude Code keeps only raw /v1/models ids containing claude or anthropic; Codex ids use generated modelPicker rows.'
+}
 
 function Read-JsonMap($path) {
   if (-not (Test-Path -LiteralPath $path)) { return @{} }

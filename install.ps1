@@ -9,6 +9,8 @@
     is for people on real Windows (PowerShell / Windows Terminal).
 
     Same fail-soft philosophy as install.sh: git is the only hard requirement.
+    Set CLAUDE_BOOTSTRAP_NO_SYNC=1 to use the current checkout as-is, which is
+    intended for CI and testing local changes.
     Every other step (bun, gstack, rtk, manim, graphify) is optional. A step
     that can't complete is reported in the summary at the end instead of
     aborting the whole bootstrap. Re-running is safe (idempotent).
@@ -49,6 +51,7 @@ $BragRepo = 'https://github.com/latent-spaces/brag.git'
 $ClaudeDir = if ($env:CLAUDE_DIR) { $env:CLAUDE_DIR } else { Join-Path $HOME '.claude' }
 $IsMinimal = $Minimal.IsPresent -or ($env:CLAUDE_BOOTSTRAP_MINIMAL -eq '1')
 $Channel   = if ($env:CLAUDE_BOOTSTRAP_CHANNEL) { $env:CLAUDE_BOOTSTRAP_CHANNEL } else { 'stable' }
+$NoSync    = ($env:CLAUDE_BOOTSTRAP_NO_SYNC -eq '1')
 $LockFile  = Join-Path $ClaudeDir 'skills-source.lock.json'
 
 $script:FailedSteps = @()
@@ -141,6 +144,14 @@ function Invoke-Step {
 #   stable (default)  the highest v* release tag
 #   edge              origin/main
 function Initialize-Repo {
+    if ($NoSync) {
+        if (-not (Test-Path (Join-Path $ClaudeDir '.git'))) {
+            throw "CLAUDE_BOOTSTRAP_NO_SYNC=1 requires an existing git checkout at $ClaudeDir"
+        }
+        Write-Step "Using existing checkout at $ClaudeDir (CLAUDE_BOOTSTRAP_NO_SYNC=1)"
+        return
+    }
+
     if (-not (Test-Path $ClaudeDir)) {
         Write-Step "Cloning $RepoUrl into $ClaudeDir"
         git clone $RepoUrl $ClaudeDir
@@ -981,6 +992,10 @@ function Invoke-Main {
     }
 
     Write-Summary
+    # Optional native tools can leave $LASTEXITCODE non-zero even when their
+    # failure was intentionally swallowed by Invoke-Step. A successful fail-soft
+    # bootstrap must report success to CI and to pwsh callers.
+    $global:LASTEXITCODE = 0
 }
 
 Invoke-Main

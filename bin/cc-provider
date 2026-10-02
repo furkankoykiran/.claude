@@ -32,13 +32,14 @@ SETTINGS="$CLAUDE_DIR/settings.json"
 BASE_SETTINGS="$CLAUDE_DIR/settings.base.json"
 CODEX_GATEWAY_PID="$CLAUDE_DIR/state/codex-gateway.pid"
 CODEX_GATEWAY_LOG="$CLAUDE_DIR/state/codex-gateway.log"
+CODEX_CONFIG="${CODEX_CONFIG:-$HOME/.codex/config.toml}"
 PLACEHOLDER_RE='<[A-Z_]+>'
 
 # Keys the ACTIVE PROVIDER owns outright. Each is taken from the provider file
 # and removed when that file does not set it, so stale routing credentials cannot
 # outlive a switch. UX policy such as effortLevel and enabledPlugins is carried
 # over from the user's settings instead of being reset by provider templates.
-PROVIDER_KEYS='["env","model","apiKeyHelper"]'
+PROVIDER_KEYS='["env","model","apiKeyHelper","modelDiscoveryEnabled","modelPrefer1mContext","inferenceModels","inferenceModelPricingEnabled","inferenceModelPricing","inferenceModelPricingMultiplier","modelPicker"]'
 
 die() { printf 'cc-provider: %s\n' "$*" >&2; exit 1; }
 
@@ -94,12 +95,76 @@ codex_gateway_running() {
   kill -0 "$pid" 2>/dev/null
 }
 
+scrub_codex_bridge_mcp_config() {
+  # In ccs codex bridge mode, Claude Code owns Claude-side MCP tools. Older
+  # toolkit builds also registered github/context7 inside native Codex with a
+  # now-deleted HTTP headers helper, which makes Codex app-server stall before
+  # the first useful response. Remove only those toolkit bridge duplicates and
+  # preserve any user-owned Codex MCP entries.
+  [ -f "$CODEX_CONFIG" ] || return 0
+  command -v awk >/dev/null 2>&1 || return 0
+
+  local tmp backup removed
+  tmp="$(mktemp "${TMPDIR:-/tmp}/codex-config.XXXXXX")" || return 0
+  removed="$({
+    awk -v helper="codex-mcp-headers-helper.js" '
+      function is_header(line) { return line ~ /^\[mcp_servers\."[^"]+"\]/ }
+      function is_bridge_name(header) {
+        return header == "[mcp_servers.\"github\"]" || header == "[mcp_servers.\"context7\"]"
+      }
+      function flush(    block_text) {
+        if (!in_block) return
+        block_text = block
+        if (is_bridge_name(block_header) && index(block_text, helper) > 0) {
+          removed = 1
+        } else {
+          printf "%s", block
+        }
+        in_block = 0
+        block = ""
+        block_header = ""
+      }
+      is_header($0) {
+        flush()
+        in_block = 1
+        block_header = $0
+        block = $0 ORS
+        next
+      }
+      /^\[/ {
+        flush()
+        print
+        next
+      }
+      in_block {
+        block = block $0 ORS
+        next
+      }
+      { print }
+      END {
+        flush()
+        if (removed) print "removed" > "/dev/stderr"
+      }
+    ' "$CODEX_CONFIG" > "$tmp"
+  } 2>&1)"
+  if printf "%s\n" "$removed" | grep -qxF removed; then
+    backup="$CODEX_CONFIG.bak.$(date -u +%Y%m%d-%H%M%S)"
+    cp "$CODEX_CONFIG" "$backup" 2>/dev/null || true
+    chmod --reference="$CODEX_CONFIG" "$tmp" 2>/dev/null || chmod 600 "$tmp"
+    mv -f "$tmp" "$CODEX_CONFIG"
+    printf "Removed duplicate Claude-owned Codex MCP registrations from %s (backup: %s).\n" "$CODEX_CONFIG" "$backup"
+  else
+    rm -f "$tmp"
+  fi
+}
+
 start_codex_gateway() {
   is_provider codex || die "codex provider template is missing"
   ensure_provider_file codex
   command -v bun >/dev/null 2>&1 || die "bun is required to run the Codex gateway"
   command -v codex >/dev/null 2>&1 || die "codex CLI is required; install it and run: ccs login codex"
   mkdir -p "$(dirname "$CODEX_GATEWAY_PID")"
+  scrub_codex_bridge_mcp_config
   if codex_gateway_running; then
     printf 'Codex gateway already running (pid %s, port %s).\n' "$(cat "$CODEX_GATEWAY_PID")" "$(codex_gateway_port)"
     return 0
@@ -150,6 +215,95 @@ status_codex_gateway() {
   fi
 }
 
+codex_models_json() {
+  is_provider codex || die "codex provider template is missing"
+  command -v curl >/dev/null 2>&1 || die "curl is required to query the Codex model catalog"
+  if ! codex_gateway_running; then
+    start_codex_gateway >/dev/null
+  fi
+  local url
+  url="http://127.0.0.1:$(codex_gateway_port)/v1/models"
+  curl -fsS "$url" || die "failed to query Codex model catalog at $url"
+}
+
+refresh_codex_model_discovery() {
+  ensure_provider_file codex
+  command -v jq >/dev/null 2>&1 || return 0
+  local json tmp selected
+  json=$(codex_models_json) || return 0
+  selected=$(jq -r '.env.CODEX_GATEWAY_MODEL // "gpt-5.5"' "$PDIR/codex.json")
+  tmp="$(mktemp "$PDIR/.codex.json.XXXXXX")"
+  jq --argjson catalog "$json" --arg selected "$selected" '
+    def catalog_models:
+      ($catalog.data // []) | map(select((.id // "") != ""));
+    def known_models:
+      catalog_models
+      | map(
+          {
+            name: .id,
+            labelOverride: (.display_name // .id)
+          }
+          + (if .id == $selected or (.metadata.is_default == true) then {anthropicFamilyTier: "sonnet"} else {} end)
+          + (if .id == $selected then {isFamilyDefault: true} else {} end)
+        );
+    def picker_models:
+      catalog_models
+      | map({
+          model: .id,
+          label: (.display_name // .id),
+          description: (.metadata.description // .description // "Codex model"),
+          behavesAs: "claude-sonnet-4-5"
+        });
+    .modelDiscoveryEnabled = true
+    | .inferenceModelPricingEnabled = false
+    | .model = $selected
+    | .env.ANTHROPIC_DEFAULT_HAIKU_MODEL = $selected
+    | .env.ANTHROPIC_DEFAULT_SONNET_MODEL = $selected
+    | .env.ANTHROPIC_DEFAULT_OPUS_MODEL = $selected
+    | .env.CLAUDE_CODE_SUBAGENT_MODEL = $selected
+    | .inferenceModels = known_models
+    | .modelPicker = {options: picker_models}
+  ' "$PDIR/codex.json" > "$tmp" || { rm -f "$tmp"; return 0; }
+  chmod 600 "$tmp"
+  mv -f "$tmp" "$PDIR/codex.json"
+}
+
+codex_picker_status() {
+  command -v jq >/dev/null 2>&1 || return 0
+  local provider_count settings_count pricing selected
+  if [ -f "$PDIR/codex.json" ]; then
+    provider_count=$(jq -r '(.modelPicker.options // []) | length' "$PDIR/codex.json" 2>/dev/null || printf '0')
+    selected=$(jq -r '.env.CODEX_GATEWAY_MODEL // .model // "unset"' "$PDIR/codex.json" 2>/dev/null || printf 'unset')
+    printf 'Codex picker catalog: %s model(s) cached in providers/codex.json\n' "$provider_count"
+    printf 'Codex selected model: %s\n' "$selected"
+  fi
+  if [ -f "$SETTINGS" ]; then
+    settings_count=$(jq -r '(.modelPicker.options // []) | length' "$SETTINGS" 2>/dev/null || printf '0')
+    pricing=$(jq -r '.inferenceModelPricingEnabled // false' "$SETTINGS" 2>/dev/null || printf 'false')
+    printf 'Claude /model Codex rows: %s cached in settings.json\n' "$settings_count"
+    printf 'Codex pricing estimate: %s\n' "$pricing"
+  fi
+  printf 'Codex gateway discovery: Claude Code keeps only raw /v1/models ids containing claude or anthropic; Codex ids use generated modelPicker rows.\n'
+}
+
+list_codex_models() {
+  local json
+  json=$(codex_models_json)
+  if command -v jq >/dev/null 2>&1; then
+    printf '%s\n' "$json" | jq -r '
+      if .data then
+        .data[]
+        | [.id, (.display_name // .id), (.metadata.default_reasoning_effort // ""), ((.metadata.supported_reasoning_efforts // []) | map(.reasoningEffort // .) | join(",")), (if .metadata.is_default then "default" else "" end)]
+        | @tsv
+      else
+        error(.error.message // "invalid Codex model catalog response")
+      end
+    ' | awk 'BEGIN { printf "%-22s %-22s %-8s %-28s %s\n", "id", "display", "default", "efforts", "notes" } { printf "%-22s %-22s %-8s %-28s %s\n", $1, $2, $3, $4, $5 }'
+  else
+    printf '%s\n' "$json"
+  fi
+}
+
 set_codex_model() {
   local model="${1:-}" effort="${2:-medium}" tmp
   [ -n "$model" ] || die "codex-model requires a Codex model id (example: ccs codex-model gpt-5.5 medium)"
@@ -158,11 +312,13 @@ set_codex_model() {
   command -v jq >/dev/null 2>&1 || die "jq is required to update providers/codex.json"
   tmp="$(mktemp "$PDIR/.codex.json.XXXXXX")"
   jq --arg model "$model" --arg effort "$effort" '
-    .model = "claude-sonnet-4-5"
-    | .env.ANTHROPIC_DEFAULT_HAIKU_MODEL = "claude-sonnet-4-5"
-    | .env.ANTHROPIC_DEFAULT_SONNET_MODEL = "claude-sonnet-4-5"
-    | .env.ANTHROPIC_DEFAULT_OPUS_MODEL = "claude-sonnet-4-5"
-    | .env.CLAUDE_CODE_SUBAGENT_MODEL = "claude-sonnet-4-5"
+    .model = $model
+    | .modelDiscoveryEnabled = true
+    | .inferenceModelPricingEnabled = false
+    | .env.ANTHROPIC_DEFAULT_HAIKU_MODEL = $model
+    | .env.ANTHROPIC_DEFAULT_SONNET_MODEL = $model
+    | .env.ANTHROPIC_DEFAULT_OPUS_MODEL = $model
+    | .env.CLAUDE_CODE_SUBAGENT_MODEL = $model
     | .env.CODEX_GATEWAY_MODEL = $model
     | .env.CODEX_GATEWAY_REASONING_EFFORT = $effort
   ' "$PDIR/codex.json" > "$tmp"
@@ -463,6 +619,15 @@ activate() {
   printf 'Active provider: %s\n' "$p"
   if [ "$p" = "codex" ]; then
     start_codex_gateway
+    refresh_codex_model_discovery
+    tmp="$(mktemp "$CLAUDE_DIR/.settings.json.XXXXXX")"
+    if merge_settings "$PDIR/$p.json" "$tmp"; then
+      chmod 600 "$tmp"
+      mv -f "$tmp" "$SETTINGS"
+    else
+      rm -f "$tmp"
+      die "failed to refresh Codex model discovery settings; settings.json is unchanged"
+    fi
   else
     warn_if_local_endpoint_down "$p"
   fi
@@ -536,6 +701,7 @@ doctor() {
     printf 'hook handlers: %s\n' "$hook_count"
   fi
   status_codex_gateway
+  codex_picker_status
   if [ -f "$PDIR/nvidia.json" ] || [ -f "$PDIR/nvidia.json.example" ] || [ -f "$CLAUDE_DIR/scripts/nim-gateway.sh" ]; then
     printf 'gateway check: '
     if [ -f "$PDIR/nvidia.json" ]; then
@@ -548,7 +714,7 @@ doctor() {
 }
 
 usage() {
-  printf 'usage: cc-provider [list|status|doctor|use <provider>|auth <provider>|login <provider>|api <provider>|logout <provider>|codex-start|codex-stop|codex-status|codex-model <model> [effort]|<provider>]\n' >&2
+  printf 'usage: cc-provider [list|status|doctor|models|model <model> [effort]|use <provider>|auth <provider>|login <provider>|api <provider>|logout <provider>|codex-start|codex-stop|codex-status|codex-model <model> [effort]|<provider>]\n' >&2
   printf '  list              list available providers\n' >&2
   printf '  status            print the active provider (default) and auth summary on stderr\n' >&2
   printf '  use <provider>    activate it (compatibility shorthand: cc-provider <provider>)\n' >&2
@@ -557,6 +723,8 @@ usage() {
   printf '  api <provider>    fill an API key in providers/<provider>.json\n' >&2
   printf '  logout <provider> clear a local API key; codex/chatgpt delegates to codex logout\n' >&2
   printf '  doctor            check provider setup, safety merge and local gateway state\n' >&2
+  printf '  models            list live Codex models from the local gateway catalog\n' >&2
+  printf '  model             set Codex model id and reasoning effort (alias: codex-model)\n' >&2
   printf '  codex-start       start the local Codex app-server gateway\n' >&2
   printf '  codex-stop        stop the local Codex app-server gateway\n' >&2
   printf '  codex-status      print Codex gateway state and selected model\n' >&2
@@ -571,6 +739,8 @@ case "$cmd" in
   status)    [ "${2:-}" = "" ] || die "status accepts no provider argument"; status ;;
   list)      [ "${2:-}" = "" ] || die "list accepts no provider argument"; list_providers ;;
   doctor)    [ "${2:-}" = "" ] || die "doctor accepts no provider argument"; doctor ;;
+  models)    [ "${2:-}" = "" ] || die "models accepts no arguments"; list_codex_models ;;
+  model)     set_codex_model "${2:-}" "${3:-medium}"; [ "${4:-}" = "" ] || die "model accepts at most model and effort" ;;
   codex-start) [ "${2:-}" = "" ] || die "codex-start accepts no arguments"; start_codex_gateway ;;
   codex-stop) [ "${2:-}" = "" ] || die "codex-stop accepts no arguments"; stop_codex_gateway ;;
   codex-status) [ "${2:-}" = "" ] || die "codex-status accepts no arguments"; status_codex_gateway ;;

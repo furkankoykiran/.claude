@@ -2,16 +2,16 @@
 
 # Catalog change report
 
-- added: 156
+- added: 157
 - updated: 0
 - removed: 0
 - renamed: 0
 - license-restricted: 11
 - runtime-only: 3
-- security-sensitive: 72
+- security-sensitive: 73
 - **manual-review-required: true**
 
-## Added (156)
+## Added (157)
 
 - `/ab-testing`
 - `/ad-creative`
@@ -73,6 +73,7 @@
 - `/fk-gh-flow:solve-issue`
 - `/fk-manim-video:manim-narration`
 - `/fk-toolkit-ops:add-mcp`
+- `/fk-toolkit-ops:openai-image`
 - `/fk-toolkit-ops:toolkit-update`
 - `/fk-writing-kit:blog-from-chat`
 - `/fk-writing-kit:github-profile-blog`
@@ -170,7 +171,7 @@
 - `/web-artifacts-builder`
 - `/xlsx`
 
-## Security-sensitive (72)
+## Security-sensitive (73)
 
 - `/agent-reach`
 - `/autoplan`
@@ -197,6 +198,7 @@
 - `/document-release`
 - `/docx`
 - `/fk-gh-flow:github-comment`
+- `/fk-toolkit-ops:openai-image`
 - `/fk-toolkit-ops:toolkit-update`
 - `/freeze`
 - `/gstack-upgrade`
@@ -245,7 +247,7 @@
 - `/web-artifacts-builder`
 - `/xlsx`
 
-## Manual-review-required (72)
+## Manual-review-required (73)
 
 - `/agent-reach`
 - `/autoplan`
@@ -272,6 +274,7 @@
 - `/document-release`
 - `/docx`
 - `/fk-gh-flow:github-comment`
+- `/fk-toolkit-ops:openai-image`
 - `/fk-toolkit-ops:toolkit-update`
 - `/freeze`
 - `/gstack-upgrade`

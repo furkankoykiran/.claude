@@ -83,6 +83,10 @@ ccs codex-status
 
 `ccs codex-model <model> <effort>` accepts a Codex model id and one of `none`, `low`, `medium`, `high`, or `xhigh`. The example above sets `CODEX_GATEWAY_MODEL=gpt-5.5` and `CODEX_GATEWAY_REASONING_EFFORT=medium`. `ccs codex` switches Claude Code to the loopback provider and starts or reuses `scripts/codex-anthropic-gateway.ts`, which supervises `codex app-server --stdio` behind `127.0.0.1:4545`. `ccs codex-start`, `ccs codex-stop`, and `ccs codex-status` expose the same lifecycle without switching providers.
 
+`ccs models` reads the live Codex App Server catalog through the local gateway. Claude Code's raw gateway discovery only keeps `/v1/models` ids containing `claude` or `anthropic`, so Codex ids such as `gpt-5.5` are intentionally filtered by the client. When `ccs codex` activates the provider, it refreshes Claude Code's supported `modelPicker` rows from the live Codex catalog instead, using `behavesAs` for provider-specific model ids. `ccs codex-model` sets the default Codex model for Claude aliases and resumed sessions; if Claude Code sends an explicit Codex model id from the generated picker, the gateway honors that request for the turn. Local pricing estimates stay disabled because ChatGPT/Codex entitlement is not Anthropic API billing. Session usage surfaces have the same boundary: see [Codex session usage](codex-session-usage.md) before treating Claude Code usage data as billing or quota evidence. Model switching has its own boundary: see [Codex model switching](codex-model-switching.md) for what is live-proven and what remains unclaimed.
+
+The current mode boundary is deliberately conservative. Manual mode and Plan mode are Claude Code client behavior and work through the Codex bridge. Auto mode is model-dependent in Claude Code; with the verified `gpt-5.5` setup, Claude Code reports Auto as unavailable for that model. Fast mode is an Opus 5 usage-credit feature and is not treated as a Codex capability.
+
 The live zero-Anthropic acceptance test proves a narrow boundary: with Anthropic inference unavailable/observed, Claude Code sent a text prompt and a shell-tool turn through the Codex gateway and received the expected result. It does not prove every Claude Code feature, every MCP server, every model, or production-grade availability. Treat the Codex app-server bridge as experimental until upstream stabilizes it.
 
 ### How it works
@@ -242,7 +246,7 @@ The current starter registry is:
 | `notion` | OAuth | login-required | `https://mcp.notion.com/mcp` |
 | `sentry` | OAuth | login-required | `https://mcp.sentry.dev/mcp` |
 
-Use `fkt mcp status`, `fkt mcp auth <id>`, and `fkt mcp doctor` to inspect those states. Complete login in the host that will use the server: Claude Code users add the server with `claude mcp add --transport http ...` and run `/mcp`; Codex users use `codex mcp add ... --url ...` and `codex mcp login <id>` when the server supports OAuth. Tokens stay in native host storage, never in this repository.
+Use `fkt mcp status`, `fkt mcp auth <id>`, `fkt mcp enable <id>`, `fkt mcp disable <id>`, and `fkt mcp doctor` to inspect and record those preferences. `fkt mcp doctor` validates the generated plugin MCP manifest against `mcp-registry.toml`, rejects manifest drift or auth-required endpoint leakage, and checks live `claude mcp list` / `codex mcp list` output when those CLIs are available. It then reports cross-host and enabled-endpoint duplicates by URL. Complete login in the host that will use the server: Claude Code users add the server with `claude mcp add --transport http ...` and run `/mcp`; Codex users use `codex mcp add ... --url ...` and `codex mcp login <id>` when the server supports OAuth. Tokens stay in native host storage, never in this repository.
 
 `scripts/setup-mcp.sh` still configures the two older Claude-local examples, `github` and `context7`, for users who want that path. Those tokens are stored in `~/.claude.json` (mode `600`).
 

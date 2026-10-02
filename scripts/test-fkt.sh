@@ -66,6 +66,7 @@ run_fkt() {
   FKT_CONFIG_DIR="$CFG_DIR" \
   FKT_STATE_DIR="$STATE_DIR" \
   FKT_ADVISORY_URL_BASE="file://$WORK/feed" \
+  FKT_MCP_LIVE_CHECK="${FKT_MCP_LIVE_CHECK:-0}" \
   "$FKT" "$@"
 }
 
@@ -83,6 +84,17 @@ run_fkt_env() {
 }
 
 git_q() { git -C "$1" "${@:2}" >/dev/null 2>&1; }
+
+config_get() {
+  local key="$1" default="${2-}" line
+  if [ -f "$CONFIG_FILE" ]; then
+    line="$(sed -n "s/^[[:space:]]*${key}[[:space:]]*=[[:space:]]*\(.*\)$/\1/p" "$CONFIG_FILE" | tail -1)"
+    line="${line%%#*}"
+    line="${line%"${line##*[![:space:]]}"}"
+    if [ -n "$line" ]; then printf '%s\n' "$line"; return 0; fi
+  fi
+  printf '%s\n' "$default"
+}
 
 # Write a migration that appends a marker to the state dir when fkt runs it.
 # The quoted heredoc keeps $FKT_STATE_DIR unexpanded until then — that variable
@@ -105,6 +117,7 @@ setup_fixture() {
   HOME_DIR="$WORK/claude"
   CFG_DIR="$WORK/config"
   STATE_DIR="$WORK/state"
+  CONFIG_FILE="$CFG_DIR/config"
 
   local seed="$WORK/seed"
   mkdir -p "$seed"
@@ -112,12 +125,27 @@ setup_fixture() {
   git_q "$seed" config user.email t@example.invalid
   git_q "$seed" config user.name Test
   printf '0.1.0\n' > "$seed/VERSION"
-  mkdir -p "$seed/migrations" "$seed/bin" "$seed/hooks"
+  mkdir -p "$seed/migrations" "$seed/bin" "$seed/hooks" "$seed/providers"
+  printf '{}\n' > "$seed/settings.json"
+  printf 'anthropic\n' > "$seed/providers/.active"
+  printf '{}\n' > "$seed/providers/codex.json"
   # A realistic checkout ships the updater and the hook; the SessionStart tests
   # below resolve them relative to FKT_HOME, exactly as a real install does.
   cp "$FKT" "$seed/bin/fkt"
+  cat > "$seed/bin/cc-provider" <<'CCS'
+#!/usr/bin/env bash
+printf '%s\n' "$*" >> "$CLAUDE_DIR/cc-provider.log"
+case "$1" in
+  model) printf '{"model":"%s","effort":"%s"}\n' "$2" "${3:-medium}" > "$CLAUDE_DIR/model-choice.json" ;;
+  login) printf 'login %s\n' "$2" >> "$CLAUDE_DIR/cc-provider.log" ;;
+  *) mkdir -p "$CLAUDE_DIR/providers"; printf '%s\n' "$1" > "$CLAUDE_DIR/providers/.active" ;;
+esac
+CCS
+  chmod +x "$seed/bin/cc-provider"
   cp "$REPO_ROOT/hooks/session-start-update-notice.sh" "$seed/hooks/"
   cp "$REPO_ROOT/mcp-registry.toml" "$seed/mcp-registry.toml"
+  mkdir -p "$seed/skills/fk-toolkit-ops"
+  cp "$REPO_ROOT/skills/fk-toolkit-ops/mcp.json" "$seed/skills/fk-toolkit-ops/mcp.json"
   git_q "$seed" add -A
   git_q "$seed" commit -m v0.1.0
   git_q "$seed" tag v0.1.0
@@ -152,9 +180,163 @@ assert_contains "0.1.0" "version reports the checked-out VERSION" -- version
 assert_contains "channel        stable" "status defaults to the stable channel" -- status
 assert_exit 2 "unknown command is a usage error" -- frobnicate
 assert_contains "openaiDeveloperDocs" "mcp status lists the no-auth docs server" -- mcp status
-assert_contains "login-required" "mcp status shows auth-required entries disabled until login" -- mcp status
+assert_contains "native-login" "mcp status shows native-login scope for auth-required entries" -- mcp status
+assert_contains "ok" "mcp status reports duplicate state" -- mcp status
 assert_contains "codex mcp login notion" "mcp auth explains native Codex OAuth login" -- mcp auth notion
-assert_contains "default enabled   1 no-auth server" "mcp doctor reports only no-auth defaults" -- mcp doctor
+assert_contains "enabled no-auth   1 server" "mcp doctor reports enabled no-auth defaults" -- mcp doctor
+assert_contains "manifest servers 1 valid" "mcp doctor validates generated plugin manifest" -- mcp doctor
+BAD_MCP_MANIFEST="$WORK/bad-mcp-manifest-home"
+cp -R "$HOME_DIR" "$BAD_MCP_MANIFEST"
+jq '.mcpServers.github = {"type":"streamable-http","url":"https://api.githubcopilot.com/mcp/"}' \
+  "$BAD_MCP_MANIFEST/skills/fk-toolkit-ops/mcp.json" > "$BAD_MCP_MANIFEST/skills/fk-toolkit-ops/mcp.tmp" \
+  && mv "$BAD_MCP_MANIFEST/skills/fk-toolkit-ops/mcp.tmp" "$BAD_MCP_MANIFEST/skills/fk-toolkit-ops/mcp.json"
+BAD_MCP_OUT="$(FKT_HOME="$BAD_MCP_MANIFEST" FKT_CONFIG_DIR="$CFG_DIR" FKT_STATE_DIR="$STATE_DIR" FKT_MCP_LIVE_CHECK=0 "$FKT" mcp doctor 2>&1)"; BAD_MCP_STATUS=$?
+if [ "$BAD_MCP_STATUS" = "2" ] && grep -qF "plugin MCP manifest drifted" <<<"$BAD_MCP_OUT"; then
+  pass "mcp doctor rejects manifest drift and auth endpoint leakage"
+else
+  fail "mcp doctor rejects manifest drift and auth endpoint leakage" "status $BAD_MCP_STATUS output: $BAD_MCP_OUT"
+fi
+assert_contains "mcp notion enabled = true" "mcp enable records an auth-required preference" -- mcp enable notion
+assert_contains "login requested   1 server" "mcp doctor counts enabled login-required preferences" -- mcp doctor
+assert_contains "mcp notion enabled = false" "mcp disable clears an auth-required preference" -- mcp disable notion
+assert_contains "login requested   0 server" "mcp doctor reports cleared login-required preferences" -- mcp doctor
+FAKE_CLAUDE="$WORK/fake-claude"
+FAKE_CODEX="$WORK/fake-codex"
+cat > "$FAKE_CLAUDE" <<'EOF_CLAUDE_MCP'
+#!/usr/bin/env bash
+printf '%s\n' 'Checking MCP server health...'
+printf '%s\n' 'github: https://api.githubcopilot.com/mcp/ (HTTP) - Connected'
+printf '%s\n' 'openaiDeveloperDocs: https://developers.openai.com/mcp (HTTP) - Connected'
+EOF_CLAUDE_MCP
+cat > "$FAKE_CODEX" <<'EOF_CODEX_MCP'
+#!/usr/bin/env bash
+printf '%s\n' 'github https://api.githubcopilot.com/mcp/'
+EOF_CODEX_MCP
+chmod +x "$FAKE_CLAUDE" "$FAKE_CODEX"
+MCP_LIVE_OUT="$(run_fkt_env FKT_MCP_LIVE_CHECK=1 FKT_CLAUDE_BIN="$FAKE_CLAUDE" FKT_CODEX_BIN="$FAKE_CODEX" -- mcp doctor 2>&1)"
+if grep -qF "claude mcp urls   2" <<<"$MCP_LIVE_OUT"; then pass "mcp doctor can count live Claude MCP urls"; else fail "mcp doctor can count live Claude MCP urls" "$MCP_LIVE_OUT"; fi
+if grep -qF "codex mcp urls    1" <<<"$MCP_LIVE_OUT"; then pass "mcp doctor can count live Codex MCP urls"; else fail "mcp doctor can count live Codex MCP urls" "$MCP_LIVE_OUT"; fi
+if grep -qF "cross-host dupes  1" <<<"$MCP_LIVE_OUT"; then pass "mcp doctor reports cross-host duplicate endpoints"; else fail "mcp doctor reports cross-host duplicate endpoints" "$MCP_LIVE_OUT"; fi
+if grep -qF "enabled dupes     1" <<<"$MCP_LIVE_OUT"; then pass "mcp doctor reports enabled registry endpoints already native"; else fail "mcp doctor reports enabled registry endpoints already native" "$MCP_LIVE_OUT"; fi
+assert_contains "Install presets:" "presets lists install presets" -- presets
+assert_contains "Runtime profiles:" "presets lists runtime profiles" -- presets
+assert_contains "fkt doctor" "doctor prints a read-only health header" -- doctor
+assert_contains "active provider" "doctor reports active provider state" -- doctor
+assert_contains "fkt setup preview" "setup dry-run prints a preview" -- setup --dry-run --preset minimal --profile safe --provider codex --model gpt-5.5 --effort medium --updates enabled --auth skip --non-interactive
+assert_contains "ccs login codex" "setup dry-run previews native auth login" -- setup --dry-run --provider codex --auth login
+assert_contains "No files changed" "setup dry-run is explicitly non-mutating" -- setup --dry-run --preset minimal
+assert_contains "fkt configure preview" "configure dry-run prints a preview" -- configure --dry-run --profile balanced --permission-mode manual --compaction auto
+assert_exit 2 "setup write mode requires explicit yes" -- setup --preset minimal --updates disabled
+assert_exit 2 "setup write mode requires an implemented write option" -- setup --yes --preset minimal
+assert_exit 2 "setup rejects dry-run and yes together" -- setup --dry-run --yes --updates disabled
+assert_exit 2 "invalid setup preset is rejected" -- setup --dry-run --preset enormous
+assert_exit 2 "invalid setup skill pack is rejected" -- setup --dry-run --skill-pack ../bad
+assert_exit 2 "non-interactive setup refuses auth login prompts" -- setup --yes --provider codex --auth login --non-interactive
+run_fkt setup --yes --updates disabled >/dev/null
+if [ "$(config_get update_check unset)" = "false" ]; then
+  pass "setup --yes can disable update checks"
+else
+  fail "setup --yes can disable update checks" "config: $(cat "$CONFIG_FILE" 2>/dev/null)"
+fi
+run_fkt configure --yes --updates enabled >/dev/null
+if [ "$(config_get update_check unset)" = "true" ]; then
+  pass "configure --yes can enable update checks"
+else
+  fail "configure --yes can enable update checks" "config: $(cat "$CONFIG_FILE" 2>/dev/null)"
+fi
+run_fkt setup --yes --provider codex >/dev/null
+if [ "$(cat "$HOME_DIR/providers/.active")" = "codex" ] && grep -qxF "codex" "$HOME_DIR/cc-provider.log"; then
+  pass "setup --yes can apply provider through ccs"
+else
+  fail "setup --yes can apply provider through ccs" "log: $(cat "$HOME_DIR/cc-provider.log" 2>/dev/null)"
+fi
+run_fkt configure --yes --model gpt-5.5 --effort medium >/dev/null
+if grep -qxF "model gpt-5.5 medium" "$HOME_DIR/cc-provider.log"; then
+  pass "configure --yes can apply model through ccs"
+else
+  fail "configure --yes can apply model through ccs" "log: $(cat "$HOME_DIR/cc-provider.log" 2>/dev/null)"
+fi
+run_fkt setup --yes --provider codex --auth login >/dev/null
+if grep -qxF "login codex" "$HOME_DIR/cc-provider.log"; then
+  pass "setup --yes can delegate auth login through ccs"
+else
+  fail "setup --yes can delegate auth login through ccs" "log: $(cat "$HOME_DIR/cc-provider.log" 2>/dev/null)"
+fi
+run_fkt configure --yes --permission-mode manual --compaction off >/dev/null
+if [ "$(jq -r '.permissions.defaultMode' "$HOME_DIR/settings.json")" = "default" ] \
+   && [ "$(jq -r '.autoCompactEnabled' "$HOME_DIR/settings.json")" = "false" ]; then
+  pass "configure --yes can apply manual permissions and disable auto-compaction"
+else
+  fail "configure --yes can apply manual permissions and disable auto-compaction" "settings: $(jq -c . "$HOME_DIR/settings.json" 2>/dev/null)"
+fi
+run_fkt setup --yes --permission-mode plan --compaction auto >/dev/null
+if [ "$(jq -r '.permissions.defaultMode' "$HOME_DIR/settings.json")" = "plan" ] \
+   && [ "$(jq -r '.autoCompactEnabled' "$HOME_DIR/settings.json")" = "true" ] \
+   && [ "$(jq -r 'has("autoCompactWindow")' "$HOME_DIR/settings.json")" = "false" ]; then
+  pass "setup --yes can apply plan permissions and enable default auto-compaction"
+else
+  fail "setup --yes can apply plan permissions and enable default auto-compaction" "settings: $(jq -c . "$HOME_DIR/settings.json" 2>/dev/null)"
+fi
+assert_exit 2 "unsupported token-window compaction is rejected" -- setup --yes --compaction tokens
+run_fkt setup --yes --skill-pack gstack --skill-pack fk-writing-kit >/dev/null
+if [ "$(config_get skill_pack_gstack_enabled unset)" = "true" ] \
+   && [ "$(config_get skill_pack_fk_writing_kit_enabled unset)" = "true" ]; then
+  pass "setup --yes can record skill pack preferences"
+else
+  fail "setup --yes can record skill pack preferences" "config: $(cat "$CONFIG_FILE" 2>/dev/null)"
+fi
+if ls "$STATE_DIR"/backups/config.*.bak >/dev/null 2>&1 \
+   && ls "$STATE_DIR"/backups/settings.json.*.bak >/dev/null 2>&1 \
+   && ls "$STATE_DIR"/backups/providers.active.*.bak >/dev/null 2>&1 \
+   && ls "$STATE_DIR"/backups/provider.codex.json.*.bak >/dev/null 2>&1; then
+  pass "setup/configure write mode creates config backups"
+else
+  fail "setup/configure write mode creates config backups"
+fi
+
+UN_HOME="$WORK/uninstall-home"
+UN_TOOLKIT="$UN_HOME/.claude"
+UN_CFG="$UN_HOME/.config/fk-toolkit"
+UN_STATE="$UN_HOME/.local/state/fk-toolkit"
+mkdir -p "$UN_TOOLKIT/bin" "$UN_CFG" "$UN_STATE" "$UN_HOME/.local/bin" "$UN_HOME/.gstack"
+printf 'x\n' > "$UN_TOOLKIT/README"
+printf 'x\n' > "$UN_CFG/config"
+printf 'x\n' > "$UN_STATE/update-check"
+printf 'secret-ish but preserved\n' > "$UN_HOME/.claude.json"
+cat > "$UN_HOME/.local/bin/fkt" <<EOF_UN_FKT
+#!/usr/bin/env bash
+toolkit_dir=\${FKT_HOME:-\${CLAUDE_DIR:-$UN_TOOLKIT}}
+exec "\$toolkit_dir/bin/fkt" "\$@"
+EOF_UN_FKT
+cat > "$UN_HOME/.local/bin/ccs" <<EOF_UN_CCS
+#!/usr/bin/env bash
+toolkit_dir=\${CLAUDE_DIR:-$UN_TOOLKIT}
+exec "\$toolkit_dir/bin/cc-provider" "\$@"
+EOF_UN_CCS
+chmod +x "$UN_HOME/.local/bin/fkt" "$UN_HOME/.local/bin/ccs"
+UN_DRY_OUT="$(HOME="$UN_HOME" FKT_HOME="$UN_TOOLKIT" FKT_CONFIG_DIR="$UN_CFG" FKT_STATE_DIR="$UN_STATE" "$FKT" uninstall --dry-run 2>&1)"
+if grep -qF "No files changed" <<<"$UN_DRY_OUT" \
+   && [ -d "$UN_TOOLKIT" ] \
+   && [ -f "$UN_HOME/.local/bin/fkt" ]; then
+  pass "uninstall dry-run is non-mutating"
+else
+  fail "uninstall dry-run is non-mutating" "$UN_DRY_OUT"
+fi
+UN_OUT="$(HOME="$UN_HOME" FKT_HOME="$UN_TOOLKIT" FKT_CONFIG_DIR="$UN_CFG" FKT_STATE_DIR="$UN_STATE" "$FKT" uninstall --yes 2>&1)"; UN_STATUS=$?
+UN_BACKUP_PARENT="$UN_HOME/.local/state/fk-toolkit-uninstall"
+if [ "$UN_STATUS" = "0" ] \
+   && [ ! -e "$UN_TOOLKIT" ] \
+   && [ ! -e "$UN_CFG" ] \
+   && [ ! -e "$UN_STATE" ] \
+   && [ ! -e "$UN_HOME/.local/bin/fkt" ] \
+   && [ ! -e "$UN_HOME/.local/bin/ccs" ] \
+   && [ -f "$UN_HOME/.claude.json" ] \
+   && [ -d "$UN_HOME/.gstack" ] \
+   && find "$UN_BACKUP_PARENT" -mindepth 2 -maxdepth 2 -type d | grep -q .; then
+  pass "uninstall --yes moves toolkit files to backup and preserves credentials"
+else
+  fail "uninstall --yes moves toolkit files to backup and preserves credentials" "status $UN_STATUS output: $UN_OUT"
+fi
 
 # --- channels -------------------------------------------------------------
 run_fkt channel edge >/dev/null
@@ -843,7 +1025,7 @@ reset_state
 # older one and a ./setup that records that it ran.
 setup_gstack() {
   local dirty="${1:-clean}"
-  rm -rf "$WORK/gstack-seed" "$WORK/gstack-remote.git" "$HOME_DIR/skills"
+  rm -rf "$WORK/gstack-seed" "$WORK/gstack-remote.git" "$HOME_DIR/skills/gstack"
   local seed="$WORK/gstack-seed"
   mkdir -p "$seed"
   git_q "$seed" init -b main
@@ -885,6 +1067,7 @@ gstack_version_now() { tr -d '[:space:]' < "$HOME_DIR/skills/gstack/VERSION" 2>/
 # and drive the "already at" path — which is exactly the path that has to keep
 # gstack current, since most days there is no bootstrap update at all.
 git_q "$HOME_DIR" reset --hard v0.2.0
+git_q "$HOME_DIR" clean -fd
 run_fkt channel stable >/dev/null 2>&1
 
 setup_gstack
@@ -989,7 +1172,7 @@ else
 fi
 
 # Not installed at all is a supported layout, not something to report about.
-rm -rf "$HOME_DIR/skills"
+rm -rf "$HOME_DIR/skills/gstack"
 out="$(run_fkt update -y 2>&1)"; status=$?
 if [ "$status" -eq 0 ] && ! grep -qiF "gstack" <<<"$out"; then
   pass "a toolkit without gstack says nothing about it"
@@ -1015,7 +1198,7 @@ else
   fail "the warning names the command that finishes the job by hand"
 fi
 
-rm -rf "$HOME_DIR/skills"
+rm -rf "$HOME_DIR/skills/gstack"
 reset_state
 
 # ---------------------------------------------------------------------------

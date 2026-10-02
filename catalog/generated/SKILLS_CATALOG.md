@@ -7,8 +7,8 @@ Generated index of every Claude Code skill, command, and runtime component repre
 Resolver version 1 · schema v1.
 
 - **Sources:** 15
-- **Skills / entries:** 156
-- **Redistributable (full body):** 145
+- **Skills / entries:** 157
+- **Redistributable (full body):** 146
 - **Runtime-only:** 3
 
 ## Agent-Reach (Panniantong/Agent-Reach)
@@ -224,7 +224,7 @@ _Runtime-only — see notes below._
 
 ## furkankoykiran/.claude (personal skills)
 
-type: `repo-owned` · pack: `repository` · skills: 12 · redistribution: full
+type: `repo-owned` · pack: `repository` · skills: 13 · redistribution: full
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -235,6 +235,7 @@ type: `repo-owned` · pack: `repository` · skills: 12 · redistribution: full
 | [/fk-gh-flow:solve-issue](../../docs/skills/repository/fk-gh-flow-solve-issue.md) | Solve a GitHub issue end-to-end and open a pull request. Use when the user wants to fix or resolve a specific GitHub iss | full |
 | [/fk-manim-video:manim-narration](../../docs/skills/repository/fk-manim-video-manim-narration.md) | Build a Manim video with spoken narration synced to the animation. Use for a "narrated Manim video", "anlatımlı manim",  | full |
 | [/fk-toolkit-ops:add-mcp](../../docs/skills/repository/fk-toolkit-ops-add-mcp.md) | Wire an MCP server into Claude Code from a pasted JSON `mcpServers` block, via `claude mcp add` rather than hand-editing | full |
+| [/fk-toolkit-ops:openai-image](../../docs/skills/repository/fk-toolkit-ops-openai-image.md) | Generate/edit images via Codex ImageGen. | full |
 | [/fk-toolkit-ops:toolkit-update](../../docs/skills/repository/fk-toolkit-ops-toolkit-update.md) | Check for and apply FK Claude Toolkit updates, or switch the stable/edge channel. | full |
 | [/fk-writing-kit:blog-from-chat](../../docs/skills/repository/fk-writing-kit-blog-from-chat.md) | Turn a chat log, conversation or discussion summary into a publishable blog post, in one or more languages. Use for "blo | full |
 | [/fk-writing-kit:github-profile-blog](../../docs/skills/repository/fk-writing-kit-github-profile-blog.md) | Write an educational blog post analysing a GitHub profile's public activity. Use for "blog about my GitHub" or a write-u | full |

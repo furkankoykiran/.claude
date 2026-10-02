@@ -5,6 +5,33 @@ Installing, updating, verifying and removing the toolkit.
 Every command is safe to re-run: the installer is idempotent and fail-soft, so a
 partial failure leaves your existing setup intact rather than half-migrated.
 
+## First run
+
+Install the bootstrap, then run the local doctor before changing providers:
+
+```bash
+fkt doctor
+fkt presets
+fkt setup --dry-run --preset recommended --profile balanced
+```
+
+`fkt setup --dry-run` prints the files and commands it would touch. Apply mode
+requires `--yes` and currently writes only the proven setup choices: update
+preference, provider, model/effort, permission mode, and auto/off compaction. It
+backs up changed runtime files first and never writes provider secrets.
+
+For Codex:
+
+```bash
+fkt setup --yes --provider codex --model gpt-5.5 --effort medium
+ccs login codex
+ccs codex
+ccs status
+```
+
+Codex login is delegated to the official `codex` CLI. The toolkit does not copy
+ChatGPT, Codex, Claude, or MCP OAuth tokens between tools.
+
 ## Platform support
 
 | Component | Linux | macOS | Windows (native) | Windows (WSL) |
@@ -41,7 +68,7 @@ Both installers honour the same knobs:
 5. Installs [rtk](https://github.com/rtk-ai/rtk) and wires its PreToolUse hook.
 6. Seeds `providers/*.json` from every committed template and installs the `ccs`
    command, so [switching API providers](configuration.md#api-provider-switching) works
-   from a clean shell. Nothing is activated until you run `ccs <name>` yourself. Nothing is activated until you run `ccs <name>` yourself.
+   from a clean shell. Nothing is activated until you run `ccs <name>` yourself.
 7. Installs Python deps (`manim`, `edge-tts`) and `ffmpeg` for `manim-narration`.
 8. Clones five upstream skill packs into `~/.claude/skills/` (each git-ignored,
    auto-discovered by Claude Code):
@@ -70,6 +97,16 @@ printed in an end-of-run summary instead of aborting the bootstrap. Re-run
 
 ## Updating
 
+Use `fkt` for normal updates. It is fast-forward only and refuses to hide local
+work:
+
+```bash
+fkt check
+fkt update
+```
+
+Manual installer reruns still work when you are testing the checkout directly:
+
 ```bash
 cd ~/.claude && git pull && ./install.sh      # macOS/Linux
 ```
@@ -79,12 +116,19 @@ cd ~/.claude; git pull; .\install.ps1          # Windows
 
 ## Uninstall
 
+Preview first:
+
 ```bash
-rm -rf ~/.claude ~/.claude.json ~/.gstack    # macOS/Linux; rtk binary: ~/.local/bin/rtk
+fkt uninstall --dry-run
 ```
-```powershell
-Remove-Item -Recurse -Force $HOME\.claude, $HOME\.claude.json, $HOME\.gstack   # Windows
+
+Apply when the plan looks right:
+
+```bash
+fkt uninstall --yes
 ```
+
+The command removes toolkit-owned `ccs`/`fkt` shims and moves the bootstrap checkout plus `fkt` config/state into a timestamped backup under `~/.local/state/fk-toolkit-uninstall/`. It preserves Claude Code auth/session state (`~/.claude.json`), MCP OAuth state, Codex auth, and gstack state. On native Windows, run the same command through the installed `fkt.ps1`; PowerShell execution still needs live Windows verification.
 
 ## Verifying a release
 

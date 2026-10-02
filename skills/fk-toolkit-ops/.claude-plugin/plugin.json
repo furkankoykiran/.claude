@@ -1,7 +1,7 @@
 {
   "name": "fk-toolkit-ops",
   "displayName": "Toolkit Ops",
-  "description": "Operate the toolkit itself: check for and apply toolkit updates on the stable or edge channel, and wire an MCP server into Claude Code from a pasted config block.",
+  "description": "Operate the toolkit itself: check for and apply toolkit updates, wire MCP servers into Claude Code, and use Codex-native ImageGen when available with a clear optional API fallback boundary.",
   "version": "0.7.1",
   "author": {
     "name": "Furkan Köykıran",
@@ -14,6 +14,7 @@
     "mcp",
     "updates",
     "maintenance",
-    "bootstrap"
+    "bootstrap",
+    "image-generation"
   ]
 }
