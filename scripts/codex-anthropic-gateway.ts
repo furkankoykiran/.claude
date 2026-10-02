@@ -182,11 +182,12 @@ export function codexAppServerCommand(): {
 export function toCodexRequests(
   request: AnthropicMessagesRequest,
   options: CodexGatewayOptions,
+  toolAliasesByOriginal: Map<string, string> = new Map(),
 ): GatewayRequestBatch {
   validateAnthropicRequest(request);
 
   const existingThreadId = options.threadId ?? stringMetadata(request, "codex_thread_id");
-  const toolOutput = toolOutputFromMessages(request.messages);
+  const toolOutput = toolOutputFromMessages(request.messages, toolAliasesByOriginal);
   const input = toolOutput ? [] : flattenMessages(request);
   const system = flattenSystem(request.system);
   const additionalContext = system
@@ -259,6 +260,7 @@ export function codexThreadStartParams(
   requestModel: string,
   tools: AnthropicTool[] = [],
   aliases: Map<string, string> = new Map(),
+  reverseAliases: Map<string, string> = new Map(),
 ): Record<string, unknown> {
   const params: Record<string, unknown> = {
     cwd,
@@ -275,6 +277,7 @@ export function codexThreadStartParams(
       if (name !== tool.name) {
         aliases.set(name, tool.name);
       }
+      reverseAliases.set(tool.name, name);
       return {
         type: "function",
         name,
@@ -494,7 +497,10 @@ export function nonStreamingAnthropicResponseFromEvents(
   };
 }
 
-export function toolOutputFromMessages(messages: AnthropicMessage[]): CodexTurnToolOutput | null {
+export function toolOutputFromMessages(
+  messages: AnthropicMessage[],
+  toolAliasesByOriginal: Map<string, string> = new Map(),
+): CodexTurnToolOutput | null {
   const toolNames = new Map<string, string>();
   let latest: CodexTurnToolOutput | null = null;
   for (const message of messages) {
@@ -510,7 +516,7 @@ export function toolOutputFromMessages(messages: AnthropicMessage[]): CodexTurnT
         const name = toolNames.get(block.tool_use_id);
         if (name) {
           latest = {
-            name,
+            name: toolAliasesByOriginal.get(name) ?? name,
             namespace: null,
             output: typeof block.content === "string" ? block.content : flattenContent(block.content),
           };
@@ -785,7 +791,6 @@ function dynamicToolInput(record: Record<string, unknown>): unknown {
   return value ?? {};
 }
 
-
 type CodexProcess = {
   stdin: { write(chunk: Uint8Array): unknown | Promise<unknown> };
   stdout: ReadableStream<Uint8Array> | null;
@@ -836,6 +841,7 @@ class CodexJsonRpcClient {
   private readonly rpcPending = new Map<string | number, { resolve: (value: unknown) => void; reject: (error: Error) => void }>();
   private readonly pending = new Map<string | number, PendingTurn>();
   private readonly activeByTurn = new Map<string, { threadId: string; pending: PendingTurn }>();
+  private readonly toolAliasesByOriginal = new Map<string, string>();
 
   constructor(private readonly proc: CodexProcess) {
     this.readLoop().catch((error) => this.rejectAll(error));
@@ -847,18 +853,29 @@ class CodexJsonRpcClient {
     const id = `anthropic-${++this.seq}`;
     const state = createGatewayState();
     const selectedModel = process.env.CODEX_GATEWAY_MODEL || process.env.CODEX_MODEL;
-    const batch = toCodexRequests(request, {
-      cwd,
-      requestId: id,
-      model: selectedModel,
-      reasoningEffort: process.env.CODEX_GATEWAY_REASONING_EFFORT,
-    });
+    const batch = toCodexRequests(
+      request,
+      {
+        cwd,
+        requestId: id,
+        model: selectedModel,
+        reasoningEffort: process.env.CODEX_GATEWAY_REASONING_EFFORT,
+      },
+      this.toolAliasesByOriginal,
+    );
     const rpc = batch.requests[0];
     if (rpc && batch.threadId === null) {
       const response = await this.request(
         `thread-${this.seq}`,
         "thread/start",
-        codexThreadStartParams(cwd, selectedModel, request.model, request.tools ?? [], state.toolNameAliases),
+        codexThreadStartParams(
+          cwd,
+          selectedModel,
+          request.model,
+          request.tools ?? [],
+          state.toolNameAliases,
+          this.toolAliasesByOriginal,
+        ),
       );
       const thread = (response as { thread?: { id?: string } }).thread;
       if (!thread?.id) throw new Error("Codex thread/start returned no thread id");

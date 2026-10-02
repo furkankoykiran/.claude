@@ -194,6 +194,9 @@ describe("experimental Codex Anthropic gateway", () => {
   });
 
   it("continues Claude-owned tool results through Codex toolOutput", () => {
+    const aliases = new Map<string, string>([
+      ["mcp__github__get_me", "claude_tool_0_mcp__github__get_me"],
+    ]);
     const batch = toCodexRequests(
       {
         ...baseRequest,
@@ -204,8 +207,8 @@ describe("experimental Codex Anthropic gateway", () => {
               {
                 type: "tool_use",
                 id: "toolu_1",
-                name: "lookup",
-                input: { query: "alpha" },
+                name: "mcp__github__get_me",
+                input: {},
               },
             ],
           },
@@ -222,10 +225,11 @@ describe("experimental Codex Anthropic gateway", () => {
         ],
       },
       { cwd: "/workspace", model: "gpt-5.5" },
+      aliases,
     );
 
     expect(batch.requests[0]?.params["toolOutput"]).toEqual({
-      name: "lookup",
+      name: "claude_tool_0_mcp__github__get_me",
       namespace: null,
       output: "result text",
     });
