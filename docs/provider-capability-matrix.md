@@ -7,7 +7,7 @@ This page is the public boundary for provider support. It is intentionally conse
 | Provider | Route | Auth owner | Text | Tools | Model picker | MCP ownership | Usage and quota | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Anthropic | Claude Code native API | Claude Code | Supported | Supported by Claude Code | Native | Claude Code owns Claude-side MCP | Claude Code native usage surfaces | Stable default |
-| Codex | Local `ccs codex` bridge to Codex App Server | Codex CLI / ChatGPT plan | Supported for live-tested text turns | Limited: Claude Code owns tools; Codex App Server execution is read-only | Supported through generated `modelPicker` rows from live `model/list` | Claude Code normally owns Claude-side MCP; Codex-native MCP is opt-in only | Do not treat Claude Code counters as Codex quota or Anthropic spend | Experimental bridge |
+| Codex | Local `ccs codex` bridge to Codex App Server | Codex CLI / ChatGPT plan | Supported for live-tested text turns | Limited: Claude Code owns tools; Codex App Server execution is read-only | Supported through generated `modelPicker` rows from live `model/list` | Claude Code normally owns Claude-side MCP; Codex-native MCP is opt-in only | `ccs account` / `ccs usage` read supported Codex App Server account and rate-limit RPCs; Claude Code counters are still not quota data | Experimental bridge |
 | NVIDIA hosted | Local LiteLLM gateway | Local API key file | Supported where the selected model supports Claude Code's request shape | Provider dependent | Static provider mapping | Claude Code local MCP | Provider billing, not Claude billing | Experimental |
 | NVIDIA NIM | Direct `/v1/messages` endpoint | Local NIM deployment | Supported when the NIM model exposes Messages API behavior | Provider dependent | Static provider mapping | Claude Code local MCP | Your NIM deployment | Advanced |
 | Z.ai | Anthropic-compatible endpoint | Local API key file | Supported | Provider dependent | Static provider mapping | Claude Code local MCP | Provider billing | Supported template |
@@ -24,6 +24,7 @@ The Codex bridge keeps Claude Code as the harness. That means:
 - Codex App Server supplies model inference through its documented App Server protocol.
 - Codex App Server execution is forced read-only in bridge mode. Hidden Codex-side file writes are not a feature.
 - The gateway exposes `/v1/models`, and `ccs codex` refreshes Claude Code `modelPicker` rows from the live Codex `model/list` catalog.
+- The gateway exposes toolkit-owned account and usage endpoints backed by `account/read`, `account/rateLimits/read`, and `account/usage/read`.
 - `model/list` is a catalog. Successful inference is the access check.
 - ChatGPT/Codex usage, ChatGPT image limits, and OpenAI API billing are different things. The toolkit does not blend them.
 
