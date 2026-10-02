@@ -108,6 +108,7 @@ export type GatewayState = {
   emittedErrors: Set<string>;
   emittedToolUseIds: Set<string>;
   toolNameAliases: Map<string, string>;
+  toolRequiredArguments: Map<string, string[]>;
 };
 
 
@@ -166,6 +167,7 @@ export function createGatewayState(): GatewayState {
     emittedErrors: new Set(),
     emittedToolUseIds: new Set(),
     toolNameAliases: new Map(),
+    toolRequiredArguments: new Map(),
   };
 }
 
@@ -248,6 +250,7 @@ export function codexThreadStartParams(
   messages: AnthropicMessage[] = [],
   aliases: Map<string, string> = new Map(),
   reverseAliases: Map<string, string> = new Map(),
+  requiredArguments: Map<string, string[]> = new Map(),
 ): Record<string, unknown> {
   const params: Record<string, unknown> = {
     cwd,
@@ -267,6 +270,7 @@ export function codexThreadStartParams(
       }
       reverseAliases.set(tool.name, name);
       const inputSchema = codexDynamicToolInputSchema(tool.name, tool.input_schema);
+      requiredArguments.set(name, requiredArgumentsFromSchema(inputSchema));
       return {
         type: "function",
         name,
@@ -408,6 +412,14 @@ function claudeCodeToolInputSchema(toolName: string): Record<string, unknown> | 
   return null;
 }
 
+function requiredArgumentsFromSchema(inputSchema: unknown): string[] {
+  if (!inputSchema || typeof inputSchema !== "object") {
+    return [];
+  }
+  const required = (inputSchema as Record<string, unknown>)["required"];
+  return Array.isArray(required) ? required.filter((value): value is string => typeof value === "string") : [];
+}
+
 function codexDynamicToolDescription(tool: AnthropicTool, inputSchema: unknown): string {
   const base = tool.description?.trim() ?? "";
   const schema = JSON.stringify(inputSchema);
@@ -506,6 +518,20 @@ export function toAnthropicStreamEvents(
     }
 
     if (notification.method === "item/tool/call") {
+      const missingArguments = missingRequiredToolArguments(params, state.toolRequiredArguments);
+      if (missingArguments) {
+        events.push({
+          event: "error",
+          data: {
+            type: "error",
+            error: {
+              type: "api_error",
+              message: missingArguments,
+            },
+          },
+        });
+        continue;
+      }
       const toolUse = dynamicToolUseFromToolCallParams(params, state.toolNameAliases);
       if (toolUse && !state.emittedToolUseIds.has(toolUse.id)) {
         state.emittedToolUseIds.add(toolUse.id);
@@ -954,6 +980,24 @@ function dynamicToolUseFromToolCallParams(params: Record<string, unknown>, alias
   };
 }
 
+function missingRequiredToolArguments(params: Record<string, unknown>, requiredByTool: Map<string, string[]>): string | null {
+  const tool = readString(params, "tool");
+  if (!tool) {
+    return null;
+  }
+  const required = requiredByTool.get(tool) ?? [];
+  if (required.length === 0) {
+    return null;
+  }
+  const args = params["arguments"];
+  const record = args && typeof args === "object" && !Array.isArray(args) ? args as Record<string, unknown> : {};
+  const missing = required.filter((name) => record[name] === undefined || record[name] === null);
+  if (missing.length === 0) {
+    return null;
+  }
+  return `Codex dynamic tool call ${tool} omitted required argument(s): ${missing.join(", ")}`;
+}
+
 function dynamicToolInput(record: Record<string, unknown>): unknown {
   const value = record["arguments"] ?? record["input"];
   if (typeof value === "string") {
@@ -1051,6 +1095,7 @@ class CodexJsonRpcClient {
           request.messages,
           state.toolNameAliases,
           this.toolAliasesByOriginal,
+          state.toolRequiredArguments,
         ),
       );
       const thread = (response as { thread?: { id?: string } }).thread;
