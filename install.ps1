@@ -992,6 +992,10 @@ function Invoke-Main {
     }
 
     Write-Summary
+    # Optional native tools can leave $LASTEXITCODE non-zero even when their
+    # failure was intentionally swallowed by Invoke-Step. A successful fail-soft
+    # bootstrap must report success to CI and to pwsh callers.
+    $global:LASTEXITCODE = 0
 }
 
 Invoke-Main
