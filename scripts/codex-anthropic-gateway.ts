@@ -262,26 +262,35 @@ export function codexThreadStartParams(
     sandbox: "read-only",
   };
   if (tools.length > 0) {
-    const exposedTools = codexDynamicToolsForTurn(tools, messages);
-    const dynamicTools = exposedTools.map((tool, index) => {
-      const name = codexDynamicToolName(tool.name, index);
-      if (name !== tool.name) {
-        aliases.set(name, tool.name);
-      }
-      reverseAliases.set(tool.name, name);
-      const inputSchema = codexDynamicToolInputSchema(tool.name, tool.input_schema);
-      requiredArguments.set(name, requiredArgumentsFromSchema(inputSchema));
-      return {
-        type: "function",
-        name,
-        description: codexDynamicToolDescription(tool, inputSchema),
-        inputSchema,
-      };
-    });
+    const dynamicTools = codexDynamicToolSpecs(tools, messages, aliases, reverseAliases, requiredArguments);
     traceDynamicTools(dynamicTools);
     params["dynamicTools"] = dynamicTools;
   }
   return params;
+}
+
+export function codexDynamicToolSpecs(
+  tools: AnthropicTool[],
+  messages: AnthropicMessage[],
+  aliases: Map<string, string> = new Map(),
+  reverseAliases: Map<string, string> = new Map(),
+  requiredArguments: Map<string, string[]> = new Map(),
+): Record<string, unknown>[] {
+  return codexDynamicToolsForTurn(tools, messages).map((tool, index) => {
+    const name = codexDynamicToolName(tool.name, index);
+    if (name !== tool.name) {
+      aliases.set(name, tool.name);
+    }
+    reverseAliases.set(tool.name, name);
+    const inputSchema = codexDynamicToolInputSchema(tool.name, tool.input_schema);
+    requiredArguments.set(name, requiredArgumentsFromSchema(inputSchema));
+    return {
+      type: "function",
+      name,
+      description: codexDynamicToolDescription(tool, inputSchema),
+      inputSchema,
+    };
+  });
 }
 
 export function codexDynamicToolsForTurn(tools: AnthropicTool[], messages: AnthropicMessage[]): AnthropicTool[] {
@@ -1101,6 +1110,13 @@ class CodexJsonRpcClient {
     const id = `anthropic-${++this.seq}`;
     const state = createGatewayState();
     const selectedModel = process.env.CODEX_GATEWAY_MODEL || process.env.CODEX_MODEL;
+    codexDynamicToolSpecs(
+      request.tools ?? [],
+      request.messages,
+      state.toolNameAliases,
+      this.toolAliasesByOriginal,
+      state.toolRequiredArguments,
+    );
     const batch = toCodexRequests(
       request,
       {

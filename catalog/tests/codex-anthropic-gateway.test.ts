@@ -5,6 +5,7 @@ import {
   codexAppServerCommand,
   codexDynamicToolInputSchema,
   codexDynamicToolName,
+  codexDynamicToolSpecs,
   codexDynamicToolsForTurn,
   codexThreadStartParams,
   failClosedClientRequestResult,
@@ -78,6 +79,7 @@ describe("experimental Codex Anthropic gateway", () => {
 
   it("declares Claude tools as Codex dynamic tools at thread start", () => {
     const aliases = new Map<string, string>();
+    const requiredArguments = new Map<string, string[]>();
     expect(codexThreadStartParams("/workspace", "gpt-5.5", "claude-sonnet-4-5", [
       {
         name: "Bash",
@@ -93,7 +95,7 @@ describe("experimental Codex Anthropic gateway", () => {
         description: "Query Context7 docs",
         input_schema: { type: "object" },
       },
-    ], [{ role: "user", content: "Use Bash and mcp__context7__query-docs." }], aliases)).toMatchObject({
+    ], [{ role: "user", content: "Use Bash and mcp__context7__query-docs." }], aliases, new Map(), requiredArguments)).toMatchObject({
       dynamicTools: [
         {
           type: "function",
@@ -132,6 +134,7 @@ describe("experimental Codex Anthropic gateway", () => {
     });
     expect(aliases.get("claude_tool_1_mcp__context7__query_docs")).toBe("mcp__context7__query-docs");
     expect(codexDynamicToolName("mcp__context7__query-docs", 1)).toBe("claude_tool_1_mcp__context7__query_docs");
+    expect(requiredArguments.get("Bash")).toEqual(["command"]);
   });
 
   it("prefers turn-mentioned tools before falling back to the supported core", () => {
@@ -148,6 +151,26 @@ describe("experimental Codex Anthropic gateway", () => {
       "Bash",
       "mcp__github__get_me",
     ]);
+  });
+
+  it("prepares dynamic tool metadata independently of thread creation", () => {
+    const aliases = new Map<string, string>();
+    const reverseAliases = new Map<string, string>();
+    const requiredArguments = new Map<string, string[]>();
+    const specs = codexDynamicToolSpecs(
+      [
+        { name: "Bash", input_schema: { type: "object" } },
+        { name: "mcp__github__get_me", input_schema: { type: "object" } },
+      ],
+      [{ role: "user", content: "Use Bash." }],
+      aliases,
+      reverseAliases,
+      requiredArguments,
+    );
+
+    expect(specs.map((spec) => spec["name"])).toEqual(["Bash"]);
+    expect(reverseAliases.get("Bash")).toBe("Bash");
+    expect(requiredArguments.get("Bash")).toEqual(["command"]);
   });
 
   it("normalizes dynamic tool input schemas for Responses function tools", () => {
