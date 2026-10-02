@@ -5,6 +5,7 @@ import {
   codexAppServerCommand,
   codexDynamicToolInputSchema,
   codexDynamicToolName,
+  codexDynamicToolsForTurn,
   codexThreadStartParams,
   failClosedClientRequestResult,
   createGatewayState,
@@ -92,7 +93,7 @@ describe("experimental Codex Anthropic gateway", () => {
         description: "Query Context7 docs",
         input_schema: { type: "object" },
       },
-    ], aliases)).toMatchObject({
+    ], [{ role: "user", content: "Use Bash and mcp__context7__query-docs." }], aliases)).toMatchObject({
       dynamicTools: [
         {
           type: "function",
@@ -131,6 +132,22 @@ describe("experimental Codex Anthropic gateway", () => {
     });
     expect(aliases.get("claude_tool_1_mcp__context7__query_docs")).toBe("mcp__context7__query-docs");
     expect(codexDynamicToolName("mcp__context7__query-docs", 1)).toBe("claude_tool_1_mcp__context7__query_docs");
+  });
+
+  it("prefers turn-mentioned tools before falling back to the supported core", () => {
+    const tools = [
+      { name: "Bash", input_schema: { type: "object" } },
+      { name: "CronCreate", input_schema: { type: "object" } },
+      { name: "mcp__github__get_me", input_schema: { type: "object" } },
+    ];
+
+    expect(codexDynamicToolsForTurn(tools, [{ role: "user", content: "Use Bash once." }]).map((tool) => tool.name)).toEqual([
+      "Bash",
+    ]);
+    expect(codexDynamicToolsForTurn(tools, [{ role: "user", content: "Check my GitHub profile." }]).map((tool) => tool.name)).toEqual([
+      "Bash",
+      "mcp__github__get_me",
+    ]);
   });
 
   it("normalizes dynamic tool input schemas for Responses function tools", () => {

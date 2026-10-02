@@ -245,6 +245,7 @@ export function codexThreadStartParams(
   model: string | undefined,
   requestModel: string,
   tools: AnthropicTool[] = [],
+  messages: AnthropicMessage[] = [],
   aliases: Map<string, string> = new Map(),
   reverseAliases: Map<string, string> = new Map(),
 ): Record<string, unknown> {
@@ -258,7 +259,8 @@ export function codexThreadStartParams(
     sandbox: "read-only",
   };
   if (tools.length > 0) {
-    const dynamicTools = tools.map((tool, index) => {
+    const exposedTools = codexDynamicToolsForTurn(tools, messages);
+    const dynamicTools = exposedTools.map((tool, index) => {
       const name = codexDynamicToolName(tool.name, index);
       if (name !== tool.name) {
         aliases.set(name, tool.name);
@@ -278,12 +280,26 @@ export function codexThreadStartParams(
   return params;
 }
 
+export function codexDynamicToolsForTurn(tools: AnthropicTool[], messages: AnthropicMessage[]): AnthropicTool[] {
+  const turnText = flattenMessagesText(messages).toLowerCase();
+  const mentioned = tools.filter((tool) => turnText.includes(tool.name.toLowerCase()));
+  if (mentioned.length > 0) {
+    return mentioned;
+  }
+  const supportedCore = new Set(["Bash", "Read", "Edit", "Write", "Task"]);
+  return tools.filter((tool) => supportedCore.has(tool.name) || tool.name.startsWith("mcp__"));
+}
+
 export function codexDynamicToolName(name: string, index: number): string {
   if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(name) && !name.startsWith("mcp__")) {
     return name;
   }
   const readable = name.replace(/[^A-Za-z0-9_]/g, "_").slice(0, 64);
   return `claude_tool_${index}_${readable || "tool"}`;
+}
+
+function flattenMessagesText(messages: AnthropicMessage[]): string {
+  return messages.map((message) => flattenContent(message.content)).join("\n");
 }
 
 export function codexDynamicToolInputSchema(toolName: string, inputSchema: unknown): unknown {
@@ -1032,6 +1048,7 @@ class CodexJsonRpcClient {
           selectedModel,
           request.model,
           request.tools ?? [],
+          request.messages,
           state.toolNameAliases,
           this.toolAliasesByOriginal,
         ),
