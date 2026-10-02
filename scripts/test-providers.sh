@@ -592,6 +592,33 @@ if [ -f "$SANDBOX/state/codex-gateway.pid" ]; then
   kill "$(cat "$SANDBOX/state/codex-gateway.pid")" 2>/dev/null || true
   rm -f "$SANDBOX/state/codex-gateway.pid"
 fi
+FKT_TEST_CODEX_PORT="$FREE_CODEX_PORT" python3 - <<'PY' >/tmp/fkt-codex-unhealthy.log 2>&1 &
+import os
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(404)
+        self.end_headers()
+    def log_message(self, *_args):
+        pass
+
+HTTPServer(("127.0.0.1", int(os.environ["FKT_TEST_CODEX_PORT"])), Handler).serve_forever()
+PY
+UNHEALTHY_PID=$!
+sleep 1
+codex_blocked_status_out=$(say codex-status)
+codex_blocked_start_out=$(say codex-start)
+kill "$UNHEALTHY_PID" 2>/dev/null || true
+wait "$UNHEALTHY_PID" 2>/dev/null || true
+case "$codex_blocked_status_out" in
+  *"Codex gateway: blocked (port $FREE_CODEX_PORT occupied; /health unavailable)"*) ok "codex-status reports an occupied unhealthy gateway port as blocked" ;;
+  *) bad "codex-status did not report an occupied unhealthy gateway port: $codex_blocked_status_out" ;;
+esac
+case "$codex_blocked_start_out" in
+  *"port $FREE_CODEX_PORT is occupied but /health is not reachable"*) ok "codex-start refuses an occupied unhealthy gateway port" ;;
+  *) bad "codex-start did not refuse an occupied unhealthy gateway port: $codex_blocked_start_out" ;;
+esac
 FKT_TEST_CODEX_PORT="$FREE_CODEX_PORT" python3 - <<'PY' >/tmp/fkt-codex-health.log 2>&1 &
 import os
 from http.server import BaseHTTPRequestHandler, HTTPServer

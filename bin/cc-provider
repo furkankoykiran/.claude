@@ -106,6 +106,13 @@ codex_gateway_health_running() {
   curl -fsS --max-time 1 "http://127.0.0.1:$(codex_gateway_port)/health" >/dev/null 2>&1
 }
 
+codex_gateway_port_listening() {
+  local port
+  port=$(codex_gateway_port)
+  [ -n "$port" ] || return 1
+  (exec 3<>"/dev/tcp/127.0.0.1/$port") >/dev/null 2>&1
+}
+
 codex_gateway_available() {
   codex_gateway_running || codex_gateway_health_running
 }
@@ -190,6 +197,9 @@ start_codex_gateway() {
   fi
   local port model effort
   port=$(codex_gateway_port)
+  if codex_gateway_port_listening; then
+    die "Codex gateway port $port is occupied but /health is not reachable; stop the other listener or choose another CODEX_GATEWAY_PORT"
+  fi
   model=$(sanitize_codex_display "$(jq -r '.env.CODEX_GATEWAY_MODEL // empty' "$PDIR/codex.json")")
   effort=$(jq -r '.env.CODEX_GATEWAY_REASONING_EFFORT // empty' "$PDIR/codex.json")
   if command -v setsid >/dev/null 2>&1; then
@@ -227,6 +237,8 @@ status_codex_gateway() {
     printf 'Codex gateway: running (pid %s, port %s)\n' "$(cat "$CODEX_GATEWAY_PID")" "$(codex_gateway_port)"
   elif codex_gateway_health_running; then
     printf 'Codex gateway: running (health, port %s)\n' "$(codex_gateway_port)"
+  elif codex_gateway_port_listening; then
+    printf 'Codex gateway: blocked (port %s occupied; /health unavailable)\n' "$(codex_gateway_port)"
   else
     printf 'Codex gateway: stopped\n'
   fi
