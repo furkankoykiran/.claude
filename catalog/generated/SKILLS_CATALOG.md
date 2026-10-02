@@ -66,7 +66,7 @@ _Runtime-only — see notes below._
 ## gstack (garrytan/gstack)
 
 type: `git` · pack: `gstack` · skills: 55 · redistribution: full
-repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `96764e80a641`
+repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `7fca42ad8b6c`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -129,7 +129,7 @@ repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: 
 ## Impeccable (pbakaus/impeccable)
 
 type: `git` · pack: `impeccable` · skills: 1 · redistribution: full
-repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `c74755d92098`
+repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `508d7e8955de`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -158,7 +158,7 @@ repo: https://github.com/adithya-s-k/manim_skill.git · ref: `origin/HEAD` · re
 ## Marketing skills (coreyhaines31/marketingskills)
 
 type: `git` · pack: `marketing` · skills: 50 · redistribution: full
-repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `5b2c0007766c`
+repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `c0e35b78ad29`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -174,7 +174,7 @@ repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD`
 | [/cold-email](../../docs/skills/marketing/cold-email.md) | Write B2B cold emails and follow-up sequences that get replies. Use when the user wants to write cold outreach emails, p | full |
 | [/community-marketing](../../docs/skills/marketing/community-marketing.md) | Build and leverage online communities to drive product growth and brand loyalty. Use when the user wants to create a com | full |
 | [/competitor-profiling](../../docs/skills/marketing/competitor-profiling.md) | When the user wants to research, profile, or analyze competitors from their URLs. Also use when the user mentions 'compe | full |
-| [/competitors](../../docs/skills/marketing/competitors.md) | When the user wants to create competitor comparison or alternative pages for SEO and sales enablement. Also use when the | full |
+| [/competitors](../../docs/skills/marketing/competitors.md) | When the user wants to create competitor comparison or alternative pages for SEO and buyer-facing use. Also use when the | full |
 | [/content-strategy](../../docs/skills/marketing/content-strategy.md) | When the user wants to plan a content strategy, decide what content to create, or figure out what topics to cover. Also  | full |
 | [/copy-editing](../../docs/skills/marketing/copy-editing.md) | When the user wants to edit, review, or improve existing marketing copy, or refresh outdated content. Also use when the  | full |
 | [/copywriting](../../docs/skills/marketing/copywriting.md) | When the user wants to write, rewrite, or improve marketing copy for any page — including homepage, landing pages, prici | full |
