@@ -265,7 +265,7 @@ export function codexThreadStartParams(
   };
   if (tools.length > 0) {
     const dynamicTools = codexDynamicToolSpecs(tools, messages, aliases, reverseAliases, requiredArguments);
-    traceDynamicTools(dynamicTools);
+    traceDynamicTools(dynamicTools, latestUserMessageText(messages));
     params["dynamicTools"] = dynamicTools;
   }
   return params;
@@ -448,13 +448,14 @@ function codexDynamicToolDescription(tool: AnthropicTool, inputSchema: unknown):
   return base ? `${base}\n\n${contract}` : contract;
 }
 
-function traceDynamicTools(dynamicTools: unknown): void {
+function traceDynamicTools(dynamicTools: Record<string, unknown>[], turnText: string): void {
   if (process.env.CODEX_GATEWAY_TRACE_TOOLS !== "1") {
     return;
   }
   console.error(JSON.stringify({
     event: "codex-gateway.dynamicTools",
-    dynamicTools,
+    toolNames: dynamicTools.map((tool) => tool["name"]).filter((name): name is string => typeof name === "string"),
+    latestUserTextSnippet: turnText.slice(0, 240),
   }));
 }
 
