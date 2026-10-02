@@ -296,7 +296,7 @@ export function codexDynamicToolSpecs(
 }
 
 export function codexDynamicToolsForTurn(tools: AnthropicTool[], messages: AnthropicMessage[]): AnthropicTool[] {
-  const turnText = flattenMessagesText(messages).toLowerCase();
+  const turnText = latestUserMessageText(messages).toLowerCase();
   const mentioned = tools.filter((tool) => turnText.includes(tool.name.toLowerCase()));
   if (mentioned.length > 0) {
     return mentioned;
@@ -315,6 +315,16 @@ export function codexDynamicToolName(name: string, index: number): string {
 
 function flattenMessagesText(messages: AnthropicMessage[]): string {
   return messages.map((message) => flattenContent(message.content)).join("\n");
+}
+
+function latestUserMessageText(messages: AnthropicMessage[]): string {
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    const message = messages[index];
+    if (message?.role === "user") {
+      return flattenContent(message.content);
+    }
+  }
+  return "";
 }
 
 export function codexDynamicToolInputSchema(toolName: string, inputSchema: unknown): unknown {
@@ -1140,7 +1150,7 @@ class CodexJsonRpcClient {
     await this.initialize();
     const id = `anthropic-${++this.seq}`;
     const state = createGatewayState();
-    state.turnText = flattenMessagesText(request.messages);
+    state.turnText = latestUserMessageText(request.messages);
     const selectedModel = process.env.CODEX_GATEWAY_MODEL || process.env.CODEX_MODEL;
     codexDynamicToolSpecs(
       request.tools ?? [],

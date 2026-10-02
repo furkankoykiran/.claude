@@ -153,6 +153,19 @@ describe("experimental Codex Anthropic gateway", () => {
     ]);
   });
 
+  it("uses only the latest user turn when narrowing mentioned tools", () => {
+    const tools = [
+      { name: "Agent", input_schema: { type: "object" } },
+      { name: "Bash", input_schema: { type: "object" } },
+      { name: "Write", input_schema: { type: "object" } },
+    ];
+
+    expect(codexDynamicToolsForTurn(tools, [
+      { role: "assistant", content: "Available tools include Agent and Write." },
+      { role: "user", content: "Call Bash with a harmless command." },
+    ]).map((tool) => tool.name)).toEqual(["Bash"]);
+  });
+
   it("prepares dynamic tool metadata independently of thread creation", () => {
     const aliases = new Map<string, string>();
     const reverseAliases = new Map<string, string>();
