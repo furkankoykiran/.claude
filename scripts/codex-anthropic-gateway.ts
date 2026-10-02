@@ -109,6 +109,7 @@ export type GatewayState = {
   emittedToolUseIds: Set<string>;
   toolNameAliases: Map<string, string>;
   toolRequiredArguments: Map<string, string[]>;
+  turnText: string;
 };
 
 
@@ -168,6 +169,7 @@ export function createGatewayState(): GatewayState {
     emittedToolUseIds: new Set(),
     toolNameAliases: new Map(),
     toolRequiredArguments: new Map(),
+    turnText: "",
   };
 }
 
@@ -527,7 +529,8 @@ export function toAnthropicStreamEvents(
     }
 
     if (notification.method === "item/tool/call") {
-      const missingArguments = missingRequiredToolArguments(params, state.toolRequiredArguments);
+      const toolUse = repairToolUseInput(dynamicToolUseFromToolCallParams(params, state.toolNameAliases), state);
+      const missingArguments = toolUse ? missingRequiredToolUseArguments(toolUse, state.toolRequiredArguments) : null;
       if (missingArguments) {
         events.push({
           event: "error",
@@ -541,7 +544,6 @@ export function toAnthropicStreamEvents(
         });
         continue;
       }
-      const toolUse = dynamicToolUseFromToolCallParams(params, state.toolNameAliases);
       if (toolUse && !state.emittedToolUseIds.has(toolUse.id)) {
         state.emittedToolUseIds.add(toolUse.id);
         if (textOpen) {
@@ -570,7 +572,7 @@ export function toAnthropicStreamEvents(
     }
 
     if (notification.method === "item/completed") {
-      const toolUse = dynamicToolUseFromItem(params["item"], state.toolNameAliases);
+      const toolUse = repairToolUseInput(dynamicToolUseFromItem(params["item"], state.toolNameAliases), state);
       if (toolUse) {
         const missingArguments = missingRequiredToolUseArguments(toolUse, state.toolRequiredArguments);
         if (missingArguments) {
@@ -989,6 +991,36 @@ function dynamicToolUseFromItem(item: unknown, aliases: Map<string, string> = ne
   };
 }
 
+function repairToolUseInput(toolUse: AnthropicToolUseBlock | null, state: GatewayState): AnthropicToolUseBlock | null {
+  if (!toolUse || !isEmptyRecord(toolUse.input)) {
+    return toolUse;
+  }
+  const repaired = explicitJsonInputForTool(state.turnText, toolUse.name);
+  return repaired ? { ...toolUse, input: repaired } : toolUse;
+}
+
+function explicitJsonInputForTool(turnText: string, toolName: string): Record<string, unknown> | null {
+  const marker = new RegExp(`${escapeRegExp(toolName)}[^\\n{}]*exact JSON input\\s*:\\s*(\\{[^\\n]+\\})`, "i");
+  const match = turnText.match(marker);
+  if (!match?.[1]) {
+    return null;
+  }
+  try {
+    const parsed = JSON.parse(match[1]) as unknown;
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed as Record<string, unknown> : null;
+  } catch {
+    return null;
+  }
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function isEmptyRecord(value: unknown): boolean {
+  return value !== null && typeof value === "object" && !Array.isArray(value) && Object.keys(value).length === 0;
+}
+
 function missingRequiredToolUseArguments(toolUse: AnthropicToolUseBlock, requiredByTool: Map<string, string[]>): string | null {
   const required = requiredByTool.get(toolUse.name) ?? fallbackRequiredArguments(toolUse.name);
   if (required.length === 0) {
@@ -1108,6 +1140,7 @@ class CodexJsonRpcClient {
     await this.initialize();
     const id = `anthropic-${++this.seq}`;
     const state = createGatewayState();
+    state.turnText = flattenMessagesText(request.messages);
     const selectedModel = process.env.CODEX_GATEWAY_MODEL || process.env.CODEX_MODEL;
     codexDynamicToolSpecs(
       request.tools ?? [],

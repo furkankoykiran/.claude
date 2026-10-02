@@ -601,6 +601,43 @@ describe("experimental Codex Anthropic gateway", () => {
     });
   });
 
+  it("repairs empty tool input only from explicit JSON in the user prompt", () => {
+    const state = createGatewayState();
+    state.turnText = 'Call the Bash tool with this exact JSON input: {"command":"printf ok","description":"print"}';
+    const events = toAnthropicStreamEvents([
+      {
+        method: "turn/started",
+        params: { threadId: "t1", turn: { id: "turn1" } },
+      },
+      {
+        method: "item/completed",
+        params: {
+          threadId: "t1",
+          turnId: "turn1",
+          item: {
+            id: "call_1",
+            type: "dynamic_tool_call",
+            toolName: "Bash",
+            arguments: "{}",
+          },
+        },
+      },
+      {
+        method: "turn/completed",
+        params: { threadId: "t1", turn: { id: "turn1" } },
+      },
+    ], state);
+
+    expect(events.find((event) => event.event === "content_block_start")?.data).toMatchObject({
+      content_block: {
+        type: "tool_use",
+        name: "Bash",
+        input: { command: "printf ok", description: "print" },
+      },
+    });
+    expect(events.filter((event) => event.event === "error")).toHaveLength(0);
+  });
+
   it("deduplicates retried forwards and repeated Codex errors", () => {
     const state = createGatewayState();
     const batch = toCodexRequests(baseRequest, { cwd: "/workspace", requestId: "first", model: "gpt-5.5" });
