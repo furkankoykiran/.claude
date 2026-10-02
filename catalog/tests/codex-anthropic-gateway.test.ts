@@ -3,6 +3,7 @@ import {
   cancellationRequest,
   cleanShutdownRequests,
   codexAppServerCommand,
+  codexDynamicToolName,
   codexThreadStartParams,
   failClosedClientRequestResult,
   createGatewayState,
@@ -71,6 +72,47 @@ describe("experimental Codex Anthropic gateway", () => {
       approvalsReviewer: "user",
       sandbox: "read-only",
     });
+  });
+
+  it("declares Claude tools as Codex dynamic tools at thread start", () => {
+    const aliases = new Map<string, string>();
+    expect(codexThreadStartParams("/workspace", "gpt-5.5", "claude-sonnet-4-5", [
+      {
+        name: "Bash",
+        description: "Run a shell command",
+        input_schema: {
+          type: "object",
+          properties: { command: { type: "string" } },
+          required: ["command"],
+        },
+      },
+      {
+        name: "mcp__context7__query-docs",
+        description: "Query Context7 docs",
+        input_schema: { type: "object" },
+      },
+    ], aliases)).toMatchObject({
+      dynamicTools: [
+        {
+          type: "function",
+          name: "Bash",
+          description: "Run a shell command",
+          inputSchema: {
+            type: "object",
+            properties: { command: { type: "string" } },
+            required: ["command"],
+          },
+        },
+        {
+          type: "function",
+          name: "claude_tool_1_mcp__context7__query_docs",
+          description: "Query Context7 docs",
+          inputSchema: { type: "object" },
+        },
+      ],
+    });
+    expect(aliases.get("claude_tool_1_mcp__context7__query_docs")).toBe("mcp__context7__query-docs");
+    expect(codexDynamicToolName("mcp__context7__query-docs", 1)).toBe("claude_tool_1_mcp__context7__query_docs");
   });
 
   it("uses turn/start for multi-turn requests carrying a Codex thread id", () => {
@@ -187,6 +229,7 @@ describe("experimental Codex Anthropic gateway", () => {
       namespace: null,
       output: "result text",
     });
+    expect(batch.requests[0]?.params["input"]).toEqual([]);
   });
 
 
@@ -267,6 +310,8 @@ describe("experimental Codex Anthropic gateway", () => {
   });
 
   it("maps Codex streaming deltas and dynamic tool calls to Anthropic SSE events", () => {
+    const state = createGatewayState();
+    state.toolNameAliases.set("claude_tool_0_mcp__context7__query_docs", "mcp__context7__query-docs");
     const events = toAnthropicStreamEvents([
       {
         method: "turn/started",
@@ -288,8 +333,8 @@ describe("experimental Codex Anthropic gateway", () => {
           item: {
             id: "toolu_1",
             type: "dynamic_tool_call",
-            toolName: "lookup",
-            input: { query: "alpha" },
+            toolName: "claude_tool_0_mcp__context7__query_docs",
+            arguments: "{\"query\":\"alpha\"}",
           },
         },
       },
@@ -301,7 +346,7 @@ describe("experimental Codex Anthropic gateway", () => {
         method: "turn/completed",
         params: { threadId: "t1", turn: { id: "turn1" } },
       },
-    ]);
+    ], state);
 
     expect(events.map((event) => event.event)).toEqual([
       "message_start",
@@ -328,7 +373,7 @@ describe("experimental Codex Anthropic gateway", () => {
       content_block: {
         type: "tool_use",
         id: "toolu_1",
-        name: "lookup",
+        name: "mcp__context7__query-docs",
         input: { query: "alpha" },
       },
     });

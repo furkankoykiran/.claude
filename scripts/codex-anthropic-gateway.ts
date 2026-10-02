@@ -106,6 +106,7 @@ export type GatewayState = {
   seenRequestKeys: Set<string>;
   activeTurns: Map<string, { threadId: string }>;
   emittedErrors: Set<string>;
+  toolNameAliases: Map<string, string>;
 };
 
 
@@ -162,6 +163,7 @@ export function createGatewayState(): GatewayState {
     seenRequestKeys: new Set(),
     activeTurns: new Map(),
     emittedErrors: new Set(),
+    toolNameAliases: new Map(),
   };
 }
 
@@ -184,7 +186,8 @@ export function toCodexRequests(
   validateAnthropicRequest(request);
 
   const existingThreadId = options.threadId ?? stringMetadata(request, "codex_thread_id");
-  const input = flattenMessages(request);
+  const toolOutput = toolOutputFromMessages(request.messages);
+  const input = toolOutput ? [] : flattenMessages(request);
   const system = flattenSystem(request.system);
   const additionalContext = system
     ? {
@@ -220,7 +223,6 @@ export function toCodexRequests(
     approvalsReviewer: "user",
     sandboxPolicy: { type: "readOnly", networkAccess: false },
   };
-  const toolOutput = toolOutputFromMessages(request.messages);
   if (toolOutput) {
     params["toolOutput"] = toolOutput;
   }
@@ -251,8 +253,14 @@ export function shouldStreamAnthropicResponse(request: Pick<AnthropicMessagesReq
   return request.stream === true;
 }
 
-export function codexThreadStartParams(cwd: string, model: string | undefined, requestModel: string): Record<string, unknown> {
-  return {
+export function codexThreadStartParams(
+  cwd: string,
+  model: string | undefined,
+  requestModel: string,
+  tools: AnthropicTool[] = [],
+  aliases: Map<string, string> = new Map(),
+): Record<string, unknown> {
+  const params: Record<string, unknown> = {
     cwd,
     model: resolveCodexModel(requestModel, model),
     ephemeral: true,
@@ -261,6 +269,29 @@ export function codexThreadStartParams(cwd: string, model: string | undefined, r
     approvalsReviewer: "user",
     sandbox: "read-only",
   };
+  if (tools.length > 0) {
+    params["dynamicTools"] = tools.map((tool, index) => {
+      const name = codexDynamicToolName(tool.name, index);
+      if (name !== tool.name) {
+        aliases.set(name, tool.name);
+      }
+      return {
+        type: "function",
+        name,
+        description: tool.description ?? "",
+        inputSchema: tool.input_schema,
+      };
+    });
+  }
+  return params;
+}
+
+export function codexDynamicToolName(name: string, index: number): string {
+  if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(name) && !name.startsWith("mcp__")) {
+    return name;
+  }
+  const readable = name.replace(/[^A-Za-z0-9_]/g, "_").slice(0, 64);
+  return `claude_tool_${index}_${readable || "tool"}`;
 }
 
 export function resolveCodexModel(requestModel: string, selectedModel?: string): string {
@@ -344,7 +375,7 @@ export function toAnthropicStreamEvents(
     }
 
     if (notification.method === "item/completed") {
-      const toolUse = dynamicToolUseFromItem(params["item"]);
+      const toolUse = dynamicToolUseFromItem(params["item"], state.toolNameAliases);
       if (toolUse) {
         if (textOpen) {
           events.push({
@@ -713,7 +744,7 @@ function readTurnId(params: Record<string, unknown>): string | null {
   return readString(params, "turnId");
 }
 
-function dynamicToolUseFromItem(item: unknown): AnthropicToolUseBlock | null {
+function dynamicToolUseFromItem(item: unknown, aliases: Map<string, string> = new Map()): AnthropicToolUseBlock | null {
   if (!item || typeof item !== "object") {
     return null;
   }
@@ -723,7 +754,7 @@ function dynamicToolUseFromItem(item: unknown): AnthropicToolUseBlock | null {
     return null;
   }
   const id = typeof record["id"] === "string" ? record["id"] : "toolu_codex";
-  const name =
+  const rawName =
     typeof record["toolName"] === "string"
       ? record["toolName"]
       : typeof record["tool"] === "string"
@@ -733,12 +764,25 @@ function dynamicToolUseFromItem(item: unknown): AnthropicToolUseBlock | null {
         : typeof record["tool"] === "string"
           ? record["tool"]
           : "codex_tool";
+  const name = aliases.get(rawName) ?? rawName;
   return {
     type: "tool_use",
     id,
     name,
-    input: record["input"] ?? record["arguments"] ?? {},
+    input: dynamicToolInput(record),
   };
+}
+
+function dynamicToolInput(record: Record<string, unknown>): unknown {
+  const value = record["arguments"] ?? record["input"];
+  if (typeof value === "string") {
+    try {
+      return JSON.parse(value) as unknown;
+    } catch {
+      return { arguments: value };
+    }
+  }
+  return value ?? {};
 }
 
 
@@ -814,7 +858,7 @@ class CodexJsonRpcClient {
       const response = await this.request(
         `thread-${this.seq}`,
         "thread/start",
-        codexThreadStartParams(cwd, selectedModel, request.model),
+        codexThreadStartParams(cwd, selectedModel, request.model, request.tools ?? [], state.toolNameAliases),
       );
       const thread = (response as { thread?: { id?: string } }).thread;
       if (!thread?.id) throw new Error("Codex thread/start returned no thread id");
