@@ -108,6 +108,34 @@ jobs:
           }
           Write-Host "PSScriptAnalyzer: clean"
 
+  powershell-install-smoke:
+    name: Native PowerShell install smoke (Windows)
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Run install.ps1 against the checked-out code
+        shell: pwsh
+        env:
+          CLAUDE_DIR: ${{ github.workspace }}
+          CLAUDE_BOOTSTRAP_MINIMAL: '1'
+          CLAUDE_BOOTSTRAP_NO_SYNC: '1'
+        run: |
+          ./install.ps1 -Minimal
+      - name: Assert PowerShell commands are discoverable
+        shell: pwsh
+        env:
+          CLAUDE_DIR: ${{ github.workspace }}
+          FKT_HOME: ${{ github.workspace }}
+        run: |
+          $bin = Join-Path $HOME '.local\bin'
+          if (-not (Test-Path (Join-Path $bin 'ccs.ps1'))) { throw 'ccs.ps1 was not installed' }
+          if (-not (Test-Path (Join-Path $bin 'fkt.ps1'))) { throw 'fkt.ps1 was not installed' }
+          & (Join-Path $bin 'ccs.ps1') list
+          & (Join-Path $bin 'fkt.ps1') doctor
+
   install-smoke:
     name: Install smoke test + Chromium launch (ubuntu:24.04)
     runs-on: ubuntu-latest
