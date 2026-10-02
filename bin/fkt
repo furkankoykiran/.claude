@@ -1059,6 +1059,7 @@ apply_permission_mode_setting() {
     manual) mode="default" ;;
     *) mode="$requested" ;;
   esac
+  # shellcheck disable=SC2016 # jq program: $mode is provided through --arg.
   settings_json_update --arg mode "$mode" '.permissions = (.permissions // {}) | .permissions.defaultMode = $mode'
   say "  applied         permission mode $requested"
 }
@@ -1078,7 +1079,8 @@ apply_compaction_setting() {
 
 do_setup_preview() {
   local mode="$1" dry_run=0 yes=0 non_interactive=0 provider_requested=0 preset="recommended" profile="balanced"
-  local provider="$( [ -f "$FKT_HOME/providers/.active" ] && tr -d '[:space:]' < "$FKT_HOME/providers/.active" || printf 'anthropic' )"
+  local provider
+  provider="$( [ -f "$FKT_HOME/providers/.active" ] && tr -d '[:space:]' < "$FKT_HOME/providers/.active" || printf 'anthropic' )"
   local model="" effort="" permission_mode="" compaction="" updates="" auth="" skill_packs="" mcps=""
   while [ $# -gt 1 ]; do
     shift
@@ -1501,9 +1503,11 @@ shim_owned_by_toolkit() {
   [ -f "$file" ] || return 1
   case "$name" in
     ccs)
+      # shellcheck disable=SC2016 # Match the literal shim body, not current shell variables.
       grep -q 'exec "$toolkit_dir/bin/cc-provider" "$@"' "$file" 2>/dev/null || return 1
       ;;
     fkt)
+      # shellcheck disable=SC2016 # Match the literal shim body, not current shell variables.
       grep -q 'exec "$toolkit_dir/bin/fkt" "$@"' "$file" 2>/dev/null || return 1
       ;;
     ccs.ps1)
