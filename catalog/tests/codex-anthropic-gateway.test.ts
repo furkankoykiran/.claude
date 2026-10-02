@@ -3,6 +3,7 @@ import {
   cancellationRequest,
   cleanShutdownRequests,
   codexAppServerCommand,
+  codexDynamicToolInputSchema,
   codexDynamicToolName,
   codexThreadStartParams,
   failClosedClientRequestResult,
@@ -96,23 +97,46 @@ describe("experimental Codex Anthropic gateway", () => {
         {
           type: "function",
           name: "Bash",
-          description: "Run a shell command",
+          description:
+            'Run a shell command\n\nCall this Claude Code client tool with JSON arguments matching this schema: {"type":"object","properties":{"command":{"type":"string"}},"required":["command"],"additionalProperties":false}',
           inputSchema: {
             type: "object",
             properties: { command: { type: "string" } },
             required: ["command"],
+            additionalProperties: false,
           },
         },
         {
           type: "function",
           name: "claude_tool_1_mcp__context7__query_docs",
-          description: "Query Context7 docs",
-          inputSchema: { type: "object" },
+          description:
+            'Query Context7 docs\n\nCall this Claude Code client tool with JSON arguments matching this schema: {"type":"object","properties":{},"required":[],"additionalProperties":false}',
+          inputSchema: {
+            type: "object",
+            properties: {},
+            required: [],
+            additionalProperties: false,
+          },
         },
       ],
     });
     expect(aliases.get("claude_tool_1_mcp__context7__query_docs")).toBe("mcp__context7__query-docs");
     expect(codexDynamicToolName("mcp__context7__query-docs", 1)).toBe("claude_tool_1_mcp__context7__query_docs");
+  });
+
+  it("normalizes dynamic tool input schemas for Responses function tools", () => {
+    expect(codexDynamicToolInputSchema({ properties: { command: { type: "string" } }, required: ["command"] })).toEqual({
+      type: "object",
+      properties: { command: { type: "string" } },
+      required: ["command"],
+      additionalProperties: false,
+    });
+    expect(codexDynamicToolInputSchema(null)).toEqual({
+      type: "object",
+      properties: {},
+      required: [],
+      additionalProperties: false,
+    });
   });
 
   it("uses turn/start for multi-turn requests carrying a Codex thread id", () => {
@@ -385,6 +409,58 @@ describe("experimental Codex Anthropic gateway", () => {
       type: "content_block_delta",
       index: 2,
       delta: { type: "text_delta", text: "TOOL_OK" },
+    });
+  });
+
+  it("maps app-server dynamic tool requests to Claude tool_use events with their arguments", () => {
+    const state = createGatewayState();
+    state.toolNameAliases.set("claude_tool_0_mcp__github__get_me", "mcp__github__get_me");
+    const events = toAnthropicStreamEvents([
+      {
+        method: "turn/started",
+        params: { threadId: "t1", turn: { id: "turn1" } },
+      },
+      {
+        method: "item/tool/call",
+        params: {
+          threadId: "t1",
+          turnId: "turn1",
+          callId: "call_1",
+          namespace: null,
+          tool: "claude_tool_0_mcp__github__get_me",
+          arguments: { include_private: false },
+        },
+      },
+      {
+        method: "item/completed",
+        params: {
+          threadId: "t1",
+          turnId: "turn1",
+          item: {
+            id: "call_1",
+            type: "dynamic_tool_call",
+            toolName: "claude_tool_0_mcp__github__get_me",
+            arguments: "{}",
+          },
+        },
+      },
+      {
+        method: "turn/completed",
+        params: { threadId: "t1", turn: { id: "turn1" } },
+      },
+    ], state);
+
+    const starts = events.filter((event) => event.event === "content_block_start");
+    expect(starts).toHaveLength(1);
+    expect(starts[0]?.data).toEqual({
+      type: "content_block_start",
+      index: 0,
+      content_block: {
+        type: "tool_use",
+        id: "call_1",
+        name: "mcp__github__get_me",
+        input: { include_private: false },
+      },
     });
   });
 

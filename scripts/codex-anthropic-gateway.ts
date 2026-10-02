@@ -106,6 +106,7 @@ export type GatewayState = {
   seenRequestKeys: Set<string>;
   activeTurns: Map<string, { threadId: string }>;
   emittedErrors: Set<string>;
+  emittedToolUseIds: Set<string>;
   toolNameAliases: Map<string, string>;
 };
 
@@ -163,6 +164,7 @@ export function createGatewayState(): GatewayState {
     seenRequestKeys: new Set(),
     activeTurns: new Map(),
     emittedErrors: new Set(),
+    emittedToolUseIds: new Set(),
     toolNameAliases: new Map(),
   };
 }
@@ -278,11 +280,12 @@ export function codexThreadStartParams(
         aliases.set(name, tool.name);
       }
       reverseAliases.set(tool.name, name);
+      const inputSchema = codexDynamicToolInputSchema(tool.input_schema);
       return {
         type: "function",
         name,
-        description: tool.description ?? "",
-        inputSchema: tool.input_schema,
+        description: codexDynamicToolDescription(tool, inputSchema),
+        inputSchema,
       };
     });
   }
@@ -295,6 +298,40 @@ export function codexDynamicToolName(name: string, index: number): string {
   }
   const readable = name.replace(/[^A-Za-z0-9_]/g, "_").slice(0, 64);
   return `claude_tool_${index}_${readable || "tool"}`;
+}
+
+export function codexDynamicToolInputSchema(inputSchema: unknown): unknown {
+  if (!inputSchema || typeof inputSchema !== "object" || Array.isArray(inputSchema)) {
+    return {
+      type: "object",
+      properties: {},
+      required: [],
+      additionalProperties: false,
+    };
+  }
+  const schema = structuredClone(inputSchema) as Record<string, unknown>;
+  if (schema["type"] === undefined && (schema["properties"] || schema["required"])) {
+    schema["type"] = "object";
+  }
+  if (schema["type"] === "object") {
+    if (!schema["properties"] || typeof schema["properties"] !== "object" || Array.isArray(schema["properties"])) {
+      schema["properties"] = {};
+    }
+    if (!Array.isArray(schema["required"])) {
+      schema["required"] = [];
+    }
+    if (schema["additionalProperties"] === undefined) {
+      schema["additionalProperties"] = false;
+    }
+  }
+  return schema;
+}
+
+function codexDynamicToolDescription(tool: AnthropicTool, inputSchema: unknown): string {
+  const base = tool.description?.trim() ?? "";
+  const schema = JSON.stringify(inputSchema);
+  const contract = `Call this Claude Code client tool with JSON arguments matching this schema: ${schema}`;
+  return base ? `${base}\n\n${contract}` : contract;
 }
 
 export function resolveCodexModel(requestModel: string, selectedModel?: string): string {
@@ -377,9 +414,42 @@ export function toAnthropicStreamEvents(
       continue;
     }
 
+    if (notification.method === "item/tool/call") {
+      const toolUse = dynamicToolUseFromToolCallParams(params, state.toolNameAliases);
+      if (toolUse && !state.emittedToolUseIds.has(toolUse.id)) {
+        state.emittedToolUseIds.add(toolUse.id);
+        if (textOpen) {
+          events.push({
+            event: "content_block_stop",
+            data: { type: "content_block_stop", index: contentIndex },
+          });
+          contentIndex += 1;
+          textOpen = false;
+        }
+        events.push({
+          event: "content_block_start",
+          data: {
+            type: "content_block_start",
+            index: contentIndex,
+            content_block: toolUse,
+          },
+        });
+        events.push({
+          event: "content_block_stop",
+          data: { type: "content_block_stop", index: contentIndex },
+        });
+        contentIndex += 1;
+      }
+      continue;
+    }
+
     if (notification.method === "item/completed") {
       const toolUse = dynamicToolUseFromItem(params["item"], state.toolNameAliases);
       if (toolUse) {
+        if (state.emittedToolUseIds.has(toolUse.id)) {
+          continue;
+        }
+        state.emittedToolUseIds.add(toolUse.id);
         if (textOpen) {
           events.push({
             event: "content_block_stop",
@@ -779,6 +849,20 @@ function dynamicToolUseFromItem(item: unknown, aliases: Map<string, string> = ne
   };
 }
 
+function dynamicToolUseFromToolCallParams(params: Record<string, unknown>, aliases: Map<string, string> = new Map()): AnthropicToolUseBlock | null {
+  const id = readString(params, "callId");
+  const rawName = readString(params, "tool");
+  if (!id || !rawName) {
+    return null;
+  }
+  return {
+    type: "tool_use",
+    id,
+    name: aliases.get(rawName) ?? rawName,
+    input: params["arguments"] ?? {},
+  };
+}
+
 function dynamicToolInput(record: Record<string, unknown>): unknown {
   const value = record["arguments"] ?? record["input"];
   if (typeof value === "string") {
@@ -998,6 +1082,9 @@ class CodexJsonRpcClient {
   private handleMessage(message: JsonRpcNotification | JsonRpcRequest): void {
     const record = message as Record<string, unknown>;
     if ("id" in record && "method" in record) {
+      if (record["method"] === "item/tool/call") {
+        this.recordNotification(message as JsonRpcNotification);
+      }
       const handled = this.respondToClientRequest(record["id"] as string | number, String(record["method"]));
       if (handled) return;
     }
@@ -1017,7 +1104,10 @@ class CodexJsonRpcClient {
       }
       return;
     }
-    const notification = message as JsonRpcNotification;
+    this.recordNotification(message as JsonRpcNotification);
+  }
+
+  private recordNotification(notification: JsonRpcNotification): void {
     const params = notification.params ?? {};
     const turnId = readTurnId(params);
     let pending = turnId ? this.activeByTurn.get(turnId)?.pending : undefined;
