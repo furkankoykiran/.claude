@@ -1085,12 +1085,7 @@ export function failClosedClientRequestResult(method: string): Record<string, un
   if (method === "item/tool/call") {
     return {
       success: false,
-      contentItems: [
-        {
-          type: "inputText",
-          text: "Codex gateway does not execute Codex-side dynamic tools; Claude Code owns client tools.",
-        },
-      ],
+      contentItems: [],
     };
   }
   return null;

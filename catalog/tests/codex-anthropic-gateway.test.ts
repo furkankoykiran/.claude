@@ -395,7 +395,7 @@ describe("experimental Codex Anthropic gateway", () => {
       scope: "turn",
       strictAutoReview: true,
     });
-    expect(failClosedClientRequestResult("item/tool/call")).toMatchObject({ success: false });
+    expect(failClosedClientRequestResult("item/tool/call")).toEqual({ success: false, contentItems: [] });
     expect(failClosedClientRequestResult("thread/unknown")).toBeNull();
   });
 
