@@ -568,7 +568,6 @@ describe("experimental Codex Anthropic gateway", () => {
 
   it("fails closed when a completed dynamic tool item omits required arguments", () => {
     const state = createGatewayState();
-    state.toolRequiredArguments.set("Bash", ["command"]);
     const events = toAnthropicStreamEvents([
       {
         method: "turn/started",

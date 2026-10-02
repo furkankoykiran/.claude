@@ -990,7 +990,7 @@ function dynamicToolUseFromItem(item: unknown, aliases: Map<string, string> = ne
 }
 
 function missingRequiredToolUseArguments(toolUse: AnthropicToolUseBlock, requiredByTool: Map<string, string[]>): string | null {
-  const required = requiredByTool.get(toolUse.name) ?? [];
+  const required = requiredByTool.get(toolUse.name) ?? fallbackRequiredArguments(toolUse.name);
   if (required.length === 0) {
     return null;
   }
@@ -1023,7 +1023,7 @@ function missingRequiredToolArguments(params: Record<string, unknown>, requiredB
   if (!tool) {
     return null;
   }
-  const required = requiredByTool.get(tool) ?? [];
+  const required = requiredByTool.get(tool) ?? fallbackRequiredArguments(tool);
   if (required.length === 0) {
     return null;
   }
@@ -1034,6 +1034,10 @@ function missingRequiredToolArguments(params: Record<string, unknown>, requiredB
     return null;
   }
   return `Codex dynamic tool call ${tool} omitted required argument(s): ${missing.join(", ")}`;
+}
+
+function fallbackRequiredArguments(toolName: string): string[] {
+  return requiredArgumentsFromSchema(claudeCodeToolInputSchema(toolName));
 }
 
 function dynamicToolInput(record: Record<string, unknown>): unknown {
