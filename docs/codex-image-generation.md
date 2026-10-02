@@ -1,17 +1,18 @@
 # Codex and Image Generation
 
-Last checked: 2026-10-01 against official OpenAI documentation and local Codex 0.159.2 schema/probes.
+Last checked: 2026-10-01 against official OpenAI documentation, the local Codex `imagegen` skill, and local Codex 0.159.2 schema/probes.
 
 ## Decision
 
-Use Codex-native ImageGen when the running Codex host exposes it. Do not make the OpenAI API the default image path for Codex users.
+Use Codex-native ImageGen as the default image path for Codex users. Do not require the OpenAI API for ordinary image generation or editing in Codex.
 
-There are two different surfaces that are easy to mix up:
+There are three separate surfaces that are easy to mix up:
 
-- Codex/ChatGPT host tools can expose a native image-generation tool, commonly surfaced to agents as ImageGen or `$imagegen`. That path uses the signed-in Codex/ChatGPT environment, not an `OPENAI_API_KEY` in this repository.
-- The Claude Code gateway path runs through Codex App Server. Official ChatGPT-plan App Server docs describe text inference over Responses, and the current preview limitation page still lists hosted Responses image generation as unsupported for that route.
+- Codex/ChatGPT hosts expose a native image-generation path, commonly surfaced as ImageGen, `$imagegen`, or the built-in `image_gen` tool. This path uses the signed-in Codex/ChatGPT environment, not an `OPENAI_API_KEY` in this repository.
+- Claude Code bridge mode (`ccs codex`) is a different surface: Claude Code is the client, and Codex App Server is the backend. The App Server schema can represent image-generation items, but this repository still needs a live bridge proof before advertising image generation through Claude Code itself.
+- The OpenAI API image tools are a separate billing/auth path. They are useful for explicit API workflows and larger automated batches, but they are not the default product path here.
 
-So the product stance is: prefer host-native ImageGen where the current Codex runtime actually exposes it; do not tunnel image generation through the Claude Code `ccs codex` gateway until a supported App Server request path is proven; keep OpenAI API image generation only as an explicit, separate fallback when the user asks for API-key billing.
+So the product stance is: prefer host-native ImageGen; keep the Claude Code gateway boundary honest until a supported App Server `imageGeneration` result is proven; offer API-backed image generation only when the user explicitly asks for that billing path or accepts it as a fallback.
 
 ## What is supported
 
@@ -19,25 +20,28 @@ The source skill is `/fk-toolkit-ops:openai-image` at `skills/fk-toolkit-ops/ski
 
 - use host-native ImageGen / `$imagegen` / `image_gen` when available;
 - save generated files under a safe project path, normally `generated/images/`;
-- support generation, editing, and transparent-background workflows when the host tool supports them;
+- support generation, editing, reference images, and transparent-background workflows when the host tool supports them;
 - do not require or ask for `OPENAI_API_KEY` for the native Codex path;
 - do not claim the Claude Code gateway can call ImageGen until a live `ccs codex` proof shows an `imageGeneration` result item.
 
 ## Fallback boundary
 
-OpenAI API image generation remains useful, but it is not the default here. Use it only when the user explicitly wants API-backed image generation or when native ImageGen is unavailable and the user approves the API path. That path may bill the user's OpenAI API project and requires `OPENAI_API_KEY`.
+OpenAI API image generation remains available as a fallback, but it is not the normal Codex path. Use it only when the user explicitly wants API-backed image generation or when native ImageGen is unavailable and the user approves the API path. That path may bill the user's OpenAI API project and requires `OPENAI_API_KEY`.
+
+Do not describe ChatGPT Plus, Pro, Team, Business, or Codex usage as OpenAI API credits. Native ImageGen usage and OpenAI API billing are separate.
 
 ## Evidence
 
 Official OpenAI documentation checked for this decision:
 
-- ChatGPT plan preview limitations list image generation as unsupported for the App Server / Sign in with ChatGPT plan route. See `https://developers.openai.com/siwc/token-sharing-open-source/preview-limitations`.
-- Codex App Server documentation describes text inference through Responses with a ChatGPT-plan OAuth token and says `model/list` is catalog data, not entitlement proof. See `https://developers.openai.com/siwc/token-sharing-open-source/codex-app-server`.
-- OpenAI image generation docs describe image generation through the Image API and the Responses API image-generation tool. Those docs are about API-backed access and billing, not proof that the Claude Code gateway can invoke Codex host-native ImageGen. See `https://developers.openai.com/api/docs/guides/image-generation`.
-- The Codex help article says ChatGPT image-generation limits are separate from Codex usage limits, which is another reason this toolkit must not present API billing as the default Codex path. See `https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan`.
+- ChatGPT Learn says image generation can be requested in an interactive session and that `$imagegen` invokes the image-generation skill explicitly. It also says built-in image generation uses `gpt-image-2` and counts toward general Codex usage limits. See `https://learn.chatgpt.com/docs/image-generation`.
+- The OpenAI API image-generation docs describe the separate Responses API `image_generation` tool and Image API model/options surface. Those docs are about API-backed access and billing, not the default Codex host-native path. See `https://developers.openai.com/api/docs/guides/tools-image-generation`.
+- The upstream Codex `imagegen` skill says the default mode is the built-in `image_gen` tool, that it does not require `OPENAI_API_KEY`, and that the CLI/API path is a fallback only when explicitly requested or confirmed. See `https://github.com/openai/codex/blob/main/codex-rs/skills/src/assets/samples/imagegen/SKILL.md`.
 
 Local evidence checked for this decision:
 
+- `/root/.codex/skills/.system/imagegen/SKILL.md` matches the upstream native-first rule: default to built-in `image_gen`; use the API/CLI fallback only by explicit request; never ask for `OPENAI_API_KEY` for built-in mode.
+- A live native ImageGen smoke in this Codex session generated `/root/.codex/generated_images/01a0f47b-8488-7661-8451-671d206d886e/call_eSo2r2HPV8ufidq1CZIkPOAE.png` without using `OPENAI_API_KEY` or API curl.
 - `codex app-server generate-json-schema --out ...` in Codex 0.159.2 includes `ImageGenerationThreadItem`, `ImageGenerationFailure`, and image input/output item types. This proves the protocol can represent image-generation results.
 - The same generated schema did not show a direct client request parameter dedicated to image generation; turns still start from normal user input.
-- A live `codex exec --json` probe asking for native image generation returned a text item only and no `imageGeneration` item or generated file. That probe does not disprove ImageGen in all Codex hosts, but it means this CLI path is not yet proven as a product integration.
+- A live `codex exec --json` probe asking for native image generation returned a text item only and no `imageGeneration` item or generated file. That probe does not disprove ImageGen in Codex hosts, but it means the Claude Code bridge path is not yet product-proven.

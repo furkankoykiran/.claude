@@ -7607,7 +7607,7 @@
       ],
       "canonicalInvocation": "/fk-toolkit-ops:openai-image",
       "description": "Generate/edit images via Codex ImageGen.",
-      "digest": "65be94cb3c6b61dbb61eca50fbfa354bb1dd02b7cfd3ce521cc09ff0d72e34ec",
+      "digest": "b434696680a75348ef4016372e31141367721139123fd9cbef2512884c0fba88",
       "frontmatter": {
         "allowed-tools": [
           "Bash",
