@@ -579,6 +579,38 @@ case "$codex_out" in
   *"Codex gateway"*"port 4545"*) ok "codex starts or reuses its app-server gateway on activation" ;;
   *) bad "codex did not manage the app-server gateway: $codex_out" ;;
 esac
+if [ -f "$SANDBOX/state/codex-gateway.pid" ]; then
+  kill "$(cat "$SANDBOX/state/codex-gateway.pid")" 2>/dev/null || true
+  rm -f "$SANDBOX/state/codex-gateway.pid"
+fi
+python3 - <<'PY' >/tmp/fkt-codex-health.log 2>&1 &
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == "/health":
+            body = b'{"ok":true,"provider":"codex-app-server","model":"gpt-5.5"}'
+            self.send_response(200)
+            self.send_header("content-type", "application/json")
+            self.send_header("content-length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        self.send_response(404)
+        self.end_headers()
+    def log_message(self, *_args):
+        pass
+
+HTTPServer(("127.0.0.1", 4545), Handler).serve_forever()
+PY
+HEALTH_PID=$!
+sleep 1
+codex_status_out=$(say codex-status)
+kill "$HEALTH_PID" 2>/dev/null || true
+case "$codex_status_out" in
+  *"Codex gateway: running (health, port 4545)"*) ok "codex-status recognizes a live gateway even without a pidfile" ;;
+  *) bad "codex-status reported a live pidless gateway incorrectly: $codex_status_out" ;;
+esac
 if grep -q "codex-mcp-headers-helper" "$SANDBOX/codex-config.toml"; then
   bad "codex activation left stale bridge MCP headers helpers in native Codex config"
 else
@@ -593,6 +625,12 @@ codex_model_out=$(say codex-model gpt-5.5 medium)
 case "$codex_model_out" in
   *"Codex model set to gpt-5.5"*) ok "codex-model reports the selected Codex model" ;;
   *) bad "codex-model did not report the selected model: $codex_model_out" ;;
+esac
+codex_ansi_out=$(say codex-model 'gpt-5.5[1m' medium)
+case "$codex_ansi_out" in
+  *"[1m"*) bad "codex-model leaked an ANSI suffix into display output: $codex_ansi_out" ;;
+  *"Codex model set to gpt-5.5"*) ok "codex-model strips ANSI/control suffixes from display output" ;;
+  *) bad "codex-model did not report the sanitized model: $codex_ansi_out" ;;
 esac
 if [ "$(jq -r '.env.CODEX_GATEWAY_MODEL' "$SANDBOX/providers/codex.json")" = "gpt-5.5" ] \
    && [ "$(jq -r '.env.CODEX_GATEWAY_REASONING_EFFORT' "$SANDBOX/providers/codex.json")" = "medium" ]; then

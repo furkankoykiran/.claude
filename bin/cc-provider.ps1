@@ -74,6 +74,14 @@ function Format-SecretRedaction($value) {
   return "configured (****$($value.Substring($value.Length - 4)))"
 }
 
+function Format-CodexDisplay($value) {
+  if ($null -eq $value) { return '' }
+  $text = [string]$value
+  $text = [regex]::Replace($text, "`e\[[0-9;?]*[ -/]*[@-~]", '')
+  $text = [regex]::Replace($text, '\[[0-9;]*m', '')
+  return [regex]::Replace($text, '[\x00-\x1F\x7F]', '')
+}
+
 function Get-CredentialKey($p) {
   $f = Join-Path $PDir "$p.json"
   if (-not (Test-Path -LiteralPath $f)) { return $null }
@@ -229,6 +237,7 @@ function Write-CodexPickerStatus {
     $selected = 'unset'
     if ($codex.ContainsKey('env') -and $codex['env'].ContainsKey('CODEX_GATEWAY_MODEL')) { $selected = $codex['env']['CODEX_GATEWAY_MODEL'] }
     elseif ($codex.ContainsKey('model')) { $selected = $codex['model'] }
+    $selected = Format-CodexDisplay $selected
     "Codex picker catalog: $providerCount model(s) cached in providers/codex.json"
     "Codex selected model: $selected"
   }

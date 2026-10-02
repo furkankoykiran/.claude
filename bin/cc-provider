@@ -78,6 +78,11 @@ redact_secret() {
   fi
 }
 
+sanitize_codex_display() {
+  # Strip terminal escape sequences and the common leftover SGR suffix shape
+  # that appears when an upstream model label has already lost its ESC byte.
+  printf '%s' "$1" | sed -E $'s/\x1B\\[[0-9;?]*[ -/]*[@-~]//g; s/\\[[0-9;]*m//g; s/[[:cntrl:]]//g'
+}
 
 codex_gateway_port() {
   if [ -f "$PDIR/codex.json" ] && command -v jq >/dev/null 2>&1; then
@@ -93,6 +98,15 @@ codex_gateway_running() {
   pid=$(cat "$CODEX_GATEWAY_PID" 2>/dev/null || true)
   [ -n "$pid" ] || return 1
   kill -0 "$pid" 2>/dev/null
+}
+
+codex_gateway_health_running() {
+  command -v curl >/dev/null 2>&1 || return 1
+  curl -fsS --max-time 1 "http://127.0.0.1:$(codex_gateway_port)/health" >/dev/null 2>&1
+}
+
+codex_gateway_available() {
+  codex_gateway_running || codex_gateway_health_running
 }
 
 scrub_codex_bridge_mcp_config() {
@@ -169,9 +183,13 @@ start_codex_gateway() {
     printf 'Codex gateway already running (pid %s, port %s).\n' "$(cat "$CODEX_GATEWAY_PID")" "$(codex_gateway_port)"
     return 0
   fi
+  if codex_gateway_health_running; then
+    printf 'Codex gateway already running (health, port %s).\n' "$(codex_gateway_port)"
+    return 0
+  fi
   local port model effort
   port=$(codex_gateway_port)
-  model=$(jq -r '.env.CODEX_GATEWAY_MODEL // empty' "$PDIR/codex.json")
+  model=$(sanitize_codex_display "$(jq -r '.env.CODEX_GATEWAY_MODEL // empty' "$PDIR/codex.json")")
   effort=$(jq -r '.env.CODEX_GATEWAY_REASONING_EFFORT // empty' "$PDIR/codex.json")
   if command -v setsid >/dev/null 2>&1; then
     nohup setsid env CODEX_GATEWAY_PORT="$port" CODEX_GATEWAY_MODEL="$model" CODEX_GATEWAY_REASONING_EFFORT="$effort" \
@@ -206,11 +224,13 @@ stop_codex_gateway() {
 status_codex_gateway() {
   if codex_gateway_running; then
     printf 'Codex gateway: running (pid %s, port %s)\n' "$(cat "$CODEX_GATEWAY_PID")" "$(codex_gateway_port)"
+  elif codex_gateway_health_running; then
+    printf 'Codex gateway: running (health, port %s)\n' "$(codex_gateway_port)"
   else
     printf 'Codex gateway: stopped\n'
   fi
   if [ -f "$PDIR/codex.json" ] && command -v jq >/dev/null 2>&1; then
-    printf 'Codex model: %s\n' "$(jq -r '.env.CODEX_GATEWAY_MODEL // "unset"' "$PDIR/codex.json")"
+    printf 'Codex model: %s\n' "$(sanitize_codex_display "$(jq -r '.env.CODEX_GATEWAY_MODEL // "unset"' "$PDIR/codex.json")")"
     printf 'Codex reasoning effort: %s\n' "$(jq -r '.env.CODEX_GATEWAY_REASONING_EFFORT // "default"' "$PDIR/codex.json")"
   fi
 }
@@ -218,7 +238,7 @@ status_codex_gateway() {
 codex_models_json() {
   is_provider codex || die "codex provider template is missing"
   command -v curl >/dev/null 2>&1 || die "curl is required to query the Codex model catalog"
-  if ! codex_gateway_running; then
+  if ! codex_gateway_available; then
     start_codex_gateway >/dev/null
   fi
   local url
@@ -273,7 +293,7 @@ codex_picker_status() {
   local provider_count settings_count pricing selected
   if [ -f "$PDIR/codex.json" ]; then
     provider_count=$(jq -r '(.modelPicker.options // []) | length' "$PDIR/codex.json" 2>/dev/null || printf '0')
-    selected=$(jq -r '.env.CODEX_GATEWAY_MODEL // .model // "unset"' "$PDIR/codex.json" 2>/dev/null || printf 'unset')
+    selected=$(sanitize_codex_display "$(jq -r '.env.CODEX_GATEWAY_MODEL // .model // "unset"' "$PDIR/codex.json" 2>/dev/null || printf 'unset')")
     printf 'Codex picker catalog: %s model(s) cached in providers/codex.json\n' "$provider_count"
     printf 'Codex selected model: %s\n' "$selected"
   fi
@@ -306,6 +326,7 @@ list_codex_models() {
 
 set_codex_model() {
   local model="${1:-}" effort="${2:-medium}" tmp
+  model=$(sanitize_codex_display "$model")
   [ -n "$model" ] || die "codex-model requires a Codex model id (example: ccs codex-model gpt-5.5 medium)"
   case "$effort" in low|medium|high|xhigh|none) ;; *) die "reasoning effort must be one of: none, low, medium, high, xhigh" ;; esac
   ensure_provider_file codex
