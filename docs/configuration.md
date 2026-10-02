@@ -31,6 +31,7 @@ ccs codex-model gpt-5.5 medium   # choose the Codex model and reasoning effort
 ccs codex-status                 # print Codex gateway state and selected model
 ccs account                      # print supported Codex account/auth fields
 ccs usage                        # print supported Codex usage/rate-limit fields
+ccs permissions                  # print Claude/Codex permission and Auto ownership
 ccs doctor                       # check provider setup, safety merge and gateway state
 ```
 
@@ -90,6 +91,8 @@ ccs codex-status
 `ccs account` and `ccs usage` read only supported Codex App Server RPCs through the local gateway: `account/read`, `account/rateLimits/read`, and `account/usage/read`. The output redacts email addresses, labels unavailable fields as unavailable, and points users back to ChatGPT Settings -> Usage for the authoritative UI. The toolkit does not scrape ChatGPT pages, read browser cookies, copy OAuth tokens, or infer quota recovery from reset timestamps. Local pricing estimates stay disabled because ChatGPT/Codex entitlement is not Anthropic API billing. Session usage surfaces have the same boundary: see [Codex session usage](codex-session-usage.md) before treating Claude Code usage data as billing or quota evidence. Model switching has its own boundary: see [Codex model switching](codex-model-switching.md) for what is live-proven and what remains unclaimed.
 
 The current mode boundary is deliberately conservative. Manual mode and Plan mode are Claude Code client behavior and work through the Codex bridge. Auto mode is model-dependent in Claude Code; with the verified `gpt-5.5` setup, Claude Code reports Auto as unavailable for that model. Fast mode is an Opus 5 usage-credit feature and is not treated as a Codex capability.
+
+Use `ccs permissions` to inspect the layered authority model for the active provider. Under `ccs codex`, Claude Code remains the authority for Bash, file tools, hooks, Claude-side MCP, tool results, and the permission UI. The Codex bridge starts Codex turns with a read-only sandbox, `approvalPolicy=never`, and no authoritative Codex auto-review path. Native Codex sandbox and approval-reviewer settings, including Codex Auto Review, apply when you use the official Codex CLI directly; they do not silently approve operations that Claude Code is expected to review.
 
 The live zero-Anthropic acceptance test proves a narrow boundary: with Anthropic inference unavailable/observed, Claude Code sent a text prompt and a shell-tool turn through the Codex gateway and received the expected result. It does not prove every Claude Code feature, every MCP server, every model, or production-grade availability. Treat the Codex app-server bridge as experimental until upstream stabilizes it.
 

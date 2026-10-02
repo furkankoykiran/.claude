@@ -404,6 +404,50 @@ EOF_USAGE_WINDOWS
   printf '  Official details: ChatGPT Settings -> Usage\n'
 }
 
+print_permission_matrix() {
+  command -v jq >/dev/null 2>&1 || die "jq is required to inspect permission settings"
+  local active="none" claude_mode="default" provider_scope="standard"
+  if [ -f "$PDIR/.active" ]; then
+    active=$(tr -d '[:space:]' < "$PDIR/.active")
+  fi
+  if [ -f "$SETTINGS" ]; then
+    claude_mode=$(jq -r '.permissions.defaultMode // "default"' "$SETTINGS" 2>/dev/null || printf 'default')
+  fi
+  case "$claude_mode" in
+    default) claude_mode_label="default (Manual / ask)" ;;
+    plan) claude_mode_label="plan" ;;
+    acceptEdits) claude_mode_label="acceptEdits" ;;
+    dontAsk) claude_mode_label="dontAsk" ;;
+    auto) claude_mode_label="auto (Claude Code support is model/session dependent)" ;;
+    bypassPermissions) claude_mode_label="bypassPermissions" ;;
+    *) claude_mode_label="$claude_mode" ;;
+  esac
+  [ "$active" = "codex" ] && provider_scope="ccs codex bridge"
+
+  printf 'Permission and Auto semantics\n'
+  printf '  Active provider: %s\n' "$active"
+  printf '  Claude permission mode: %s\n' "$claude_mode_label"
+  printf '  Active scope: %s\n' "$provider_scope"
+  if [ "$active" = "codex" ]; then
+    printf '  Authority: Claude Code owns Bash, Read/Edit/Write, hooks, Claude-side MCP, tool results, and permission UI.\n'
+    printf '  Codex bridge sandbox: read-only (network disabled for turn sandbox)\n'
+    printf '  Codex bridge approval policy: never\n'
+    printf '  Codex bridge approval reviewer: user (Codex auto_review is not authoritative)\n'
+    printf '  Codex-side tool executor: disabled/fail-closed in bridge mode\n'
+    printf '  Claude Auto mode: only available when Claude Code itself accepts the active model/session; not inferred from Codex auto_review.\n'
+  else
+    printf '  Authority: Claude Code owns provider requests and its normal permission UI for this provider.\n'
+    printf '  Codex native controls: not active through ccs unless you run the official codex CLI directly.\n'
+  fi
+  printf '\nSupported choices\n'
+  printf '  Manual / ask:        fkt configure --yes --permission-mode manual\n'
+  printf '  Plan:                fkt configure --yes --permission-mode plan\n'
+  printf '  Accept edits:        fkt configure --yes --permission-mode acceptEdits\n'
+  printf '  Hard deny prompts:   fkt configure --yes --permission-mode dontAsk\n'
+  printf '  Claude Auto:         fkt configure --yes --permission-mode auto (only if Claude Code supports the active model/session)\n'
+  printf '  Native Codex Auto Review: use official codex CLI settings outside ccs codex; ccs codex will not let it approve Claude-owned operations.\n'
+}
+
 refresh_codex_model_discovery() {
   ensure_provider_file codex
   command -v jq >/dev/null 2>&1 || return 0
@@ -893,7 +937,7 @@ doctor() {
 }
 
 usage() {
-  printf 'usage: cc-provider [list|status|doctor|models|account|usage|model <model> [effort]|use <provider>|auth <provider>|login <provider>|api <provider>|logout <provider>|codex-start|codex-stop|codex-status|codex-model <model> [effort]|<provider>]\n' >&2
+  printf 'usage: cc-provider [list|status|doctor|models|account|usage|permissions|model <model> [effort]|use <provider>|auth <provider>|login <provider>|api <provider>|logout <provider>|codex-start|codex-stop|codex-status|codex-model <model> [effort]|<provider>]\n' >&2
   printf '  list              list available providers\n' >&2
   printf '  status            print the active provider (default) and auth summary on stderr\n' >&2
   printf '  use <provider>    activate it (compatibility shorthand: cc-provider <provider>)\n' >&2
@@ -905,6 +949,7 @@ usage() {
   printf '  models            list live Codex models from the local gateway catalog\n' >&2
   printf '  account           show supported Codex account/auth details\n' >&2
   printf '  usage             show supported Codex usage and rate-limit details\n' >&2
+  printf '  permissions       show Claude/Codex permission and Auto ownership\n' >&2
   printf '  model             set Codex model id and reasoning effort (alias: codex-model)\n' >&2
   printf '  codex-start       start the local Codex app-server gateway\n' >&2
   printf '  codex-stop        stop the local Codex app-server gateway\n' >&2
@@ -923,6 +968,7 @@ case "$cmd" in
   models)    [ "${2:-}" = "" ] || die "models accepts no arguments"; list_codex_models ;;
   account)   [ "${2:-}" = "" ] || die "account accepts no arguments"; print_codex_account ;;
   usage)     [ "${2:-}" = "" ] || die "usage accepts no arguments"; print_codex_usage ;;
+  permissions) [ "${2:-}" = "" ] || die "permissions accepts no arguments"; print_permission_matrix ;;
   model)     set_codex_model "${2:-}" "${3:-medium}"; [ "${4:-}" = "" ] || die "model accepts at most model and effort" ;;
   codex-start) [ "${2:-}" = "" ] || die "codex-start accepts no arguments"; start_codex_gateway ;;
   codex-stop) [ "${2:-}" = "" ] || die "codex-stop accepts no arguments"; stop_codex_gateway ;;

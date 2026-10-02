@@ -654,6 +654,7 @@ sleep 1
 codex_status_out=$(say codex-status)
 codex_account_out=$(say account)
 codex_usage_out=$(say usage)
+codex_permissions_out=$(say permissions)
 kill "$HEALTH_PID" 2>/dev/null || true
 case "$codex_status_out" in
   *"Codex gateway: running (health, port $FREE_CODEX_PORT)"*) ok "codex-status recognizes a live gateway even without a pidfile" ;;
@@ -666,6 +667,10 @@ esac
 case "$codex_usage_out" in
   *"Codex usage"*"Ordinary usage: allowed"*"primary: used 25%"*"secondary: used 60%"*"Reset credits: 2"*"lifetimeTokens=12345"*) ok "ccs usage formats supported Codex usage and rate-limit RPC fields" ;;
   *) bad "ccs usage did not format supported usage fields: $codex_usage_out" ;;
+esac
+case "$codex_permissions_out" in
+  *"Permission and Auto semantics"*"Active provider: codex"*"Authority: Claude Code owns Bash"*"Codex bridge sandbox: read-only"*"Codex bridge approval policy: never"*"Codex auto_review is not authoritative"*) ok "ccs permissions separates Claude authority from Codex sandbox and auto-review semantics" ;;
+  *) bad "ccs permissions did not report the Codex bridge permission boundary: $codex_permissions_out" ;;
 esac
 if grep -q "codex-mcp-headers-helper" "$SANDBOX/codex-config.toml"; then
   bad "codex activation left stale bridge MCP headers helpers in native Codex config"
