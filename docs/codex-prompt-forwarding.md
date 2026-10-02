@@ -26,11 +26,17 @@ printf '%s\n' '{"type":"user","message":{"role":"user","content":[{"type":"text"
   | claude -p --output-format=stream-json --input-format=stream-json --verbose --permission-mode manual --allowedTools=Bash
 claude -p "Say exactly codex-bare-prompt-ok" --bare --verbose --output-format=stream-json --permission-mode manual --allowedTools=Bash
 claude --print --verbose --output-format=stream-json --permission-mode manual --allowedTools=Bash --system-prompt-snapshot off "Say exactly codex-no-snapshot-ok"
+claude -p "Say exactly codex-settings-json-ok" \
+  --settings '{"env":{"ANTHROPIC_BASE_URL":"http://127.0.0.1:4555","ANTHROPIC_AUTH_TOKEN":"local-codex-gateway","CLAUDE_CODE_GATEWAY_HINT_HEADERS":"1","CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS":"1","ANTHROPIC_DEFAULT_SONNET_MODEL":"gpt-5.5","ANTHROPIC_DEFAULT_OPUS_MODEL":"gpt-5.5","ANTHROPIC_DEFAULT_HAIKU_MODEL":"gpt-5.5"}}' \
+  --model gpt-5.5 --verbose --output-format=stream-json --permission-mode manual --allowedTools=Bash
 ```
 
 In each case, gateway trace showed request keys such as `messages`, `system`,
 `metadata`, `tools`, and `thinking`, but no actionable prompt in `messages`,
-`system`, or metadata. The response was:
+`system`, or metadata. The explicit `--settings` probe reached the gateway with
+Claude-owned Bash, MCP tools, skills, and SessionStart hooks visible in Claude
+Code's init event; enabling `CLAUDE_CODE_GATEWAY_HINT_HEADERS=1` did not add the
+prompt to the gateway request body. The response was:
 
 ```text
 API Error: 400 Claude Code did not forward an actionable user prompt to the Codex gateway; refusing to run Codex on system reminders only.
