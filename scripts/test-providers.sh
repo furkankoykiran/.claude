@@ -576,6 +576,9 @@ mkdir -p "$SANDBOX/scripts"
 FREE_CODEX_PORT=$(python3 -c "
 import socket
 s = socket.socket(); s.bind(('127.0.0.1', 0)); print(s.getsockname()[1]); s.close()")
+OVERRIDE_CODEX_PORT=$(python3 -c "
+import socket
+s = socket.socket(); s.bind(('127.0.0.1', 0)); print(s.getsockname()[1]); s.close()")
 for codex_provider_file in "$SANDBOX/providers/codex.json" "$SANDBOX/providers/codex.json.example"; do
   [ -f "$codex_provider_file" ] || continue
   tmp_codex_provider="$(mktemp "$SANDBOX/providers/.codex-port.XXXXXX")"
@@ -618,6 +621,36 @@ esac
 case "$codex_blocked_start_out" in
   *"port $FREE_CODEX_PORT is occupied but /health is not reachable"*) ok "codex-start refuses an occupied unhealthy gateway port" ;;
   *) bad "codex-start did not refuse an occupied unhealthy gateway port: $codex_blocked_start_out" ;;
+esac
+FKT_TEST_CODEX_PORT="$OVERRIDE_CODEX_PORT" python3 - <<'PY' >/tmp/fkt-codex-env-health.log 2>&1 &
+import os
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == "/health":
+            body = b'{"ok":true,"provider":"codex-app-server","model":"gpt-5.5"}'
+            self.send_response(200)
+            self.send_header("content-type", "application/json")
+            self.send_header("content-length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        self.send_response(404)
+        self.end_headers()
+    def log_message(self, *_args):
+        pass
+
+HTTPServer(("127.0.0.1", int(os.environ["FKT_TEST_CODEX_PORT"])), Handler).serve_forever()
+PY
+ENV_HEALTH_PID=$!
+sleep 1
+codex_env_status_out=$(CODEX_GATEWAY_PORT="$OVERRIDE_CODEX_PORT" CODEX_CONFIG="$SANDBOX/codex-config.toml" CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" codex-status 2>&1 || true)
+kill "$ENV_HEALTH_PID" 2>/dev/null || true
+wait "$ENV_HEALTH_PID" 2>/dev/null || true
+case "$codex_env_status_out" in
+  *"Codex gateway: running (health, port $OVERRIDE_CODEX_PORT)"*) ok "CODEX_GATEWAY_PORT overrides the configured Codex gateway port" ;;
+  *) bad "CODEX_GATEWAY_PORT did not override the configured Codex gateway port: $codex_env_status_out" ;;
 esac
 FKT_TEST_CODEX_PORT="$FREE_CODEX_PORT" python3 - <<'PY' >/tmp/fkt-codex-health.log 2>&1 &
 import os

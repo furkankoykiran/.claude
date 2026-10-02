@@ -86,6 +86,10 @@ sanitize_codex_display() {
 }
 
 codex_gateway_port() {
+  if [ -n "${CODEX_GATEWAY_PORT:-}" ]; then
+    printf '%s' "$CODEX_GATEWAY_PORT"
+    return 0
+  fi
   if [ -f "$PDIR/codex.json" ] && command -v jq >/dev/null 2>&1; then
     jq -r '.env.CODEX_GATEWAY_PORT // "4545"' "$PDIR/codex.json" 2>/dev/null || printf '4545'
   else

@@ -266,6 +266,9 @@ function Get-MapValue($obj, $name, $default = $null) {
 }
 
 function Get-CodexGatewayPort {
+  if ($env:CODEX_GATEWAY_PORT) {
+    return [string]$env:CODEX_GATEWAY_PORT
+  }
   $codexFile = Join-Path $PDir 'codex.json'
   if (Test-Path -LiteralPath $codexFile) {
     $codex = Read-JsonMap $codexFile
