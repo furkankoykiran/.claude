@@ -201,7 +201,7 @@ describe("experimental Codex Anthropic gateway", () => {
     });
   });
 
-  it("round trips dynamic client tools as instructions and Anthropic tool_result content", () => {
+  it("does not duplicate dynamic client tool schemas in additional context", () => {
     const batch = toCodexRequests(
       {
         ...baseRequest,
@@ -229,16 +229,12 @@ describe("experimental Codex Anthropic gateway", () => {
       { cwd: "/workspace", model: "gpt-5.5" },
     );
 
-    const context = batch.requests[0]?.params["additionalContext"] as Record<string, { value: string }>;
-    expect(JSON.parse(context["anthropic-tools"]?.value ?? "{}")).toEqual({
-      boundary: "experimental-dynamic-client-tools-only",
-      tools: [
-        {
-          name: "lookup",
-          description: "Lookup a value",
-          input_schema: { type: "object", properties: { query: { type: "string" } } },
-        },
-      ],
+    const context = batch.requests[0]?.params["additionalContext"] as Record<string, { kind: string; value: string }>;
+    expect(context).toEqual({
+      "anthropic-system": {
+        kind: "application",
+        value: "You are a careful coding assistant.",
+      },
     });
     expect(batch.requests[0]?.params["input"]).toEqual([
       {

@@ -201,27 +201,11 @@ export function toCodexRequests(
       }
     : null;
 
-  const toolInstructions = request.tools?.length
-    ? {
-        "anthropic-tools": {
-          kind: "application",
-          value: JSON.stringify({
-            boundary: "experimental-dynamic-client-tools-only",
-            tools: request.tools.map((tool) => ({
-              name: tool.name,
-              description: tool.description ?? "",
-              input_schema: tool.input_schema,
-            })),
-          }),
-        },
-      }
-    : null;
-
   const params: Record<string, unknown> = {
     input,
     cwd: options.cwd,
     model: resolveCodexModel(request.model, options.model),
-    additionalContext: mergeNullableRecords(additionalContext, toolInstructions),
+    additionalContext,
     approvalPolicy: "never",
     approvalsReviewer: "user",
     sandboxPolicy: { type: "readOnly", networkAccess: false },
