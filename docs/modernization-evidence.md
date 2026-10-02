@@ -36,7 +36,7 @@ ChatGPT authentication; no credential files were read or copied.
 | Wave | Scope | Acceptance beyond the mandatory gate |
 | --- | --- | --- |
 | 1 | Shared repository policy and context accounting | Instruction imports, missing files, cycles, size ceilings; existing Claude listing budget and marketplace check |
-| 2 | Provider UX, auth, command installation, experimental gateway | Disposable HOME installs, clean shells, switch safety, protocol fixtures, lifecycle and tool round trip; process-scoped live network proof |
+| 2 | Provider UX, auth, command installation, experimental gateway | Disposable HOME installs, clean shells, switch safety, protocol fixtures, lifecycle checks, and current fail-closed live proof |
 | 3 | Portable manifests, requested sources, MCP registry, prompt export | Immutable revisions, component licenses, supporting-file capabilities, runtime manifests, auth-state fixtures, deterministic export |
 | 4 | Automation, documentation, release readiness | Policy classifications, all applicable lint/install/platform checks, two clean generations, final runtime evidence |
 
@@ -128,14 +128,14 @@ The Codex gateway code is still experimental, but it now runs a real local
 Codex app-server loopback. Current implementation covers the translation
 boundary with fixtures for streaming, system instructions, multi-turn state,
 client tool calls, tool results, command-output deltas, duplicate retries,
-errors, cancellation, and clean shutdown. Live acceptance on 2026-09-30 ran
-`ccs codex` with `CODEX_GATEWAY_MODEL=gpt-5.5` and
-`CODEX_GATEWAY_REASONING_EFFORT=medium`, then ran `claude -p` through the
-loopback provider. Claude Code executed a shell-command turn through the Codex
-gateway and returned exactly `CODEX_GATEWAY_CLAUDE_TOOL_OK`. The gateway health
-endpoint reported `provider=codex-app-server`, `model=gpt-5.5`, and
-`reasoning_effort=medium`; no Anthropic API key or ChatGPT token file was read
-or copied.
+errors, cancellation, and clean shutdown. Historical live acceptance on
+2026-09-30 reported a shell-command turn through the loopback provider, but
+newer Claude Code `2.1.273` custom-endpoint probes did not forward the
+actionable user prompt to `/v1/messages`. The gateway now fails closed in that
+case instead of sending system reminders to Codex or producing fake tool
+success. The health endpoint still reports the selected Codex provider, model,
+and reasoning effort; no Anthropic API key or ChatGPT token file is read or
+copied.
 
 The old installer-managed shell functions are migrated away. Unix, WSL, and Git
 Bash installs now write `~/.local/bin/ccs` and `~/.local/bin/fkt`; native Windows

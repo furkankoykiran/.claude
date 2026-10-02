@@ -45,7 +45,7 @@ and adds that directory to the user PATH.
 | `ccs <name>` | Endpoint | You need | Notes |
 | --- | --- | --- | --- |
 | `anthropic` | `api.anthropic.com` | `claude login` | No token in the file; uses your normal claude.ai auth |
-| `codex` | `127.0.0.1:4545` | `ccs login codex` + experimental local gateway | Routes Claude Code to the isolated Codex adapter. The 2026-09-30 live proof covered a GPT-5.5 Medium text and shell-tool round trip with Anthropic inference unavailable/observed, but it does not make the gateway non-experimental. |
+| `codex` | `127.0.0.1:4545` | `ccs login codex` + experimental local gateway | Routes Claude Code to the isolated Codex adapter. Current live proof covers gateway lifecycle, model catalog, account/usage RPCs, and fail-closed handling when Claude Code does not forward an actionable prompt. Text and tool parity remain experimental. |
 | `zai` | `api.z.ai/api/anthropic` | z.ai API key | GLM models. [Subscription link](https://z.ai/subscribe?ic=SNPFQIQ7BD) (my referral) |
 | `nvidia` | `127.0.0.1:4000` -> `build.nvidia.com` | NVIDIA API key + local gateway | Hosted NVIDIA catalog. [See below](#nvidia-nim) |
 | `nvidia-nim` | your NIM container | a NIM deployment | Self-hosted NIM, no gateway. [See below](#nvidia-nim) |
@@ -94,7 +94,7 @@ The current mode boundary is deliberately conservative. Manual mode and Plan mod
 
 Use `ccs permissions` to inspect the layered authority model for the active provider. Under `ccs codex`, Claude Code remains the authority for Bash, file tools, hooks, Claude-side MCP, tool results, and the permission UI. The Codex bridge starts Codex turns with a read-only sandbox, `approvalPolicy=never`, and no authoritative Codex auto-review path. Native Codex sandbox and approval-reviewer settings, including Codex Auto Review, apply when you use the official Codex CLI directly; they do not silently approve operations that Claude Code is expected to review.
 
-The live zero-Anthropic acceptance test proves a narrow boundary: with Anthropic inference unavailable/observed, Claude Code sent a text prompt and a shell-tool turn through the Codex gateway and received the expected result. It does not prove every Claude Code feature, every MCP server, every model, or production-grade availability. Treat the Codex app-server bridge as experimental until upstream stabilizes it.
+Current live tests show a conservative boundary. The gateway starts, reports health, reads the Codex model catalog, and exposes supported Codex account/usage RPCs without copying ChatGPT credentials. It also refuses promptless Claude Code requests instead of running Codex on system reminders or turning failed tool calls into fake success. A supported Claude Code path that forwards the actual user turn to this custom provider is still required before claiming text, MCP, or tool parity. Treat the Codex app-server bridge as experimental until that path is proven live.
 
 ### How it works
 

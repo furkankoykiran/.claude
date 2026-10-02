@@ -15,11 +15,11 @@ In practical terms:
 | `claude-sonnet-4-5` with `CODEX_GATEWAY_MODEL=gpt-5.5` | `gpt-5.5` |
 | `gpt-5.6-luna` with `CODEX_GATEWAY_MODEL=gpt-5.5` | `gpt-5.6-luna` |
 
-This makes generated `/model` rows useful for same-session text turns without requiring a provider restart. `ccs codex-model` remains the right command for changing the default model, startup model, and resumed Claude-alias sessions.
+This keeps generated `/model` rows aligned with the Codex catalog and lets the gateway resolve Claude aliases consistently. `ccs codex-model` remains the right command for changing the default model, startup model, and resumed Claude-alias sessions. A live Claude Code text turn is still required before treating a selected row as inference proof.
 
 ## Evidence
 
-Live probes on 2026-10-01 used an active gateway with default `gpt-5.5` and effort `medium`.
+Gateway-level probes used an active gateway with default `gpt-5.5` and effort `medium`.
 
 - A `/v1/messages` request with `model: "gpt-5.6-luna"` returned `model: "gpt-5.6-luna"` and the expected text.
 - A `/v1/messages` request with `model: "claude-sonnet-4-5"` returned `model: "gpt-5.5"` and the expected text.
@@ -31,7 +31,7 @@ Live probes on 2026-10-01 used an active gateway with default `gpt-5.5` and effo
 
 ## Limits
 
-This is a gateway-routing and text-session guarantee, not full semantic proof for every Claude Code workflow. Claude Code carries multi-turn context in the message history it sends to `/v1/messages`, and the persisted `--resume` probe preserved that history across a model switch. Tool-result text survives the bridge because tool result blocks are flattened into the Codex input.
+This is a gateway-routing guarantee, not full semantic proof for every Claude Code workflow. Direct `/v1/messages` fixtures and gateway-level probes prove the resolver behavior. Current Claude Code custom-endpoint probes did not forward the actionable user prompt, so same-session Claude Code text and resume behavior remain pending until a supported prompt-forwarding path is proven.
 
 Subagent dispatch is not proven. A live `--agents` probe exposed the `echoer` agent and Task tool to Claude Code, but the Codex-backed turn returned plain text and `subagent_stats.spawned` stayed `0`. Treat subagents as unsupported under `ccs codex` until the bridge can return Claude-compatible tool-use blocks or another supported mechanism is proven. Tool execution also remains intentionally read-only on the Codex App Server side.
 
