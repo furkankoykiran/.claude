@@ -61,6 +61,12 @@ export type JsonRpcRequest = {
   params: Record<string, unknown>;
 };
 
+export type CodexTurnToolOutput = {
+  name: string;
+  namespace: string | null;
+  output: string | AnthropicTextBlock[];
+};
+
 export type JsonRpcNotification = {
   jsonrpc?: "2.0";
   method: string;
@@ -214,6 +220,10 @@ export function toCodexRequests(
     approvalsReviewer: "user",
     sandboxPolicy: { type: "readOnly", networkAccess: false },
   };
+  const toolOutput = toolOutputFromMessages(request.messages);
+  if (toolOutput) {
+    params["toolOutput"] = toolOutput;
+  }
   if (options.reasoningEffort) {
     params["effort"] = options.reasoningEffort;
   }
@@ -451,6 +461,33 @@ export function nonStreamingAnthropicResponseFromEvents(
     stop_reason: "end_turn",
     usage: { input_tokens: 0, output_tokens: 0 },
   };
+}
+
+export function toolOutputFromMessages(messages: AnthropicMessage[]): CodexTurnToolOutput | null {
+  const toolNames = new Map<string, string>();
+  let latest: CodexTurnToolOutput | null = null;
+  for (const message of messages) {
+    if (!Array.isArray(message.content)) {
+      continue;
+    }
+    for (const block of message.content) {
+      if (block.type === "tool_use") {
+        toolNames.set(block.id, block.name);
+        continue;
+      }
+      if (block.type === "tool_result") {
+        const name = toolNames.get(block.tool_use_id);
+        if (name) {
+          latest = {
+            name,
+            namespace: null,
+            output: typeof block.content === "string" ? block.content : flattenContent(block.content),
+          };
+        }
+      }
+    }
+  }
+  return latest;
 }
 
 export function cancellationRequest(

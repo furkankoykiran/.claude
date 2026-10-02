@@ -151,6 +151,44 @@ describe("experimental Codex Anthropic gateway", () => {
     ]);
   });
 
+  it("continues Claude-owned tool results through Codex toolOutput", () => {
+    const batch = toCodexRequests(
+      {
+        ...baseRequest,
+        messages: [
+          {
+            role: "assistant",
+            content: [
+              {
+                type: "tool_use",
+                id: "toolu_1",
+                name: "lookup",
+                input: { query: "alpha" },
+              },
+            ],
+          },
+          {
+            role: "user",
+            content: [
+              {
+                type: "tool_result",
+                tool_use_id: "toolu_1",
+                content: "result text",
+              },
+            ],
+          },
+        ],
+      },
+      { cwd: "/workspace", model: "gpt-5.5" },
+    );
+
+    expect(batch.requests[0]?.params["toolOutput"]).toEqual({
+      name: "lookup",
+      namespace: null,
+      output: "result text",
+    });
+  });
+
 
   it("maps Codex model/list into Anthropic-compatible model objects", () => {
     expect(
