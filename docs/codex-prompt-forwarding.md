@@ -29,6 +29,9 @@ claude --print --verbose --output-format=stream-json --permission-mode manual --
 claude -p "Say exactly codex-settings-json-ok" \
   --settings '{"env":{"ANTHROPIC_BASE_URL":"http://127.0.0.1:4555","ANTHROPIC_AUTH_TOKEN":"local-codex-gateway","CLAUDE_CODE_GATEWAY_HINT_HEADERS":"1","CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS":"1","ANTHROPIC_DEFAULT_SONNET_MODEL":"gpt-5.5","ANTHROPIC_DEFAULT_OPUS_MODEL":"gpt-5.5","ANTHROPIC_DEFAULT_HAIKU_MODEL":"gpt-5.5"}}' \
   --model gpt-5.5 --verbose --output-format=stream-json --permission-mode manual --allowedTools=Bash
+claude -p "Say exactly codex-exclude-dynamic-ok" \
+  --settings '{"env":{"ANTHROPIC_BASE_URL":"http://127.0.0.1:4556","ANTHROPIC_AUTH_TOKEN":"local-codex-gateway","CLAUDE_CODE_GATEWAY_HINT_HEADERS":"1","CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS":"1","ANTHROPIC_DEFAULT_SONNET_MODEL":"gpt-5.5","ANTHROPIC_DEFAULT_OPUS_MODEL":"gpt-5.5","ANTHROPIC_DEFAULT_HAIKU_MODEL":"gpt-5.5"}}' \
+  --model gpt-5.5 --exclude-dynamic-system-prompt-sections --verbose --output-format=stream-json --permission-mode manual --allowedTools=Bash
 ```
 
 In each case, gateway trace showed request keys such as `messages`, `system`,
