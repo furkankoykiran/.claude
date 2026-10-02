@@ -274,13 +274,13 @@ export function codexThreadStartParams(
     sandbox: "read-only",
   };
   if (tools.length > 0) {
-    params["dynamicTools"] = tools.map((tool, index) => {
+    const dynamicTools = tools.map((tool, index) => {
       const name = codexDynamicToolName(tool.name, index);
       if (name !== tool.name) {
         aliases.set(name, tool.name);
       }
       reverseAliases.set(tool.name, name);
-      const inputSchema = codexDynamicToolInputSchema(tool.input_schema);
+      const inputSchema = codexDynamicToolInputSchema(tool.name, tool.input_schema);
       return {
         type: "function",
         name,
@@ -288,6 +288,8 @@ export function codexThreadStartParams(
         inputSchema,
       };
     });
+    traceDynamicTools(dynamicTools);
+    params["dynamicTools"] = dynamicTools;
   }
   return params;
 }
@@ -300,7 +302,11 @@ export function codexDynamicToolName(name: string, index: number): string {
   return `claude_tool_${index}_${readable || "tool"}`;
 }
 
-export function codexDynamicToolInputSchema(inputSchema: unknown): unknown {
+export function codexDynamicToolInputSchema(toolName: string, inputSchema: unknown): unknown {
+  const claudeToolSchema = claudeCodeToolInputSchema(toolName);
+  if (claudeToolSchema) {
+    return claudeToolSchema;
+  }
   if (!inputSchema || typeof inputSchema !== "object" || Array.isArray(inputSchema)) {
     return {
       type: "object",
@@ -327,11 +333,96 @@ export function codexDynamicToolInputSchema(inputSchema: unknown): unknown {
   return schema;
 }
 
+function claudeCodeToolInputSchema(toolName: string): Record<string, unknown> | null {
+  if (toolName === "Bash") {
+    return {
+      type: "object",
+      properties: {
+        command: {
+          type: "string",
+          description: "Shell command for Claude Code to run.",
+        },
+        description: {
+          type: "string",
+          description: "Short description of what the command does.",
+        },
+      },
+      required: ["command"],
+      additionalProperties: false,
+    };
+  }
+  if (toolName === "Read") {
+    return {
+      type: "object",
+      properties: {
+        file_path: {
+          type: "string",
+          description: "Absolute path for Claude Code to read.",
+        },
+        offset: { type: "number" },
+        limit: { type: "number" },
+      },
+      required: ["file_path"],
+      additionalProperties: false,
+    };
+  }
+  if (toolName === "Write") {
+    return {
+      type: "object",
+      properties: {
+        file_path: {
+          type: "string",
+          description: "Absolute path for Claude Code to write.",
+        },
+        content: {
+          type: "string",
+          description: "Complete file contents to write.",
+        },
+      },
+      required: ["file_path", "content"],
+      additionalProperties: false,
+    };
+  }
+  if (toolName === "Edit") {
+    return {
+      type: "object",
+      properties: {
+        file_path: {
+          type: "string",
+          description: "Absolute path for Claude Code to edit.",
+        },
+        old_string: {
+          type: "string",
+          description: "Exact text to replace.",
+        },
+        new_string: {
+          type: "string",
+          description: "Replacement text.",
+        },
+        replace_all: { type: "boolean" },
+      },
+      required: ["file_path", "old_string", "new_string"],
+      additionalProperties: false,
+    };
+  }
+  return null;
+}
+
 function codexDynamicToolDescription(tool: AnthropicTool, inputSchema: unknown): string {
   const base = tool.description?.trim() ?? "";
   const schema = JSON.stringify(inputSchema);
   const contract = `Call this Claude Code client tool with JSON arguments matching this schema: ${schema}`;
   return base ? `${base}\n\n${contract}` : contract;
+}
+
+function traceDynamicTools(dynamicTools: unknown): void {
+  if (process.env.CODEX_GATEWAY_TRACE_TOOLS !== "1") {
+    return;
+  }
+  console.error(JSON.stringify({
+    event: "codex-gateway.dynamicTools",
+    dynamicTools,
+  }));
 }
 
 export function resolveCodexModel(requestModel: string, selectedModel?: string): string {

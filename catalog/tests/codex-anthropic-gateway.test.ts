@@ -98,10 +98,19 @@ describe("experimental Codex Anthropic gateway", () => {
           type: "function",
           name: "Bash",
           description:
-            'Run a shell command\n\nCall this Claude Code client tool with JSON arguments matching this schema: {"type":"object","properties":{"command":{"type":"string"}},"required":["command"],"additionalProperties":false}',
+            'Run a shell command\n\nCall this Claude Code client tool with JSON arguments matching this schema: {"type":"object","properties":{"command":{"type":"string","description":"Shell command for Claude Code to run."},"description":{"type":"string","description":"Short description of what the command does."}},"required":["command"],"additionalProperties":false}',
           inputSchema: {
             type: "object",
-            properties: { command: { type: "string" } },
+            properties: {
+              command: {
+                type: "string",
+                description: "Shell command for Claude Code to run.",
+              },
+              description: {
+                type: "string",
+                description: "Short description of what the command does.",
+              },
+            },
             required: ["command"],
             additionalProperties: false,
           },
@@ -125,16 +134,39 @@ describe("experimental Codex Anthropic gateway", () => {
   });
 
   it("normalizes dynamic tool input schemas for Responses function tools", () => {
-    expect(codexDynamicToolInputSchema({ properties: { command: { type: "string" } }, required: ["command"] })).toEqual({
+    expect(codexDynamicToolInputSchema("lookup", { properties: { command: { type: "string" } }, required: ["command"] })).toEqual({
       type: "object",
       properties: { command: { type: "string" } },
       required: ["command"],
       additionalProperties: false,
     });
-    expect(codexDynamicToolInputSchema(null)).toEqual({
+    expect(codexDynamicToolInputSchema("lookup", null)).toEqual({
       type: "object",
       properties: {},
       required: [],
+      additionalProperties: false,
+    });
+  });
+
+  it("uses compact Claude Code schemas for built-in client tools", () => {
+    expect(codexDynamicToolInputSchema("Bash", { type: "object", properties: { ignored: { type: "string" } } })).toEqual({
+      type: "object",
+      properties: {
+        command: {
+          type: "string",
+          description: "Shell command for Claude Code to run.",
+        },
+        description: {
+          type: "string",
+          description: "Short description of what the command does.",
+        },
+      },
+      required: ["command"],
+      additionalProperties: false,
+    });
+    expect(codexDynamicToolInputSchema("Write", null)).toMatchObject({
+      type: "object",
+      required: ["file_path", "content"],
       additionalProperties: false,
     });
   });
