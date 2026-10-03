@@ -62,6 +62,7 @@ export type JsonRpcRequest = {
 };
 
 export type CodexTurnToolOutput = {
+  toolUseId: string;
   name: string;
   namespace: string | null;
   output: string | AnthropicTextBlock[];
@@ -110,7 +111,36 @@ export type GatewayState = {
   toolNameAliases: Map<string, string>;
   toolRequiredArguments: Map<string, string[]>;
   turnText: string;
+  appServerThreadId: string | null;
+  appServerTurnId: string | null;
+  terminalTurnState: string | null;
+  toolResultContinuation: boolean;
+  emittedText: string;
 };
+
+type PendingToolRoute = {
+  threadId: string;
+  turnId: string;
+};
+
+type ClaudeGatewayRequestTrace = {
+  event: "codex-gateway.claudeRequest";
+  sessionId: string | null;
+  promptId: string | null;
+  requestClass: string | null;
+  prevToolDurations: string | null;
+  latestUserContentBlockTypes: string[];
+  actionableUserText: string;
+  hasToolResult: boolean;
+  appServerThreadId: string | null;
+  appServerTurnId: string | null;
+  terminalTurnState: string | null;
+};
+
+type ClaudeGatewayHeaderHints = Pick<
+  ClaudeGatewayRequestTrace,
+  "sessionId" | "promptId" | "requestClass" | "prevToolDurations"
+>;
 
 
 export type CodexModelCatalogEntry = Record<string, unknown> & {
@@ -170,6 +200,11 @@ export function createGatewayState(): GatewayState {
     toolNameAliases: new Map(),
     toolRequiredArguments: new Map(),
     turnText: "",
+    appServerThreadId: null,
+    appServerTurnId: null,
+    terminalTurnState: null,
+    toolResultContinuation: false,
+    emittedText: "",
   };
 }
 
@@ -324,10 +359,6 @@ export function codexDynamicToolName(name: string, index: number): string {
   return `claude_tool_${index}_${readable || "tool"}`;
 }
 
-function flattenMessagesText(messages: AnthropicMessage[]): string {
-  return messages.map((message) => forwardableMessageText(message)).filter(Boolean).join("\n");
-}
-
 function latestUserMessageText(messages: AnthropicMessage[]): string {
   for (let index = messages.length - 1; index >= 0; index -= 1) {
     const message = messages[index];
@@ -339,6 +370,37 @@ function latestUserMessageText(messages: AnthropicMessage[]): string {
     }
   }
   return "";
+}
+
+function latestUserMessage(messages: AnthropicMessage[]): AnthropicMessage | null {
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    const message = messages[index];
+    if (message?.role === "user") {
+      return message;
+    }
+  }
+  return null;
+}
+
+export function latestUserContentBlockTypes(messages: AnthropicMessage[]): string[] {
+  const message = latestUserMessage(messages);
+  if (!message) {
+    return [];
+  }
+  if (typeof message.content === "string") {
+    return ["text"];
+  }
+  return message.content.map((block) => block.type);
+}
+
+function latestUserMessageHasActionableText(messages: AnthropicMessage[]): boolean {
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    const message = messages[index];
+    if (message?.role === "user") {
+      return forwardableUserContentText(message.content).trim().length > 0;
+    }
+  }
+  return false;
 }
 
 function turnTextForRequest(request: AnthropicMessagesRequest): string {
@@ -361,7 +423,7 @@ export function promptlessInitialTurnError(
   if (toolOutputFromMessages(request.messages, toolAliasesByOriginal)) {
     return null;
   }
-  return flattenMessagesText(request.messages).trim().length > 0
+  return latestUserMessageHasActionableText(request.messages)
     ? null
     : "Claude Code did not forward an actionable user prompt to the Codex gateway; refusing to run Codex on system reminders only.";
 }
@@ -506,6 +568,7 @@ function traceDynamicTools(
   console.error(JSON.stringify({
     event: "codex-gateway.dynamicTools",
     toolNames: dynamicTools.map((tool) => tool["name"]).filter((name): name is string => typeof name === "string"),
+    dynamicTools,
     latestUserTextSnippet: latestUserMessageText(messages).slice(0, 240),
     systemTextSnippet: (systemText ?? "").slice(0, 240),
     messageSummaries: messages.map((message) => ({
@@ -523,6 +586,7 @@ function traceRequestContext(request: AnthropicMessagesRequest): void {
   const explicitJsonIndex = systemText.search(/\bexact JSON input\s*:/i);
   console.error(JSON.stringify({
     event: "codex-gateway.requestContext",
+    tools: request.tools ?? [],
     requestKeys: Object.keys(request as Record<string, unknown>).sort(),
     metadataKeys: request.metadata ? Object.keys(request.metadata).sort() : [],
     systemTextLength: systemText.length,
@@ -534,6 +598,29 @@ function traceRequestContext(request: AnthropicMessagesRequest): void {
       role: message.role,
       snippet: flattenContent(message.content).slice(0, 160),
     })).slice(-6),
+  }));
+}
+
+function traceClaudeGatewayRequest(trace: ClaudeGatewayRequestTrace): void {
+  if (process.env.CLAUDE_CODE_GATEWAY_HINT_HEADERS !== "1" && process.env.CODEX_GATEWAY_TRACE_REQUESTS !== "1") {
+    return;
+  }
+  console.error(JSON.stringify(trace));
+}
+
+function traceToolCallMapping(
+  notification: JsonRpcNotification,
+  toolUse: AnthropicToolUseBlock | null,
+  missingArguments: string | null,
+): void {
+  if (process.env.CODEX_GATEWAY_TRACE_TOOLS !== "1") {
+    return;
+  }
+  console.error(JSON.stringify({
+    event: "codex-gateway.toolCallMapping",
+    codexEvent: notification,
+    anthropicToolUse: toolUse,
+    missingArguments,
   }));
 }
 
@@ -590,11 +677,18 @@ export function toAnthropicStreamEvents(
       const threadId = readString(params, "threadId");
       if (turnId && threadId) {
         state.activeTurns.set(turnId, { threadId });
+        state.appServerThreadId = threadId;
+        state.appServerTurnId = turnId;
       }
       continue;
     }
 
     if (notification.method === "item/agentMessage/delta" || notification.method === "item/commandExecution/outputDelta") {
+      let deltaText = readString(params, "delta") ?? "";
+      if (state.toolResultContinuation) {
+        state.emittedText += deltaText;
+        continue;
+      }
       if (!textOpen) {
         events.push({
           event: "content_block_start",
@@ -611,15 +705,17 @@ export function toAnthropicStreamEvents(
         data: {
           type: "content_block_delta",
           index: contentIndex,
-          delta: { type: "text_delta", text: readString(params, "delta") ?? "" },
+          delta: { type: "text_delta", text: deltaText },
         },
       });
+      state.emittedText += deltaText;
       continue;
     }
 
     if (notification.method === "item/tool/call") {
       const toolUse = repairToolUseInput(dynamicToolUseFromToolCallParams(params, state.toolNameAliases), state);
       const missingArguments = toolUse ? missingRequiredToolUseArguments(toolUse, state.toolRequiredArguments) : null;
+      traceToolCallMapping(notification, toolUse, missingArguments);
       if (missingArguments) {
         events.push({
           event: "error",
@@ -643,18 +739,7 @@ export function toAnthropicStreamEvents(
           contentIndex += 1;
           textOpen = false;
         }
-        events.push({
-          event: "content_block_start",
-          data: {
-            type: "content_block_start",
-            index: contentIndex,
-            content_block: toolUse,
-          },
-        });
-        events.push({
-          event: "content_block_stop",
-          data: { type: "content_block_stop", index: contentIndex },
-        });
+        events.push(...anthropicToolUseSseEvents(contentIndex, toolUse));
         contentIndex += 1;
       }
       continue;
@@ -664,6 +749,7 @@ export function toAnthropicStreamEvents(
       const toolUse = repairToolUseInput(dynamicToolUseFromItem(params["item"], state.toolNameAliases), state);
       if (toolUse) {
         const missingArguments = missingRequiredToolUseArguments(toolUse, state.toolRequiredArguments);
+        traceToolCallMapping(notification, toolUse, missingArguments);
         if (missingArguments) {
           events.push({
             event: "error",
@@ -689,12 +775,31 @@ export function toAnthropicStreamEvents(
           contentIndex += 1;
           textOpen = false;
         }
+        events.push(...anthropicToolUseSseEvents(contentIndex, toolUse));
+        contentIndex += 1;
+      }
+      continue;
+    }
+
+    if (notification.method === "turn/completed" || notification.method === "turn/failed" || notification.method === "turn/interrupted") {
+      state.terminalTurnState = notification.method;
+      state.appServerThreadId = readString(params, "threadId") ?? state.appServerThreadId;
+      state.appServerTurnId = readTurnId(params) ?? state.appServerTurnId;
+      if (state.toolResultContinuation && state.emittedText.length > 0) {
         events.push({
           event: "content_block_start",
           data: {
             type: "content_block_start",
             index: contentIndex,
-            content_block: toolUse,
+            content_block: { type: "text", text: "" },
+          },
+        });
+        events.push({
+          event: "content_block_delta",
+          data: {
+            type: "content_block_delta",
+            index: contentIndex,
+            delta: { type: "text_delta", text: collapseAdjacentRepeatedText(state.emittedText) },
           },
         });
         events.push({
@@ -702,11 +807,8 @@ export function toAnthropicStreamEvents(
           data: { type: "content_block_stop", index: contentIndex },
         });
         contentIndex += 1;
+        state.emittedText = "";
       }
-      continue;
-    }
-
-    if (notification.method === "turn/completed" || notification.method === "turn/failed" || notification.method === "turn/interrupted") {
       if (textOpen) {
         events.push({
           event: "content_block_stop",
@@ -741,6 +843,7 @@ export function toAnthropicStreamEvents(
     }
 
     if (notification.method === "error") {
+      state.terminalTurnState = "error";
       const key = JSON.stringify(params);
       if (!state.emittedErrors.has(key)) {
         state.emittedErrors.add(key);
@@ -798,12 +901,39 @@ export function nonStreamingAnthropicResponseFromEvents(
   };
 }
 
+function anthropicToolUseSseEvents(index: number, toolUse: AnthropicToolUseBlock): AnthropicSseEvent[] {
+  return [
+    {
+      event: "content_block_start",
+      data: {
+        type: "content_block_start",
+        index,
+        content_block: { ...toolUse, input: {} },
+      },
+    },
+    {
+      event: "content_block_delta",
+      data: {
+        type: "content_block_delta",
+        index,
+        delta: {
+          type: "input_json_delta",
+          partial_json: JSON.stringify(toolUse.input ?? {}),
+        },
+      },
+    },
+    {
+      event: "content_block_stop",
+      data: { type: "content_block_stop", index },
+    },
+  ];
+}
+
 export function toolOutputFromMessages(
   messages: AnthropicMessage[],
   toolAliasesByOriginal: Map<string, string> = new Map(),
 ): CodexTurnToolOutput | null {
   const toolNames = new Map<string, string>();
-  let latest: CodexTurnToolOutput | null = null;
   for (const message of messages) {
     if (!Array.isArray(message.content)) {
       continue;
@@ -811,21 +941,31 @@ export function toolOutputFromMessages(
     for (const block of message.content) {
       if (block.type === "tool_use") {
         toolNames.set(block.id, block.name);
-        continue;
-      }
-      if (block.type === "tool_result") {
-        const name = toolNames.get(block.tool_use_id);
-        if (name) {
-          latest = {
-            name: toolAliasesByOriginal.get(name) ?? name,
-            namespace: null,
-            output: typeof block.content === "string" ? block.content : flattenContent(block.content),
-          };
-        }
       }
     }
   }
-  return latest;
+  const latestUser = [...messages].reverse().find((message) => message.role === "user");
+  if (!latestUser || !Array.isArray(latestUser.content)) {
+    return null;
+  }
+  for (let index = latestUser.content.length - 1; index >= 0; index -= 1) {
+    const block = latestUser.content[index];
+    if (block?.type !== "tool_result") {
+      continue;
+    }
+    const name = toolNames.get(block.tool_use_id);
+    if (!name) {
+      continue;
+    }
+    const output = typeof block.content === "string" ? block.content : flattenContent(block.content);
+    return {
+      toolUseId: block.tool_use_id,
+      name: toolAliasesByOriginal.get(name) ?? name,
+      namespace: null,
+      output: block.is_error === true ? `Claude Code tool failed:\n${output}` : output,
+    };
+  }
+  return null;
 }
 
 export function cancellationRequest(
@@ -892,6 +1032,15 @@ function isIgnorableCodexNotification(method: string): boolean {
     || method === "configWarning"
     || method === "warning"
     || method === "deprecationNotice";
+}
+
+function collapseAdjacentRepeatedText(text: string): string {
+  if (text.length === 0 || text.length % 2 !== 0) {
+    return text;
+  }
+  const half = text.length / 2;
+  const first = text.slice(0, half);
+  return first === text.slice(half) ? first : text;
 }
 
 function terminalTurnError(method: string, params: Record<string, unknown>): string | null {
@@ -1180,7 +1329,7 @@ function fallbackRequiredArguments(toolName: string): string[] {
 }
 
 function dynamicToolInput(record: Record<string, unknown>): unknown {
-  const value = record["arguments"] ?? record["input"];
+  const value = dynamicToolInputValue(record);
   if (typeof value === "string") {
     try {
       return JSON.parse(value) as unknown;
@@ -1189,6 +1338,20 @@ function dynamicToolInput(record: Record<string, unknown>): unknown {
     }
   }
   return value ?? {};
+}
+
+function dynamicToolInputValue(record: Record<string, unknown>): unknown {
+  if (record["arguments"] !== undefined) {
+    return record["arguments"];
+  }
+  const input = record["input"];
+  if (input && typeof input === "object" && !Array.isArray(input)) {
+    const inputRecord = input as Record<string, unknown>;
+    if (Object.keys(inputRecord).length === 1 && inputRecord["arguments"] !== undefined) {
+      return inputRecord["arguments"];
+    }
+  }
+  return input;
 }
 
 type CodexProcess = {
@@ -1230,12 +1393,13 @@ export function failClosedClientRequestResult(method: string): Record<string, un
   return null;
 }
 
-class CodexJsonRpcClient {
+export class CodexJsonRpcClient {
   private seq = 0;
   private initialized = false;
   private readonly rpcPending = new Map<string | number, { resolve: (value: unknown) => void; reject: (error: Error) => void }>();
   private readonly pending = new Map<string | number, PendingTurn>();
   private readonly activeByTurn = new Map<string, { threadId: string; pending: PendingTurn }>();
+  private readonly pendingToolRoutes = new Map<string, PendingToolRoute>();
   private readonly toolAliasesByOriginal = new Map<string, string>();
 
   constructor(private readonly proc: CodexProcess) {
@@ -1243,18 +1407,41 @@ class CodexJsonRpcClient {
     this.stderrLoop().catch(() => undefined);
   }
 
-  async turn(request: AnthropicMessagesRequest, cwd: string): Promise<AnthropicSseEvent[]> {
+  async turn(
+    request: AnthropicMessagesRequest,
+    cwd: string,
+    headerHints: ClaudeGatewayHeaderHints = {
+      sessionId: null,
+      promptId: null,
+      requestClass: null,
+      prevToolDurations: null,
+    },
+  ): Promise<AnthropicSseEvent[]> {
     const state = createGatewayState();
     state.turnText = turnTextForRequest(request);
     traceRequestContext(request);
+    const toolOutput = toolOutputFromMessages(request.messages, this.toolAliasesByOriginal);
+    state.toolResultContinuation = toolOutput !== null;
     const promptlessError = promptlessInitialTurnError(request, this.toolAliasesByOriginal);
     if (promptlessError) {
-      return toAnthropicStreamEvents([{ method: "error", params: { message: promptlessError } }], state);
+      const events = toAnthropicStreamEvents([{ method: "error", params: { message: promptlessError } }], state);
+      traceClaudeGatewayRequest({
+        event: "codex-gateway.claudeRequest",
+        ...headerHints,
+        latestUserContentBlockTypes: latestUserContentBlockTypes(request.messages),
+        actionableUserText: state.turnText,
+        hasToolResult: toolOutput !== null,
+        appServerThreadId: state.appServerThreadId,
+        appServerTurnId: state.appServerTurnId,
+        terminalTurnState: state.terminalTurnState,
+      });
+      return events;
     }
 
     await this.initialize();
     const id = `anthropic-${++this.seq}`;
     const selectedModel = process.env.CODEX_GATEWAY_MODEL || process.env.CODEX_MODEL;
+    const toolRoute = toolOutput ? this.pendingToolRoutes.get(toolOutput.toolUseId) : undefined;
     codexDynamicToolSpecs(
       request.tools ?? [],
       request.messages,
@@ -1268,6 +1455,7 @@ class CodexJsonRpcClient {
       {
         cwd,
         requestId: id,
+        threadId: toolRoute?.threadId,
         model: selectedModel,
         reasoningEffort: process.env.CODEX_GATEWAY_REASONING_EFFORT,
       },
@@ -1297,13 +1485,33 @@ class CodexJsonRpcClient {
     if (!rpc || !shouldForwardWithRetryDedupe(state, rpc)) {
       throw new Error("Codex gateway refused to forward duplicate request");
     }
-    return await new Promise<AnthropicSseEvent[]>((resolve, reject) => {
-      this.pending.set(id, { resolve, reject, state, notifications: [] });
+    const events = await new Promise<AnthropicSseEvent[]>((resolve, reject) => {
+      const pending: PendingTurn = { resolve, reject, state, notifications: [] };
+      this.pending.set(id, pending);
+      if (toolOutput && toolRoute) {
+        this.activeByTurn.set(toolRoute.turnId, { threadId: toolRoute.threadId, pending });
+        this.pendingToolRoutes.delete(toolOutput.toolUseId);
+      }
       this.writeJson(rpc).catch((error) => {
         this.pending.delete(id);
+        if (toolOutput && toolRoute) {
+          this.activeByTurn.delete(toolRoute.turnId);
+          this.pendingToolRoutes.set(toolOutput.toolUseId, toolRoute);
+        }
         reject(error instanceof Error ? error : new Error(String(error)));
       });
     });
+    traceClaudeGatewayRequest({
+      event: "codex-gateway.claudeRequest",
+      ...headerHints,
+      latestUserContentBlockTypes: latestUserContentBlockTypes(request.messages),
+      actionableUserText: state.turnText,
+      hasToolResult: toolOutput !== null,
+      appServerThreadId: state.appServerThreadId,
+      appServerTurnId: state.appServerTurnId,
+      terminalTurnState: state.terminalTurnState,
+    });
+    return events;
   }
 
   async models(): Promise<CodexModelListResult> {
@@ -1366,6 +1574,7 @@ class CodexJsonRpcClient {
     for (const pending of this.pending.values()) pending.reject(err);
     this.pending.clear();
     this.activeByTurn.clear();
+    this.pendingToolRoutes.clear();
   }
 
   private async writeJson(value: unknown): Promise<void> {
@@ -1413,6 +1622,12 @@ class CodexJsonRpcClient {
     if ("id" in record && "method" in record) {
       if (record["method"] === "item/tool/call") {
         this.recordNotification(message as JsonRpcNotification);
+        void this.writeJson({
+          jsonrpc: "2.0",
+          id: record["id"] as string | number,
+          result: { success: true, contentItems: [] },
+        });
+        return;
       }
       const handled = this.respondToClientRequest(record["id"] as string | number, String(record["method"]));
       if (handled) return;
@@ -1449,9 +1664,26 @@ class CodexJsonRpcClient {
         this.activeByTurn.set(startedTurn, { threadId, pending: latest });
       }
     }
+    if (!pending && turnId && this.activeByTurn.has(turnId)) return;
     if (!pending) pending = Array.from(this.pending.values()).at(-1);
     if (!pending) return;
     pending.notifications.push(notification);
+    if (notification.method === "item/tool/call") {
+      const callId = readString(params, "callId");
+      const threadId = readString(params, "threadId");
+      if (callId && turnId && threadId) {
+        this.pendingToolRoutes.set(callId, { threadId, turnId });
+      }
+      try {
+        pending.resolve(toAnthropicStreamEvents(pending.notifications, pending.state));
+      } catch (error) {
+        pending.reject(error instanceof Error ? error : new Error(String(error)));
+      }
+      for (const [id, p] of this.pending.entries()) {
+        if (p === pending) this.pending.delete(id);
+      }
+      return;
+    }
     if (notification.method === "turn/completed" || notification.method === "turn/failed" || notification.method === "turn/interrupted" || notification.method === "error") {
       try {
         pending.resolve(toAnthropicStreamEvents(pending.notifications, pending.state));
@@ -1484,6 +1716,15 @@ function spawnCodexAppServer(): CodexProcess {
 
 function sseEncode(event: AnthropicSseEvent): string {
   return `event: ${event.event}\ndata: ${JSON.stringify(event.data)}\n\n`;
+}
+
+function claudeGatewayHeaderHints(headers: Headers): ClaudeGatewayHeaderHints {
+  return {
+    sessionId: headers.get("x-claude-code-session-id"),
+    requestClass: headers.get("x-claude-code-request-class"),
+    promptId: headers.get("x-claude-code-prompt-id"),
+    prevToolDurations: headers.get("x-claude-code-prev-tool-durations"),
+  };
 }
 
 async function serve(): Promise<void> {
@@ -1545,7 +1786,7 @@ async function serve(): Promise<void> {
         return Response.json({ type: "error", error: { type: "invalid_request_error", message: "invalid JSON" } }, { status: 400 });
       }
       try {
-        const events = await client.turn(body, cwd);
+        const events = await client.turn(body, cwd, claudeGatewayHeaderHints(req.headers));
         if (shouldStreamAnthropicResponse(body)) {
           return new Response(events.map(sseEncode).join(""), {
             headers: {
