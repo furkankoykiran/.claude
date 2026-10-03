@@ -76,7 +76,7 @@ const MUTATING = [
   "Commit + push the automation branch",
   "Open or update the automation PR",
   "Reset PR merge state (fail-closed)",
-  "Flag PR for manual review",
+  "Reject blocked update",
   "Enable protected squash auto-merge (routine change)",
 ];
 
@@ -92,21 +92,15 @@ const scenario = (o: {
   manual?: string;
   /** '' models the reset step failing or being skipped. */
   verifiedSha?: string;
-  /** '' | 'hold' | 'queued' — the pending-review verdict for this run. */
-  holdState?: string;
-  /** 'true' once a held batch is older than HOLD_ESCALATE_DAYS. */
-  escalate?: string;
 }): Ctx => ({
   steps: {
     detect: { outputs: { changed: o.changed } },
     classify: { outputs: { manual_review: o.manual ?? "" } },
-    // A held run never mints a token, so model that rather than letting a
-    // scenario claim both a hold and a live token.
-    "app-token": { outputs: { token: o.holdState ? "" : (o.token ?? "") } },
-    pending: { outputs: { hold_state: o.holdState ?? "", escalate: o.escalate ?? "" } },
+    "app-token": { outputs: { token: o.token ?? "" } },
+    pending: { outputs: { number: "1" } },
     pr: { outputs: { number: "1" } },
     push: { outputs: { sha: "cafe1234" } },
-    reset: { outputs: { verified_sha: o.verifiedSha ?? (o.token && !o.holdState ? "cafe1234" : "") } },
+    reset: { outputs: { verified_sha: o.verifiedSha ?? (o.token ? "cafe1234" : "") } },
   },
   inputs: { dry_run: o.dryRun ?? null },
   vars: { ENABLE_SKILLS_AUTOMATION: o.enabled ?? "" },
@@ -136,7 +130,7 @@ describe("update workflow: every mutating step is guarded", () => {
     // Any step whose body pushes, opens a PR, labels, merges, or mints a token
     // must be listed above. Catches a new mutation added without a guard.
     const body = readFileSync(WORKFLOW, "utf8");
-    const writeMarkers = [/git push/, /gh pr create/, /gh pr merge/, /gh pr edit/, /create-github-app-token/, /gh label create/];
+    const writeMarkers = [/git push/, /gh pr create/, /gh pr close/, /gh pr merge/, /gh pr edit/, /create-github-app-token/, /gh label create/];
     for (const step of STEPS) {
       const name = nameOf(step);
       const idx = body.indexOf(name);
@@ -204,12 +198,12 @@ describe("update workflow: routine change", () => {
     expect(ran).toContain("Enable protected squash auto-merge (routine change)");
   });
 
-  it("does not flag it for manual review", () => {
-    expect(ran).not.toContain("Flag PR for manual review");
+  it("does not reject it as blocked", () => {
+    expect(ran).not.toContain("Reject blocked update");
   });
 });
 
-describe("update workflow: manual-review change", () => {
+describe("update workflow: blocked change", () => {
   const ran = runsUnder(scenario({
     changed: "true", dryRun: false, enabled: "true", token: "ghs_x", manual: "true",
   }));
@@ -218,9 +212,9 @@ describe("update workflow: manual-review change", () => {
     expect(ran).not.toContain("Enable protected squash auto-merge (routine change)");
   });
 
-  it("opens the PR and labels it for a human", () => {
+  it("opens the PR and rejects it with evidence", () => {
     expect(ran).toContain("Open or update the automation PR");
-    expect(ran).toContain("Flag PR for manual review");
+    expect(ran).toContain("Reject blocked update");
   });
 
   it("always resets inherited merge state first", () => {
@@ -228,102 +222,13 @@ describe("update workflow: manual-review change", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// A batch awaiting human review must be a STABLE review target.
-//
-// Before this guard existed the push step was gated only on "is there a
-// change?", so every scheduled run rebuilt the branch from main and replaced
-// the head SHA of a PR a human was reading. PR #52 took that 29 times in 29
-// days and was never reviewed once. These tests pin the fix: while a review is
-// pending, the run mutates nothing at all.
-// ---------------------------------------------------------------------------
-describe("update workflow: a batch under review is frozen", () => {
-  const ran = runsUnder(scenario({
-    changed: "true", dryRun: false, enabled: "true", manual: "true", holdState: "hold",
-  }));
-
-  it("performs no mutation whatsoever, so the reviewed commit survives", () => {
-    for (const m of MUTATING) expect(ran).not.toContain(m);
-  });
-
-  it("never mints an App token — a held run cannot write even by accident", () => {
-    expect(ran).not.toContain("Automation token (GitHub App)");
-  });
-
-  it("reports the hold instead of going quiet", () => {
-    expect(ran).toContain("Hold — the batch under review is unchanged");
-    expect(ran).toContain("Summary");
-  });
-
-  it("does not claim automation is disabled — it is holding, not broken", () => {
-    expect(ran).not.toContain("Report that automation is disabled");
-  });
-});
-
-describe("update workflow: newer upstream queues behind a pending review", () => {
-  const ran = runsUnder(scenario({
-    changed: "true", dryRun: false, enabled: "true", manual: "true", holdState: "queued",
-  }));
-
-  it("still refuses to touch the reviewed commit", () => {
-    for (const m of MUTATING) expect(ran).not.toContain(m);
-  });
-
-  it("surfaces the queued batch rather than silently dropping it", () => {
-    expect(ran).toContain("Queue — newer upstream is waiting behind the review");
-    expect(ran).not.toContain("Hold — the batch under review is unchanged");
-  });
-});
-
-describe("update workflow: a stalled review batch escalates", () => {
-  it("goes red once the batch is older than the threshold", () => {
-    const ran = runsUnder(scenario({
-      changed: "true", dryRun: false, enabled: "true", manual: "true",
-      holdState: "hold", escalate: "true",
-    }));
-    expect(ran).toContain("Escalate a stalled review batch");
-  });
-
-  it("stays green while the batch is still fresh", () => {
-    const ran = runsUnder(scenario({
-      changed: "true", dryRun: false, enabled: "true", manual: "true", holdState: "hold",
-    }));
-    expect(ran).not.toContain("Escalate a stalled review batch");
-  });
-
-  it("never escalates when nothing is held", () => {
-    const ran = runsUnder(scenario({
-      changed: "true", dryRun: false, enabled: "true", token: "ghs_x", manual: "false",
-    }));
-    expect(ran).not.toContain("Escalate a stalled review batch");
-  });
-
-  it("fails the run, because a green scheduled run notifies nobody", () => {
-    const step = STEPS.find((s) => nameOf(s) === "Escalate a stalled review batch");
-    expect(step, "escalation step not found — did it get renamed?").toBeDefined();
-    expect((step as Step & { run?: string }).run).toContain("exit 1");
-  });
-});
-
-describe("update workflow: the freeze cannot be edited away", () => {
-  // The guard is one term in an `if:` expression. Dropping it from any single
-  // mutating step silently restores the daily force-push over a reviewed SHA,
-  // and nothing else in the suite would notice.
-  for (const name of MUTATING) {
-    it(`"${name}" is gated on there being no pending review`, () => {
-      const step = STEPS.find((s) => nameOf(s) === name)!;
-      const guardedDirectly = String(step.if).includes("steps.pending.outputs.hold_state == ''");
-      // Steps that require the App token inherit the freeze, because the token
-      // step is itself gated on it and a held run leaves the output empty.
-      const viaToken = String(step.if).includes("steps.app-token.outputs.token != ''");
-      expect(guardedDirectly || viaToken,
-        `"${name}" can run while a batch is under review`).toBe(true);
-    });
-  }
-
-  it("gates the App token on the hold, so the freeze is enforced at the root", () => {
-    const token = STEPS.find((s) => nameOf(s) === "Automation token (GitHub App)")!;
-    expect(String(token.if)).toContain("steps.pending.outputs.hold_state == ''");
+describe("update workflow: legacy manual-review PRs are reclassified", () => {
+  it("does not preserve the old hold/queue limbo path", () => {
+    const names = STEPS.map(nameOf);
+    expect(names).not.toContain("Hold — the batch under review is unchanged");
+    expect(names).not.toContain("Queue — newer upstream is waiting behind the review");
+    expect(names).not.toContain("Escalate a stalled review batch");
+    expect(readFileSync(WORKFLOW, "utf8")).not.toContain("hold_state");
   });
 
   // A GitHub auto-merge request survives a push to the head branch, and is not
@@ -348,8 +253,8 @@ describe("update workflow: the freeze cannot be edited away", () => {
   });
 
   it("records the catalog identity on the commit it publishes", () => {
-    // The hold check reads this trailer back off the branch to decide whether
-    // upstream has moved. Without it every run would look like a new batch.
+    // This gives a published automation commit a stable, auditable identity
+    // tied to the exact lockfile and generated catalog it was cut from.
     const push = STEPS.find((s) => nameOf(s) === "Commit + push the automation branch")!;
     expect((push as Step & { run?: string }).run).toContain("Catalog-Content: ${CONTENT_DIGEST}");
   });
@@ -377,6 +282,14 @@ describe("update workflow: merge safety invariants", () => {
     const merging = calls.filter((c) => !c.includes("--disable-auto"));
     expect(merging.length).toBe(1);
     expect(merging[0]).toContain("--match-head-commit");
+  });
+
+  it("blocked updates are closed instead of left in manual-review limbo", () => {
+    const step = STEPS.find((s) => nameOf(s) === "Reject blocked update")!;
+    const run = String((step as Step & { run?: string }).run);
+    expect(run).toContain("gh pr close");
+    expect(run).toContain("automation-blocked");
+    expect(run).toContain("exit 1");
   });
 
   it("refuses to create an empty commit", () => {

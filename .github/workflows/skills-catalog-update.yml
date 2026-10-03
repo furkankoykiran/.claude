@@ -3,8 +3,8 @@ name: Skills Catalog Update
 # Inspects every configured upstream source, advances the lock to current refs,
 # regenerates the catalog, validates, and opens/updates ONE automation PR.
 # Routine policy-compliant changes get squash auto-merge (gated on the
-# repository's required checks); exceptional supply-chain changes are labeled
-# manual-review-required and left open for a human.
+# repository's required checks); exceptional supply-chain changes are rejected
+# with evidence instead of being left in manual-review limbo.
 #
 # Every mutating step (commit, push, PR, labels, auto-merge) runs only with a
 # GitHub App installation token. GITHUB_TOKEN is deliberately not a fallback:
@@ -47,11 +47,6 @@ concurrency:
 env:
   BRANCH: automation/skills-catalog
   PR_TITLE: "chore(skills): update upstream catalog"
-  # Days a manual-review batch may sit before a scheduled run goes red. A green
-  # run notifies nobody: PR #52 sat for 30 days behind 30 consecutive successful
-  # runs whose only alarm was a ::warning:: inside them. Failing is the only
-  # signal GitHub actually pushes to the repository owner.
-  HOLD_ESCALATE_DAYS: "7"
   # Every path the resolver/generator is allowed to touch. Used both to detect
   # changes and to stage them, so the two can never disagree.
   CATALOG_PATHS: >-
@@ -125,28 +120,14 @@ jobs:
           fi
 
       # ---------------------------------------------------------------------
-      # Pending-review hold. Read-only, runs before anything is minted.
-      #
-      # One branch and one PR are reused across runs, and the push step used to
-      # be gated only on "is there a change?". So every scheduled run rebuilt
-      # the branch from main and force-pushed, replacing the head SHA of a PR
-      # that was waiting for a human. PR #52 took that treatment 29 times in 29
-      # days: each push invalidated whatever reading a reviewer had done, and
-      # because main never moved, the diff base never moved either, so the batch
-      # only grew and `mass-change` guaranteed the manual verdict forever.
-      #
-      # A batch under review is therefore FROZEN. This step decides:
-      #
-      #   hold_state=''        no pending review — normal autonomous path
-      #   hold_state='hold'    pending review, upstream identical to it
-      #   hold_state='queued'  pending review, newer upstream waiting behind it
-      #
-      # In both non-empty states every mutating step is skipped, so the
-      # reviewed commit stays exactly what the human is looking at. Nothing is
-      # lost: the queued content is recomputed from scratch on the next run
-      # after the review lands.
+      # Existing automation PR inspection. Read-only, runs before anything is
+      # minted. Older workflow versions could leave the stable automation PR
+      # parked with manual-review-required. Current policy does not freeze those
+      # PRs: this run reclassifies the generated diff, removes stale policy
+      # labels for a routine batch, or closes a genuinely blocked batch with
+      # evidence.
       # ---------------------------------------------------------------------
-      - name: Check for a batch already under review
+      - name: Inspect existing automation PR
         id: pending
         if: steps.detect.outputs.changed == 'true'
         env:
@@ -166,8 +147,6 @@ jobs:
                       --json number,createdAt,headRefOid,labels --jq '.[0] // empty')
           if [ -z "$PR_JSON" ]; then
             echo "No open automation PR; proceeding on the autonomous path."
-            echo "hold_state=" >> "$GITHUB_OUTPUT"
-            echo "escalate=" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -182,31 +161,10 @@ jobs:
           echo "age_days=$AGE_DAYS" >> "$GITHUB_OUTPUT"
           echo "PR #$PR_NUMBER head=${PR_HEAD:0:10} age=${AGE_DAYS}d manual-review=$HAS_LABEL"
 
-          if [ "$HAS_LABEL" != "true" ]; then
-            echo "Open PR carries no manual-review label; it is a routine batch this run may replace."
-            echo "hold_state=" >> "$GITHUB_OUTPUT"
-            echo "escalate=" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          # The reviewed commit records the catalog it was cut from, so "has
-          # upstream moved since the review started?" is answered without
-          # trusting the PR body, which a human may legitimately have edited.
-          git fetch --no-tags --depth=1 origin "+refs/heads/${BRANCH}:refs/remotes/origin/${BRANCH}" 2>/dev/null || true
-          REVIEWED=$(git log -1 --format=%B "refs/remotes/origin/${BRANCH}" 2>/dev/null \
-                       | sed -n 's/^Catalog-Content: //p' | head -1 || true)
-          echo "reviewed_content=$REVIEWED" >> "$GITHUB_OUTPUT"
-
-          if [ "$REVIEWED" = "$CONTENT" ]; then
-            echo "hold_state=hold" >> "$GITHUB_OUTPUT"
+          if [ "$HAS_LABEL" = "true" ]; then
+            echo "::notice::Open PR carries the legacy manual-review-required label. New policy does not freeze it; this run will reclassify and either auto-merge routine content or reject a genuine blocker."
           else
-            echo "hold_state=queued" >> "$GITHUB_OUTPUT"
-          fi
-
-          if [ "$AGE_DAYS" -ge "$HOLD_ESCALATE_DAYS" ]; then
-            echo "escalate=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "escalate=" >> "$GITHUB_OUTPUT"
+            echo "Open PR carries no legacy manual-review label; proceeding."
           fi
 
       - name: Classify change + build PR body
@@ -218,7 +176,7 @@ jobs:
           # The committed skills-catalog-diff.json is deliberately generated
           # against an empty base (that is the invariant the CI catalog job
           # enforces), so every skill reads as newly added there and reusing it
-          # would mark every PR manual-review-required and never auto-merge.
+          # would mark every PR blocked and never auto-merge.
           git show HEAD:catalog/generated/skills-catalog.json > /tmp/base-catalog.json
           bun run catalog/src/cli.ts diff --base /tmp/base-catalog.json > /tmp/change-diff.json
           MANUAL=$(bun -e 'const d=JSON.parse(require("fs").readFileSync("/tmp/change-diff.json","utf8")); process.stdout.write(d.summary && d.summary.manualReviewRequired ? "true":"false")')
@@ -327,60 +285,14 @@ jobs:
           echo "Would release as ${{ steps.version.outputs.version }}."
           git --no-pager diff --stat -- "${paths[@]}" "${vpaths[@]}"
 
-      - name: Hold — the batch under review is unchanged
-        if: >-
-          steps.detect.outputs.changed == 'true'
-          && inputs.dry_run != true
-          && steps.pending.outputs.hold_state == 'hold'
-        run: |
-          set -euo pipefail
-          {
-            echo "### Held for review"
-            echo ""
-            echo "PR #${{ steps.pending.outputs.number }} is awaiting human review and upstream has not"
-            echo "moved since it was cut. Nothing was committed, published, or relabelled, so the"
-            echo "commit under review is still the exact commit a reviewer opened."
-            echo ""
-            echo "- catalog content: \`${{ steps.pending.outputs.content }}\`"
-            echo "- open for: ${{ steps.pending.outputs.age_days }} day(s)"
-            echo ""
-            echo "Review and merge the PR to release the pipeline."
-          } >> "$GITHUB_STEP_SUMMARY"
-          echo "Holding: PR #${{ steps.pending.outputs.number }} unchanged after ${{ steps.pending.outputs.age_days }} day(s)."
-
-      - name: Queue — newer upstream is waiting behind the review
-        if: >-
-          steps.detect.outputs.changed == 'true'
-          && inputs.dry_run != true
-          && steps.pending.outputs.hold_state == 'queued'
-        run: |
-          set -euo pipefail
-          {
-            echo "### Queued behind a review"
-            echo ""
-            echo "Upstream moved while PR #${{ steps.pending.outputs.number }} is under review."
-            echo "The reviewed commit was deliberately left untouched, so the newer content is"
-            echo "queued rather than applied — it is recomputed from scratch and published on the"
-            echo "first run after that PR lands, coalesced into a single follow-up batch."
-            echo ""
-            echo "- under review: \`${{ steps.pending.outputs.reviewed_content }}\`"
-            echo "- available now: \`${{ steps.pending.outputs.content }}\`"
-            echo "- open for: ${{ steps.pending.outputs.age_days }} day(s)"
-            echo ""
-            bun run catalog/src/change-summary.ts /tmp/change-diff.json
-          } >> "$GITHUB_STEP_SUMMARY"
-          echo "::warning::Newer upstream changes are queued behind PR #${{ steps.pending.outputs.number }}. Review and merge it to let them through."
-
       # Mints an installation token so the PR triggers required checks and the
       # merge triggers the release workflow. Skipped on a dry run, skipped when
-      # there is nothing to ship, skipped when automation is switched off, and
-      # skipped while a batch is under review — a held run mints nothing at all.
+      # there is nothing to ship, and skipped when automation is switched off.
       - name: Automation token (GitHub App)
         id: app-token
         if: >-
           steps.detect.outputs.changed == 'true'
           && inputs.dry_run != true
-          && steps.pending.outputs.hold_state == ''
           && vars.ENABLE_SKILLS_AUTOMATION == 'true'
         uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
@@ -393,7 +305,7 @@ jobs:
       # mutating anything a rerun would notice.
       #
       # Label endpoints do NOT necessarily need Issues: write. Run 30195036275
-      # created this repo's manual-review-required label using GITHUB_TOKEN
+      # created this repo's manual-review label using GITHUB_TOKEN
       # whose permissions block was contents+pull-requests only, with no issues
       # scope at all. So we probe rather than assume a permission is required.
       - name: Preflight App token permissions
@@ -417,8 +329,8 @@ jobs:
           fi
 
           set +e
-          OUT=$(gh label create manual-review-required \
-                  --description "Supply-chain change needs human review before merge" \
+          OUT=$(gh label create automation-blocked \
+                  --description "Automation rejected this supply-chain update" \
                   --color B60205 2>&1)
           RC=$?
           set -e
@@ -428,7 +340,7 @@ jobs:
             LABELS=writable
           else
             LABELS=denied
-            echo "::warning::Label write denied for ${APP_SLUG}[bot]. Pull requests: write normally covers label endpoints; if it does not here, grant Issues: read & write. A manual-review change will fail loudly rather than merge."
+            echo "::warning::Label write denied for ${APP_SLUG}[bot]. Pull requests: write normally covers label endpoints; if it does not here, grant Issues: read & write. A blocked change will fail loudly rather than merge."
           fi
           echo "labels=$LABELS" >> "$GITHUB_OUTPUT"
           echo "installation_covers_repo=$COVERED" >> "$GITHUB_OUTPUT"
@@ -444,7 +356,6 @@ jobs:
         if: >-
           steps.detect.outputs.changed == 'true'
           && inputs.dry_run != true
-          && steps.pending.outputs.hold_state == ''
           && steps.app-token.outputs.token == ''
         run: |
           echo "::warning::Upstream changes detected but no App token was minted (ENABLE_SKILLS_AUTOMATION is not 'true'). No branch, PR, or merge was created. See docs/release-automation.md."
@@ -469,7 +380,6 @@ jobs:
         if: >-
           steps.detect.outputs.changed == 'true'
           && inputs.dry_run != true
-          && steps.pending.outputs.hold_state == ''
           && steps.app-token.outputs.token != ''
           && steps.pending.outputs.number != ''
         env:
@@ -500,7 +410,6 @@ jobs:
         if: >-
           steps.detect.outputs.changed == 'true'
           && inputs.dry_run != true
-          && steps.pending.outputs.hold_state == ''
           && steps.app-token.outputs.token != ''
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
@@ -558,7 +467,6 @@ jobs:
         if: >-
           steps.detect.outputs.changed == 'true'
           && inputs.dry_run != true
-          && steps.pending.outputs.hold_state == ''
           && steps.app-token.outputs.token != ''
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
@@ -599,7 +507,6 @@ jobs:
         if: >-
           steps.detect.outputs.changed == 'true'
           && inputs.dry_run != true
-          && steps.pending.outputs.hold_state == ''
           && steps.app-token.outputs.token != ''
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
@@ -644,7 +551,7 @@ jobs:
           echo "Verified: auto-merge disabled."
 
           # 3. Reconcile automation-owned policy labels with THIS run's verdict.
-          #    Only a genuine manual -> routine transition removes the label.
+          #    Only a genuine blocked -> routine transition removes labels.
           #    Removing it unconditionally and re-adding it in a later step left
           #    the PR briefly unlabelled on every single run, and produced a
           #    remove/add notification pair per run — 29 of them on #52, which
@@ -658,6 +565,14 @@ jobs:
             fi
             echo "Removed stale manual-review-required label."
           fi
+          if [ "$MANUAL_REVIEW" = "false" ] \
+             && printf '%s' "$LABELS" | tr ',' '\n' | grep -qx "automation-blocked"; then
+            if ! gh pr edit "$PR_NUMBER" --remove-label automation-blocked; then
+              echo "::error::Could not remove the stale automation-blocked label from PR #${PR_NUMBER}."
+              exit 1
+            fi
+            echo "Removed stale automation-blocked label."
+          fi
 
           # 4. The PR must be showing exactly what this run pushed.
           if [ "$HEAD_OID" != "$PUSHED_SHA" ]; then
@@ -667,11 +582,10 @@ jobs:
           echo "Verified: PR head matches this run's commit ${PUSHED_SHA}."
           echo "verified_sha=$PUSHED_SHA" >> "$GITHUB_OUTPUT"
 
-      - name: Flag PR for manual review
+      - name: Reject blocked update
         if: >-
           steps.detect.outputs.changed == 'true'
           && inputs.dry_run != true
-          && steps.pending.outputs.hold_state == ''
           && steps.app-token.outputs.token != ''
           && steps.classify.outputs.manual_review == 'true'
         env:
@@ -679,26 +593,27 @@ jobs:
           PR_NUMBER: ${{ steps.pr.outputs.number }}
         run: |
           set -euo pipefail
-          # Auto-merge is already proven disabled by the reset step, so this
-          # cannot cause a merge. It still fails closed: an unlabelled
-          # manual-review PR is a silent safety regression.
-          if ! gh pr edit "$PR_NUMBER" --add-label manual-review-required; then
-            echo "::error::Could not label PR #${PR_NUMBER} manual-review-required. Auto-merge is disabled and the PR is open for review. Check the preflight output, then widen the App grant (Pull requests: write usually suffices; otherwise Issues: read & write) and re-run."
+          # Auto-merge is already proven disabled by the reset step. A blocked
+          # batch is rejected with evidence, not parked for routine human
+          # intervention.
+          if ! gh pr edit "$PR_NUMBER" --add-label automation-blocked; then
+            echo "::error::Could not label PR #${PR_NUMBER} automation-blocked. Auto-merge is disabled and the PR will not merge. Check the preflight output, then widen the App grant (Pull requests: write usually suffices; otherwise Issues: read & write) and re-run."
             exit 1
           fi
           # Read it back: a silent no-op would be indistinguishable from success.
-          PRESENT=$(gh pr view "$PR_NUMBER" --json labels --jq '[.labels[].name] | index("manual-review-required") != null')
+          PRESENT=$(gh pr view "$PR_NUMBER" --json labels --jq '[.labels[].name] | index("automation-blocked") != null')
           if [ "$PRESENT" != "true" ]; then
-            echo "::error::manual-review-required was not present on PR #${PR_NUMBER} after adding it. Failing closed."
+            echo "::error::automation-blocked was not present on PR #${PR_NUMBER} after adding it. Failing closed."
             exit 1
           fi
-          echo "::warning::PR #${PR_NUMBER} is manual-review-required; auto-merge is disabled and a human must merge it."
+          gh pr close "$PR_NUMBER" --comment "Automation rejected this upstream update because the catalog diff widens a sensitive or supply-chain surface. See the PR body and this workflow summary for the exact blocking reasons. No merge was attempted."
+          echo "::error::PR #${PR_NUMBER} was rejected by policy; auto-merge is disabled and the update is closed with evidence."
+          exit 1
 
       - name: Enable protected squash auto-merge (routine change)
         if: >-
           steps.detect.outputs.changed == 'true'
           && inputs.dry_run != true
-          && steps.pending.outputs.hold_state == ''
           && steps.app-token.outputs.token != ''
           && steps.classify.outputs.manual_review != 'true'
           && steps.reset.outputs.verified_sha != ''
@@ -710,7 +625,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Belt and braces: the step condition already excludes manual review,
+          # Belt and braces: the step condition already excludes blocked changes,
           # but re-assert it here so a future condition edit cannot silently
           # widen what auto-merges.
           if [ "$MANUAL_REVIEW" != "false" ]; then
@@ -734,22 +649,6 @@ jobs:
           fi
           echo "Protected squash auto-merge enabled for ${VERIFIED_SHA}."
 
-      # A held batch must not be able to block the pipeline quietly. Every one
-      # of the 30 runs that kept #52 alive concluded `success`, and GitHub
-      # notifies nobody about a green scheduled run — so 30 days passed with no
-      # signal reaching anyone. Past HOLD_ESCALATE_DAYS the run goes red, which
-      # is the one outcome GitHub does deliver.
-      - name: Escalate a stalled review batch
-        if: >-
-          steps.detect.outputs.changed == 'true'
-          && inputs.dry_run != true
-          && steps.pending.outputs.hold_state != ''
-          && steps.pending.outputs.escalate == 'true'
-        run: |
-          set -euo pipefail
-          echo "::error::PR #${{ steps.pending.outputs.number }} has been awaiting manual review for ${{ steps.pending.outputs.age_days }} days (threshold ${HOLD_ESCALATE_DAYS}). Upstream catalog updates are queued behind it. Review and merge it, or close it to let the automation rebuild the batch."
-          exit 1
-
       - name: Summary
         if: always()
         run: |
@@ -758,8 +657,8 @@ jobs:
             echo ""
             echo "- changed: \`${{ steps.detect.outputs.changed }}\`"
             echo "- dry run: \`${{ inputs.dry_run == true }}\`"
-            echo "- manual review required: \`${{ steps.classify.outputs.manual_review || 'n/a' }}\`"
-            echo "- pending-review hold: \`${{ steps.pending.outputs.hold_state || 'none' }}\`"
+            echo "- automation blocked: \`${{ steps.classify.outputs.manual_review || 'n/a' }}\`"
+            echo "- existing automation PR: \`${{ steps.pending.outputs.number && format('#{0}', steps.pending.outputs.number) || 'none' }}\`"
             echo "- automation enabled: \`${{ vars.ENABLE_SKILLS_AUTOMATION == 'true' }}\`"
             echo "- PR: \`${{ steps.pr.outputs.number && format('#{0}', steps.pr.outputs.number) || 'none' }}\`"
             if [ -f /tmp/pr-body.md ]; then
