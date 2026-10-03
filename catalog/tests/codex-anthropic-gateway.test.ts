@@ -223,6 +223,33 @@ describe("experimental Codex Anthropic gateway", () => {
     );
   });
 
+  it("extracts a real user prompt from a later text block after Claude Code system reminders", () => {
+    const request = {
+      ...baseRequest,
+      messages: [
+        {
+          role: "user" as const,
+          content: [
+            { type: "text" as const, text: "<system-reminder>\n# Environment\nAvailable tools include Bash.\n</system-reminder>" },
+            { type: "text" as const, text: "<system-reminder>\nUse the TodoWrite tool for task planning.\n</system-reminder>" },
+            { type: "text" as const, text: "Say exactly FORWARDING_CANARY_7F3A" },
+          ],
+        },
+      ],
+      tools: [
+        { name: "Bash", input_schema: { type: "object", properties: { command: { type: "string" } }, required: ["command"] } },
+      ],
+    };
+
+    const batch = toCodexRequests(request, { cwd: "/workspace", model: "gpt-5.5", requestId: "r-canary" });
+
+    expect(batch.requests).toHaveLength(1);
+    expect(batch.requests[0]?.params["input"]).toEqual([
+      { type: "text", text: "user: Say exactly FORWARDING_CANARY_7F3A", text_elements: [] },
+    ]);
+    expect(JSON.stringify(batch.requests[0])).not.toContain("system-reminder");
+  });
+
   it("prepares dynamic tool metadata independently of thread creation", () => {
     const aliases = new Map<string, string>();
     const reverseAliases = new Map<string, string>();
