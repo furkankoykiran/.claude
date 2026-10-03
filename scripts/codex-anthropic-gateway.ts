@@ -324,10 +324,6 @@ export function codexDynamicToolName(name: string, index: number): string {
   return `claude_tool_${index}_${readable || "tool"}`;
 }
 
-function flattenMessagesText(messages: AnthropicMessage[]): string {
-  return messages.map((message) => forwardableMessageText(message)).filter(Boolean).join("\n");
-}
-
 function latestUserMessageText(messages: AnthropicMessage[]): string {
   for (let index = messages.length - 1; index >= 0; index -= 1) {
     const message = messages[index];
@@ -339,6 +335,16 @@ function latestUserMessageText(messages: AnthropicMessage[]): string {
     }
   }
   return "";
+}
+
+function latestUserMessageHasActionableText(messages: AnthropicMessage[]): boolean {
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    const message = messages[index];
+    if (message?.role === "user") {
+      return forwardableUserContentText(message.content).trim().length > 0;
+    }
+  }
+  return false;
 }
 
 function turnTextForRequest(request: AnthropicMessagesRequest): string {
@@ -361,7 +367,7 @@ export function promptlessInitialTurnError(
   if (toolOutputFromMessages(request.messages, toolAliasesByOriginal)) {
     return null;
   }
-  return flattenMessagesText(request.messages).trim().length > 0
+  return latestUserMessageHasActionableText(request.messages)
     ? null
     : "Claude Code did not forward an actionable user prompt to the Codex gateway; refusing to run Codex on system reminders only.";
 }
@@ -506,6 +512,7 @@ function traceDynamicTools(
   console.error(JSON.stringify({
     event: "codex-gateway.dynamicTools",
     toolNames: dynamicTools.map((tool) => tool["name"]).filter((name): name is string => typeof name === "string"),
+    dynamicTools,
     latestUserTextSnippet: latestUserMessageText(messages).slice(0, 240),
     systemTextSnippet: (systemText ?? "").slice(0, 240),
     messageSummaries: messages.map((message) => ({
@@ -523,6 +530,7 @@ function traceRequestContext(request: AnthropicMessagesRequest): void {
   const explicitJsonIndex = systemText.search(/\bexact JSON input\s*:/i);
   console.error(JSON.stringify({
     event: "codex-gateway.requestContext",
+    tools: request.tools ?? [],
     requestKeys: Object.keys(request as Record<string, unknown>).sort(),
     metadataKeys: request.metadata ? Object.keys(request.metadata).sort() : [],
     systemTextLength: systemText.length,
@@ -534,6 +542,22 @@ function traceRequestContext(request: AnthropicMessagesRequest): void {
       role: message.role,
       snippet: flattenContent(message.content).slice(0, 160),
     })).slice(-6),
+  }));
+}
+
+function traceToolCallMapping(
+  notification: JsonRpcNotification,
+  toolUse: AnthropicToolUseBlock | null,
+  missingArguments: string | null,
+): void {
+  if (process.env.CODEX_GATEWAY_TRACE_TOOLS !== "1") {
+    return;
+  }
+  console.error(JSON.stringify({
+    event: "codex-gateway.toolCallMapping",
+    codexEvent: notification,
+    anthropicToolUse: toolUse,
+    missingArguments,
   }));
 }
 
@@ -620,6 +644,7 @@ export function toAnthropicStreamEvents(
     if (notification.method === "item/tool/call") {
       const toolUse = repairToolUseInput(dynamicToolUseFromToolCallParams(params, state.toolNameAliases), state);
       const missingArguments = toolUse ? missingRequiredToolUseArguments(toolUse, state.toolRequiredArguments) : null;
+      traceToolCallMapping(notification, toolUse, missingArguments);
       if (missingArguments) {
         events.push({
           event: "error",
@@ -643,18 +668,7 @@ export function toAnthropicStreamEvents(
           contentIndex += 1;
           textOpen = false;
         }
-        events.push({
-          event: "content_block_start",
-          data: {
-            type: "content_block_start",
-            index: contentIndex,
-            content_block: toolUse,
-          },
-        });
-        events.push({
-          event: "content_block_stop",
-          data: { type: "content_block_stop", index: contentIndex },
-        });
+        events.push(...anthropicToolUseSseEvents(contentIndex, toolUse));
         contentIndex += 1;
       }
       continue;
@@ -664,6 +678,7 @@ export function toAnthropicStreamEvents(
       const toolUse = repairToolUseInput(dynamicToolUseFromItem(params["item"], state.toolNameAliases), state);
       if (toolUse) {
         const missingArguments = missingRequiredToolUseArguments(toolUse, state.toolRequiredArguments);
+        traceToolCallMapping(notification, toolUse, missingArguments);
         if (missingArguments) {
           events.push({
             event: "error",
@@ -689,18 +704,7 @@ export function toAnthropicStreamEvents(
           contentIndex += 1;
           textOpen = false;
         }
-        events.push({
-          event: "content_block_start",
-          data: {
-            type: "content_block_start",
-            index: contentIndex,
-            content_block: toolUse,
-          },
-        });
-        events.push({
-          event: "content_block_stop",
-          data: { type: "content_block_stop", index: contentIndex },
-        });
+        events.push(...anthropicToolUseSseEvents(contentIndex, toolUse));
         contentIndex += 1;
       }
       continue;
@@ -798,12 +802,39 @@ export function nonStreamingAnthropicResponseFromEvents(
   };
 }
 
+function anthropicToolUseSseEvents(index: number, toolUse: AnthropicToolUseBlock): AnthropicSseEvent[] {
+  return [
+    {
+      event: "content_block_start",
+      data: {
+        type: "content_block_start",
+        index,
+        content_block: { ...toolUse, input: {} },
+      },
+    },
+    {
+      event: "content_block_delta",
+      data: {
+        type: "content_block_delta",
+        index,
+        delta: {
+          type: "input_json_delta",
+          partial_json: JSON.stringify(toolUse.input ?? {}),
+        },
+      },
+    },
+    {
+      event: "content_block_stop",
+      data: { type: "content_block_stop", index },
+    },
+  ];
+}
+
 export function toolOutputFromMessages(
   messages: AnthropicMessage[],
   toolAliasesByOriginal: Map<string, string> = new Map(),
 ): CodexTurnToolOutput | null {
   const toolNames = new Map<string, string>();
-  let latest: CodexTurnToolOutput | null = null;
   for (const message of messages) {
     if (!Array.isArray(message.content)) {
       continue;
@@ -811,21 +842,30 @@ export function toolOutputFromMessages(
     for (const block of message.content) {
       if (block.type === "tool_use") {
         toolNames.set(block.id, block.name);
-        continue;
-      }
-      if (block.type === "tool_result") {
-        const name = toolNames.get(block.tool_use_id);
-        if (name) {
-          latest = {
-            name: toolAliasesByOriginal.get(name) ?? name,
-            namespace: null,
-            output: typeof block.content === "string" ? block.content : flattenContent(block.content),
-          };
-        }
       }
     }
   }
-  return latest;
+  const latestUser = [...messages].reverse().find((message) => message.role === "user");
+  if (!latestUser || !Array.isArray(latestUser.content)) {
+    return null;
+  }
+  for (let index = latestUser.content.length - 1; index >= 0; index -= 1) {
+    const block = latestUser.content[index];
+    if (block?.type !== "tool_result") {
+      continue;
+    }
+    const name = toolNames.get(block.tool_use_id);
+    if (!name) {
+      continue;
+    }
+    const output = typeof block.content === "string" ? block.content : flattenContent(block.content);
+    return {
+      name: toolAliasesByOriginal.get(name) ?? name,
+      namespace: null,
+      output: block.is_error === true ? `Claude Code tool failed:\n${output}` : output,
+    };
+  }
+  return null;
 }
 
 export function cancellationRequest(
@@ -1180,7 +1220,7 @@ function fallbackRequiredArguments(toolName: string): string[] {
 }
 
 function dynamicToolInput(record: Record<string, unknown>): unknown {
-  const value = record["arguments"] ?? record["input"];
+  const value = dynamicToolInputValue(record);
   if (typeof value === "string") {
     try {
       return JSON.parse(value) as unknown;
@@ -1189,6 +1229,20 @@ function dynamicToolInput(record: Record<string, unknown>): unknown {
     }
   }
   return value ?? {};
+}
+
+function dynamicToolInputValue(record: Record<string, unknown>): unknown {
+  if (record["arguments"] !== undefined) {
+    return record["arguments"];
+  }
+  const input = record["input"];
+  if (input && typeof input === "object" && !Array.isArray(input)) {
+    const inputRecord = input as Record<string, unknown>;
+    if (Object.keys(inputRecord).length === 1 && inputRecord["arguments"] !== undefined) {
+      return inputRecord["arguments"];
+    }
+  }
+  return input;
 }
 
 type CodexProcess = {
@@ -1452,6 +1506,18 @@ class CodexJsonRpcClient {
     if (!pending) pending = Array.from(this.pending.values()).at(-1);
     if (!pending) return;
     pending.notifications.push(notification);
+    if (notification.method === "item/tool/call") {
+      try {
+        pending.resolve(toAnthropicStreamEvents(pending.notifications, pending.state));
+      } catch (error) {
+        pending.reject(error instanceof Error ? error : new Error(String(error)));
+      }
+      for (const [id, p] of this.pending.entries()) {
+        if (p === pending) this.pending.delete(id);
+      }
+      if (turnId) this.activeByTurn.delete(turnId);
+      return;
+    }
     if (notification.method === "turn/completed" || notification.method === "turn/failed" || notification.method === "turn/interrupted" || notification.method === "error") {
       try {
         pending.resolve(toAnthropicStreamEvents(pending.notifications, pending.state));

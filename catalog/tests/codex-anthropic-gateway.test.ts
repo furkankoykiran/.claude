@@ -18,6 +18,7 @@ import {
   toCodexRequests,
   nonStreamingAnthropicResponseFromEvents,
   promptlessInitialTurnError,
+  toolOutputFromMessages,
   type AnthropicMessagesRequest,
 } from "../../scripts/codex-anthropic-gateway.ts";
 
@@ -214,6 +215,25 @@ describe("experimental Codex Anthropic gateway", () => {
       ],
       tools: [
         { name: "Bash", input_schema: { type: "object", properties: { command: { type: "string" } }, required: ["command"] } },
+      ],
+    };
+
+    expect(promptlessInitialTurnError(request)).toContain("did not forward an actionable user prompt");
+    expect(() => toCodexRequests(request, { cwd: "/workspace", model: "gpt-5.5" })).toThrow(
+      "did not forward an actionable user prompt",
+    );
+  });
+
+  it("fails closed when Claude follows an assistant reply with only system reminders", () => {
+    const request = {
+      ...baseRequest,
+      messages: [
+        { role: "user" as const, content: "Say exactly TOOL_OK" },
+        { role: "assistant" as const, content: "TOOL_OK" },
+        {
+          role: "user" as const,
+          content: "<system-reminder>\n# Repository instructions\nFollow /root/.claude instructions.\n</system-reminder>",
+        },
       ],
     };
 
@@ -425,6 +445,85 @@ describe("experimental Codex Anthropic gateway", () => {
     expect(batch.requests[0]?.params["input"]).toEqual([]);
   });
 
+  it("continues failed Claude-owned tool results as failure text", () => {
+    const batch = toCodexRequests(
+      {
+        ...baseRequest,
+        messages: [
+          {
+            role: "assistant",
+            content: [
+              {
+                type: "tool_use",
+                id: "toolu_1",
+                name: "Bash",
+                input: { command: "pwd" },
+              },
+            ],
+          },
+          {
+            role: "user",
+            content: [
+              {
+                type: "tool_result",
+                tool_use_id: "toolu_1",
+                content: "InputValidationError: command missing",
+                is_error: true,
+              },
+            ],
+          },
+        ],
+      },
+      { cwd: "/workspace", model: "gpt-5.5" },
+    );
+
+    expect(batch.requests[0]?.params["toolOutput"]).toEqual({
+      name: "Bash",
+      namespace: null,
+      output: "Claude Code tool failed:\nInputValidationError: command missing",
+    });
+    expect(batch.requests[0]?.params["input"]).toEqual([]);
+  });
+
+  it("does not reuse an older tool result after a reminder-only user message", () => {
+    const messages = [
+      {
+        role: "assistant" as const,
+        content: [
+          {
+            type: "tool_use" as const,
+            id: "toolu_1",
+            name: "Bash",
+            input: { command: "pwd" },
+          },
+        ],
+      },
+      {
+        role: "user" as const,
+        content: [
+          {
+            type: "tool_result" as const,
+            tool_use_id: "toolu_1",
+            content: "/workspace",
+          },
+        ],
+      },
+      {
+        role: "assistant" as const,
+        content: "The command returned /workspace.",
+      },
+      {
+        role: "user" as const,
+        content: "<system-reminder>\nFollow repository instructions.\n</system-reminder>",
+      },
+    ];
+
+    expect(toolOutputFromMessages(messages)).toBeNull();
+    expect(promptlessInitialTurnError({ ...baseRequest, messages })).toContain(
+      "did not forward an actionable user prompt",
+    );
+  });
+
 
   it("maps Codex model/list into Anthropic-compatible model objects", () => {
     expect(
@@ -548,6 +647,7 @@ describe("experimental Codex Anthropic gateway", () => {
       "content_block_delta",
       "content_block_stop",
       "content_block_start",
+      "content_block_delta",
       "content_block_stop",
       "content_block_start",
       "content_block_delta",
@@ -567,10 +667,15 @@ describe("experimental Codex Anthropic gateway", () => {
         type: "tool_use",
         id: "toolu_1",
         name: "mcp__context7__query-docs",
-        input: { query: "alpha" },
+        input: {},
       },
     });
-    expect(events[8]?.data).toEqual({
+    expect(events[6]?.data).toEqual({
+      type: "content_block_delta",
+      index: 1,
+      delta: { type: "input_json_delta", partial_json: "{\"query\":\"alpha\"}" },
+    });
+    expect(events[9]?.data).toEqual({
       type: "content_block_delta",
       index: 2,
       delta: { type: "text_delta", text: "TOOL_OK" },
@@ -616,6 +721,10 @@ describe("experimental Codex Anthropic gateway", () => {
     ], state);
 
     const starts = events.filter((event) => event.event === "content_block_start");
+    const inputDeltas = events.filter((event) => {
+      const delta = event.data["delta"] as { type?: string } | undefined;
+      return delta?.type === "input_json_delta";
+    });
     expect(starts).toHaveLength(1);
     expect(starts[0]?.data).toEqual({
       type: "content_block_start",
@@ -624,9 +733,77 @@ describe("experimental Codex Anthropic gateway", () => {
         type: "tool_use",
         id: "call_1",
         name: "mcp__github__get_me",
-        input: { include_private: false },
+        input: {},
       },
     });
+    expect(inputDeltas).toHaveLength(1);
+    expect(inputDeltas[0]?.data).toEqual({
+      type: "content_block_delta",
+      index: 0,
+      delta: { type: "input_json_delta", partial_json: "{\"include_private\":false}" },
+    });
+  });
+
+  it("unwraps completed dynamic tool input arguments without losing required values", () => {
+    const state = createGatewayState();
+    state.toolRequiredArguments.set("Bash", ["command"]);
+    const events = toAnthropicStreamEvents([
+      {
+        method: "turn/started",
+        params: { threadId: "t1", turn: { id: "turn1" } },
+      },
+      {
+        method: "item/completed",
+        params: {
+          threadId: "t1",
+          turnId: "turn1",
+          item: {
+            id: "call_1",
+            type: "dynamic_tool_call",
+            toolName: "Bash",
+            input: {
+              arguments: JSON.stringify({
+                command: "pwd",
+                nested: { enabled: true },
+                flags: ["-P"],
+                dryRun: false,
+              }),
+            },
+          },
+        },
+      },
+      {
+        method: "turn/completed",
+        params: { threadId: "t1", turn: { id: "turn1" } },
+      },
+    ], state);
+
+    const starts = events.filter((event) => event.event === "content_block_start");
+    const inputDeltas = events.filter((event) => {
+      const delta = event.data["delta"] as { type?: string } | undefined;
+      return delta?.type === "input_json_delta";
+    });
+    expect(starts).toHaveLength(1);
+    expect(starts[0]?.data).toEqual({
+      type: "content_block_start",
+      index: 0,
+      content_block: {
+        type: "tool_use",
+        id: "call_1",
+        name: "Bash",
+        input: {},
+      },
+    });
+    expect(inputDeltas).toHaveLength(1);
+    expect(inputDeltas[0]?.data).toEqual({
+      type: "content_block_delta",
+      index: 0,
+      delta: {
+        type: "input_json_delta",
+        partial_json: "{\"command\":\"pwd\",\"nested\":{\"enabled\":true},\"flags\":[\"-P\"],\"dryRun\":false}",
+      },
+    });
+    expect(events.filter((event) => event.event === "error")).toHaveLength(0);
   });
 
   it("fails closed when a Codex dynamic tool call omits required arguments", () => {
@@ -729,8 +906,16 @@ describe("experimental Codex Anthropic gateway", () => {
       content_block: {
         type: "tool_use",
         name: "Bash",
-        input: { command: "printf ok", description: "print" },
+        input: {},
       },
+    });
+    expect(events.find((event) => {
+      const delta = event.data["delta"] as { type?: string } | undefined;
+      return delta?.type === "input_json_delta";
+    })?.data).toEqual({
+      type: "content_block_delta",
+      index: 0,
+      delta: { type: "input_json_delta", partial_json: "{\"command\":\"printf ok\",\"description\":\"print\"}" },
     });
     expect(events.filter((event) => event.event === "error")).toHaveLength(0);
   });
