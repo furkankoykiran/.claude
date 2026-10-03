@@ -3,6 +3,10 @@ import {
   cancellationRequest,
   cleanShutdownRequests,
   codexAppServerCommand,
+  codexDynamicToolInputSchema,
+  codexDynamicToolName,
+  codexDynamicToolSpecs,
+  codexDynamicToolsForTurn,
   codexThreadStartParams,
   failClosedClientRequestResult,
   createGatewayState,
@@ -12,6 +16,8 @@ import {
   toAnthropicModelsList,
   toAnthropicStreamEvents,
   toCodexRequests,
+  nonStreamingAnthropicResponseFromEvents,
+  promptlessInitialTurnError,
   type AnthropicMessagesRequest,
 } from "../../scripts/codex-anthropic-gateway.ts";
 
@@ -72,6 +78,209 @@ describe("experimental Codex Anthropic gateway", () => {
     });
   });
 
+  it("declares Claude tools as Codex dynamic tools at thread start", () => {
+    const aliases = new Map<string, string>();
+    const requiredArguments = new Map<string, string[]>();
+    expect(codexThreadStartParams("/workspace", "gpt-5.5", "claude-sonnet-4-5", [
+      {
+        name: "Bash",
+        description: "Run a shell command",
+        input_schema: {
+          type: "object",
+          properties: { command: { type: "string" } },
+          required: ["command"],
+        },
+      },
+      {
+        name: "mcp__context7__query-docs",
+        description: "Query Context7 docs",
+        input_schema: { type: "object" },
+      },
+    ], [{ role: "user", content: "Use Bash and mcp__context7__query-docs." }], aliases, new Map(), requiredArguments)).toMatchObject({
+      dynamicTools: [
+        {
+          type: "function",
+          name: "Bash",
+          description:
+            'Run a shell command\n\nCall this Claude Code client tool with JSON arguments matching this schema: {"type":"object","properties":{"command":{"type":"string","description":"Shell command for Claude Code to run."},"description":{"type":"string","description":"Short description of what the command does."}},"required":["command"],"additionalProperties":false}',
+          inputSchema: {
+            type: "object",
+            properties: {
+              command: {
+                type: "string",
+                description: "Shell command for Claude Code to run.",
+              },
+              description: {
+                type: "string",
+                description: "Short description of what the command does.",
+              },
+            },
+            required: ["command"],
+            additionalProperties: false,
+          },
+        },
+        {
+          type: "function",
+          name: "claude_tool_1_mcp__context7__query_docs",
+          description:
+            'Query Context7 docs\n\nCall this Claude Code client tool with JSON arguments matching this schema: {"type":"object","properties":{},"required":[],"additionalProperties":false}',
+          inputSchema: {
+            type: "object",
+            properties: {},
+            required: [],
+            additionalProperties: false,
+          },
+        },
+      ],
+    });
+    expect(aliases.get("claude_tool_1_mcp__context7__query_docs")).toBe("mcp__context7__query-docs");
+    expect(codexDynamicToolName("mcp__context7__query-docs", 1)).toBe("claude_tool_1_mcp__context7__query_docs");
+    expect(requiredArguments.get("Bash")).toEqual(["command"]);
+  });
+
+  it("prefers turn-mentioned tools before falling back to the supported core", () => {
+    const tools = [
+      { name: "Bash", input_schema: { type: "object" } },
+      { name: "CronCreate", input_schema: { type: "object" } },
+      { name: "mcp__github__get_me", input_schema: { type: "object" } },
+    ];
+
+    expect(codexDynamicToolsForTurn(tools, [{ role: "user", content: "Use Bash once." }]).map((tool) => tool.name)).toEqual([
+      "Bash",
+    ]);
+    expect(codexDynamicToolsForTurn(tools, [{ role: "user", content: "Check my GitHub profile." }]).map((tool) => tool.name)).toEqual([
+      "Bash",
+      "mcp__github__get_me",
+    ]);
+  });
+
+  it("uses only the latest user turn when narrowing mentioned tools", () => {
+    const tools = [
+      { name: "Agent", input_schema: { type: "object" } },
+      { name: "Bash", input_schema: { type: "object" } },
+      { name: "Write", input_schema: { type: "object" } },
+    ];
+
+    expect(codexDynamicToolsForTurn(tools, [
+      { role: "assistant", content: "Available tools include Agent and Write." },
+      { role: "user", content: "Call Bash with a harmless command." },
+      { role: "user", content: "<system-reminder>\n# Environment\nAvailable tools include Agent and Write.\n</system-reminder>" },
+    ]).map((tool) => tool.name)).toEqual(["Bash"]);
+  });
+
+  it("ignores tool result user blocks when narrowing mentioned tools", () => {
+    const tools = [
+      { name: "Bash", input_schema: { type: "object" } },
+      { name: "Write", input_schema: { type: "object" } },
+    ];
+
+    expect(codexDynamicToolsForTurn(tools, [
+      { role: "user", content: "Call Bash with exact JSON input." },
+      {
+        role: "user",
+        content: [
+          {
+            type: "tool_result",
+            tool_use_id: "call_1",
+            content: "InputValidationError: Write failed",
+            is_error: true,
+          },
+        ],
+      },
+    ]).map((tool) => tool.name)).toEqual(["Bash"]);
+  });
+
+  it("uses explicit turn text when Claude SDK moves the action prompt out of messages", () => {
+    const tools = [
+      { name: "Bash", input_schema: { type: "object" } },
+      { name: "Write", input_schema: { type: "object" } },
+    ];
+
+    expect(codexDynamicToolsForTurn(
+      tools,
+      [{ role: "user", content: "<system-reminder>Available tools include Bash and Write.</system-reminder>" }],
+      'Call the Bash tool with this exact JSON input: {"command":"printf ok","description":"print"}',
+    ).map((tool) => tool.name)).toEqual(["Bash"]);
+  });
+
+  it("fails closed when Claude forwards only system reminders without the user prompt", () => {
+    const request = {
+      ...baseRequest,
+      messages: [
+        {
+          role: "user" as const,
+          content: "<system-reminder>\n# Environment\nAvailable tools include Bash.\n</system-reminder>",
+        },
+      ],
+      tools: [
+        { name: "Bash", input_schema: { type: "object", properties: { command: { type: "string" } }, required: ["command"] } },
+      ],
+    };
+
+    expect(promptlessInitialTurnError(request)).toContain("did not forward an actionable user prompt");
+    expect(() => toCodexRequests(request, { cwd: "/workspace", model: "gpt-5.5" })).toThrow(
+      "did not forward an actionable user prompt",
+    );
+  });
+
+  it("prepares dynamic tool metadata independently of thread creation", () => {
+    const aliases = new Map<string, string>();
+    const reverseAliases = new Map<string, string>();
+    const requiredArguments = new Map<string, string[]>();
+    const specs = codexDynamicToolSpecs(
+      [
+        { name: "Bash", input_schema: { type: "object" } },
+        { name: "mcp__github__get_me", input_schema: { type: "object" } },
+      ],
+      [{ role: "user", content: "Use Bash." }],
+      aliases,
+      reverseAliases,
+      requiredArguments,
+    );
+
+    expect(specs.map((spec) => spec["name"])).toEqual(["Bash"]);
+    expect(reverseAliases.get("Bash")).toBe("Bash");
+    expect(requiredArguments.get("Bash")).toEqual(["command"]);
+  });
+
+  it("normalizes dynamic tool input schemas for Responses function tools", () => {
+    expect(codexDynamicToolInputSchema("lookup", { properties: { command: { type: "string" } }, required: ["command"] })).toEqual({
+      type: "object",
+      properties: { command: { type: "string" } },
+      required: ["command"],
+      additionalProperties: false,
+    });
+    expect(codexDynamicToolInputSchema("lookup", null)).toEqual({
+      type: "object",
+      properties: {},
+      required: [],
+      additionalProperties: false,
+    });
+  });
+
+  it("uses compact Claude Code schemas for built-in client tools", () => {
+    expect(codexDynamicToolInputSchema("Bash", { type: "object", properties: { ignored: { type: "string" } } })).toEqual({
+      type: "object",
+      properties: {
+        command: {
+          type: "string",
+          description: "Shell command for Claude Code to run.",
+        },
+        description: {
+          type: "string",
+          description: "Short description of what the command does.",
+        },
+      },
+      required: ["command"],
+      additionalProperties: false,
+    });
+    expect(codexDynamicToolInputSchema("Write", null)).toMatchObject({
+      type: "object",
+      required: ["file_path", "content"],
+      additionalProperties: false,
+    });
+  });
+
   it("uses turn/start for multi-turn requests carrying a Codex thread id", () => {
     const batch = toCodexRequests(
       {
@@ -102,7 +311,7 @@ describe("experimental Codex Anthropic gateway", () => {
     });
   });
 
-  it("round trips dynamic client tools as instructions and Anthropic tool_result content", () => {
+  it("does not duplicate dynamic client tool schemas in additional context", () => {
     const batch = toCodexRequests(
       {
         ...baseRequest,
@@ -130,16 +339,12 @@ describe("experimental Codex Anthropic gateway", () => {
       { cwd: "/workspace", model: "gpt-5.5" },
     );
 
-    const context = batch.requests[0]?.params["additionalContext"] as Record<string, { value: string }>;
-    expect(JSON.parse(context["anthropic-tools"]?.value ?? "{}")).toEqual({
-      boundary: "experimental-dynamic-client-tools-only",
-      tools: [
-        {
-          name: "lookup",
-          description: "Lookup a value",
-          input_schema: { type: "object", properties: { query: { type: "string" } } },
-        },
-      ],
+    const context = batch.requests[0]?.params["additionalContext"] as Record<string, { kind: string; value: string }>;
+    expect(context).toEqual({
+      "anthropic-system": {
+        kind: "application",
+        value: "You are a careful coding assistant.",
+      },
     });
     expect(batch.requests[0]?.params["input"]).toEqual([
       {
@@ -148,6 +353,49 @@ describe("experimental Codex Anthropic gateway", () => {
         text_elements: [],
       },
     ]);
+  });
+
+  it("continues Claude-owned tool results through Codex toolOutput", () => {
+    const aliases = new Map<string, string>([
+      ["mcp__github__get_me", "claude_tool_0_mcp__github__get_me"],
+    ]);
+    const batch = toCodexRequests(
+      {
+        ...baseRequest,
+        messages: [
+          {
+            role: "assistant",
+            content: [
+              {
+                type: "tool_use",
+                id: "toolu_1",
+                name: "mcp__github__get_me",
+                input: {},
+              },
+            ],
+          },
+          {
+            role: "user",
+            content: [
+              {
+                type: "tool_result",
+                tool_use_id: "toolu_1",
+                content: "result text",
+              },
+            ],
+          },
+        ],
+      },
+      { cwd: "/workspace", model: "gpt-5.5" },
+      aliases,
+    );
+
+    expect(batch.requests[0]?.params["toolOutput"]).toEqual({
+      name: "claude_tool_0_mcp__github__get_me",
+      namespace: null,
+      output: "result text",
+    });
+    expect(batch.requests[0]?.params["input"]).toEqual([]);
   });
 
 
@@ -217,7 +465,7 @@ describe("experimental Codex Anthropic gateway", () => {
       scope: "turn",
       strictAutoReview: true,
     });
-    expect(failClosedClientRequestResult("item/tool/call")).toMatchObject({ success: false });
+    expect(failClosedClientRequestResult("item/tool/call")).toEqual({ success: false, contentItems: [] });
     expect(failClosedClientRequestResult("thread/unknown")).toBeNull();
   });
 
@@ -228,6 +476,8 @@ describe("experimental Codex Anthropic gateway", () => {
   });
 
   it("maps Codex streaming deltas and dynamic tool calls to Anthropic SSE events", () => {
+    const state = createGatewayState();
+    state.toolNameAliases.set("claude_tool_0_mcp__context7__query_docs", "mcp__context7__query-docs");
     const events = toAnthropicStreamEvents([
       {
         method: "turn/started",
@@ -249,8 +499,8 @@ describe("experimental Codex Anthropic gateway", () => {
           item: {
             id: "toolu_1",
             type: "dynamic_tool_call",
-            toolName: "lookup",
-            input: { query: "alpha" },
+            toolName: "claude_tool_0_mcp__context7__query_docs",
+            arguments: "{\"query\":\"alpha\"}",
           },
         },
       },
@@ -262,7 +512,7 @@ describe("experimental Codex Anthropic gateway", () => {
         method: "turn/completed",
         params: { threadId: "t1", turn: { id: "turn1" } },
       },
-    ]);
+    ], state);
 
     expect(events.map((event) => event.event)).toEqual([
       "message_start",
@@ -289,7 +539,7 @@ describe("experimental Codex Anthropic gateway", () => {
       content_block: {
         type: "tool_use",
         id: "toolu_1",
-        name: "lookup",
+        name: "mcp__context7__query-docs",
         input: { query: "alpha" },
       },
     });
@@ -298,6 +548,164 @@ describe("experimental Codex Anthropic gateway", () => {
       index: 2,
       delta: { type: "text_delta", text: "TOOL_OK" },
     });
+  });
+
+  it("maps app-server dynamic tool requests to Claude tool_use events with their arguments", () => {
+    const state = createGatewayState();
+    state.toolNameAliases.set("claude_tool_0_mcp__github__get_me", "mcp__github__get_me");
+    const events = toAnthropicStreamEvents([
+      {
+        method: "turn/started",
+        params: { threadId: "t1", turn: { id: "turn1" } },
+      },
+      {
+        method: "item/tool/call",
+        params: {
+          threadId: "t1",
+          turnId: "turn1",
+          callId: "call_1",
+          namespace: null,
+          tool: "claude_tool_0_mcp__github__get_me",
+          arguments: { include_private: false },
+        },
+      },
+      {
+        method: "item/completed",
+        params: {
+          threadId: "t1",
+          turnId: "turn1",
+          item: {
+            id: "call_1",
+            type: "dynamic_tool_call",
+            toolName: "claude_tool_0_mcp__github__get_me",
+            arguments: "{}",
+          },
+        },
+      },
+      {
+        method: "turn/completed",
+        params: { threadId: "t1", turn: { id: "turn1" } },
+      },
+    ], state);
+
+    const starts = events.filter((event) => event.event === "content_block_start");
+    expect(starts).toHaveLength(1);
+    expect(starts[0]?.data).toEqual({
+      type: "content_block_start",
+      index: 0,
+      content_block: {
+        type: "tool_use",
+        id: "call_1",
+        name: "mcp__github__get_me",
+        input: { include_private: false },
+      },
+    });
+  });
+
+  it("fails closed when a Codex dynamic tool call omits required arguments", () => {
+    const state = createGatewayState();
+    state.toolRequiredArguments.set("Bash", ["command"]);
+    const events = toAnthropicStreamEvents([
+      {
+        method: "turn/started",
+        params: { threadId: "t1", turn: { id: "turn1" } },
+      },
+      {
+        method: "item/tool/call",
+        params: {
+          threadId: "t1",
+          turnId: "turn1",
+          callId: "call_1",
+          namespace: null,
+          tool: "Bash",
+          arguments: {},
+        },
+      },
+      {
+        method: "turn/completed",
+        params: { threadId: "t1", turn: { id: "turn1" } },
+      },
+    ], state);
+
+    expect(events.filter((event) => event.event === "content_block_start")).toHaveLength(0);
+    expect(events.filter((event) => event.event === "error")).toHaveLength(1);
+    expect(events.find((event) => event.event === "error")?.data).toMatchObject({
+      error: {
+        message: "Codex dynamic tool call Bash omitted required argument(s): command",
+      },
+    });
+  });
+
+  it("fails closed when a completed dynamic tool item omits required arguments", () => {
+    const state = createGatewayState();
+    const events = toAnthropicStreamEvents([
+      {
+        method: "turn/started",
+        params: { threadId: "t1", turn: { id: "turn1" } },
+      },
+      {
+        method: "item/completed",
+        params: {
+          threadId: "t1",
+          turnId: "turn1",
+          item: {
+            id: "call_1",
+            type: "dynamic_tool_call",
+            toolName: "Bash",
+            arguments: "{}",
+          },
+        },
+      },
+      {
+        method: "turn/completed",
+        params: { threadId: "t1", turn: { id: "turn1" } },
+      },
+    ], state);
+
+    expect(events.filter((event) => event.event === "content_block_start")).toHaveLength(0);
+    expect(events.filter((event) => event.event === "error")).toHaveLength(1);
+    expect(events.find((event) => event.event === "error")?.data).toMatchObject({
+      error: {
+        message: "Codex dynamic tool call Bash omitted required argument(s): command",
+      },
+    });
+  });
+
+  it("repairs empty tool input only from explicit JSON in the user prompt", () => {
+    const state = createGatewayState();
+    state.turnText = 'Call the Bash tool with this exact JSON input: {"command":"printf ok","description":"print"}';
+    const events = toAnthropicStreamEvents([
+      {
+        method: "turn/started",
+        params: { threadId: "t1", turn: { id: "turn1" } },
+      },
+      {
+        method: "item/completed",
+        params: {
+          threadId: "t1",
+          turnId: "turn1",
+          item: {
+            id: "call_1",
+            type: "dynamic_tool_call",
+            toolName: "Bash",
+            arguments: "{}",
+          },
+        },
+      },
+      {
+        method: "turn/completed",
+        params: { threadId: "t1", turn: { id: "turn1" } },
+      },
+    ], state);
+
+    expect(events.find((event) => event.event === "content_block_start")?.data).toMatchObject({
+      content_block: {
+        type: "tool_use",
+        name: "Bash",
+        input: { command: "printf ok", description: "print" },
+      },
+    });
+    expect(events.filter((event) => event.event === "error")).toHaveLength(0);
   });
 
   it("deduplicates retried forwards and repeated Codex errors", () => {
@@ -316,6 +724,42 @@ describe("experimental Codex Anthropic gateway", () => {
       state,
     );
 
+    expect(events.filter((event) => event.event === "error")).toHaveLength(1);
+  });
+
+  it("does not translate failed or interrupted Codex turns into successful Claude turns", () => {
+    const failed = toAnthropicStreamEvents([
+      {
+        method: "turn/completed",
+        params: { threadId: "t1", turn: { id: "turn1", status: "failed", error: { message: "tool failed" } } },
+      },
+    ]);
+    const interrupted = toAnthropicStreamEvents([
+      {
+        method: "turn/interrupted",
+        params: { threadId: "t1", turn: { id: "turn2", status: "interrupted" } },
+      },
+    ]);
+
+    expect(failed.filter((event) => event.event === "error")).toHaveLength(1);
+    expect(interrupted.filter((event) => event.event === "error")).toHaveLength(1);
+    expect(failed.some((event) => event.event === "message_delta")).toBe(false);
+    expect(interrupted.some((event) => event.event === "message_delta")).toBe(false);
+  });
+
+  it("returns one structured non-streaming failure instead of a false success for app-server errors", () => {
+    const state = createGatewayState();
+    const events = toAnthropicStreamEvents(
+      [
+        { method: "error", params: { message: "unknown MCP tool" } },
+        { method: "error", params: { message: "unknown MCP tool" } },
+      ],
+      state,
+    );
+
+    expect(() => nonStreamingAnthropicResponseFromEvents(baseRequest, events, "gpt-5.5")).toThrow(
+      "unknown MCP tool",
+    );
     expect(events.filter((event) => event.event === "error")).toHaveLength(1);
   });
 

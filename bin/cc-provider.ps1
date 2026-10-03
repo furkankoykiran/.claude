@@ -74,6 +74,14 @@ function Format-SecretRedaction($value) {
   return "configured (****$($value.Substring($value.Length - 4)))"
 }
 
+function Format-CodexDisplay($value) {
+  if ($null -eq $value) { return '' }
+  $text = [string]$value
+  $text = [regex]::Replace($text, "`e\[[0-9;?]*[ -/]*[@-~]", '')
+  $text = [regex]::Replace($text, '\[[0-9;]*m', '')
+  return [regex]::Replace($text, '[\x00-\x1F\x7F]', '')
+}
+
 function Get-CredentialKey($p) {
   $f = Join-Path $PDir "$p.json"
   if (-not (Test-Path -LiteralPath $f)) { return $null }
@@ -229,6 +237,7 @@ function Write-CodexPickerStatus {
     $selected = 'unset'
     if ($codex.ContainsKey('env') -and $codex['env'].ContainsKey('CODEX_GATEWAY_MODEL')) { $selected = $codex['env']['CODEX_GATEWAY_MODEL'] }
     elseif ($codex.ContainsKey('model')) { $selected = $codex['model'] }
+    $selected = Format-CodexDisplay $selected
     "Codex picker catalog: $providerCount model(s) cached in providers/codex.json"
     "Codex selected model: $selected"
   }
@@ -242,6 +251,188 @@ function Write-CodexPickerStatus {
     "Codex pricing estimate: $pricing"
   }
   'Codex gateway discovery: Claude Code keeps only raw /v1/models ids containing claude or anthropic; Codex ids use generated modelPicker rows.'
+  'Codex bridge prompt forwarding: pending; promptless Claude Code requests fail closed instead of running Codex on system reminders.'
+}
+
+function Get-MapValue($obj, $name, $default = $null) {
+  if ($null -eq $obj) { return $default }
+  if ($obj -is [hashtable]) {
+    if ($obj.ContainsKey($name)) { return $obj[$name] }
+    return $default
+  }
+  $prop = $obj.PSObject.Properties[$name]
+  if ($null -ne $prop) { return $prop.Value }
+  return $default
+}
+
+function Get-CodexGatewayPort {
+  if ($env:CODEX_GATEWAY_PORT) {
+    return [string]$env:CODEX_GATEWAY_PORT
+  }
+  $codexFile = Join-Path $PDir 'codex.json'
+  if (Test-Path -LiteralPath $codexFile) {
+    $codex = Read-JsonMap $codexFile
+    if ($codex.ContainsKey('env') -and $codex['env'].ContainsKey('CODEX_GATEWAY_PORT')) {
+      return [string]$codex['env']['CODEX_GATEWAY_PORT']
+    }
+  }
+  return '4545'
+}
+
+function Invoke-CodexGatewayJson($path) {
+  $port = Get-CodexGatewayPort
+  $uri = "http://127.0.0.1:$port$path"
+  try {
+    $response = Invoke-WebRequest -UseBasicParsing -Uri $uri -TimeoutSec 5
+    return ($response.Content | ConvertFrom-Json)
+  } catch {
+    throw "failed to query Codex account data at $uri"
+  }
+}
+
+function Format-EmailRedaction($email) {
+  if ([string]::IsNullOrWhiteSpace($email) -or -not $email.Contains('@')) { return 'redacted' }
+  $parts = $email.Split('@', 2)
+  if ([string]::IsNullOrEmpty($parts[0]) -or [string]::IsNullOrEmpty($parts[1])) { return 'redacted' }
+  $prefix = $parts[0]
+  if ($prefix.Length -gt 2) { $prefix = $prefix.Substring(0, 2) }
+  return "$prefix***@$($parts[1])"
+}
+
+function Format-EpochUtc($epoch) {
+  if ($null -eq $epoch -or "$epoch" -eq 'null' -or "$epoch" -notmatch '^\d+$') { return 'unavailable' }
+  return ([DateTimeOffset]::FromUnixTimeSeconds([int64]$epoch).UtcDateTime.ToString('yyyy-MM-ddTHH:mm:ssZ'))
+}
+
+function Format-TimeUntil($epoch) {
+  if ($null -eq $epoch -or "$epoch" -eq 'null' -or "$epoch" -notmatch '^\d+$') { return 'unavailable' }
+  $delta = [DateTimeOffset]::FromUnixTimeSeconds([int64]$epoch) - [DateTimeOffset]::UtcNow
+  if ($delta.TotalSeconds -le 0) { return 'elapsed' }
+  if ($delta.Days -gt 0) { return "$($delta.Days)d $($delta.Hours)h $($delta.Minutes)m" }
+  if ($delta.Hours -gt 0) { return "$($delta.Hours)h $($delta.Minutes)m" }
+  return "$($delta.Minutes)m"
+}
+
+function Show-CodexAccount {
+  try { $accountJson = Invoke-CodexGatewayJson '/codex/account' } catch {
+    'Codex account: unavailable'
+    'Usage unavailable - open ChatGPT Settings -> Usage.'
+    return
+  }
+  $account = Get-MapValue $accountJson 'account'
+  $codexFile = Join-Path $PDir 'codex.json'
+  $model = 'unset'
+  $effort = 'default'
+  if (Test-Path -LiteralPath $codexFile) {
+    $codex = Read-JsonMap $codexFile
+    if ($codex.ContainsKey('env')) {
+      if ($codex['env'].ContainsKey('CODEX_GATEWAY_MODEL')) { $model = Format-CodexDisplay $codex['env']['CODEX_GATEWAY_MODEL'] }
+      if ($codex['env'].ContainsKey('CODEX_GATEWAY_REASONING_EFFORT')) { $effort = [string]$codex['env']['CODEX_GATEWAY_REASONING_EFFORT'] }
+    }
+  }
+  'Codex account'
+  if ($null -eq $account) {
+    '  Status: signed out or unavailable'
+    $requiresAuth = Get-MapValue $accountJson 'requiresOpenaiAuth' $false
+    if ($requiresAuth) { '  Auth mode: openai auth required' } else { '  Auth mode: unknown' }
+    '  Account: redacted'
+    '  Plan: unavailable'
+  } else {
+    '  Status: signed in'
+    "  Auth mode: $(Get-MapValue $account 'type' 'unknown')"
+    "  Account: $(Format-EmailRedaction (Get-MapValue $account 'email' ''))"
+    "  Plan: $(Get-MapValue $account 'planType' 'unavailable')"
+  }
+  "  Model: $model"
+  "  Effort: $effort"
+  "  Last refresh: $([DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ssZ'))"
+}
+
+function Show-UsageWindow($name, $window) {
+  if ($null -eq $window) { return }
+  $used = Get-MapValue $window 'usedPercent' 'unavailable'
+  $resetsAt = Get-MapValue $window 'resetsAt'
+  $windowMins = Get-MapValue $window 'windowDurationMins'
+  $line = "  ${name}: used $used%"
+  if ($null -ne $resetsAt) { $line += " | resets $(Format-EpochUtc $resetsAt) ($(Format-TimeUntil $resetsAt))" }
+  if ($null -ne $windowMins) { $line += " | windowMins $windowMins" }
+  $line
+}
+
+function Show-CodexUsage {
+  try { $limitsJson = Invoke-CodexGatewayJson '/codex/rate-limits' } catch {
+    'Usage unavailable - open ChatGPT Settings -> Usage.'
+    return
+  }
+  try { $usageJson = Invoke-CodexGatewayJson '/codex/usage' } catch { $usageJson = $null }
+  'Codex usage'
+  $ordinary = Get-MapValue $limitsJson 'ordinaryUsageAllowed'
+  if ($ordinary -eq $true) { '  Ordinary usage: allowed' }
+  elseif ($ordinary -eq $false) { '  Ordinary usage: exhausted' }
+  else { '  Ordinary usage: unavailable' }
+
+  $limitsById = Get-MapValue $limitsJson 'rateLimitsByLimitId'
+  if ($null -eq $limitsById) {
+    $limitsById = [pscustomobject]@{ default = (Get-MapValue $limitsJson 'rateLimits') }
+  }
+  foreach ($limit in $limitsById.PSObject.Properties) {
+    if ($null -eq $limit.Value) { continue }
+    "  Limit: $($limit.Name)"
+    Show-UsageWindow 'primary' (Get-MapValue $limit.Value 'primary')
+    Show-UsageWindow 'secondary' (Get-MapValue $limit.Value 'secondary')
+  }
+  $resetCredits = Get-MapValue (Get-MapValue $limitsJson 'rateLimitResetCredits') 'availableCount' 'unavailable'
+  "  Reset credits: $resetCredits"
+  $summary = Get-MapValue $usageJson 'summary'
+  if ($null -eq $summary) {
+    '  Token usage summary: unavailable'
+  } else {
+    $pairs = foreach ($prop in $summary.PSObject.Properties) { "$($prop.Name)=$($prop.Value)" }
+    "  Token usage summary: $($pairs -join ', ')"
+  }
+  "  Last refresh: $([DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ssZ'))"
+  '  Official details: ChatGPT Settings -> Usage'
+}
+
+function Show-PermissionMatrix {
+  $activeProvider = 'none'
+  if (Test-Path -LiteralPath $Active) { $activeProvider = (Get-Content -LiteralPath $Active -Raw).Trim() }
+  $claudeMode = 'default'
+  if (Test-Path -LiteralPath $Settings) {
+    $settingsMap = Read-JsonMap $Settings
+    if ($settingsMap.ContainsKey('permissions') -and $settingsMap['permissions'].ContainsKey('defaultMode')) {
+      $claudeMode = [string]$settingsMap['permissions']['defaultMode']
+    }
+  }
+  switch ($claudeMode) {
+    'default' { $modeLabel = 'default (Manual / ask)' }
+    'auto' { $modeLabel = 'auto (Claude Code support is model/session dependent)' }
+    default { $modeLabel = $claudeMode }
+  }
+  'Permission and Auto semantics'
+  "  Active provider: $activeProvider"
+  "  Claude permission mode: $modeLabel"
+  if ($activeProvider -eq 'codex') {
+    '  Active scope: ccs codex bridge'
+    '  Authority: Claude Code owns Bash, Read/Edit/Write, hooks, Claude-side MCP, tool results, and permission UI.'
+    '  Codex bridge sandbox: read-only (network disabled for turn sandbox)'
+    '  Codex bridge approval policy: never'
+    '  Codex bridge approval reviewer: user (Codex auto_review is not authoritative)'
+    '  Codex-side tool executor: disabled/fail-closed in bridge mode'
+    '  Claude Auto mode: only available when Claude Code itself accepts the active model/session; not inferred from Codex auto_review.'
+  } else {
+    '  Active scope: standard'
+    '  Authority: Claude Code owns provider requests and its normal permission UI for this provider.'
+    '  Codex native controls: not active through ccs unless you run the official codex CLI directly.'
+  }
+  ''
+  'Supported choices'
+  '  Manual / ask:        fkt configure --yes --permission-mode manual'
+  '  Plan:                fkt configure --yes --permission-mode plan'
+  '  Accept edits:        fkt configure --yes --permission-mode acceptEdits'
+  '  Hard deny prompts:   fkt configure --yes --permission-mode dontAsk'
+  '  Claude Auto:         fkt configure --yes --permission-mode auto (only if Claude Code supports the active model/session)'
+  '  Native Codex Auto Review: use official codex CLI settings outside ccs codex; ccs codex will not let it approve Claude-owned operations.'
 }
 
 function Read-JsonMap($path) {
@@ -478,7 +669,7 @@ function Enable-Provider($p) {
 }
 
 function Show-Usage {
-  "usage: cc-provider.ps1 [list|status|doctor|use <provider>|auth <provider>|login <provider>|api <provider>|logout <provider>|<provider>]" | Write-Host
+  "usage: cc-provider.ps1 [list|status|doctor|account|usage|permissions|use <provider>|auth <provider>|login <provider>|api <provider>|logout <provider>|<provider>]" | Write-Host
   "  list              list available providers" | Write-Host
   "  status            print the active provider and auth summary" | Write-Host
   "  use <provider>    activate it (compatibility shorthand: cc-provider.ps1 <provider>)" | Write-Host
@@ -486,6 +677,9 @@ function Show-Usage {
   "  login <provider>  fill an API key; codex/chatgpt delegates to official codex login" | Write-Host
   "  api <provider>    fill an API key in providers\<provider>.json" | Write-Host
   "  logout <provider> clear a local API key; codex/chatgpt delegates to codex logout" | Write-Host
+  "  account           show supported Codex account/auth details" | Write-Host
+  "  usage             show supported Codex usage and rate-limit details" | Write-Host
+  "  permissions       show Claude/Codex permission and Auto ownership" | Write-Host
   "  doctor            check provider setup, safety merge and local gateway state" | Write-Host
   "" | Write-Host
   "available providers:" | Write-Host
@@ -529,6 +723,18 @@ switch ($Command) {
   'doctor' {
     if ($Rest.Count -gt 0) { throw 'doctor accepts no provider argument' }
     Invoke-Doctor
+  }
+  'account' {
+    if ($Rest.Count -gt 0) { throw 'account accepts no arguments' }
+    Show-CodexAccount
+  }
+  'usage' {
+    if ($Rest.Count -gt 0) { throw 'usage accepts no arguments' }
+    Show-CodexUsage
+  }
+  'permissions' {
+    if ($Rest.Count -gt 0) { throw 'permissions accepts no arguments' }
+    Show-PermissionMatrix
   }
   'use' {
     $p = Assert-ProviderArg 'use' $Rest

@@ -32,6 +32,7 @@ SETTINGS="$CLAUDE_DIR/settings.json"
 BASE_SETTINGS="$CLAUDE_DIR/settings.base.json"
 CODEX_GATEWAY_PID="$CLAUDE_DIR/state/codex-gateway.pid"
 CODEX_GATEWAY_LOG="$CLAUDE_DIR/state/codex-gateway.log"
+CODEX_ACCOUNT_CACHE="$CLAUDE_DIR/state/codex-account-cache.json"
 CODEX_CONFIG="${CODEX_CONFIG:-$HOME/.codex/config.toml}"
 PLACEHOLDER_RE='<[A-Z_]+>'
 
@@ -78,8 +79,17 @@ redact_secret() {
   fi
 }
 
+sanitize_codex_display() {
+  # Strip terminal escape sequences and the common leftover SGR suffix shape
+  # that appears when an upstream model label has already lost its ESC byte.
+  printf '%s' "$1" | sed -E $'s/\x1B\\[[0-9;?]*[ -/]*[@-~]//g; s/\\[[0-9;]*m//g; s/[[:cntrl:]]//g'
+}
 
 codex_gateway_port() {
+  if [ -n "${CODEX_GATEWAY_PORT:-}" ]; then
+    printf '%s' "$CODEX_GATEWAY_PORT"
+    return 0
+  fi
   if [ -f "$PDIR/codex.json" ] && command -v jq >/dev/null 2>&1; then
     jq -r '.env.CODEX_GATEWAY_PORT // "4545"' "$PDIR/codex.json" 2>/dev/null || printf '4545'
   else
@@ -93,6 +103,22 @@ codex_gateway_running() {
   pid=$(cat "$CODEX_GATEWAY_PID" 2>/dev/null || true)
   [ -n "$pid" ] || return 1
   kill -0 "$pid" 2>/dev/null
+}
+
+codex_gateway_health_running() {
+  command -v curl >/dev/null 2>&1 || return 1
+  curl -fsS --max-time 1 "http://127.0.0.1:$(codex_gateway_port)/health" >/dev/null 2>&1
+}
+
+codex_gateway_port_listening() {
+  local port
+  port=$(codex_gateway_port)
+  [ -n "$port" ] || return 1
+  (exec 3<>"/dev/tcp/127.0.0.1/$port") >/dev/null 2>&1
+}
+
+codex_gateway_available() {
+  codex_gateway_running || codex_gateway_health_running
 }
 
 scrub_codex_bridge_mcp_config() {
@@ -169,9 +195,16 @@ start_codex_gateway() {
     printf 'Codex gateway already running (pid %s, port %s).\n' "$(cat "$CODEX_GATEWAY_PID")" "$(codex_gateway_port)"
     return 0
   fi
+  if codex_gateway_health_running; then
+    printf 'Codex gateway already running (health, port %s).\n' "$(codex_gateway_port)"
+    return 0
+  fi
   local port model effort
   port=$(codex_gateway_port)
-  model=$(jq -r '.env.CODEX_GATEWAY_MODEL // empty' "$PDIR/codex.json")
+  if codex_gateway_port_listening; then
+    die "Codex gateway port $port is occupied but /health is not reachable; stop the other listener or choose another CODEX_GATEWAY_PORT"
+  fi
+  model=$(sanitize_codex_display "$(jq -r '.env.CODEX_GATEWAY_MODEL // empty' "$PDIR/codex.json")")
   effort=$(jq -r '.env.CODEX_GATEWAY_REASONING_EFFORT // empty' "$PDIR/codex.json")
   if command -v setsid >/dev/null 2>&1; then
     nohup setsid env CODEX_GATEWAY_PORT="$port" CODEX_GATEWAY_MODEL="$model" CODEX_GATEWAY_REASONING_EFFORT="$effort" \
@@ -206,11 +239,15 @@ stop_codex_gateway() {
 status_codex_gateway() {
   if codex_gateway_running; then
     printf 'Codex gateway: running (pid %s, port %s)\n' "$(cat "$CODEX_GATEWAY_PID")" "$(codex_gateway_port)"
+  elif codex_gateway_health_running; then
+    printf 'Codex gateway: running (health, port %s)\n' "$(codex_gateway_port)"
+  elif codex_gateway_port_listening; then
+    printf 'Codex gateway: blocked (port %s occupied; /health unavailable)\n' "$(codex_gateway_port)"
   else
     printf 'Codex gateway: stopped\n'
   fi
   if [ -f "$PDIR/codex.json" ] && command -v jq >/dev/null 2>&1; then
-    printf 'Codex model: %s\n' "$(jq -r '.env.CODEX_GATEWAY_MODEL // "unset"' "$PDIR/codex.json")"
+    printf 'Codex model: %s\n' "$(sanitize_codex_display "$(jq -r '.env.CODEX_GATEWAY_MODEL // "unset"' "$PDIR/codex.json")")"
     printf 'Codex reasoning effort: %s\n' "$(jq -r '.env.CODEX_GATEWAY_REASONING_EFFORT // "default"' "$PDIR/codex.json")"
   fi
 }
@@ -218,12 +255,210 @@ status_codex_gateway() {
 codex_models_json() {
   is_provider codex || die "codex provider template is missing"
   command -v curl >/dev/null 2>&1 || die "curl is required to query the Codex model catalog"
-  if ! codex_gateway_running; then
+  if ! codex_gateway_available; then
     start_codex_gateway >/dev/null
   fi
   local url
   url="http://127.0.0.1:$(codex_gateway_port)/v1/models"
   curl -fsS "$url" || die "failed to query Codex model catalog at $url"
+}
+
+codex_gateway_json() {
+  local path="$1" cache_key="${2:-}" cache_ttl="${3:-0}" url now cache_age
+  is_provider codex || die "codex provider template is missing"
+  command -v curl >/dev/null 2>&1 || die "curl is required to query Codex account data"
+  if ! codex_gateway_available; then
+    start_codex_gateway >/dev/null
+  fi
+  mkdir -p "$(dirname "$CODEX_ACCOUNT_CACHE")"
+  now=$(date +%s)
+  if [ -n "$cache_key" ] && [ -f "$CODEX_ACCOUNT_CACHE" ] && command -v jq >/dev/null 2>&1; then
+    cache_age=$(jq -r --arg key "$cache_key" --argjson now "$now" --argjson ttl "$cache_ttl" '
+      if (.[$key].ts? // 0) > 0 and (($now - .[$key].ts) < $ttl) then "fresh" else "stale" end
+    ' "$CODEX_ACCOUNT_CACHE" 2>/dev/null || printf 'stale')
+    if [ "$cache_age" = "fresh" ]; then
+      jq -c --arg key "$cache_key" '.[$key].data' "$CODEX_ACCOUNT_CACHE"
+      return
+    fi
+  fi
+  url="http://127.0.0.1:$(codex_gateway_port)$path"
+  local json
+  json=$(curl -fsS "$url") || die "failed to query Codex account data at $url"
+  if [ -n "$cache_key" ] && command -v jq >/dev/null 2>&1; then
+    local tmp
+    if [ ! -f "$CODEX_ACCOUNT_CACHE" ]; then
+      printf '{}\n' > "$CODEX_ACCOUNT_CACHE"
+      chmod 600 "$CODEX_ACCOUNT_CACHE" 2>/dev/null || true
+    fi
+    tmp="$(mktemp "$CLAUDE_DIR/state/.codex-account-cache.XXXXXX")"
+    chmod 600 "$tmp" 2>/dev/null || true
+    if jq -n --arg key "$cache_key" --argjson now "$now" --argjson data "$json" --slurpfile old "$CODEX_ACCOUNT_CACHE" '
+      (($old[0] // {}) | if type == "object" then . else {} end)
+      | .[$key] = {ts: $now, data: $data}
+    ' > "$tmp" 2>/dev/null; then
+      mv -f "$tmp" "$CODEX_ACCOUNT_CACHE"
+      chmod 600 "$CODEX_ACCOUNT_CACHE" 2>/dev/null || true
+    else
+      rm -f "$tmp"
+    fi
+  fi
+  printf '%s\n' "$json"
+}
+
+redact_email_for_display() {
+  awk -F@ '{
+    if (NF != 2 || $1 == "" || $2 == "") { print "redacted"; next }
+    prefix=substr($1,1,2)
+    print prefix "***@" $2
+  }'
+}
+
+format_epoch_utc() {
+  local epoch="$1"
+  case "$epoch" in ''|null|*[!0-9]*) printf 'unavailable'; return ;; esac
+  date -u -d "@$epoch" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null \
+    || date -u -r "$epoch" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null \
+    || printf '%s' "$epoch"
+}
+
+format_time_until() {
+  local epoch="$1" now delta days hours mins
+  case "$epoch" in ''|null|*[!0-9]*) printf 'unavailable'; return ;; esac
+  now=$(date +%s)
+  delta=$((epoch - now))
+  if [ "$delta" -le 0 ]; then
+    printf 'elapsed'
+    return
+  fi
+  days=$((delta / 86400))
+  hours=$(((delta % 86400) / 3600))
+  mins=$(((delta % 3600) / 60))
+  if [ "$days" -gt 0 ]; then
+    printf '%sd %sh %sm' "$days" "$hours" "$mins"
+  elif [ "$hours" -gt 0 ]; then
+    printf '%sh %sm' "$hours" "$mins"
+  else
+    printf '%sm' "$mins"
+  fi
+}
+
+codex_account_json() {
+  codex_gateway_json "/codex/account" account 30
+}
+
+codex_rate_limits_json() {
+  codex_gateway_json "/codex/rate-limits" rateLimits 30
+}
+
+codex_usage_json() {
+  codex_gateway_json "/codex/usage" usage 30
+}
+
+print_codex_account() {
+  command -v jq >/dev/null 2>&1 || die "jq is required to format Codex account data"
+  local account_json model effort
+  account_json=$(codex_account_json) || { printf 'Codex account: unavailable\nUsage unavailable - open ChatGPT Settings -> Usage.\n'; return 0; }
+  model="unset"
+  effort="default"
+  if [ -f "$PDIR/codex.json" ]; then
+    model=$(sanitize_codex_display "$(jq -r '.env.CODEX_GATEWAY_MODEL // .model // "unset"' "$PDIR/codex.json" 2>/dev/null || printf 'unset')")
+    effort=$(jq -r '.env.CODEX_GATEWAY_REASONING_EFFORT // "default"' "$PDIR/codex.json" 2>/dev/null || printf 'default')
+  fi
+  printf 'Codex account\n'
+  printf '  Status: %s\n' "$(printf '%s\n' "$account_json" | jq -r 'if .account == null then "signed out or unavailable" else "signed in" end')"
+  printf '  Auth mode: %s\n' "$(printf '%s\n' "$account_json" | jq -r '.account.type // (if .requiresOpenaiAuth then "openai auth required" else "unknown" end)')"
+  printf '  Account: %s\n' "$(printf '%s\n' "$account_json" | jq -r '.account.email // empty' | redact_email_for_display)"
+  printf '  Plan: %s\n' "$(printf '%s\n' "$account_json" | jq -r '.account.planType // "unavailable"')"
+  printf '  Model: %s\n' "$model"
+  printf '  Effort: %s\n' "$effort"
+  printf '  Last refresh: %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+}
+
+print_codex_usage() {
+  command -v jq >/dev/null 2>&1 || die "jq is required to format Codex usage data"
+  local limits_json usage_json
+  limits_json=$(codex_rate_limits_json) || {
+    printf 'Usage unavailable - open ChatGPT Settings -> Usage.\n'
+    return 0
+  }
+  usage_json=$(codex_usage_json 2>/dev/null || printf '{}')
+  printf 'Codex usage\n'
+  printf '  Ordinary usage: %s\n' "$(printf '%s\n' "$limits_json" | jq -r 'if .ordinaryUsageAllowed == true then "allowed" elif .ordinaryUsageAllowed == false then "exhausted" else "unavailable" end')"
+  while IFS="$(printf '\t')" read -r kind limit_id window_name used_percent resets_at window_mins; do
+    case "$kind" in
+      limit)
+        printf '  Limit: %s\n' "$limit_id"
+        ;;
+      window)
+        printf '  %s: used %s%%' "$window_name" "$used_percent"
+        if [ "$resets_at" != "null" ]; then
+          printf ' | resets %s (%s)' "$(format_epoch_utc "$resets_at")" "$(format_time_until "$resets_at")"
+        fi
+        if [ "$window_mins" != "null" ]; then
+          printf ' | windowMins %s' "$window_mins"
+        fi
+        printf '\n'
+        ;;
+    esac
+  done <<EOF_USAGE_WINDOWS
+$(printf '%s\n' "$limits_json" | jq -r '
+    (.rateLimitsByLimitId // {"default": .rateLimits}) as $limits
+    | $limits
+    | to_entries[]
+    | . as $entry
+    | (["limit", $entry.key, "", "", "", ""] | @tsv),
+      (if $entry.value.primary == null then empty else ["window", $entry.key, "primary", ($entry.value.primary.usedPercent // "unavailable"), ($entry.value.primary.resetsAt // "null"), ($entry.value.primary.windowDurationMins // "null")] | @tsv end),
+      (if $entry.value.secondary == null then empty else ["window", $entry.key, "secondary", ($entry.value.secondary.usedPercent // "unavailable"), ($entry.value.secondary.resetsAt // "null"), ($entry.value.secondary.windowDurationMins // "null")] | @tsv end)
+  ')
+EOF_USAGE_WINDOWS
+  printf '  Reset credits: %s\n' "$(printf '%s\n' "$limits_json" | jq -r '.rateLimitResetCredits.availableCount // "unavailable"')"
+  printf '  Token usage summary: %s\n' "$(printf '%s\n' "$usage_json" | jq -r 'if .summary then (.summary | to_entries | map("\(.key)=\(.value // "null")") | join(", ")) else "unavailable" end')"
+  printf '  Last refresh: %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  printf '  Official details: ChatGPT Settings -> Usage\n'
+}
+
+print_permission_matrix() {
+  command -v jq >/dev/null 2>&1 || die "jq is required to inspect permission settings"
+  local active="none" claude_mode="default" provider_scope="standard"
+  if [ -f "$PDIR/.active" ]; then
+    active=$(tr -d '[:space:]' < "$PDIR/.active")
+  fi
+  if [ -f "$SETTINGS" ]; then
+    claude_mode=$(jq -r '.permissions.defaultMode // "default"' "$SETTINGS" 2>/dev/null || printf 'default')
+  fi
+  case "$claude_mode" in
+    default) claude_mode_label="default (Manual / ask)" ;;
+    plan) claude_mode_label="plan" ;;
+    acceptEdits) claude_mode_label="acceptEdits" ;;
+    dontAsk) claude_mode_label="dontAsk" ;;
+    auto) claude_mode_label="auto (Claude Code support is model/session dependent)" ;;
+    bypassPermissions) claude_mode_label="bypassPermissions" ;;
+    *) claude_mode_label="$claude_mode" ;;
+  esac
+  [ "$active" = "codex" ] && provider_scope="ccs codex bridge"
+
+  printf 'Permission and Auto semantics\n'
+  printf '  Active provider: %s\n' "$active"
+  printf '  Claude permission mode: %s\n' "$claude_mode_label"
+  printf '  Active scope: %s\n' "$provider_scope"
+  if [ "$active" = "codex" ]; then
+    printf '  Authority: Claude Code owns Bash, Read/Edit/Write, hooks, Claude-side MCP, tool results, and permission UI.\n'
+    printf '  Codex bridge sandbox: read-only (network disabled for turn sandbox)\n'
+    printf '  Codex bridge approval policy: never\n'
+    printf '  Codex bridge approval reviewer: user (Codex auto_review is not authoritative)\n'
+    printf '  Codex-side tool executor: disabled/fail-closed in bridge mode\n'
+    printf '  Claude Auto mode: only available when Claude Code itself accepts the active model/session; not inferred from Codex auto_review.\n'
+  else
+    printf '  Authority: Claude Code owns provider requests and its normal permission UI for this provider.\n'
+    printf '  Codex native controls: not active through ccs unless you run the official codex CLI directly.\n'
+  fi
+  printf '\nSupported choices\n'
+  printf '  Manual / ask:        fkt configure --yes --permission-mode manual\n'
+  printf '  Plan:                fkt configure --yes --permission-mode plan\n'
+  printf '  Accept edits:        fkt configure --yes --permission-mode acceptEdits\n'
+  printf '  Hard deny prompts:   fkt configure --yes --permission-mode dontAsk\n'
+  printf '  Claude Auto:         fkt configure --yes --permission-mode auto (only if Claude Code supports the active model/session)\n'
+  printf '  Native Codex Auto Review: use official codex CLI settings outside ccs codex; ccs codex will not let it approve Claude-owned operations.\n'
 }
 
 refresh_codex_model_discovery() {
@@ -273,7 +508,7 @@ codex_picker_status() {
   local provider_count settings_count pricing selected
   if [ -f "$PDIR/codex.json" ]; then
     provider_count=$(jq -r '(.modelPicker.options // []) | length' "$PDIR/codex.json" 2>/dev/null || printf '0')
-    selected=$(jq -r '.env.CODEX_GATEWAY_MODEL // .model // "unset"' "$PDIR/codex.json" 2>/dev/null || printf 'unset')
+    selected=$(sanitize_codex_display "$(jq -r '.env.CODEX_GATEWAY_MODEL // .model // "unset"' "$PDIR/codex.json" 2>/dev/null || printf 'unset')")
     printf 'Codex picker catalog: %s model(s) cached in providers/codex.json\n' "$provider_count"
     printf 'Codex selected model: %s\n' "$selected"
   fi
@@ -284,6 +519,7 @@ codex_picker_status() {
     printf 'Codex pricing estimate: %s\n' "$pricing"
   fi
   printf 'Codex gateway discovery: Claude Code keeps only raw /v1/models ids containing claude or anthropic; Codex ids use generated modelPicker rows.\n'
+  printf 'Codex bridge prompt forwarding: pending; promptless Claude Code requests fail closed instead of running Codex on system reminders.\n'
 }
 
 list_codex_models() {
@@ -306,6 +542,7 @@ list_codex_models() {
 
 set_codex_model() {
   local model="${1:-}" effort="${2:-medium}" tmp
+  model=$(sanitize_codex_display "$model")
   [ -n "$model" ] || die "codex-model requires a Codex model id (example: ccs codex-model gpt-5.5 medium)"
   case "$effort" in low|medium|high|xhigh|none) ;; *) die "reasoning effort must be one of: none, low, medium, high, xhigh" ;; esac
   ensure_provider_file codex
@@ -714,7 +951,7 @@ doctor() {
 }
 
 usage() {
-  printf 'usage: cc-provider [list|status|doctor|models|model <model> [effort]|use <provider>|auth <provider>|login <provider>|api <provider>|logout <provider>|codex-start|codex-stop|codex-status|codex-model <model> [effort]|<provider>]\n' >&2
+  printf 'usage: cc-provider [list|status|doctor|models|account|usage|permissions|model <model> [effort]|use <provider>|auth <provider>|login <provider>|api <provider>|logout <provider>|codex-start|codex-stop|codex-status|codex-model <model> [effort]|<provider>]\n' >&2
   printf '  list              list available providers\n' >&2
   printf '  status            print the active provider (default) and auth summary on stderr\n' >&2
   printf '  use <provider>    activate it (compatibility shorthand: cc-provider <provider>)\n' >&2
@@ -724,6 +961,9 @@ usage() {
   printf '  logout <provider> clear a local API key; codex/chatgpt delegates to codex logout\n' >&2
   printf '  doctor            check provider setup, safety merge and local gateway state\n' >&2
   printf '  models            list live Codex models from the local gateway catalog\n' >&2
+  printf '  account           show supported Codex account/auth details\n' >&2
+  printf '  usage             show supported Codex usage and rate-limit details\n' >&2
+  printf '  permissions       show Claude/Codex permission and Auto ownership\n' >&2
   printf '  model             set Codex model id and reasoning effort (alias: codex-model)\n' >&2
   printf '  codex-start       start the local Codex app-server gateway\n' >&2
   printf '  codex-stop        stop the local Codex app-server gateway\n' >&2
@@ -740,6 +980,9 @@ case "$cmd" in
   list)      [ "${2:-}" = "" ] || die "list accepts no provider argument"; list_providers ;;
   doctor)    [ "${2:-}" = "" ] || die "doctor accepts no provider argument"; doctor ;;
   models)    [ "${2:-}" = "" ] || die "models accepts no arguments"; list_codex_models ;;
+  account)   [ "${2:-}" = "" ] || die "account accepts no arguments"; print_codex_account ;;
+  usage)     [ "${2:-}" = "" ] || die "usage accepts no arguments"; print_codex_usage ;;
+  permissions) [ "${2:-}" = "" ] || die "permissions accepts no arguments"; print_permission_matrix ;;
   model)     set_codex_model "${2:-}" "${3:-medium}"; [ "${4:-}" = "" ] || die "model accepts at most model and effort" ;;
   codex-start) [ "${2:-}" = "" ] || die "codex-start accepts no arguments"; start_codex_gateway ;;
   codex-stop) [ "${2:-}" = "" ] || die "codex-stop accepts no arguments"; stop_codex_gateway ;;

@@ -16,7 +16,8 @@
 | [Skill context economy](skill-context-economy.md) | What the skill listing costs, how it was measured, the enforced budget |
 | [Codex skill parity](codex-skill-parity.md) | Static skill compatibility matrix and live-parity evidence boundaries for `ccs codex` |
 | [Codex mode parity](codex-mode-parity.md) | Permission and model-mode support boundaries for `ccs codex` |
-| [Codex session usage](codex-session-usage.md) | Session, monitor, and usage accounting boundaries for `ccs codex` |
+| [Codex prompt forwarding](codex-prompt-forwarding.md) | Current custom-endpoint prompt-forwarding evidence and the fail-closed boundary |
+| [Codex session usage](codex-session-usage.md) | Session, account, rate-limit, and usage accounting boundaries for `ccs codex` |
 | [Codex model switching](codex-model-switching.md) | Default model selection, generated `/model` rows, and switching limits for `ccs codex` |
 | [Codex continuation](codex-continuation.md) | Supported resume primitives and the current boundary for usage-limit continuation under `ccs codex` |
 | [Codex image generation](codex-image-generation.md) | Native ImageGen first, the unproven Claude Code gateway boundary, and the optional API-key fallback |

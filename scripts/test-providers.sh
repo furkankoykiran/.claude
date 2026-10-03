@@ -573,11 +573,142 @@ command = "example-mcp"
 enabled = true
 EOF_CODEX_CONFIG
 mkdir -p "$SANDBOX/scripts"
+FREE_CODEX_PORT=$(python3 -c "
+import socket
+s = socket.socket(); s.bind(('127.0.0.1', 0)); print(s.getsockname()[1]); s.close()")
+OVERRIDE_CODEX_PORT=$(python3 -c "
+import socket
+s = socket.socket(); s.bind(('127.0.0.1', 0)); print(s.getsockname()[1]); s.close()")
+for codex_provider_file in "$SANDBOX/providers/codex.json" "$SANDBOX/providers/codex.json.example"; do
+  [ -f "$codex_provider_file" ] || continue
+  tmp_codex_provider="$(mktemp "$SANDBOX/providers/.codex-port.XXXXXX")"
+  jq --arg port "$FREE_CODEX_PORT" '.env.CODEX_GATEWAY_PORT = $port' "$codex_provider_file" > "$tmp_codex_provider"
+  mv -f "$tmp_codex_provider" "$codex_provider_file"
+done
 
 codex_out=$(say codex)
 case "$codex_out" in
-  *"Codex gateway"*"port 4545"*) ok "codex starts or reuses its app-server gateway on activation" ;;
+  *"Codex gateway"*"port $FREE_CODEX_PORT"*) ok "codex starts or reuses its app-server gateway on activation" ;;
   *) bad "codex did not manage the app-server gateway: $codex_out" ;;
+esac
+if [ -f "$SANDBOX/state/codex-gateway.pid" ]; then
+  kill "$(cat "$SANDBOX/state/codex-gateway.pid")" 2>/dev/null || true
+  rm -f "$SANDBOX/state/codex-gateway.pid"
+fi
+FKT_TEST_CODEX_PORT="$FREE_CODEX_PORT" python3 - <<'PY' >/tmp/fkt-codex-unhealthy.log 2>&1 &
+import os
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(404)
+        self.end_headers()
+    def log_message(self, *_args):
+        pass
+
+HTTPServer(("127.0.0.1", int(os.environ["FKT_TEST_CODEX_PORT"])), Handler).serve_forever()
+PY
+UNHEALTHY_PID=$!
+sleep 1
+codex_blocked_status_out=$(say codex-status)
+codex_blocked_start_out=$(say codex-start)
+kill "$UNHEALTHY_PID" 2>/dev/null || true
+wait "$UNHEALTHY_PID" 2>/dev/null || true
+case "$codex_blocked_status_out" in
+  *"Codex gateway: blocked (port $FREE_CODEX_PORT occupied; /health unavailable)"*) ok "codex-status reports an occupied unhealthy gateway port as blocked" ;;
+  *) bad "codex-status did not report an occupied unhealthy gateway port: $codex_blocked_status_out" ;;
+esac
+case "$codex_blocked_start_out" in
+  *"port $FREE_CODEX_PORT is occupied but /health is not reachable"*) ok "codex-start refuses an occupied unhealthy gateway port" ;;
+  *) bad "codex-start did not refuse an occupied unhealthy gateway port: $codex_blocked_start_out" ;;
+esac
+FKT_TEST_CODEX_PORT="$OVERRIDE_CODEX_PORT" python3 - <<'PY' >/tmp/fkt-codex-env-health.log 2>&1 &
+import os
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == "/health":
+            body = b'{"ok":true,"provider":"codex-app-server","model":"gpt-5.5"}'
+            self.send_response(200)
+            self.send_header("content-type", "application/json")
+            self.send_header("content-length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        self.send_response(404)
+        self.end_headers()
+    def log_message(self, *_args):
+        pass
+
+HTTPServer(("127.0.0.1", int(os.environ["FKT_TEST_CODEX_PORT"])), Handler).serve_forever()
+PY
+ENV_HEALTH_PID=$!
+sleep 1
+codex_env_status_out=$(CODEX_GATEWAY_PORT="$OVERRIDE_CODEX_PORT" CODEX_CONFIG="$SANDBOX/codex-config.toml" CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" codex-status 2>&1 || true)
+kill "$ENV_HEALTH_PID" 2>/dev/null || true
+wait "$ENV_HEALTH_PID" 2>/dev/null || true
+case "$codex_env_status_out" in
+  *"Codex gateway: running (health, port $OVERRIDE_CODEX_PORT)"*) ok "CODEX_GATEWAY_PORT overrides the configured Codex gateway port" ;;
+  *) bad "CODEX_GATEWAY_PORT did not override the configured Codex gateway port: $codex_env_status_out" ;;
+esac
+FKT_TEST_CODEX_PORT="$FREE_CODEX_PORT" python3 - <<'PY' >/tmp/fkt-codex-health.log 2>&1 &
+import os
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == "/health":
+            body = b'{"ok":true,"provider":"codex-app-server","model":"gpt-5.5"}'
+        elif self.path == "/codex/account":
+            body = b'{"account":{"type":"chatgpt","email":"sample@example.com","planType":"plus"},"requiresOpenaiAuth":false}'
+        elif self.path == "/codex/rate-limits":
+            body = b'{"ordinaryUsageAllowed":true,"rateLimitResetCredits":{"availableCount":2,"credits":null},"rateLimits":{"limitId":"codex","primary":{"usedPercent":25,"resetsAt":1790940000,"windowDurationMins":300},"secondary":{"usedPercent":60,"resetsAt":1791200000,"windowDurationMins":10080}}}'
+        elif self.path == "/codex/usage":
+            body = b'{"summary":{"lifetimeTokens":12345,"peakDailyTokens":456,"longestRunningTurnSec":78,"currentStreakDays":3,"longestStreakDays":5},"dailyUsageBuckets":[{"startDate":"2026-10-02","tokens":123}]}'
+        else:
+            self.send_response(404)
+            self.end_headers()
+            return
+        if body:
+            self.send_response(200)
+            self.send_header("content-type", "application/json")
+            self.send_header("content-length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+    def log_message(self, *_args):
+        pass
+
+HTTPServer(("127.0.0.1", int(os.environ["FKT_TEST_CODEX_PORT"])), Handler).serve_forever()
+PY
+HEALTH_PID=$!
+sleep 1
+codex_status_out=$(say codex-status)
+codex_account_out=$(say account)
+codex_usage_out=$(say usage)
+codex_permissions_out=$(say permissions)
+kill "$HEALTH_PID" 2>/dev/null || true
+case "$codex_status_out" in
+  *"Codex gateway: running (health, port $FREE_CODEX_PORT)"*) ok "codex-status recognizes a live gateway even without a pidfile" ;;
+  *) bad "codex-status reported a live pidless gateway incorrectly: $codex_status_out" ;;
+esac
+case "$codex_account_out" in
+  *"Codex account"*"Status: signed in"*"Account: sa***@example.com"*"Plan: plus"*"Model: gpt-5.5"*) ok "ccs account formats supported Codex account RPC fields with redaction" ;;
+  *) bad "ccs account did not format supported account fields: $codex_account_out" ;;
+esac
+case "$codex_usage_out" in
+  *"Codex usage"*"Ordinary usage: allowed"*"primary: used 25%"*"secondary: used 60%"*"Reset credits: 2"*"lifetimeTokens=12345"*) ok "ccs usage formats supported Codex usage and rate-limit RPC fields" ;;
+  *) bad "ccs usage did not format supported usage fields: $codex_usage_out" ;;
+esac
+cache_mode=$(stat -c '%a' "$SANDBOX/state/codex-account-cache.json" 2>/dev/null || printf 'missing')
+case "$cache_mode" in
+  600) ok "Codex account cache is private" ;;
+  *) bad "Codex account cache mode is $cache_mode, expected 600" ;;
+esac
+case "$codex_permissions_out" in
+  *"Permission and Auto semantics"*"Active provider: codex"*"Authority: Claude Code owns Bash"*"Codex bridge sandbox: read-only"*"Codex bridge approval policy: never"*"Codex auto_review is not authoritative"*) ok "ccs permissions separates Claude authority from Codex sandbox and auto-review semantics" ;;
+  *) bad "ccs permissions did not report the Codex bridge permission boundary: $codex_permissions_out" ;;
 esac
 if grep -q "codex-mcp-headers-helper" "$SANDBOX/codex-config.toml"; then
   bad "codex activation left stale bridge MCP headers helpers in native Codex config"
@@ -593,6 +724,12 @@ codex_model_out=$(say codex-model gpt-5.5 medium)
 case "$codex_model_out" in
   *"Codex model set to gpt-5.5"*) ok "codex-model reports the selected Codex model" ;;
   *) bad "codex-model did not report the selected model: $codex_model_out" ;;
+esac
+codex_ansi_out=$(say codex-model 'gpt-5.5[1m' medium)
+case "$codex_ansi_out" in
+  *"[1m"*) bad "codex-model leaked an ANSI suffix into display output: $codex_ansi_out" ;;
+  *"Codex model set to gpt-5.5"*) ok "codex-model strips ANSI/control suffixes from display output" ;;
+  *) bad "codex-model did not report the sanitized model: $codex_ansi_out" ;;
 esac
 if [ "$(jq -r '.env.CODEX_GATEWAY_MODEL' "$SANDBOX/providers/codex.json")" = "gpt-5.5" ] \
    && [ "$(jq -r '.env.CODEX_GATEWAY_REASONING_EFFORT' "$SANDBOX/providers/codex.json")" = "medium" ]; then
@@ -635,7 +772,7 @@ case "$out" in
   *) bad "doctor did not check gateway state: $out" ;;
 esac
 case "$out" in
-  *"Codex picker catalog:"*"Claude /model Codex rows:"*"ids containing claude or anthropic"*) ok "doctor reports Codex picker and gateway-discovery state" ;;
+  *"Codex picker catalog:"*"Claude /model Codex rows:"*"ids containing claude or anthropic"*"promptless Claude Code requests fail closed"*) ok "doctor reports Codex picker, gateway-discovery, and bridge prompt-forwarding state" ;;
   *) bad "doctor did not report Codex picker state: $out" ;;
 esac
 case "$out" in

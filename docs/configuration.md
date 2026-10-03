@@ -29,6 +29,9 @@ ccs logout zai                   # clear a local provider API key
 ccs login codex                  # delegate to official codex login
 ccs codex-model gpt-5.5 medium   # choose the Codex model and reasoning effort
 ccs codex-status                 # print Codex gateway state and selected model
+ccs account                      # print supported Codex account/auth fields
+ccs usage                        # print supported Codex usage/rate-limit fields
+ccs permissions                  # print Claude/Codex permission and Auto ownership
 ccs doctor                       # check provider setup, safety merge and gateway state
 ```
 
@@ -42,7 +45,7 @@ and adds that directory to the user PATH.
 | `ccs <name>` | Endpoint | You need | Notes |
 | --- | --- | --- | --- |
 | `anthropic` | `api.anthropic.com` | `claude login` | No token in the file; uses your normal claude.ai auth |
-| `codex` | `127.0.0.1:4545` | `ccs login codex` + experimental local gateway | Routes Claude Code to the isolated Codex adapter. The 2026-09-30 live proof covered a GPT-5.5 Medium text and shell-tool round trip with Anthropic inference unavailable/observed, but it does not make the gateway non-experimental. |
+| `codex` | `127.0.0.1:4545` | `ccs login codex` + experimental local gateway | Routes Claude Code to the isolated Codex adapter. Current live proof covers gateway lifecycle, model catalog, account/usage RPCs, and fail-closed handling when Claude Code does not forward an actionable prompt. Text and tool parity remain experimental. |
 | `zai` | `api.z.ai/api/anthropic` | z.ai API key | GLM models. [Subscription link](https://z.ai/subscribe?ic=SNPFQIQ7BD) (my referral) |
 | `nvidia` | `127.0.0.1:4000` -> `build.nvidia.com` | NVIDIA API key + local gateway | Hosted NVIDIA catalog. [See below](#nvidia-nim) |
 | `nvidia-nim` | your NIM container | a NIM deployment | Self-hosted NIM, no gateway. [See below](#nvidia-nim) |
@@ -83,11 +86,15 @@ ccs codex-status
 
 `ccs codex-model <model> <effort>` accepts a Codex model id and one of `none`, `low`, `medium`, `high`, or `xhigh`. The example above sets `CODEX_GATEWAY_MODEL=gpt-5.5` and `CODEX_GATEWAY_REASONING_EFFORT=medium`. `ccs codex` switches Claude Code to the loopback provider and starts or reuses `scripts/codex-anthropic-gateway.ts`, which supervises `codex app-server --stdio` behind `127.0.0.1:4545`. `ccs codex-start`, `ccs codex-stop`, and `ccs codex-status` expose the same lifecycle without switching providers.
 
-`ccs models` reads the live Codex App Server catalog through the local gateway. Claude Code's raw gateway discovery only keeps `/v1/models` ids containing `claude` or `anthropic`, so Codex ids such as `gpt-5.5` are intentionally filtered by the client. When `ccs codex` activates the provider, it refreshes Claude Code's supported `modelPicker` rows from the live Codex catalog instead, using `behavesAs` for provider-specific model ids. `ccs codex-model` sets the default Codex model for Claude aliases and resumed sessions; if Claude Code sends an explicit Codex model id from the generated picker, the gateway honors that request for the turn. Local pricing estimates stay disabled because ChatGPT/Codex entitlement is not Anthropic API billing. Session usage surfaces have the same boundary: see [Codex session usage](codex-session-usage.md) before treating Claude Code usage data as billing or quota evidence. Model switching has its own boundary: see [Codex model switching](codex-model-switching.md) for what is live-proven and what remains unclaimed.
+`ccs models` reads the live Codex App Server catalog through the local gateway. Claude Code's raw gateway discovery only keeps `/v1/models` ids containing `claude` or `anthropic`, so Codex ids such as `gpt-5.5` are intentionally filtered by the client. When `ccs codex` activates the provider, it refreshes Claude Code's supported `modelPicker` rows from the live Codex catalog instead, using `behavesAs` for provider-specific model ids. `ccs codex-model` sets the default Codex model for Claude aliases and resumed sessions; if Claude Code sends an explicit Codex model id from the generated picker, the gateway honors that request for the turn.
+
+`ccs account` and `ccs usage` read only supported Codex App Server RPCs through the local gateway: `account/read`, `account/rateLimits/read`, and `account/usage/read`. The output redacts email addresses, labels unavailable fields as unavailable, and points users back to ChatGPT Settings -> Usage for the authoritative UI. The toolkit does not scrape ChatGPT pages, read browser cookies, copy OAuth tokens, or infer quota recovery from reset timestamps. Local pricing estimates stay disabled because ChatGPT/Codex entitlement is not Anthropic API billing. Session usage surfaces have the same boundary: see [Codex session usage](codex-session-usage.md) before treating Claude Code usage data as billing or quota evidence. Model switching has its own boundary: see [Codex model switching](codex-model-switching.md) for what is live-proven and what remains unclaimed.
 
 The current mode boundary is deliberately conservative. Manual mode and Plan mode are Claude Code client behavior and work through the Codex bridge. Auto mode is model-dependent in Claude Code; with the verified `gpt-5.5` setup, Claude Code reports Auto as unavailable for that model. Fast mode is an Opus 5 usage-credit feature and is not treated as a Codex capability.
 
-The live zero-Anthropic acceptance test proves a narrow boundary: with Anthropic inference unavailable/observed, Claude Code sent a text prompt and a shell-tool turn through the Codex gateway and received the expected result. It does not prove every Claude Code feature, every MCP server, every model, or production-grade availability. Treat the Codex app-server bridge as experimental until upstream stabilizes it.
+Use `ccs permissions` to inspect the layered authority model for the active provider. Under `ccs codex`, Claude Code remains the authority for Bash, file tools, hooks, Claude-side MCP, tool results, and the permission UI. The Codex bridge starts Codex turns with a read-only sandbox, `approvalPolicy=never`, and no authoritative Codex auto-review path. Native Codex sandbox and approval-reviewer settings, including Codex Auto Review, apply when you use the official Codex CLI directly; they do not silently approve operations that Claude Code is expected to review.
+
+Current live tests show a conservative boundary. The gateway starts, reports health, reads the Codex model catalog, and exposes supported Codex account/usage RPCs without copying ChatGPT credentials. It also refuses promptless Claude Code requests instead of running Codex on system reminders or turning failed tool calls into fake success. A supported Claude Code path that forwards the actual user turn to this custom provider is still required before claiming text, MCP, or tool parity. See [Codex prompt forwarding](codex-prompt-forwarding.md) for the current probes. Treat the Codex app-server bridge as experimental until that path is proven live.
 
 ### How it works
 
