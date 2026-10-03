@@ -332,8 +332,8 @@ function latestUserMessageText(messages: AnthropicMessage[]): string {
   for (let index = messages.length - 1; index >= 0; index -= 1) {
     const message = messages[index];
     if (message?.role === "user") {
-      const text = flattenContent(message.content);
-      if (isActionableUserText(text)) {
+      const text = forwardableMessageText(message);
+      if (text) {
         return text;
       }
     }
@@ -975,11 +975,21 @@ function flattenMessages(request: AnthropicMessagesRequest): Record<string, unkn
 }
 
 function forwardableMessageText(message: AnthropicMessage): string {
-  const text = flattenContent(message.content);
-  if (message.role === "user" && !isActionableUserText(text)) {
+  return message.role === "user" ? forwardableUserContentText(message.content) : flattenContent(message.content);
+}
+
+function forwardableUserContentText(content: AnthropicMessage["content"]): string {
+  if (typeof content === "string") {
+    return isActionableUserText(content) ? content : "";
+  }
+  const hasActionableText = content.some((block) => block.type === "text" && isActionableUserText(block.text));
+  if (!hasActionableText) {
     return "";
   }
-  return text;
+  return content
+    .map((block) => block.type === "text" && !isActionableUserText(block.text) ? "" : flattenContent([block]))
+    .filter(Boolean)
+    .join("\n");
 }
 
 function flattenContent(content: string | AnthropicContentBlock[]): string {
