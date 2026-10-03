@@ -32,7 +32,10 @@ chmod +x "$SANDBOX/bin/codex"
 cat > "$SANDBOX/bin/bun" <<'EOF'
 #!/usr/bin/env bash
 if [ "${1:-}" = "run" ] && [ "${3:-}" = "serve" ]; then
-  while :; do sleep 60; done
+  (while :; do sleep 60; done) &
+  child=$!
+  trap 'kill "$child" 2>/dev/null || true' TERM INT EXIT
+  wait "$child"
 fi
 exec /root/.bun/bin/bun "$@"
 EOF
@@ -41,6 +44,12 @@ export PATH="$SANDBOX/bin:$PATH"
 cp "$REPO_DIR"/providers/*.json.example "$SANDBOX/providers/"
 cp "$REPO_DIR"/providers/*.yaml.example "$SANDBOX/providers/" 2>/dev/null || true
 cp "$REPO_DIR/settings.base.json" "$SANDBOX/"
+INITIAL_CODEX_PORT=$(python3 -c "
+import socket
+s = socket.socket(); s.bind(('127.0.0.1', 0)); print(s.getsockname()[1]); s.close()")
+tmp_codex_provider="$(mktemp "$SANDBOX/providers/.codex-port.XXXXXX")"
+jq --arg port "$INITIAL_CODEX_PORT" '.env.CODEX_GATEWAY_PORT = $port' "$SANDBOX/providers/codex.json.example" > "$tmp_codex_provider"
+mv -f "$tmp_codex_provider" "$SANDBOX/providers/codex.json.example"
 
 ccs() { CODEX_CONFIG="$SANDBOX/codex-config.toml" CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "$@"; }
 # Merged stdout+stderr as a string. Captured rather than piped: under `set -o
@@ -592,8 +601,32 @@ case "$codex_out" in
   *) bad "codex did not manage the app-server gateway: $codex_out" ;;
 esac
 if [ -f "$SANDBOX/state/codex-gateway.pid" ]; then
-  kill "$(cat "$SANDBOX/state/codex-gateway.pid")" 2>/dev/null || true
-  rm -f "$SANDBOX/state/codex-gateway.pid"
+  CODEX_PID=$(cat "$SANDBOX/state/codex-gateway.pid")
+  CODEX_CHILDREN=$(pgrep -P "$CODEX_PID" 2>/dev/null || true)
+  ccs anthropic >/dev/null 2>&1 || true
+  if ! kill -0 "$CODEX_PID" 2>/dev/null; then
+    ok "ccs anthropic stops the toolkit-owned Codex gateway pid"
+  else
+    bad "ccs anthropic left Codex gateway pid $CODEX_PID running"
+  fi
+  children_alive=0
+  for child in $CODEX_CHILDREN; do
+    if kill -0 "$child" 2>/dev/null; then
+      children_alive=1
+    fi
+  done
+  if [ "$children_alive" = 0 ]; then
+    ok "ccs anthropic stops Codex gateway descendants"
+  else
+    bad "ccs anthropic left Codex gateway descendant(s) running: $CODEX_CHILDREN"
+  fi
+  if [ ! -f "$SANDBOX/state/codex-gateway.pid" ] && [ ! -f "$SANDBOX/state/codex-gateway.meta" ]; then
+    ok "ccs anthropic clears Codex gateway ownership files"
+  else
+    bad "ccs anthropic left Codex gateway ownership files behind"
+  fi
+else
+  bad "codex activation did not write a gateway pidfile"
 fi
 FKT_TEST_CODEX_PORT="$FREE_CODEX_PORT" python3 - <<'PY' >/tmp/fkt-codex-unhealthy.log 2>&1 &
 import os
@@ -652,6 +685,15 @@ case "$codex_env_status_out" in
   *"Codex gateway: running (health, port $OVERRIDE_CODEX_PORT)"*) ok "CODEX_GATEWAY_PORT overrides the configured Codex gateway port" ;;
   *) bad "CODEX_GATEWAY_PORT did not override the configured Codex gateway port: $codex_env_status_out" ;;
 esac
+codex_reactivate_out=$(say codex)
+case "$codex_reactivate_out" in
+  *"Active provider: codex"*"Codex gateway"*"port $FREE_CODEX_PORT"*) ok "ccs codex starts a fresh gateway after anthropic cleanup" ;;
+  *) bad "ccs codex did not restart a fresh gateway after anthropic cleanup: $codex_reactivate_out" ;;
+esac
+if [ -f "$SANDBOX/state/codex-gateway.pid" ]; then
+  kill "$(cat "$SANDBOX/state/codex-gateway.pid")" 2>/dev/null || true
+  rm -f "$SANDBOX/state/codex-gateway.pid" "$SANDBOX/state/codex-gateway.meta"
+fi
 FKT_TEST_CODEX_PORT="$FREE_CODEX_PORT" python3 - <<'PY' >/tmp/fkt-codex-health.log 2>&1 &
 import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -689,10 +731,59 @@ codex_account_out=$(say account)
 codex_usage_out=$(say usage)
 codex_permissions_out=$(say permissions)
 kill "$HEALTH_PID" 2>/dev/null || true
+wait "$HEALTH_PID" 2>/dev/null || true
 case "$codex_status_out" in
   *"Codex gateway: running (health, port $FREE_CODEX_PORT)"*) ok "codex-status recognizes a live gateway even without a pidfile" ;;
   *) bad "codex-status reported a live pidless gateway incorrectly: $codex_status_out" ;;
 esac
+case "$codex_account_out" in
+  *"already serving /health but is not a valid toolkit-owned gateway"*) ok "ccs account refuses a pidless Codex /health listener" ;;
+  *) bad "ccs account trusted a pidless Codex gateway: $codex_account_out" ;;
+esac
+case "$codex_usage_out" in
+  *"already serving /health but is not a valid toolkit-owned gateway"*) ok "ccs usage refuses a pidless Codex /health listener" ;;
+  *) bad "ccs usage trusted a pidless Codex gateway: $codex_usage_out" ;;
+esac
+FKT_TEST_CODEX_PORT="$FREE_CODEX_PORT" bash -c '
+  python3 - <<PY
+import os
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == "/health":
+            body = b"{\"ok\":true,\"provider\":\"codex-app-server\",\"model\":\"gpt-5.5\"}"
+        elif self.path == "/codex/account":
+            body = b"{\"account\":{\"type\":\"chatgpt\",\"email\":\"sample@example.com\",\"planType\":\"plus\"},\"requiresOpenaiAuth\":false}"
+        elif self.path == "/codex/rate-limits":
+            body = b"{\"ordinaryUsageAllowed\":true,\"rateLimitResetCredits\":{\"availableCount\":2,\"credits\":null},\"rateLimits\":{\"limitId\":\"codex\",\"primary\":{\"usedPercent\":25,\"resetsAt\":1790940000,\"windowDurationMins\":300},\"secondary\":{\"usedPercent\":60,\"resetsAt\":1791200000,\"windowDurationMins\":10080}}}"
+        elif self.path == "/codex/usage":
+            body = b"{\"summary\":{\"lifetimeTokens\":12345,\"peakDailyTokens\":456,\"longestRunningTurnSec\":78,\"currentStreakDays\":3,\"longestStreakDays\":5},\"dailyUsageBuckets\":[{\"startDate\":\"2026-10-02\",\"tokens\":123}]}"
+        else:
+            self.send_response(404)
+            self.end_headers()
+            return
+        self.send_response(200)
+        self.send_header("content-type", "application/json")
+        self.send_header("content-length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+    def log_message(self, *_args):
+        pass
+
+HTTPServer(("127.0.0.1", int(os.environ["FKT_TEST_CODEX_PORT"])), Handler).serve_forever()
+PY
+' "bun run $SANDBOX/scripts/codex-anthropic-gateway.ts" "serve" >/tmp/fkt-codex-owned-health.log 2>&1 &
+OWNED_HEALTH_PID=$!
+printf '%s\n' "$OWNED_HEALTH_PID" > "$SANDBOX/state/codex-gateway.pid"
+printf 'port=%s\nmodel=%s\neffort=%s\nsource=missing:%s/scripts/codex-anthropic-gateway.ts\n' \
+  "$FREE_CODEX_PORT" "gpt-5.5" "medium" "$SANDBOX" > "$SANDBOX/state/codex-gateway.meta"
+sleep 1
+codex_account_out=$(say account)
+codex_usage_out=$(say usage)
+kill "$OWNED_HEALTH_PID" 2>/dev/null || true
+wait "$OWNED_HEALTH_PID" 2>/dev/null || true
+rm -f "$SANDBOX/state/codex-gateway.pid" "$SANDBOX/state/codex-gateway.meta"
 case "$codex_account_out" in
   *"Codex account"*"Status: signed in"*"Account: sa***@example.com"*"Plan: plus"*"Model: gpt-5.5"*) ok "ccs account formats supported Codex account RPC fields with redaction" ;;
   *) bad "ccs account did not format supported account fields: $codex_account_out" ;;

@@ -32,6 +32,7 @@ SETTINGS="$CLAUDE_DIR/settings.json"
 BASE_SETTINGS="$CLAUDE_DIR/settings.base.json"
 CODEX_GATEWAY_PID="$CLAUDE_DIR/state/codex-gateway.pid"
 CODEX_GATEWAY_LOG="$CLAUDE_DIR/state/codex-gateway.log"
+CODEX_GATEWAY_META="$CLAUDE_DIR/state/codex-gateway.meta"
 CODEX_ACCOUNT_CACHE="$CLAUDE_DIR/state/codex-account-cache.json"
 CODEX_CONFIG="${CODEX_CONFIG:-$HOME/.codex/config.toml}"
 PLACEHOLDER_RE='<[A-Z_]+>'
@@ -105,6 +106,51 @@ codex_gateway_running() {
   kill -0 "$pid" 2>/dev/null
 }
 
+codex_gateway_source_hash() {
+  local script="$CLAUDE_DIR/scripts/codex-anthropic-gateway.ts"
+  if [ ! -f "$script" ]; then
+    printf 'missing:%s\n' "$script"
+    return 0
+  fi
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$script" 2>/dev/null | awk '{print $1}'
+  elif command -v shasum >/dev/null 2>&1; then
+    shasum -a 256 "$script" 2>/dev/null | awk '{print $1}'
+  else
+    cksum "$script" 2>/dev/null | awk '{print $1 "-" $2}'
+  fi
+}
+
+codex_gateway_signature() {
+  printf 'port=%s\nmodel=%s\neffort=%s\nsource=%s\n' \
+    "$(codex_gateway_port)" \
+    "$(sanitize_codex_display "$(jq -r '.env.CODEX_GATEWAY_MODEL // empty' "$PDIR/codex.json" 2>/dev/null || true)")" \
+    "$(jq -r '.env.CODEX_GATEWAY_REASONING_EFFORT // empty' "$PDIR/codex.json" 2>/dev/null || true)" \
+    "$(codex_gateway_source_hash)"
+}
+
+codex_gateway_owned_pid() {
+  local pid="$1" cmd
+  [ -n "$pid" ] || return 1
+  kill -0 "$pid" 2>/dev/null || return 1
+  cmd=$(ps -p "$pid" -o args= 2>/dev/null || true)
+  case "$cmd" in
+    *"codex-anthropic-gateway.ts"*"serve"*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+codex_gateway_valid() {
+  codex_gateway_running || return 1
+  local pid expected actual
+  pid=$(cat "$CODEX_GATEWAY_PID" 2>/dev/null || true)
+  codex_gateway_owned_pid "$pid" || return 1
+  [ -f "$CODEX_GATEWAY_META" ] || return 1
+  expected=$(codex_gateway_signature)
+  actual=$(cat "$CODEX_GATEWAY_META" 2>/dev/null || true)
+  [ "$actual" = "$expected" ]
+}
+
 codex_gateway_health_running() {
   command -v curl >/dev/null 2>&1 || return 1
   curl -fsS --max-time 1 "http://127.0.0.1:$(codex_gateway_port)/health" >/dev/null 2>&1
@@ -118,7 +164,27 @@ codex_gateway_port_listening() {
 }
 
 codex_gateway_available() {
-  codex_gateway_running || codex_gateway_health_running
+  codex_gateway_valid
+}
+
+codex_gateway_descendants() {
+  local parent="$1" child
+  command -v pgrep >/dev/null 2>&1 || return 0
+  for child in $(pgrep -P "$parent" 2>/dev/null || true); do
+    printf '%s\n' "$child"
+    codex_gateway_descendants "$child"
+  done
+}
+
+kill_codex_gateway_descendants() {
+  local signal="$1" descendants="$2" descendant
+  [ -n "$descendants" ] || return 0
+  while IFS= read -r descendant; do
+    [ -n "$descendant" ] || continue
+    kill "$signal" "$descendant" 2>/dev/null || true
+  done <<EOF_DESCENDANTS
+$descendants
+EOF_DESCENDANTS
 }
 
 scrub_codex_bridge_mcp_config() {
@@ -191,13 +257,16 @@ start_codex_gateway() {
   command -v codex >/dev/null 2>&1 || die "codex CLI is required; install it and run: ccs login codex"
   mkdir -p "$(dirname "$CODEX_GATEWAY_PID")"
   scrub_codex_bridge_mcp_config
-  if codex_gateway_running; then
+  if codex_gateway_valid; then
     printf 'Codex gateway already running (pid %s, port %s).\n' "$(cat "$CODEX_GATEWAY_PID")" "$(codex_gateway_port)"
     return 0
   fi
+  if codex_gateway_running; then
+    printf 'Codex gateway pid %s is obsolete; restarting.\n' "$(cat "$CODEX_GATEWAY_PID")"
+    stop_codex_gateway >/dev/null 2>&1 || true
+  fi
   if codex_gateway_health_running; then
-    printf 'Codex gateway already running (health, port %s).\n' "$(codex_gateway_port)"
-    return 0
+    die "Codex gateway port $(codex_gateway_port) is already serving /health but is not a valid toolkit-owned gateway; stop it or choose another CODEX_GATEWAY_PORT"
   fi
   local port model effort
   port=$(codex_gateway_port)
@@ -214,31 +283,60 @@ start_codex_gateway() {
       nohup bun run "$CLAUDE_DIR/scripts/codex-anthropic-gateway.ts" serve >"$CODEX_GATEWAY_LOG" 2>&1 &
   fi
   printf '%s\n' "$!" > "$CODEX_GATEWAY_PID"
+  codex_gateway_signature > "$CODEX_GATEWAY_META"
   sleep 1
-  if codex_gateway_running; then
+  if codex_gateway_valid; then
     printf 'Codex gateway started (pid %s, port %s, model %s, effort %s).\n' "$(cat "$CODEX_GATEWAY_PID")" "$port" "${model:-unset}" "${effort:-default}"
   else
     rm -f "$CODEX_GATEWAY_PID"
+    rm -f "$CODEX_GATEWAY_META"
     die "Codex gateway failed to start; see $CODEX_GATEWAY_LOG"
   fi
 }
 
 stop_codex_gateway() {
   if ! codex_gateway_running; then
-    rm -f "$CODEX_GATEWAY_PID"
+    rm -f "$CODEX_GATEWAY_PID" "$CODEX_GATEWAY_META"
     printf 'Codex gateway is not running.\n'
     return 0
   fi
-  local pid
+  local pid pgid descendants
   pid=$(cat "$CODEX_GATEWAY_PID")
-  kill "$pid" 2>/dev/null || true
-  rm -f "$CODEX_GATEWAY_PID"
+  if ! codex_gateway_owned_pid "$pid"; then
+    rm -f "$CODEX_GATEWAY_PID" "$CODEX_GATEWAY_META"
+    printf 'Codex gateway pidfile did not point at a toolkit-owned gateway (pid %s); left process untouched.\n' "$pid"
+    return 0
+  fi
+  pgid=$(ps -o pgid= -p "$pid" 2>/dev/null | tr -d ' ' || true)
+  descendants=$(codex_gateway_descendants "$pid" | sort -rn || true)
+  if [ "$pgid" = "$pid" ]; then
+    kill -TERM -- "-$pid" 2>/dev/null || true
+  else
+    kill_codex_gateway_descendants -TERM "$descendants"
+    kill "$pid" 2>/dev/null || true
+  fi
+  local _wait
+  for _wait in 1 2 3 4 5; do
+    kill -0 "$pid" 2>/dev/null || break
+    sleep 0.2
+  done
+  if kill -0 "$pid" 2>/dev/null; then
+    if [ "$pgid" = "$pid" ]; then
+      kill -KILL -- "-$pid" 2>/dev/null || true
+    else
+      kill_codex_gateway_descendants -KILL "$descendants"
+      kill -KILL "$pid" 2>/dev/null || true
+    fi
+  fi
+  rm -f "$CODEX_GATEWAY_PID" "$CODEX_GATEWAY_META"
   printf 'Codex gateway stopped (pid %s).\n' "$pid"
 }
 
 status_codex_gateway() {
-  if codex_gateway_running; then
+  if codex_gateway_valid; then
     printf 'Codex gateway: running (pid %s, port %s)\n' "$(cat "$CODEX_GATEWAY_PID")" "$(codex_gateway_port)"
+  elif codex_gateway_running; then
+    printf 'Codex gateway: obsolete (pid %s, port %s)\n' "$(cat "$CODEX_GATEWAY_PID")" "$(codex_gateway_port)"
   elif codex_gateway_health_running; then
     printf 'Codex gateway: running (health, port %s)\n' "$(codex_gateway_port)"
   elif codex_gateway_port_listening; then
@@ -866,6 +964,7 @@ activate() {
       die "failed to refresh Codex model discovery settings; settings.json is unchanged"
     fi
   else
+    stop_codex_gateway >/dev/null 2>&1 || true
     warn_if_local_endpoint_down "$p"
   fi
   printf 'Restart Claude Code for the change to take effect (env is read at startup).\n'
