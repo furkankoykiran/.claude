@@ -701,6 +701,11 @@ case "$codex_usage_out" in
   *"Codex usage"*"Ordinary usage: allowed"*"primary: used 25%"*"secondary: used 60%"*"Reset credits: 2"*"lifetimeTokens=12345"*) ok "ccs usage formats supported Codex usage and rate-limit RPC fields" ;;
   *) bad "ccs usage did not format supported usage fields: $codex_usage_out" ;;
 esac
+cache_mode=$(stat -c '%a' "$SANDBOX/state/codex-account-cache.json" 2>/dev/null || printf 'missing')
+case "$cache_mode" in
+  600) ok "Codex account cache is private" ;;
+  *) bad "Codex account cache mode is $cache_mode, expected 600" ;;
+esac
 case "$codex_permissions_out" in
   *"Permission and Auto semantics"*"Active provider: codex"*"Authority: Claude Code owns Bash"*"Codex bridge sandbox: read-only"*"Codex bridge approval policy: never"*"Codex auto_review is not authoritative"*) ok "ccs permissions separates Claude authority from Codex sandbox and auto-review semantics" ;;
   *) bad "ccs permissions did not report the Codex bridge permission boundary: $codex_permissions_out" ;;

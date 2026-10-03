@@ -286,12 +286,16 @@ codex_gateway_json() {
   json=$(curl -fsS "$url") || die "failed to query Codex account data at $url"
   if [ -n "$cache_key" ] && command -v jq >/dev/null 2>&1; then
     local tmp
-    [ -f "$CODEX_ACCOUNT_CACHE" ] || printf '{}\n' > "$CODEX_ACCOUNT_CACHE"
+    if [ ! -f "$CODEX_ACCOUNT_CACHE" ]; then
+      printf '{}\n' > "$CODEX_ACCOUNT_CACHE"
+      chmod 600 "$CODEX_ACCOUNT_CACHE" 2>/dev/null || true
+    fi
     tmp="$(mktemp "$CLAUDE_DIR/state/.codex-account-cache.XXXXXX")"
+    chmod 600 "$tmp" 2>/dev/null || true
     jq -n --arg key "$cache_key" --argjson now "$now" --argjson data "$json" --slurpfile old "$CODEX_ACCOUNT_CACHE" '
       (($old[0] // {}) | if type == "object" then . else {} end)
       | .[$key] = {ts: $now, data: $data}
-    ' > "$tmp" 2>/dev/null && mv -f "$tmp" "$CODEX_ACCOUNT_CACHE" || rm -f "$tmp"
+    ' > "$tmp" 2>/dev/null && mv -f "$tmp" "$CODEX_ACCOUNT_CACHE" && chmod 600 "$CODEX_ACCOUNT_CACHE" 2>/dev/null || rm -f "$tmp"
   fi
   printf '%s\n' "$json"
 }
