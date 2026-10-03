@@ -292,10 +292,15 @@ codex_gateway_json() {
     fi
     tmp="$(mktemp "$CLAUDE_DIR/state/.codex-account-cache.XXXXXX")"
     chmod 600 "$tmp" 2>/dev/null || true
-    jq -n --arg key "$cache_key" --argjson now "$now" --argjson data "$json" --slurpfile old "$CODEX_ACCOUNT_CACHE" '
+    if jq -n --arg key "$cache_key" --argjson now "$now" --argjson data "$json" --slurpfile old "$CODEX_ACCOUNT_CACHE" '
       (($old[0] // {}) | if type == "object" then . else {} end)
       | .[$key] = {ts: $now, data: $data}
-    ' > "$tmp" 2>/dev/null && mv -f "$tmp" "$CODEX_ACCOUNT_CACHE" && chmod 600 "$CODEX_ACCOUNT_CACHE" 2>/dev/null || rm -f "$tmp"
+    ' > "$tmp" 2>/dev/null; then
+      mv -f "$tmp" "$CODEX_ACCOUNT_CACHE"
+      chmod 600 "$CODEX_ACCOUNT_CACHE" 2>/dev/null || true
+    else
+      rm -f "$tmp"
+    fi
   fi
   printf '%s\n' "$json"
 }
