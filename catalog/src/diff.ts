@@ -17,11 +17,9 @@ import {
 export type ChangeKind = "added" | "updated" | "removed" | "renamed";
 
 /**
- * More changed entries than this in a single diff is treated as a mass change
- * and forces manual review regardless of per-skill classification. A routine
- * daily upstream bump touches a handful of skills; a batch this large means a
- * source restructured, a selection changed, or a resolver bug — always worth a
- * human look before it auto-merges.
+ * More changed entries than this in a single diff is surfaced as a mass change.
+ * It is evidence, not a blocker by itself: provenance, digest, license,
+ * generated-output determinism and tests decide whether the batch is safe.
  *
  * Not applied when there is no base catalog (the bootstrap diff legitimately
  * reports every skill as added).
@@ -149,15 +147,12 @@ export function changedPolicyFields(prev: CatalogSkillEntry, cur: CatalogSkillEn
 }
 
 /**
- * Capabilities severe enough that ANY content change to a skill already
- * carrying one deserves human eyes.
+ * Capabilities severe enough to show prominently in review evidence.
  *
- * Boolean escalation alone is not sufficient: a skill that already ships an
- * executable, hooks, MCP config, an agent or a credential reference can have
- * its body rewritten entirely without any capability going false -> true, and
- * that rewrite would classify as routine. Restricting this to the severe
- * capabilities keeps the noise bounded (14 of 141 catalog skills today) while
- * closing the rewrite path on exactly the skills where it matters.
+ * Existing capabilities are not blockers on their own. The gate blocks when a
+ * sensitive capability is newly introduced or widened, while routine upstream
+ * rewrites still pass through provenance, digest, license, generated-output and
+ * test validation before auto-merge can happen.
  */
 export const HIGH_RISK_CAPABILITIES: ReadonlyArray<{ name: string; read: (p: SecurityProfile) => boolean }> = [
   { name: "credential-reference", read: (p) => p.hasCredentialRef },
@@ -221,7 +216,6 @@ function reviewReasonsFor(
   cur: CatalogSkillEntry | undefined,
   prev: CatalogSkillEntry | undefined,
   kind: ChangeKind,
-  contentChanged = false,
 ): string[] {
   if (kind === "removed") return ["skill-removed"];
   if (kind === "renamed") return ["skill-renamed"];
@@ -235,15 +229,6 @@ function reviewReasonsFor(
   const reasons = capabilityEscalations(previousSecurityProfile(prev), cur.security).map(
     (c) => `capability-introduced:${c}`,
   );
-
-  // A body rewrite of a skill that ALREADY carries severe capability needs a
-  // human. No capability goes false -> true in that case, so escalation alone
-  // would call it routine.
-  if (contentChanged) {
-    for (const c of highRiskCapabilities(cur.security)) {
-      reasons.push(`content-changed-with-capability:${c}`);
-    }
-  }
 
   // A companion file appearing or disappearing beside SKILL.md changes the
   // profile flags without changing the digest.
@@ -310,7 +295,7 @@ export function diffCatalogs(current: Catalog, base: Catalog | null, baseName: s
     const policyFields = changedPolicyFields(prev, cur);
     const securityChanged = securityProfileChanged(prev, cur);
     if (contentChanged || policyFields.length > 0 || securityChanged) {
-      const reasons = reviewReasonsFor(cur, prev, "updated", contentChanged);
+      const reasons = reviewReasonsFor(cur, prev, "updated");
       const detail = contentChanged
         ? `digest ${prev.digest.slice(0, 10)} -> ${cur.digest.slice(0, 10)}`
         : `metadata-only change (digest unchanged): ${[...policyFields, ...(securityChanged ? ["security"] : [])].join(", ")}`;
@@ -376,11 +361,10 @@ export function diffCatalogs(current: Catalog, base: Catalog | null, baseName: s
 
   changes.sort((a, b) => a.key.localeCompare(b.key));
 
-  // A mass change forces review on its own. Not applied to the bootstrap diff
-  // (no base), where "every skill is added" is the expected, correct answer.
+  // A mass change is evidence only. Not applied to the bootstrap diff (no
+  // base), where "every skill is added" is the expected, correct answer.
   const massChange = base !== null && changes.length > MASS_CHANGE_THRESHOLD;
   const reviewReasons = [...new Set(changes.flatMap((c) => c.reasons))].sort();
-  if (massChange) reviewReasons.push(`mass-change:${changes.length}>${MASS_CHANGE_THRESHOLD}`);
 
   const summary = {
     added: changes.filter((c) => c.kind === "added").length,
@@ -390,7 +374,7 @@ export function diffCatalogs(current: Catalog, base: Catalog | null, baseName: s
     licenseRestricted,
     runtimeOnly,
     securitySensitive: changes.filter((c) => c.securitySensitive).length,
-    manualReviewRequired: massChange || changes.some((c) => c.manualReviewRequired),
+    manualReviewRequired: changes.some((c) => c.manualReviewRequired),
     massChange,
     reviewReasons,
   };

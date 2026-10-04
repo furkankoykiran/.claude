@@ -150,9 +150,9 @@ describe("changedPolicyFields", () => {
 describe("reviewer findings: rewrite and companion-file gaps", () => {
   const withFlags = (o: Partial<SecurityProfile>, flags: string[]) => S({ ...o, flags });
 
-  it("a body REWRITE of a skill already carrying severe capability requires review", () => {
-    // No capability goes false -> true, so boolean escalation alone calls this
-    // routine. The content changed on a skill that already ships an executable.
+  it("a body rewrite of a skill already carrying severe capability stays routine when the surface does not widen", () => {
+    // The diff still exposes the rewrite, but existing capability alone is not
+    // a blocker after provenance, digest, license and generated output pass.
     const prof = withFlags({ hasExecutable: true, hasBashOrPowershell: true }, ["executables:1"]);
     const d = diffCatalogs(
       cat([sk({ digest: "b".repeat(64), security: prof })]),
@@ -160,8 +160,8 @@ describe("reviewer findings: rewrite and companion-file gaps", () => {
       "base",
     );
     expect(d.summary.updated).toBe(1);
-    expect(d.summary.manualReviewRequired).toBe(true);
-    expect(d.changes[0]!.reasons.join(",")).toContain("content-changed-with-capability:executable/binary");
+    expect(d.summary.manualReviewRequired).toBe(false);
+    expect(d.changes[0]!.reasons).toEqual([]);
   });
 
   for (const [label, prof] of [
@@ -170,13 +170,14 @@ describe("reviewer findings: rewrite and companion-file gaps", () => {
     ["mcp/lsp", S({ hasMcpOrLsp: true })],
     ["agents", S({ hasAgents: true })],
   ] as Array<[string, SecurityProfile]>) {
-    it(`a body rewrite of a skill carrying ${label} requires review`, () => {
+    it(`a body rewrite of a skill carrying ${label} stays routine when the surface does not widen`, () => {
       const d = diffCatalogs(
         cat([sk({ digest: "b".repeat(64), security: prof })]),
         cat([sk({ digest: "a".repeat(64), security: prof })]),
         "base",
       );
-      expect(d.summary.manualReviewRequired).toBe(true);
+      expect(d.summary.manualReviewRequired).toBe(false);
+      expect(d.changes[0]!.reasons).toEqual([]);
     });
   }
 

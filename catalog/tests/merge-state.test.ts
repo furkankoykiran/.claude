@@ -31,7 +31,7 @@ const stepScript = (name: string): string => {
 
 const RESET = stepScript("Reset PR merge state (fail-closed)");
 const AUTOMERGE = stepScript("Enable protected squash auto-merge (routine change)");
-const FLAG = stepScript("Flag PR for manual review");
+const REJECT = stepScript("Reject blocked update");
 
 const PUSHED = "cafe1234cafe1234cafe1234cafe1234cafe1234";
 
@@ -72,7 +72,7 @@ function makeStub(o: StubOpts): { bin: string; calls: () => string[] } {
       labels: (r.labels ?? []).map((n) => ({ name: n })),
     })),
     fail: o.fail ?? [],
-    labelsAfterAdd: o.labelsAfterAdd ?? ["manual-review-required"],
+    labelsAfterAdd: o.labelsAfterAdd ?? ["automation-blocked"],
   }));
   writeFileSync(counter, "0");
 
@@ -86,8 +86,8 @@ for pat in $(jq -r '.fail[]' "$CFG"); do
   fi
 done
 # \`gh pr view --json labels\` (label read-back after an add)
-if printf '%s' "$*" | grep -q 'pr view' && printf '%s' "$*" | grep -q 'index("manual-review-required")'; then
-  jq -r '[.labelsAfterAdd[]] | index("manual-review-required") != null' "$CFG"
+if printf '%s' "$*" | grep -q 'pr view' && printf '%s' "$*" | grep -q 'index("automation-blocked")'; then
+  jq -r '[.labelsAfterAdd[]] | index("automation-blocked") != null' "$CFG"
   exit 0
 fi
 # \`gh pr view --json autoMergeRequest --jq ...\` (post-enable verification)
@@ -247,16 +247,17 @@ describe("merge-state reset: stale policy labels", () => {
 });
 
 describe("policy transitions on the reused PR", () => {
-  it("routine -> manual-review: the inherited auto-merge is cancelled first", () => {
+  it("routine -> blocked: the inherited auto-merge is cancelled first", () => {
     // Run N enabled auto-merge; run N+1 classifies the same PR as sensitive.
     const stub = makeStub({ reads: [{ autoMergeMethod: "SQUASH" }, { autoMergeMethod: null }] });
     const reset = runScript(RESET, stub, { ...resetEnv, MANUAL_REVIEW: "true" });
     expect(reset.code).toBe(0);
     expect(stub.calls().some((c) => c.includes("--disable-auto"))).toBe(true);
 
-    // The manual-review branch never re-enables it.
-    const flag = runScript(FLAG, stub, { PR_NUMBER: "26" });
-    expect(flag.code).toBe(0);
+    // The blocked branch rejects and never re-enables it.
+    const reject = runScript(REJECT, stub, { PR_NUMBER: "26" });
+    expect(reject.code).not.toBe(0);
+    expect(stub.calls().some((c) => c.includes("pr close 26"))).toBe(true);
     expect(stub.calls().some((c) => c.includes("--squash --auto"))).toBe(false);
   });
 
@@ -269,14 +270,14 @@ describe("policy transitions on the reused PR", () => {
 
   it("label assignment failure fails closed and never merges", () => {
     const stub = makeStub({ reads: [{ autoMergeMethod: null }], fail: ["--add-label"] });
-    const r = runScript(FLAG, stub, { PR_NUMBER: "26" });
+    const r = runScript(REJECT, stub, { PR_NUMBER: "26" });
     expect(r.code).not.toBe(0);
     expect(stub.calls().some((c) => c.includes("--squash --auto"))).toBe(false);
   });
 
   it("label that silently does not stick fails closed", () => {
     const stub = makeStub({ reads: [{ autoMergeMethod: null }], labelsAfterAdd: [] });
-    const r = runScript(FLAG, stub, { PR_NUMBER: "26" });
+    const r = runScript(REJECT, stub, { PR_NUMBER: "26" });
     expect(r.code).not.toBe(0);
     expect(r.stdout + r.stderr).toContain("was not present on PR");
   });

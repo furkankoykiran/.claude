@@ -21,13 +21,13 @@ export function renderChangeSummary(d: DiffReport, limit = 40): string {
   L.push("");
   L.push(
     s.manualReviewRequired
-      ? `> **Manual review required.** This PR will NOT auto-merge.`
+      ? `> **Blocked update.** This change widens a sensitive surface and will NOT auto-merge.`
       : `> Routine change. Eligible for squash auto-merge once required checks pass.`,
   );
   L.push("");
 
   if (s.reviewReasons.length) {
-    L.push("**Why review is required**");
+    L.push("**Why automation blocks this update**");
     L.push("");
     for (const r of s.reviewReasons) L.push(`- \`${r}\``);
     L.push("");

@@ -88,18 +88,11 @@ describe("review policy — escalation only on false -> true (no false positives
       // The capability was already there, so nothing went false -> true.
       expect(d.changes[0]!.reasons.filter((r) => r.startsWith("capability-introduced:"))).toEqual([]);
 
-      // Severe capabilities are the exception: a content rewrite of a skill
-      // that already ships an executable, hooks, MCP config, an agent or a
-      // credential reference still needs a human, because no boolean moves.
-      const severe = ["credential-reference", "executable/binary", "hooks", "mcp/lsp", "agents"];
-      if (severe.includes(cap.name)) {
-        expect(d.summary.manualReviewRequired, `${cap.name} rewrite must be reviewed`).toBe(true);
-        expect(d.changes[0]!.reasons.join(",")).toContain(`content-changed-with-capability:${cap.name}`);
-      } else {
-        // Bounded noise: the common capabilities do not make every edit manual.
-        expect(d.summary.manualReviewRequired, `${cap.name} rewrite should stay routine`).toBe(false);
-        expect(d.changes[0]!.reasons).toEqual([]);
-      }
+      // The capability was already present and did not widen. The generated
+      // diff still exposes the rewrite, and CI validates provenance, digests,
+      // licenses and generated output before auto-merge can happen.
+      expect(d.summary.manualReviewRequired, `${cap.name} rewrite should stay routine`).toBe(false);
+      expect(d.changes[0]!.reasons).toEqual([]);
     });
 
     it(`newly introduced "${cap.name}" IS flagged`, () => {
@@ -195,13 +188,13 @@ describe("review policy — mass change threshold", () => {
   const many = (n: number, suffix = "") =>
     Array.from({ length: n }, (_, i) => sk(`/s${i}`, `d${i}${suffix}`));
 
-  it(`more than ${MASS_CHANGE_THRESHOLD} changes forces review even when each is routine`, () => {
+  it(`more than ${MASS_CHANGE_THRESHOLD} routine changes is evidence, not a blocker`, () => {
     const n = MASS_CHANGE_THRESHOLD + 1;
     const d = diffCatalogs(cat(many(n, "x")), cat(many(n)), "base");
     expect(d.summary.updated).toBe(n);
     expect(d.summary.massChange).toBe(true);
-    expect(d.summary.manualReviewRequired).toBe(true);
-    expect(d.summary.reviewReasons.join(",")).toContain("mass-change");
+    expect(d.summary.manualReviewRequired).toBe(false);
+    expect(d.summary.reviewReasons).toEqual([]);
   });
 
   it("a batch at the threshold stays routine", () => {
