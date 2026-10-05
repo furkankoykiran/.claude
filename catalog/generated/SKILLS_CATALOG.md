@@ -6,9 +6,9 @@
 Generated index of every Claude Code skill, command, and runtime component represented by `furkankoykiran/.claude`.
 Resolver version 1 · schema v1.
 
-- **Sources:** 15
-- **Skills / entries:** 157
-- **Redistributable (full body):** 146
+- **Sources:** 14
+- **Skills / entries:** 153
+- **Redistributable (full body):** 143
 - **Runtime-only:** 3
 
 ## Agent-Reach (Panniantong/Agent-Reach)
@@ -144,17 +144,6 @@ repo: https://github.com/multica-ai/andrej-karpathy-skills.git · ref: `origin/H
 | --- | --- | --- |
 | [/karpathy-guidelines](../../docs/skills/karpathy/karpathy-guidelines.md) | Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid ov | metadata-only |
 
-## Manim skills (adithya-s-k/manim_skill)
-
-type: `git` · pack: `manim` · skills: 3 · redistribution: metadata-only
-repo: https://github.com/adithya-s-k/manim_skill.git · ref: `origin/HEAD` · revision: `cef045011722`
-
-| invocation | description | redistribution |
-| --- | --- | --- |
-| [/manim-composer](../../docs/skills/manim/manim-composer.md) | Trigger when: (1) User wants to create an educational/explainer video, (2) User has a vague concept they want visualized | full |
-| [/manimce-best-practices](../../docs/skills/manim/manimce-best-practices.md) | Trigger when: (1) User mentions "manim" or "Manim Community" or "ManimCE", (2) Code contains `from manim import *`, (3)  | full |
-| [/manimgl-best-practices](../../docs/skills/manim/manimgl-best-practices.md) | Trigger when: (1) User mentions "manimgl" or "ManimGL" or "3b1b manim", (2) Code contains `from manimlib import *`, (3)  | metadata-only |
-
 ## Marketing skills (coreyhaines31/marketingskills)
 
 type: `git` · pack: `marketing` · skills: 50 · redistribution: full
@@ -224,7 +213,7 @@ _Runtime-only — see notes below._
 
 ## furkankoykiran/.claude (personal skills)
 
-type: `repo-owned` · pack: `repository` · skills: 13 · redistribution: full
+type: `repo-owned` · pack: `repository` · skills: 12 · redistribution: full
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -233,7 +222,6 @@ type: `repo-owned` · pack: `repository` · skills: 13 · redistribution: full
 | [/fk-gh-flow:github-comment](../../docs/skills/repository/fk-gh-flow-github-comment.md) | Write GitHub issue comments, PR descriptions and review replies that read like a real developer wrote them, matching the | full |
 | [/fk-gh-flow:pr-followup](../../docs/skills/repository/fk-gh-flow-pr-followup.md) | Read a pull request's latest review discussion and act on the pending feedback. Use for "follow up on PR | full |
 | [/fk-gh-flow:solve-issue](../../docs/skills/repository/fk-gh-flow-solve-issue.md) | Solve a GitHub issue end-to-end and open a pull request. Use when the user wants to fix or resolve a specific GitHub iss | full |
-| [/fk-manim-video:manim-narration](../../docs/skills/repository/fk-manim-video-manim-narration.md) | Build a Manim video with spoken narration synced to the animation. Use for a "narrated Manim video", "anlatımlı manim",  | full |
 | [/fk-toolkit-ops:add-mcp](../../docs/skills/repository/fk-toolkit-ops-add-mcp.md) | Wire an MCP server into Claude Code from a pasted JSON `mcpServers` block, via `claude mcp add` rather than hand-editing | full |
 | [/fk-toolkit-ops:openai-image](../../docs/skills/repository/fk-toolkit-ops-openai-image.md) | Generate/edit images via Codex ImageGen. | full |
 | [/fk-toolkit-ops:toolkit-update](../../docs/skills/repository/fk-toolkit-ops-toolkit-update.md) | Check for and apply FK Claude Toolkit updates, or switch the stable/edge channel. | full |

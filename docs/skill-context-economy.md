@@ -43,7 +43,6 @@ metadata.
 | gstack | 4,604 | 8% |
 | anthropic | 4,379 | 8% |
 | repository (ours) | 3,944 | 7% |
-| manim | 1,894 | 3% |
 | impeccable | 910 | 2% |
 | karpathy | 243 | <1% |
 
@@ -55,7 +54,7 @@ were kept.
 **Roughly fifty skills were listed by name alone.** Everything alphabetically
 after `humanizer` with a description longer than the few hundred characters left
 in the budget — `image`, `launch`, `offers`, `pdf`, `pptx`, `popups`, `pricing`,
-`manim-narration` and the rest of the marketing pack — was unroutable by the
+and the rest of the marketing pack — was unroutable by the
 model for the entire session.
 
 On the 200k-token context most users are on, the budget is 4,096 characters. The
@@ -97,8 +96,6 @@ skill listing budget: 1974 / 2048 chars (96%)
       find-repos             189 chars
       pr-followup            131 chars
       solve-issue            hidden (disable-model-invocation)
-  fk-manim-video         248 chars
-      manim-narration        248 chars
   fk-toolkit-ops         161 chars
       add-mcp                161 chars
       toolkit-update         hidden (disable-model-invocation)
@@ -144,11 +141,13 @@ signal. The pattern:
 Drop restatement, dependency notes, and anything the model does not need until
 after it has already chosen the skill — that belongs in the body.
 
-`manim-narration` went from 1,143 characters to 248:
+The narrated-video skill, since removed, went from 1,143 characters to 248:
 
 > Build a Manim video with spoken narration synced to the animation. Use for a
 > "narrated Manim video", "anlatımlı manim", "manim with voice", a PR
 > walkthrough video, or code that imports NarratedScene. ManimCE only.
+>
+> (Quoted from the removed skill's original description, kept as a worked example.)
 
 What came out: the edge-tts and ffmpeg implementation notes, the `NarratedScene`
 API description, the screenshot pipeline, the pip and system dependency list.

@@ -10,7 +10,7 @@
  *   - *_REPO="<git url>" / RTK_INSTALLER="<url>"   (git + installer sources)
  *   - `git clone ... <repo>`                       (gstack, fetched via clone)
  *   - plugin marketplaces + curated plugins         (register_plugin_marketplaces)
- *   - curated skill name lists (manim, anthropic)   (for/for-name loops)
+ *   - curated skill name lists (anthropic)          (for/for-name loops)
  *   - pypi package (graphifyy)
  */
 import { readFile } from "node:fs/promises";
@@ -92,12 +92,11 @@ export function extractInstallerSources(installSh: string): {
   const pypi = new Set<string>();
   for (const pkg of allMatches(/pip(?:x)? install(?:\s+--?\S+)*\s+([a-zA-Z0-9_\-]+)/g, installSh)) {
     // only keep ones that look like real package installs (lowercase, not flags)
-    if (/^[a-z][a-z0-9_-]*$/.test(pkg) && !["upgrade", "user", "install", "manim", "edge-tts"].includes(pkg)) {
+    if (/^[a-z][a-z0-9_-]*$/.test(pkg) && !["upgrade", "user", "install"].includes(pkg)) {
       pypi.add(pkg);
     }
   }
-  // manim/edge-tts are deps of a repo-owned skill; graphifyy is the standalone source.
-  // We only surface graphifyy as a runtime source; others are repo-owned skill deps.
+  // graphifyy is the only standalone PyPI runtime source the installer declares.
 
   return {
     gitRepos: [...gitRepos].sort(),

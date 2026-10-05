@@ -530,14 +530,6 @@
       "sourceId": "repository"
     },
     {
-      "key": "/fk-manim-video:manim-narration",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "repository"
-    },
-    {
       "key": "/fk-toolkit-ops:add-mcp",
       "kind": "added",
       "manualReviewRequired": false,
@@ -870,30 +862,6 @@
       ],
       "securitySensitive": true,
       "sourceId": "gstack"
-    },
-    {
-      "key": "/manim-composer",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "manim"
-    },
-    {
-      "key": "/manimce-best-practices",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "manim"
-    },
-    {
-      "key": "/manimgl-best-practices",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "manim"
     },
     {
       "key": "/marketing-council",
@@ -1439,8 +1407,8 @@
   ],
   "schemaVersion": 2,
   "summary": {
-    "added": 157,
-    "licenseRestricted": 11,
+    "added": 153,
+    "licenseRestricted": 10,
     "manualReviewRequired": true,
     "massChange": false,
     "removed": 0,

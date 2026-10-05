@@ -33,7 +33,7 @@ body:
     id: step
     attributes:
       label: Which step failed?
-      description: e.g. "gstack + browser", "rtk", "manim deps" (the labels printed in the run summary)
+      description: e.g. "gstack + browser", "rtk", "graphify" (the labels printed in the run summary)
       placeholder: gstack + browser
   - type: textarea
     id: what-happened

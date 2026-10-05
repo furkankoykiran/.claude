@@ -5,7 +5,7 @@ import { parseManifest } from "../src/manifest.ts";
 const INSTALL_SH = `#!/usr/bin/env bash
 REPO_URL="https://github.com/furkankoykiran/.claude.git"
 GSTACK_REPO="https://github.com/garrytan/gstack.git"
-MANIM_UPSTREAM_REPO="https://github.com/adithya-s-k/manim_skill.git"
+UNLISTED_REPO="https://github.com/example/unlisted-pack.git"
 AGENT_REACH_REPO="https://github.com/Panniantong/Agent-Reach.git"
 UI_UX_PRO_MAX_REPO="https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git"
 BRAG_REPO="https://github.com/latent-spaces/brag.git"
@@ -17,8 +17,8 @@ sync_repo() {
 install_gstack() {
   git clone --depth 1 "$GSTACK_REPO" "$gstack_dir"
 }
-install_manim_upstream() {
-  git clone --depth 1 "$MANIM_UPSTREAM_REPO" "$stage"
+install_unlisted() {
+  git clone --depth 1 "$UNLISTED_REPO" "$stage"
 }
 install_graphify() {
   python3 -m pip install --user --upgrade graphifyy
@@ -42,7 +42,7 @@ describe("parity", () => {
   it("extracts git repos, marketplaces, plugins, pypi, installers", () => {
     const ext = extractInstallerSources(INSTALL_SH);
     expect(ext.gitRepos).toContain("https://github.com/garrytan/gstack.git");
-    expect(ext.gitRepos).toContain("https://github.com/adithya-s-k/manim_skill.git");
+    expect(ext.gitRepos).toContain("https://github.com/example/unlisted-pack.git");
     expect(ext.gitRepos).toContain("https://github.com/Panniantong/Agent-Reach.git");
     expect(ext.gitRepos).toContain("https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git");
     expect(ext.gitRepos).toContain("https://github.com/latent-spaces/brag.git");
@@ -79,9 +79,9 @@ selection.kind = "all-skills"
 selection.root = ""
 `);
     const r = checkParity(manifest, INSTALL_SH);
-    // manim is declared in install.sh but missing from this manifest.
+    // unlisted-pack is declared in install.sh but missing from this manifest.
     expect(r.ok).toBe(false);
-    expect(r.missingInManifest.some((m) => m.includes("manim_skill"))).toBe(true);
+    expect(r.missingInManifest.some((m) => m.includes("unlisted-pack"))).toBe(true);
   });
 
   it("the real manifest and install.sh agree", async () => {

@@ -80,7 +80,6 @@ sessions/
 skills/*
 !skills/fk-eng-agents/
 !skills/fk-gh-flow/
-!skills/fk-manim-video/
 !skills/fk-toolkit-ops/
 !skills/fk-writing-kit/
 

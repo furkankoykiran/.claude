@@ -58,17 +58,6 @@
       "sourceId": "repository"
     },
     {
-      "canonicalInvocation": "/fk-manim-video:manim-narration",
-      "digest": "182cc0fab9796bb08c3c33bd3f061423ebbe6727a59cf0fa81d125b453cdc0a0",
-      "license": {
-        "declared": "repository-owned",
-        "detected": "repository-owned"
-      },
-      "redistribution": "full",
-      "relativePath": "skills/fk-manim-video/skills/manim-narration/SKILL.md",
-      "sourceId": "repository"
-    },
-    {
       "canonicalInvocation": "/fk-toolkit-ops:add-mcp",
       "digest": "bb81b7ebbe818be98c03a6eebea6105f768848ff2d68873b82f46536194678e5",
       "license": {
@@ -804,42 +793,6 @@
       "relativePath": "unfreeze/SKILL.md",
       "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
       "sourceId": "gstack"
-    },
-    {
-      "canonicalInvocation": "/manim-composer",
-      "digest": "eb0ff3c22f7812d249515cd699386fd723ea8dba6435f7e06504c749bcbc4c27",
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT"
-      },
-      "redistribution": "full",
-      "relativePath": "skills/manim-composer/SKILL.md",
-      "resolvedRevision": "cef045011722d285692e3381d12d4d637da56e18",
-      "sourceId": "manim"
-    },
-    {
-      "canonicalInvocation": "/manimce-best-practices",
-      "digest": "e3f5ec68c0931d2503b48368fcdbdcf8f12403a2c8eb85b806219fd49ab80631",
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT"
-      },
-      "redistribution": "full",
-      "relativePath": "skills/manimce-best-practices/SKILL.md",
-      "resolvedRevision": "cef045011722d285692e3381d12d4d637da56e18",
-      "sourceId": "manim"
-    },
-    {
-      "canonicalInvocation": "/manimgl-best-practices",
-      "digest": "3aac17f5adcbdea318eb0518c90a6cc29bcf969c33330312ba33584600b7f491",
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT"
-      },
-      "redistribution": "metadata-only",
-      "relativePath": "skills/manimgl-best-practices/SKILL.md",
-      "resolvedRevision": "cef045011722d285692e3381d12d4d637da56e18",
-      "sourceId": "manim"
     },
     {
       "canonicalInvocation": "/karpathy-guidelines",
@@ -1846,7 +1799,6 @@
         "/fk-gh-flow:github-comment",
         "/fk-gh-flow:pr-followup",
         "/fk-gh-flow:solve-issue",
-        "/fk-manim-video:manim-narration",
         "/fk-toolkit-ops:add-mcp",
         "/fk-toolkit-ops:openai-image",
         "/fk-toolkit-ops:toolkit-update",
@@ -1867,7 +1819,6 @@
         "skills/fk-gh-flow/skills/github-comment",
         "skills/fk-gh-flow/skills/pr-followup",
         "skills/fk-gh-flow/skills/solve-issue",
-        "skills/fk-manim-video/skills/manim-narration",
         "skills/fk-toolkit-ops/skills/add-mcp",
         "skills/fk-toolkit-ops/skills/openai-image",
         "skills/fk-toolkit-ops/skills/toolkit-update",
@@ -2060,28 +2011,6 @@
         "sync-gbrain",
         "test-audit",
         "unfreeze"
-      ],
-      "type": "git"
-    },
-    {
-      "canonicalSkills": [
-        "/manim-composer",
-        "/manimce-best-practices",
-        "/manimgl-best-practices"
-      ],
-      "configuredRef": "origin/HEAD",
-      "id": "manim",
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT"
-      },
-      "redistribution": "metadata-only",
-      "repo": "https://github.com/adithya-s-k/manim_skill.git",
-      "resolvedRevision": "cef045011722d285692e3381d12d4d637da56e18",
-      "selectedPaths": [
-        "skills/manim-composer",
-        "skills/manimce-best-practices",
-        "skills/manimgl-best-practices"
       ],
       "type": "git"
     },

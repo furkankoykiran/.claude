@@ -51,7 +51,7 @@ A git source selects which skill directories to copy out of the clone, mirroring
 
 - `all-skills` (root) — every `<root>/<dir>/SKILL.md` (`root=""` = the repo
   itself, e.g. gstack's flat layout).
-- `named` (root, names) — an explicit list (e.g. manim's three skills).
+- `named` (root, names) — an explicit list (e.g. anthropic's curated list).
 - `subpath` (path, dest) — one skill at a custom path (e.g. impeccable's
   `.claude/skills/impeccable`).
 - `whole-repo` — scan the whole clone for `<dir>/SKILL.md`.
@@ -121,7 +121,6 @@ and the reason is recorded. This is fail-safe: when in doubt, omit the body.
 | --- | --- | --- |
 | repository (this repo) | MIT | full |
 | gstack | MIT | full |
-| manim | MIT | full |
 | marketing | MIT | full |
 | taste | MIT | full |
 | impeccable | Apache-2.0 | full |

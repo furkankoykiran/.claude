@@ -102,13 +102,13 @@ improvised into a form field.
 **Short description**
 
 > Deterministic, provenance-audited Claude Code plugins: GitHub workflow
-> automation, writing tools, narrated Manim video, and engineering subagents.
+> automation, writing tools, and engineering subagents.
 > Every skill is pinned to a reviewed commit, licence-checked, content-digested,
 > and measured against the model's skill-listing context budget.
 
 **Longer description**
 
-> Five focused plugins, split so you install only what you want and pay context
+> Four focused plugins, split so you install only what you want and pay context
 > for only what you installed.
 >
 > - **fk-gh-flow** — find issues worth working on, solve one into a pull request,
@@ -116,8 +116,6 @@ improvised into a form field.
 >   them.
 > - **fk-writing-kit** — strip AI tells from drafts, and build blog posts or
 >   LinkedIn copy from a chat, a URL, or a GitHub profile.
-> - **fk-manim-video** — Manim animations with spoken narration synced to the
->   animation, via edge-tts and ffmpeg.
 > - **fk-eng-agents** — researcher, planner, code-reviewer and debugger
 >   subagents. No skills, so no skill-listing context cost at all.
 > - **fk-toolkit-ops** — wire an MCP server from a pasted config block; manage
@@ -130,10 +128,10 @@ improvised into a form field.
 > source is pinned to a reviewed commit SHA with its licence verified and its
 > content digested. Nothing collects telemetry.
 
-**Categories:** `productivity`, `content`, `media`, `development`
+**Categories:** `productivity`, `content`, `development`
 
 **Keywords:** `github`, `issues`, `pull-requests`, `code-review`, `writing`,
-`editing`, `manim`, `video`, `subagents`, `mcp`, `provenance`
+`editing`, `subagents`, `mcp`, `provenance`
 
 ## After approval
 

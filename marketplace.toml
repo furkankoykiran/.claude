@@ -25,7 +25,7 @@
 # WHAT IS DELIBERATELY *NOT* HERE
 # -------------------------------
 # * Third-party skill packs (gstack, marketing, taste, impeccable, karpathy,
-#   manim, anthropic). We do not own them. Republishing them under this
+#   anthropic). We do not own them. Republishing them under this
 #   marketplace would be redistribution we have not cleared, and one of them
 #   declares no licence at all. They stay installer-fetched and lock-pinned;
 #   see skills-sources.toml and docs/provenance.md.
@@ -39,7 +39,7 @@ schema_version = 1
 [marketplace]
 name = "fk-toolkit"
 display_name = "FK Claude Toolkit"
-description = "Deterministic, provenance-audited Claude Code plugins: GitHub workflow automation, writing tools, narrated Manim video, engineering subagents, and the toolkit's own updater."
+description = "Deterministic, provenance-audited Claude Code plugins: GitHub workflow automation, writing tools, engineering subagents, and the toolkit's own updater."
 owner_name = "Furkan Köykıran"
 owner_url = "https://github.com/furkankoykiran"
 homepage = "https://github.com/furkankoykiran/.claude"
@@ -52,6 +52,7 @@ plugin_root = "skills"
 # Map old name -> new name, or old name -> "" for a plugin that was removed.
 # (Empty string is written to marketplace.json as JSON null.)
 [marketplace.renames]
+fk-manim-video = ""
 
 # ---------------------------------------------------------------------------
 # Plugins. `dir` is relative to plugin_root; `skills` / `agents` list the
@@ -76,15 +77,6 @@ description = "Turn raw material into publishable writing: strip AI tells from d
 category = "content"
 keywords = ["writing", "blogging", "editing", "linkedin", "content"]
 skills = ["blog-from-chat", "github-profile-blog", "humanizer", "linkedin-post"]
-
-[[plugins]]
-name = "fk-manim-video"
-dir = "fk-manim-video"
-display_name = "Narrated Manim Video"
-description = "Build Manim animations with synced spoken narration using edge-tts and ffmpeg. Ships a NarratedScene base class, reusable visuals, and a screenshot-asset pipeline."
-category = "media"
-keywords = ["manim", "video", "narration", "tts", "animation"]
-skills = ["manim-narration"]
 
 [[plugins]]
 name = "fk-eng-agents"

@@ -2,16 +2,16 @@
 
 # Catalog change report
 
-- added: 157
+- added: 153
 - updated: 0
 - removed: 0
 - renamed: 0
-- license-restricted: 11
+- license-restricted: 10
 - runtime-only: 3
 - security-sensitive: 73
 - **manual-review-required: true**
 
-## Added (157)
+## Added (153)
 
 - `/ab-testing`
 - `/ad-creative`
@@ -71,7 +71,6 @@
 - `/fk-gh-flow:github-comment`
 - `/fk-gh-flow:pr-followup`
 - `/fk-gh-flow:solve-issue`
-- `/fk-manim-video:manim-narration`
 - `/fk-toolkit-ops:add-mcp`
 - `/fk-toolkit-ops:openai-image`
 - `/fk-toolkit-ops:toolkit-update`
@@ -108,9 +107,6 @@
 - `/lead-magnets`
 - `/learn`
 - `/make-pdf`
-- `/manim-composer`
-- `/manimce-best-practices`
-- `/manimgl-best-practices`
 - `/marketing-council`
 - `/marketing-ideas`
 - `/marketing-loops`

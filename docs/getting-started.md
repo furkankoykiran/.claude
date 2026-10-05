@@ -39,7 +39,6 @@ ChatGPT, Codex, Claude, or MCP OAuth tokens between tools.
 | Core (`CLAUDE.md`, agents, hooks, skills) | ✅ | ✅ | ✅ | ✅ |
 | gstack + headless browser | ✅ | ✅ | ✅ (Git Bash + Node) | ✅ |
 | rtk token proxy | ✅ | ✅ | ⚠️ filters only¹ | ✅ |
-| manim-narration | ✅ | ✅ | ✅ | ✅ |
 | graphify | ✅ | ✅ | ✅ | ✅ |
 
 ¹ On native Windows, rtk's token *filters* work but its PreToolUse *hook*
@@ -69,27 +68,25 @@ Both installers honour the same knobs:
 6. Seeds `providers/*.json` from every committed template and installs the `ccs`
    command, so [switching API providers](configuration.md#api-provider-switching) works
    from a clean shell. Nothing is activated until you run `ccs <name>` yourself.
-7. Installs Python deps (`manim`, `edge-tts`) and `ffmpeg` for `manim-narration`.
-8. Clones five upstream skill packs into `~/.claude/skills/` (each git-ignored,
+7. Clones four upstream skill packs into `~/.claude/skills/` (each git-ignored,
    auto-discovered by Claude Code):
-   [adithya-s-k/manim_skill](https://github.com/adithya-s-k/manim_skill),
    [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills),
    [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills),
    [pbakaus/impeccable](https://github.com/pbakaus/impeccable), and
    [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill).
-9. File-copies a curated, always-on subset of Anthropic's official
+8. File-copies a curated, always-on subset of Anthropic's official
    [anthropics/skills](https://github.com/anthropics/skills) — the
    office-document and authoring skills (`docx`, `pdf`, `pptx`, `xlsx`,
    `doc-coauthoring`) plus `mcp-builder`, `skill-creator`, and
    `web-artifacts-builder`. Overlapping skills and the name-colliding
    `claude-api` are skipped.
-10. Installs (or upgrades) [graphify](https://pypi.org/project/graphifyy/) and
+9. Installs (or upgrades) [graphify](https://pypi.org/project/graphifyy/) and
     wires its skill — re-running the bootstrap pulls the latest `graphifyy`, just
     like the git skill packs above.
-11. Registers four [plugin marketplaces](configuration.md#plugin-marketplaces) and installs a
+10. Registers four [plugin marketplaces](configuration.md#plugin-marketplaces) and installs a
     curated set of workflow plugins (see below). Skipped if the `claude` CLI
     isn't on `PATH` yet.
-12. Optionally configures portable MCP servers (`github`, `context7`).
+11. Optionally configures portable MCP servers (`github`, `context7`).
 
 Every step except cloning the repo is **fail-soft**: a failure is recorded and
 printed in an end-of-run summary instead of aborting the bootstrap. Re-run

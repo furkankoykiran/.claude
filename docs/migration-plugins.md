@@ -16,7 +16,7 @@ called by a bare name are now namespaced.
 | `/github-comment` | `/fk-gh-flow:github-comment` |
 | `/pr-followup` | `/fk-gh-flow:pr-followup` |
 | `/solve-issue` | `/fk-gh-flow:solve-issue` |
-| `/manim-narration` | `/fk-manim-video:manim-narration` |
+| `/manim-narration` | removed with its plugin; no replacement |
 | `/add-mcp` | `/fk-toolkit-ops:add-mcp` |
 | `researcher` (agent) | `fk-eng-agents:researcher` |
 | `planner`, `code-reviewer`, `debugger` | likewise under `fk-eng-agents:` |
@@ -64,7 +64,6 @@ Install only the plugins you want. That is the point of the split — see
 | --- | --- | --- |
 | `fk-gh-flow` | 5 GitHub workflow skills | 746 chars |
 | `fk-writing-kit` | 4 writing skills | 819 chars |
-| `fk-manim-video` | narrated Manim video | 248 chars |
 | `fk-toolkit-ops` | MCP setup, toolkit updates | 161 chars |
 | `fk-eng-agents` | 4 subagents, no skills | **0** |
 

@@ -44,23 +44,6 @@ selection.root = ""
 notes = "Flat layout (top-level */SKILL.md). SKILL.md are rendered from SKILL.md.tmpl upstream; deterministic per SHA."
 
 # ---------------------------------------------------------------------------
-# Manim skills (adithya-s-k/manim_skill) — MIT. Three named skills.
-# ---------------------------------------------------------------------------
-[sources.manim]
-type = "git"
-display_name = "Manim skills (adithya-s-k/manim_skill)"
-repo = "https://github.com/adithya-s-k/manim_skill.git"
-ref = "origin/HEAD"
-pack = "manim"
-license = "MIT"
-redistribution = "full"
-license_notice_files = ["LICENSE"]
-install_step = "install_manim_upstream"
-selection.kind = "named"
-selection.root = "skills"
-selection.names = ["manimce-best-practices", "manimgl-best-practices", "manim-composer"]
-
-# ---------------------------------------------------------------------------
 # Karpathy coding-discipline skill (multica-ai/andrej-karpathy-skills).
 # NO upstream license -> metadata-only (digest + immutable link only; body
 # omitted from catalog and release assets).

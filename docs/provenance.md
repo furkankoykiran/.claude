@@ -19,7 +19,6 @@ bun run catalog:check      # parity, digests, licences, determinism
 | --- | --- | --- | --- | --- | --- |
 | **repository** (this repo) | repo-owned | MIT | full | 11 | *the commit you have* |
 | [gstack](https://github.com/garrytan/gstack) | git | MIT / MIT | full | 53 | `a3259400a366` |
-| [manim_skill](https://github.com/adithya-s-k/manim_skill) | git | MIT / MIT | metadata-only | 3 | `cef045011722` |
 | [andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) | git | **unknown** / unknown | metadata-only | 1 | `2c606141936f` |
 | [marketingskills](https://github.com/coreyhaines31/marketingskills) | git | MIT / MIT | full | 48 | `c21a984a56da` |
 | [impeccable](https://github.com/pbakaus/impeccable) | git | Apache-2.0 / Apache-2.0 | full | 1 | `d272b9bd5dcf` |
@@ -92,7 +91,6 @@ skill:
 | Source | Files carried |
 | --- | --- |
 | gstack | `LICENSE` |
-| manim_skill | `LICENSE` → `UPSTREAM_LICENSE` beside each skill |
 | marketingskills | `LICENSE` |
 | impeccable | `LICENSE`, `NOTICE.md` |
 | taste-skill | `LICENSE` |

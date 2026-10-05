@@ -64,7 +64,6 @@ independently updatable:
 | --- | --- | --- |
 | `fk-gh-flow` | Find issues worth working on, solve one into a PR, follow up on review feedback, write human-sounding comments | 746 chars |
 | `fk-writing-kit` | Strip AI tells from drafts; build blog posts or LinkedIn copy from a chat, URL or GitHub profile | 819 chars |
-| `fk-manim-video` | Manim animations with spoken narration synced to the animation | 248 chars |
 | `fk-eng-agents` | researcher · planner · code-reviewer · debugger subagents | **0** |
 | `fk-toolkit-ops` | Manage toolkit updates, MCP setup, and Codex-native ImageGen boundaries | 233 chars |
 
@@ -155,7 +154,7 @@ Full detail — migrations, snoozing, opting out, security advisories — in
 
 | Component | Location | What it does |
 | --- | --- | --- |
-| **Plugins** | `skills/fk-*` | The `fk-toolkit` marketplace: `fk-gh-flow`, `fk-writing-kit`, `fk-manim-video`, `fk-eng-agents`, `fk-toolkit-ops` |
+| **Plugins** | `skills/fk-*` | The `fk-toolkit` marketplace: `fk-gh-flow`, `fk-writing-kit`, `fk-eng-agents`, `fk-toolkit-ops` |
 | **Skill packs** | `skills/` | Installer-fetched upstream packs, pinned to reviewed commits |
 | **Hooks** | `hooks/` | Format on edit, secret scan on commit, pre-push verify, Docker volume protection, update notice |
 | **Updater** | `bin/fkt` | Fast-forward-only bootstrap updates on a `stable` or `edge` channel |
@@ -382,6 +381,5 @@ Built on the work of [gstack](https://github.com/garrytan/gstack),
 [impeccable](https://github.com/pbakaus/impeccable),
 [marketing skills](https://github.com/coreyhaines31/marketingskills),
 [taste-skill](https://github.com/Leonxlnx/taste-skill),
-[manim skills](https://github.com/adithya-s-k/manim_skill),
 [Karpathy guidelines](https://github.com/multica-ai/andrej-karpathy-skills) and
 [rtk](https://github.com/rtk-ai/rtk). Thank you to their authors.
