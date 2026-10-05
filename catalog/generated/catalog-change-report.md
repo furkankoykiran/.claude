@@ -2,320 +2,99 @@
 
 # Catalog change report
 
-- added: 153
-- updated: 0
+- added: 0
+- updated: 84
 - removed: 0
 - renamed: 0
 - license-restricted: 10
 - runtime-only: 3
-- security-sensitive: 73
-- **manual-review-required: true**
+- security-sensitive: 0
+- **manual-review-required: false**
 
-## Added (153)
+## Updated (84)
 
-- `/ab-testing`
-- `/ad-creative`
-- `/ads`
-- `/agent-reach`
-- `/ai-seo`
-- `/analytics`
-- `/anthropics/skills:*`
-- `/aso`
-- `/attribution`
-- `/autoplan`
-- `/banner-design`
-- `/benchmark`
-- `/benchmark-models`
-- `/brag`
-- `/brag-slim`
-- `/brand`
-- `/brandkit`
-- `/browse`
-- `/canary`
-- `/careful`
-- `/churn-prevention`
-- `/co-marketing`
-- `/codex`
-- `/cold-email`
-- `/community-marketing`
-- `/competitor-profiling`
-- `/competitors`
-- `/content-strategy`
-- `/context-restore`
-- `/context-save`
-- `/copy-editing`
-- `/copywriting`
-- `/cro`
-- `/cso`
-- `/customer-research`
-- `/design`
-- `/design-consultation`
-- `/design-html`
-- `/design-review`
-- `/design-shotgun`
-- `/design-system`
-- `/design-taste-frontend`
-- `/design-taste-frontend-v1`
-- `/deslop-shared-libs`
-- `/devex-review`
-- `/diagram`
-- `/directory-submissions`
-- `/doc-coauthoring`
-- `/document-generate`
-- `/document-release`
-- `/docx`
-- `/emails`
-- `/events`
-- `/fk-gh-flow:find-issues`
-- `/fk-gh-flow:find-repos`
-- `/fk-gh-flow:github-comment`
-- `/fk-gh-flow:pr-followup`
-- `/fk-gh-flow:solve-issue`
-- `/fk-toolkit-ops:add-mcp`
-- `/fk-toolkit-ops:openai-image`
-- `/fk-toolkit-ops:toolkit-update`
-- `/fk-writing-kit:blog-from-chat`
-- `/fk-writing-kit:github-profile-blog`
-- `/fk-writing-kit:humanizer`
-- `/fk-writing-kit:linkedin-post`
-- `/free-tools`
-- `/freeze`
-- `/full-output-enforcement`
-- `/gpt-taste`
-- `/graphifyy`
-- `/gstack-upgrade`
-- `/guard`
-- `/health`
-- `/high-end-visual-design`
-- `/image`
-- `/image-to-code`
-- `/imagegen-frontend-mobile`
-- `/imagegen-frontend-web`
-- `/impeccable`
-- `/industrial-brutalist-ui`
-- `/influencer-marketing`
-- `/investigate`
-- `/ios-clean`
-- `/ios-design-review`
-- `/ios-fix`
-- `/ios-qa`
-- `/ios-sync`
-- `/karpathy-guidelines`
-- `/land-and-deploy`
-- `/landing-report`
-- `/launch`
-- `/lead-magnets`
-- `/learn`
-- `/make-pdf`
-- `/marketing-council`
-- `/marketing-ideas`
-- `/marketing-loops`
-- `/marketing-plan`
-- `/marketing-psychology`
-- `/mcp-builder`
-- `/minimalist-ui`
-- `/offers`
-- `/office-hours`
-- `/onboarding`
-- `/open-gstack-browser`
-- `/pair-agent`
-- `/paywalls`
-- `/pdf`
-- `/plan-ceo-review`
-- `/plan-design-review`
-- `/plan-devex-review`
-- `/plan-eng-review`
-- `/plan-tune`
-- `/popups`
-- `/pptx`
-- `/pricing`
-- `/product-marketing`
-- `/programmatic-seo`
-- `/prospecting`
-- `/public-relations`
-- `/qa`
-- `/qa-only`
-- `/redesign-existing-projects`
-- `/referrals`
-- `/retro`
-- `/review`
-- `/revops`
-- `/rtk`
-- `/sales-enablement`
-- `/schema`
-- `/scrape`
-- `/seo-audit`
-- `/setup-browser-cookies`
-- `/setup-deploy`
-- `/setup-gbrain`
-- `/ship`
-- `/signup`
-- `/site-architecture`
-- `/skill-creator`
-- `/skillify`
-- `/slides`
-- `/sms`
-- `/social`
-- `/spec`
-- `/stitch-design-taste`
-- `/sync-gbrain`
-- `/test-audit`
-- `/ui-styling`
-- `/ui-ux-pro-max`
-- `/unfreeze`
-- `/video`
-- `/web-artifacts-builder`
-- `/xlsx`
-
-## Security-sensitive (73)
-
-- `/agent-reach`
-- `/autoplan`
-- `/benchmark`
-- `/benchmark-models`
-- `/brag`
-- `/brand`
-- `/browse`
-- `/canary`
-- `/careful`
-- `/codex`
-- `/context-restore`
-- `/context-save`
-- `/design-consultation`
-- `/design-html`
-- `/design-review`
-- `/design-shotgun`
-- `/design-system`
-- `/deslop-shared-libs`
-- `/devex-review`
-- `/diagram`
-- `/directory-submissions`
-- `/document-generate`
-- `/document-release`
-- `/docx`
-- `/fk-gh-flow:github-comment`
-- `/fk-toolkit-ops:openai-image`
-- `/fk-toolkit-ops:toolkit-update`
-- `/freeze`
-- `/gstack-upgrade`
-- `/guard`
-- `/health`
-- `/image`
-- `/impeccable`
-- `/investigate`
-- `/ios-clean`
-- `/ios-design-review`
-- `/ios-fix`
-- `/ios-qa`
-- `/ios-sync`
-- `/land-and-deploy`
-- `/landing-report`
-- `/learn`
-- `/make-pdf`
-- `/office-hours`
-- `/open-gstack-browser`
-- `/pair-agent`
-- `/pdf`
-- `/plan-ceo-review`
-- `/plan-design-review`
-- `/plan-devex-review`
-- `/plan-eng-review`
-- `/plan-tune`
-- `/pptx`
-- `/qa`
-- `/qa-only`
-- `/retro`
-- `/review`
-- `/scrape`
-- `/seo-audit`
-- `/setup-browser-cookies`
-- `/setup-deploy`
-- `/setup-gbrain`
-- `/ship`
-- `/skill-creator`
-- `/skillify`
-- `/social`
-- `/spec`
-- `/sync-gbrain`
-- `/test-audit`
-- `/ui-styling`
-- `/unfreeze`
-- `/web-artifacts-builder`
-- `/xlsx`
-
-## Manual-review-required (73)
-
-- `/agent-reach`
-- `/autoplan`
-- `/benchmark`
-- `/benchmark-models`
-- `/brag`
-- `/brand`
-- `/browse`
-- `/canary`
-- `/careful`
-- `/codex`
-- `/context-restore`
-- `/context-save`
-- `/design-consultation`
-- `/design-html`
-- `/design-review`
-- `/design-shotgun`
-- `/design-system`
-- `/deslop-shared-libs`
-- `/devex-review`
-- `/diagram`
-- `/directory-submissions`
-- `/document-generate`
-- `/document-release`
-- `/docx`
-- `/fk-gh-flow:github-comment`
-- `/fk-toolkit-ops:openai-image`
-- `/fk-toolkit-ops:toolkit-update`
-- `/freeze`
-- `/gstack-upgrade`
-- `/guard`
-- `/health`
-- `/image`
-- `/impeccable`
-- `/investigate`
-- `/ios-clean`
-- `/ios-design-review`
-- `/ios-fix`
-- `/ios-qa`
-- `/ios-sync`
-- `/land-and-deploy`
-- `/landing-report`
-- `/learn`
-- `/make-pdf`
-- `/office-hours`
-- `/open-gstack-browser`
-- `/pair-agent`
-- `/pdf`
-- `/plan-ceo-review`
-- `/plan-design-review`
-- `/plan-devex-review`
-- `/plan-eng-review`
-- `/plan-tune`
-- `/pptx`
-- `/qa`
-- `/qa-only`
-- `/retro`
-- `/review`
-- `/scrape`
-- `/seo-audit`
-- `/setup-browser-cookies`
-- `/setup-deploy`
-- `/setup-gbrain`
-- `/ship`
-- `/skill-creator`
-- `/skillify`
-- `/social`
-- `/spec`
-- `/sync-gbrain`
-- `/test-audit`
-- `/ui-styling`
-- `/unfreeze`
-- `/web-artifacts-builder`
-- `/xlsx`
+- `/ad-creative` — digest 5393fd4497 -> d05a575c7e
+- `/ads` — digest c4cd09d8dd -> bab5b2024e
+- `/ai-seo` — digest 7ecc1706a0 -> d51170ec4c
+- `/analytics` — digest 3487d45728 -> ed6bb9bca5
+- `/attribution` — digest 17a53b6661 -> d3c3cf7df7
+- `/autoplan` — digest 1ebbc9a022 -> e3ab841018
+- `/benchmark` — digest 511430f8a3 -> fa2cb9459e
+- `/benchmark-models` — digest 7f74546567 -> 45bb47e13d
+- `/browse` — digest 85ef8e3f42 -> 1cd5aff6ee
+- `/canary` — digest e4ce01afa0 -> 622315fd29
+- `/careful` — digest 8d25213194 -> da7c015691
+- `/churn-prevention` — digest 8dc92bc624 -> f001d23b06
+- `/co-marketing` — digest 83fadc4013 -> 5f7a9405e8
+- `/codex` — digest 21ece6e3a1 -> 3deb4315bd
+- `/cold-email` — digest 1981481e20 -> 034354dbc2
+- `/competitor-profiling` — digest 4a96523df1 -> 46adecdbcd
+- `/content-strategy` — digest ae48c45cf0 -> bf611a391a
+- `/context-restore` — digest 5265de31fe -> fdba95f3b9
+- `/context-save` — digest 06086da7d3 -> 03559477f2
+- `/copy-editing` — digest ea77b45112 -> 57ae5f1abd
+- `/copywriting` — digest 2a5d3be8c1 -> 1e6e3224ff
+- `/cso` — digest dbcb496427 -> 99d848b585
+- `/customer-research` — digest ea1faaf82a -> d4e6cc5df7
+- `/design-consultation` — digest 3ff7d73416 -> 29a60dbbb3
+- `/design-html` — digest d0b0e5dc77 -> 94adee3763
+- `/design-review` — digest 804b6ba922 -> d0942064cb
+- `/design-shotgun` — digest 4dd48c3e59 -> 38e0ab541e
+- `/devex-review` — digest 2979decb10 -> 5bd51996b8
+- `/diagram` — digest c6ef5b2dcd -> be3d55370f
+- `/directory-submissions` — digest b9f6d8d9b8 -> 76264d6411
+- `/document-generate` — digest 7fc99a4ed4 -> fa00d1e271
+- `/document-release` — digest 40bb193d5d -> c4884808c2
+- `/emails` — digest 511356dd95 -> e2a3ce7e55
+- `/freeze` — digest 7b93dd6e06 -> af6c843ef5
+- `/gstack-upgrade` — digest 1a45231c9c -> 029a2bd212
+- `/guard` — digest b48662917c -> b9c4f2b1b4
+- `/health` — digest 07aedf4020 -> 862cdc5f22
+- `/image` — digest 50050b8789 -> 351b3c8192
+- `/impeccable` — digest 2b9379cdb3 -> 0b9e791176
+- `/influencer-marketing` — digest c3c3cad7c7 -> c6abe26ef4
+- `/investigate` — digest 684ac6b06c -> 1371679f2c
+- `/ios-clean` — digest 80c173faf9 -> 8b0dea681f
+- `/ios-design-review` — digest 4d034b49c6 -> eb243b6c34
+- `/ios-fix` — digest 954086004a -> 576b3f2d3f
+- `/ios-qa` — digest d4f0d805e5 -> 3db2ba89c9
+- `/ios-sync` — digest 805d77191c -> f823b2de4a
+- `/land-and-deploy` — digest 6ac17ec339 -> 6541e35ae6
+- `/landing-report` — digest 105472c909 -> 8b533da98b
+- `/launch` — digest 04a503bec9 -> d87bef7510
+- `/learn` — digest f6a50ec5ad -> 49fc8e0c2c
+- `/make-pdf` — digest 3a76ffe765 -> cdcc0dc51d
+- `/marketing-loops` — digest 7755764667 -> 50cbf23ccc
+- `/marketing-plan` — digest ea3109c870 -> 461e592f10
+- `/office-hours` — digest b80239a8af -> c82bed4eff
+- `/open-gstack-browser` — digest 9ea746bbcd -> 2b4a637109
+- `/pair-agent` — digest fb3dfe5585 -> 879ffd2d6d
+- `/plan-ceo-review` — digest 3771d98ccf -> f543475060
+- `/plan-design-review` — digest e4bd3517d1 -> 7a67535f3d
+- `/plan-devex-review` — digest ceec697d09 -> 59aefc5ea4
+- `/plan-eng-review` — digest 8941280e0d -> 4681fbbba5
+- `/plan-tune` — digest d5a6d37785 -> 93d9fe997e
+- `/pricing` — digest 01556c9a6e -> 1a241a2d69
+- `/prospecting` — digest 36df480e29 -> dc67f4ab6a
+- `/public-relations` — digest 359579a12d -> 82244d6403
+- `/qa` — digest fe4a2c0235 -> 2fe7bb2090
+- `/qa-only` — digest a0c7b0658f -> 163b47da66
+- `/referrals` — digest 7a95902a8f -> 56cecc52ea
+- `/retro` — digest 911fb788c4 -> 9001c9a6f2
+- `/review` — digest 3335385fa4 -> d00f3a2cf9
+- `/revops` — digest 42cae7cc81 -> e0f64f7b1a
+- `/sales-enablement` — digest 91dc90aec5 -> a55f061192
+- `/scrape` — digest 21241e97dc -> 0a57805855
+- `/setup-browser-cookies` — digest 98918d087f -> bb5f051c82
+- `/setup-deploy` — digest b19e81d4ed -> 02e027c9dc
+- `/setup-gbrain` — digest ac6e195189 -> 15ece74de2
+- `/ship` — digest d95e731b66 -> 574582ad64
+- `/skillify` — digest 9461d319fb -> ce2bb424b6
+- `/sms` — digest 8e9462f32e -> e9ccfd61df
+- `/social` — digest 2d29d2d5a9 -> 91c8b4b93d
+- `/spec` — digest 6328aad2d6 -> 7d8087726b
+- `/sync-gbrain` — digest 5d3f88acd2 -> e5ece38801
+- `/test-audit` — digest dc3d9ba449 -> 1727803941
+- `/unfreeze` — digest 307090a790 -> d9f2c6234d
+- `/video` — digest f7f1bc966f -> 6c7ae1d26b
 
