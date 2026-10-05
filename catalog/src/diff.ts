@@ -196,6 +196,12 @@ function indexBy(catalog: Catalog | null): Map<string, CatalogSkillEntry> {
   return m;
 }
 
+/** Allowed tools present in `cur` but absent from `prev`. */
+function gainedTools(prev: CatalogSkillEntry, cur: CatalogSkillEntry): string[] {
+  const before = new Set((prev.allowedTools ?? []).map((t) => t.trim()));
+  return (cur.allowedTools ?? []).map((t) => t.trim()).filter((t) => !before.has(t));
+}
+
 /**
  * Manual-review policy. A change auto-merges only when NONE of these apply.
  *
@@ -262,11 +268,14 @@ function reviewReasonsFor(
     if (changed.has(f)) reasons.push(`policy-changed:${f}`);
   }
   // Tool surface can shrink (routine) or change composition (reviewable) with
-  // an unchanged count, which the capability check alone would miss.
-  for (const f of ["allowedTools", "disallowedTools"] as const) {
-    if (changed.has(f) && !reasons.some((r) => r.startsWith("tool-surface"))) {
-      reasons.push(`policy-changed:${f}`);
-    }
+  // an unchanged count, which the capability check alone would miss. Dropping
+  // an allowed tool only narrows the surface, so it needs a gained tool to count.
+  const toolSurfaceReported = reasons.some((r) => r.startsWith("tool-surface"));
+  if (changed.has("allowedTools") && gainedTools(prev, cur).length > 0 && !toolSurfaceReported) {
+    reasons.push("policy-changed:allowedTools");
+  }
+  if (changed.has("disallowedTools") && !toolSurfaceReported) {
+    reasons.push("policy-changed:disallowedTools");
   }
   return [...new Set(reasons)].sort();
 }
