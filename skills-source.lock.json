@@ -147,170 +147,170 @@
     },
     {
       "canonicalInvocation": "/autoplan",
-      "digest": "1ebbc9a022a7471b83f6a05d4390fdd61c1a23800088c8caacd08b3def1dcf97",
+      "digest": "6d7b473d2afe5fdc0603dc0c8c13c3b3b0644651f6333c553825e7966902b0ce",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "autoplan/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/benchmark-models",
-      "digest": "7f74546567c9455e90c5721135cef06e056fd8401775977147e8710edcc723cb",
+      "digest": "45bb47e13d91477df9494538059a6c7a3b5772cf8e9fe4bbea0da781eefd8b33",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "benchmark-models/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/benchmark",
-      "digest": "511430f8a35d809278c48d41f995a83db90992cd07f9f218e28479c314918c92",
+      "digest": "d6ef5b5c32750c2a21dc6f4efbef04c91cfbc0592a252b524be58642a4e7389e",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "benchmark/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/browse",
-      "digest": "85ef8e3f428395554b2805f90c29a934ae37c90a449ff3d5a157300f8c1f9bed",
+      "digest": "7f2cd3e98690bc9eda84abb6645dce4f50353090b5eb47976e188a6580dc82f5",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "browse/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/canary",
-      "digest": "e4ce01afa0c61aecbaa3500a7b3e7fb0d587e5b2a9daa74b3126788ee3cd4b0f",
+      "digest": "05eb103f7a4f9279ef3e9b2138bcb9dbcb1d463ac06a3483721b79ec327d1f23",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "canary/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/careful",
-      "digest": "8d2521319492b6595fcfae0eff593f4d6878d8654e9c6ba3112bcc89c34ac6f1",
+      "digest": "7627fa9891f86349e5a8e2afb0fb36ce757b377faca87a3f0c9099f55df56bdb",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "careful/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/codex",
-      "digest": "21ece6e3a140c5df408db1f76a6181c5aec80ce2dcac75c0fc0d85c771321540",
+      "digest": "2a1657f8559fe9a279a4e122899bda8aa66bc7733fb69ae52e13c8bb582f9e14",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "codex/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/context-restore",
-      "digest": "5265de31fee056589e5b8ce17208506d34ece2f19be8e9bdc47db7646f19d9df",
+      "digest": "fdba95f3b988560c8688ce5c50372ef9bc36c2bcbbb3c7375b5d99f89bf517e6",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "context-restore/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/context-save",
-      "digest": "06086da7d365369f900c2a0ebf79b9be2faeb387e0337dd6ca52e141062cdc25",
+      "digest": "5bcd81645a291b3581403e27d2bf51d0f6c7df19c8281cc15c4a771cf26c71c1",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "context-save/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/cso",
-      "digest": "dbcb4964274330aca43ee7ccb0c8092e5791ae22eb51d92365efc72b7ac50397",
+      "digest": "99d848b585f978f15ef29b5631b780f5d0b40e1fd8c81b8a41c82af9102eb1ae",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "cso/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/design-consultation",
-      "digest": "3ff7d734160aa7540361cb5ec41c31d3999ef1392b673ecf43aaa90c82d27e45",
+      "digest": "fde3fdd5b1c0defd714b926e9010af67afdbc00e32105d436060ba9e02ad0137",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "design-consultation/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/design-html",
-      "digest": "d0b0e5dc770f0a0b831288012d5cc8718607f7e46624d8f907ba9b7695e366d8",
+      "digest": "fd4970f2c11938e0643dde7938a9862582323ada1fec5ce42e474c6062397ffb",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "design-html/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/design-review",
-      "digest": "804b6ba9229c4452bc7deeb9638def140891c36ac2daa132c446faff64d8b4a7",
+      "digest": "d862f58d91beb7a351e0fcf63ab4008725e2b2618ace8cc4da2d2dd459e877e2",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "design-review/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/design-shotgun",
-      "digest": "4dd48c3e59f5532b9d579cd04d1332c01b53de2ebfeee4e742b0cf131c688723",
+      "digest": "75a43072f0978606488f84b0385ed9f8aa984c4bfbad72737f3bc2b79ab331d6",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "design-shotgun/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
@@ -322,487 +322,487 @@
       },
       "redistribution": "full",
       "relativePath": "deslop-shared-libs/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/devex-review",
-      "digest": "2979decb10d1b50b18000a827c36f1c89c43505cb360075fe9eb39283da84843",
+      "digest": "7db5b47b3a70db5be9ad561c04adc3b2b4f04273e56280f54f971b1f78fe12bc",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "devex-review/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/diagram",
-      "digest": "c6ef5b2dcd65659e3354fae27563361550441fc3d2e40f188ec00dadc965b3b7",
+      "digest": "be3d55370feaddd028a284dd0d5adc43b2c3962270e487fae614dfdf0efa5fd7",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "diagram/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/document-generate",
-      "digest": "7fc99a4ed422f3e81f5e172f4054a253539eb1ef52332ac0212090288913b612",
+      "digest": "fa00d1e271f8524738d7219d9be382842a46237fafdde108bcd45590f7328c49",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "document-generate/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/document-release",
-      "digest": "40bb193d5dd4fa48b46c93588444a766c7550d4d4de2684edac1473b50e1802d",
+      "digest": "c4884808c217fe5392864513c02440c256f400df5cf1206722cce9f68d7a54de",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "document-release/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/freeze",
-      "digest": "7b93dd6e06bab706e9a8ff645ef79ff1edb9738b62aae36408d32954e37c4c79",
+      "digest": "4719e2e0f3ece21762d9a705b2e5f54163b2d262d70109d385fbc66522d650f4",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "freeze/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/gstack-upgrade",
-      "digest": "1a45231c9cc873d79592a1f47b47edf95ada7ba87050c413265f214080f6238e",
+      "digest": "5b1dea219acb7f6bb63f79143d1a46b9ecb2ad1d8a2142a20f9873f93559b557",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "gstack-upgrade/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/guard",
-      "digest": "b48662917cf6f0f518d38e93fe4e01c67c7c0111424084f9a2ff2f2495c2af59",
+      "digest": "c1c766386ea1e09ababf3e6c3f3d2eef136e855a4f5866466670385d99c57bd2",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "guard/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/health",
-      "digest": "07aedf40200ffdef9beb0310abadb2dc01f1f36f93ccdf71defbdd8095d9c424",
+      "digest": "862cdc5f22f29ba21fe919c3ac40c7c6c046cfa6a9a4f8ce88f7d25429342d22",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "health/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/investigate",
-      "digest": "684ac6b06cdce9146735cbd8326df79cdcf471e35cf54aed96c7a2f8d8ac4c2f",
+      "digest": "653f8e6b67a9ac6a5c731c1b89c30c0cd7642fbd13f01843b6b4e5b8ead08c60",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "investigate/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/ios-clean",
-      "digest": "80c173faf900cc5c14d554f220cb8724fbc5f6e4aadfa0ce61eaefd9155ad41f",
+      "digest": "8b0dea681fa5669a93fe2e4e2d86603986c07018d0937ee12328e1e4fceb2289",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "ios-clean/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/ios-design-review",
-      "digest": "4d034b49c6015f98d86ac41939c51e48ddf24c79534e5ffc72559f93019a7a25",
+      "digest": "eb243b6c344e842208392eb652beec64ff05be595a26cfce9be7962b4b87c4d7",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "ios-design-review/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/ios-fix",
-      "digest": "954086004a7290c0e0f3bc74aa30f39628774b50756ff1af6269693c0ae8864d",
+      "digest": "576b3f2d3f21fe861ee6b413e7da96158377a11413b8eee7dd26b08b0c53d1e3",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "ios-fix/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/ios-qa",
-      "digest": "d4f0d805e57991bbf3a2f704f07404585e0180bd88b13e44b7df0f6d075ce545",
+      "digest": "3db2ba89c997e081454756fdbf118ae66133e301fe081f2a3167689f58bf13fb",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "ios-qa/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/ios-sync",
-      "digest": "805d77191c9a1f32f70223b69e31362cfe9a68d66ff71f833a773feeb5466170",
+      "digest": "f823b2de4af7b903d0c0527886623bba03979be6a6f538b2fce0950bbe94d84c",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "ios-sync/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/land-and-deploy",
-      "digest": "6ac17ec339a44da04ad80774847cdcc9d6b2d7e3548e70582a27da57101a8407",
+      "digest": "158f2af86bd3269fbe15ec683a94dee4463264f220807dddc2439159216311fb",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "land-and-deploy/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/landing-report",
-      "digest": "105472c9091a36fa90508e9dfa710da4ee4014fc48aa8eae70af3596344eec85",
+      "digest": "8b533da98b52512bae6ce22b9883bfc6fbd989f6c16a27a778bbce4ef0049ba9",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "landing-report/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/learn",
-      "digest": "f6a50ec5ad5adca4a749920dddbb1983032e0d20299e690b680eecb3c79e8132",
+      "digest": "49fc8e0c2c2980c7e1ae4367b66164e0ebae0138a108c42e34f45014606596a4",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "learn/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/make-pdf",
-      "digest": "3a76ffe76564e446bcd4e40fff30be0491534c8c9e5f9c397fc7d22302a8adff",
+      "digest": "cdcc0dc51d67e68f9d9351de26f1c677be085587a8f15942a1a2ab318daff461",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "make-pdf/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/office-hours",
-      "digest": "b80239a8af9714e32765b6f40d4f5182aeaf6af40aedcafab8c0007839fc484d",
+      "digest": "af4f1d3aed18faf3f3f1b331b4d9a4bfdcb726d387e3cc289e73dc4486920e93",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "office-hours/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/open-gstack-browser",
-      "digest": "9ea746bbcd6f599237dc6561eb2ef42f5ef9de01a3dc48df16caa922ac30d6e5",
+      "digest": "63d2dd6eec0fa47ae020ed86b2ba4c73845d80fa874a98c30d719c506c26f6da",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "open-gstack-browser/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/pair-agent",
-      "digest": "fb3dfe5585cf7b5d1cc4439090cd6d720ed4c6f4f789221070b03a61064ef0b5",
+      "digest": "66ad7a42b4d0dce51dfdb0b6bacb5794f2845df4375ba9bfa8d9afafea9dcd5b",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "pair-agent/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/plan-ceo-review",
-      "digest": "3771d98ccfb828def7ec84a95b1ed3556b3691ae88f83a98d679b095f48398ef",
+      "digest": "18985eb81a2970f5c19bcaf32d52915bea2cbdbc75460c1862f890a3d4fc8e77",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "plan-ceo-review/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/plan-design-review",
-      "digest": "e4bd3517d18842427f4329a54c976d0a1839e9a42c664f51052a0542802971bf",
+      "digest": "159af8407ed5afa6070395c20d92b48ab336d1e89f6f96f03755b281e77f73d7",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "plan-design-review/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/plan-devex-review",
-      "digest": "ceec697d09cacd410d857f830edda72932cda752106d6f08c17efeb87e747fc2",
+      "digest": "d9ab9228d2a372f466553cb1b2464aadbaf5c295dff1478e4373b5b68ec99c7e",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "plan-devex-review/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/plan-eng-review",
-      "digest": "8941280e0df14715866077b9cd26c6e92ca2ca6fa9565991226ff79dfa4946f0",
+      "digest": "2657ace5952d456f8859c37881b2f0a814fb06b931370245c89ae756a7285ec0",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "plan-eng-review/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/plan-tune",
-      "digest": "d5a6d37785313e8c928d3dccafa2b33e13fd124f5474eae5b4e1d2bc370365a4",
+      "digest": "9a025d6afc7faf169721171ba99381179d9fa20dc6e6b65ca86be427c2b133fd",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "plan-tune/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/qa-only",
-      "digest": "a0c7b0658fa3f6bbc4ea1985321583c25dea8181db8d9ab4bda5b9dff471a133",
+      "digest": "94cb1d19810a6c65d75f7db5ee3d6ce319cb1540a76fdf03a9e31c3fce974338",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "qa-only/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/qa",
-      "digest": "fe4a2c02358b2bb39db1171c768039eeedd882cfea1aef56703e3380755e3fb6",
+      "digest": "ec8b97126ecd9b596f6a6e5762328cb905e9a0884bd6a8f2f787982b3ea76684",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "qa/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/retro",
-      "digest": "911fb788c4f8696951101abb8863cffb1ccfe49aca274ac8f7adb90cc2622ce3",
+      "digest": "f4019b1d1aa2ddf1732d1a8aaf66c4b69f81397f74e4561bac0c78fb9708547d",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "retro/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/review",
-      "digest": "3335385fa46c90fd2685d0fa879b91993aaf553db1b821311ac0a078d5d7488b",
+      "digest": "beda4c3cda135d78fab4895d76dd2394aabbb95bbe666cf14ad616553e1f954c",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "review/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/scrape",
-      "digest": "21241e97dcfa321be70bd65ac0c74f7497e0b8ec8cda754174d3622c40536930",
+      "digest": "fdbf6f46c182fa0aafc860c7bc0e191357445ec6b2f31ee0e234878e731dc20d",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "scrape/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/setup-browser-cookies",
-      "digest": "98918d087f44a2ba347bab83e77f72e4f55c7d0c623404ff037bd97d2938df3c",
+      "digest": "900fa7ad2604edcb7fe68f2dd355ba5fa96d3a14e59be5621fe1f1c154315eb5",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "setup-browser-cookies/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/setup-deploy",
-      "digest": "b19e81d4edc1018f3a7c529c14d9f0507fc3bfaddbbacee6e041f558b2ce25b1",
+      "digest": "268a55aff43b92f601b10b1514dcf17052b74bf4a7964ba1b752757fb0883321",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "setup-deploy/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/setup-gbrain",
-      "digest": "ac6e195189863267e47c6ba09320dc3a317a484554fd7952bf8659e88f8b6846",
+      "digest": "b19841e6f905ae503d1f6f868eae1d3f265cd8e15b86b2b967e9a4e68664367c",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "setup-gbrain/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/ship",
-      "digest": "d95e731b6687c2d74946b6d689fdc02cb73a143bb4988ff503d99696553c24cc",
+      "digest": "ee18460dfccc2e0aa788e2fd8557fd4d215dad0cbbd2ac2cdb93c3ee385d9e10",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "ship/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/skillify",
-      "digest": "9461d319fb679f7a1c6d48c076a14106c18b4059e9aba68f8df4c85e0e6994ee",
+      "digest": "0189e8205196d157d165914618bf76076ce96aa84836da1f1b5e5feb2e863de2",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skillify/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/spec",
-      "digest": "6328aad2d683f59ec13f99f7d6938831f3f64ffdfd7058556e2a80b8e69f6ab6",
+      "digest": "942acd19b0f5778cba829072662e1f6760f4f2d633eff22a9527d3992d3d5d87",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "spec/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/sync-gbrain",
-      "digest": "5d3f88acd296ea7cb37b4b44de337f6297ec9e25572548593df4909925ecc8ed",
+      "digest": "83bdfa595e67b77a76ab999714806b879428b9fd6c8ae8afb179229ee4088d87",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "sync-gbrain/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/test-audit",
-      "digest": "dc3d9ba44925588e54c44f51b81513d7f02ad39f05ad11129a894bf082a73fc8",
+      "digest": "17278039417f6dc711e13317e08e0efdcf809deec82269e986281ba3891465dd",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "test-audit/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
       "canonicalInvocation": "/unfreeze",
-      "digest": "307090a790cce61b01a77af2ead8dfc273025e5726d2b9ac67bda22f268a218f",
+      "digest": "d9f2c6234d1333479d13870b1e0bc4039da79c106f0c7f1d896a103786acd36b",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "unfreeze/SKILL.md",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "sourceId": "gstack"
     },
     {
@@ -862,55 +862,55 @@
       },
       "redistribution": "full",
       "relativePath": "skills/ab-testing/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/ad-creative",
-      "digest": "5393fd449702b2a35c078c3198c0e86bde4b2b812e10be1fe35dceb12e0a59a2",
+      "digest": "d05a575c7ea68c3843eb88196cf11d180d217c38f01cdac01dd83d7665bc7bc1",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/ad-creative/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/ads",
-      "digest": "c4cd09d8dd4fe5994865e58a64dba12aca81e72a6f0f2199ea0091687ee3a7a2",
+      "digest": "bab5b2024e390ae242dc13ee5ab8a86f415ada5fe17db47906fcfb53887f7823",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/ads/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/ai-seo",
-      "digest": "7ecc1706a0d5e16f6059379ef4ba2bd049b5b03a6e98433f76872ae91f613bc9",
+      "digest": "d51170ec4c8397a567df387486bad2f235b69a899a6bbce26aba5fd26b2c8b2b",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/ai-seo/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/analytics",
-      "digest": "3487d4572838802a39647d42cc6da83c3c9bc860af930d6a1469e56802d4d327",
+      "digest": "ed6bb9bca53ea596cc82cfb2256bfc339201e2e4660cc7a5e16ea9c85c32d8c4",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/analytics/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
@@ -922,55 +922,55 @@
       },
       "redistribution": "full",
       "relativePath": "skills/aso/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/attribution",
-      "digest": "17a53b6661b9c9494fb4c41edbd00bf9f291519fbf22ba1621689b030a9109f4",
+      "digest": "d3c3cf7df78086cddb563ef97e685b044d28c50f47b86d62f7602fedee9e96d3",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/attribution/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/churn-prevention",
-      "digest": "8dc92bc62448cf2aebeba0cd39548517a4637d620dbab201328ab0acaa251614",
+      "digest": "f001d23b0691e6ef47020e87c11050955175b94d1e5b63bdc1f2998806af42f9",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/churn-prevention/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/co-marketing",
-      "digest": "83fadc4013dd1f664056783bf59bc3c528f311069fdb25c8befb9d25ab80c1ba",
+      "digest": "5f7a9405e8a105bd6996d3c3f7a8139bcdfdbeb1aebbafff6eea1c3ad681fe0a",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/co-marketing/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/cold-email",
-      "digest": "1981481e20be4c915dee693c1652d21d47660bf39761a582cca34082a72936d5",
+      "digest": "034354dbc2ae01d6251d5048d2ef1e1d3e7234c575ceb7afa42d4f2448183113",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/cold-email/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
@@ -982,19 +982,19 @@
       },
       "redistribution": "full",
       "relativePath": "skills/community-marketing/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/competitor-profiling",
-      "digest": "4a96523df1a508dbeb12fa11e4117c1697f82a24be0cf0ae56fb369152e5e142",
+      "digest": "46adecdbcd3754e89220b8097a1c8ea6f24fffc93126f484438a2b4683de1b16",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/competitor-profiling/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
@@ -1006,43 +1006,43 @@
       },
       "redistribution": "full",
       "relativePath": "skills/competitors/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/content-strategy",
-      "digest": "ae48c45cf052f4a2961ac672da851bc2c3540d97e3962fc7eab939c526e70e49",
+      "digest": "bf611a391a3e53759b12e027f0e997ade9baf39d96305180d4b5883f4dae32a5",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/content-strategy/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/copy-editing",
-      "digest": "ea77b45112bf7e830a27943f792c7869a4e6834e4d6682ce8484754288427274",
+      "digest": "57ae5f1abd5534316e68f9d1cea341492b434d46bc52985b5b3cd00b43a7be47",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/copy-editing/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/copywriting",
-      "digest": "2a5d3be8c11c5143ff53ddb4bd21486d725118f0a6fc5ec29611bb4c7dc8262c",
+      "digest": "1e6e3224ff7ef3d8490abc2efb116d580fa7796206f0cfc039ab5c40b7f25731",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/copywriting/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
@@ -1054,43 +1054,43 @@
       },
       "redistribution": "full",
       "relativePath": "skills/cro/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/customer-research",
-      "digest": "ea1faaf82ad55a3f740315484e9c4a81cd4f56e9ab7cb8c549e5abb119b36b83",
+      "digest": "d4e6cc5df73c31ca5c8af9d7010141e1fa978369471e5349a3ba4842009b495d",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/customer-research/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/directory-submissions",
-      "digest": "b9f6d8d9b8fe1e1ad55df1bb0750b1ead82fa35db4205cee0a73686cd98270ca",
+      "digest": "76264d6411025431a55f81f3a775c415ddad68631f4133a91038599a246077fc",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/directory-submissions/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/emails",
-      "digest": "511356dd952e3b5bccb8fea802ee50573ca104434ece41ce458dff6fd184ae21",
+      "digest": "e2a3ce7e5582762c08d5cd4e823c0b684b7ae4c135e9180aac4fd66a9c3f14a8",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/emails/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
@@ -1102,7 +1102,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/events/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
@@ -1114,43 +1114,43 @@
       },
       "redistribution": "full",
       "relativePath": "skills/free-tools/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/image",
-      "digest": "50050b8789fc568dc7ae4f35e56ce5776e7fa2379b9c56e8dc7acac1c78d2366",
+      "digest": "351b3c81926922e875e8065ec6d845b6d3499ff5d1ce79acd21358b60a55071b",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/image/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/influencer-marketing",
-      "digest": "c3c3cad7c7d80e03a35515497559fcf7ac8f12d3b9bf68eb3d996fcb85ad09b5",
+      "digest": "c6abe26ef4cb45e48e32ea6c13c762da7105b33df7b213cfd249ea118af25042",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/influencer-marketing/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/launch",
-      "digest": "04a503bec9150454f458126de7bbb3bd1c8949d39043b1eb623d380862284d86",
+      "digest": "d87bef7510943e1130d5a07db8bc2122b0cf325b88ef97ea8ff7633b779d5a27",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/launch/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
@@ -1162,7 +1162,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/lead-magnets/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
@@ -1174,7 +1174,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/marketing-council/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
@@ -1186,31 +1186,31 @@
       },
       "redistribution": "full",
       "relativePath": "skills/marketing-ideas/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/marketing-loops",
-      "digest": "7755764667f2424f0d136be846c3347c237a8d264bad454e6502cacc78196a49",
+      "digest": "50cbf23ccc14f4f6c1385545b567bac591b668d2e191295db020dae8a96e036b",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/marketing-loops/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/marketing-plan",
-      "digest": "ea3109c870666414acf5e7dd8f0d8adcec4f5e4d64f91bca5c4e8f81d22e2294",
+      "digest": "461e592f10ec2dd2d24d44e616389e8cf3f334049430cb2cf4a5051a71322982",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/marketing-plan/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
@@ -1222,7 +1222,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/marketing-psychology/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
@@ -1234,7 +1234,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/offers/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
@@ -1246,7 +1246,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/onboarding/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
@@ -1258,7 +1258,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/paywalls/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
@@ -1270,19 +1270,19 @@
       },
       "redistribution": "full",
       "relativePath": "skills/popups/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/pricing",
-      "digest": "01556c9a6e02b775098da04791553b26f10be94db48027c1518bf4fcbeab7bc9",
+      "digest": "1a241a2d69c75581705ffdbf893ea9e47df2d1e5a4c8f0fc4c31579440a03003",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/pricing/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
@@ -1294,7 +1294,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/product-marketing/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
@@ -1306,67 +1306,67 @@
       },
       "redistribution": "full",
       "relativePath": "skills/programmatic-seo/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/prospecting",
-      "digest": "36df480e29b430eebb5ee6898c60bfbd23920f1725f8efc07a6390f9f4ab2622",
+      "digest": "dc67f4ab6a1f5a74f2b123c07f40cf7118bdec65143907253d3a97da9b670f18",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/prospecting/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/public-relations",
-      "digest": "359579a12daee81b1b303df5ad83365164044c104dece7b215462cad3e3663a8",
+      "digest": "82244d6403025c4d91a41fb9a73418c34ef17d89a00311ea49e4fc018cb2ce09",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/public-relations/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/referrals",
-      "digest": "7a95902a8f70170a601e1b1c0e83442ab45f5c32a767c2d1070b9d7d2633ec25",
+      "digest": "56cecc52ea86e070463ed96940d20e2d7808499942ccbaa85aa765c75ca6ea74",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/referrals/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/revops",
-      "digest": "42cae7cc81f7902360ce2ba641d108ed01388ad7f2f8f7d664dc8e1e1c3bf4ee",
+      "digest": "e0f64f7b1aac7e134c8b51397fda851a9f73036bf921a46de8b8278667beec5f",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/revops/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/sales-enablement",
-      "digest": "91dc90aec5bb33cfbf8dbb2361f0ff0637b8d1d78b6bb7ab538347bcbf80842b",
+      "digest": "a55f061192b499812053168814b73f56a352732d15738e0c04b7dfe3fcc3dc8f",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/sales-enablement/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
@@ -1378,7 +1378,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/schema/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
@@ -1390,7 +1390,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/seo-audit/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
@@ -1402,7 +1402,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/signup/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
@@ -1414,55 +1414,55 @@
       },
       "redistribution": "full",
       "relativePath": "skills/site-architecture/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/sms",
-      "digest": "8e9462f32ef539e88c007474aac0136c26e6d8f7894a48180754e4df46e107ba",
+      "digest": "e9ccfd61dff3cc446142a9e7cd2f86bb8a959558594c5e20588a8dc290443f65",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/sms/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/social",
-      "digest": "2d29d2d5a9a88a48e2c0722e2928992b90b965de237355ddcad0c695824258d8",
+      "digest": "91c8b4b93dd3b8ed52914ed9beb77110d3a8850f3a7e34b5d109c8df2d6d443b",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/social/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/video",
-      "digest": "f7f1bc966f9938d61fc4cd245f931c9767d0bc63be3e1578f93271ec0c71f301",
+      "digest": "6c7ae1d26ba5b85a09c282258a112100609796f609b22b36e4dde7c7aeca0558",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/video/SKILL.md",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/impeccable",
-      "digest": "2b9379cdb329890eebe2384fbaa23f771745f30d8cfc43e180ebd092e69bcd2f",
+      "digest": "0b9e791176f8829944ce075dd0d6922e289b2545c6221b56cb25a798598a0fba",
       "license": {
         "declared": "Apache-2.0",
         "detected": "Apache-2.0"
       },
       "redistribution": "full",
       "relativePath": ".claude/skills/impeccable/SKILL.md",
-      "resolvedRevision": "508d7e8955de3b3caf2d8676e85206723d41a887",
+      "resolvedRevision": "ece38d9904b8a619b3f77cab476eacad09c4fb11",
       "sourceId": "impeccable"
     },
     {
@@ -1630,7 +1630,7 @@
       },
       "redistribution": "metadata-only",
       "relativePath": "skills/doc-coauthoring/SKILL.md",
-      "resolvedRevision": "8a1541c4a3ffa5a20a5a91de0dcf3f0bab1d1ef4",
+      "resolvedRevision": "683bc88e56f3e09ba94f7055977f3d3aa499f202",
       "sourceId": "anthropic"
     },
     {
@@ -1642,7 +1642,7 @@
       },
       "redistribution": "metadata-only",
       "relativePath": "skills/docx/SKILL.md",
-      "resolvedRevision": "8a1541c4a3ffa5a20a5a91de0dcf3f0bab1d1ef4",
+      "resolvedRevision": "683bc88e56f3e09ba94f7055977f3d3aa499f202",
       "sourceId": "anthropic"
     },
     {
@@ -1654,7 +1654,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/mcp-builder/SKILL.md",
-      "resolvedRevision": "8a1541c4a3ffa5a20a5a91de0dcf3f0bab1d1ef4",
+      "resolvedRevision": "683bc88e56f3e09ba94f7055977f3d3aa499f202",
       "sourceId": "anthropic"
     },
     {
@@ -1666,7 +1666,7 @@
       },
       "redistribution": "metadata-only",
       "relativePath": "skills/pdf/SKILL.md",
-      "resolvedRevision": "8a1541c4a3ffa5a20a5a91de0dcf3f0bab1d1ef4",
+      "resolvedRevision": "683bc88e56f3e09ba94f7055977f3d3aa499f202",
       "sourceId": "anthropic"
     },
     {
@@ -1678,7 +1678,7 @@
       },
       "redistribution": "metadata-only",
       "relativePath": "skills/pptx/SKILL.md",
-      "resolvedRevision": "8a1541c4a3ffa5a20a5a91de0dcf3f0bab1d1ef4",
+      "resolvedRevision": "683bc88e56f3e09ba94f7055977f3d3aa499f202",
       "sourceId": "anthropic"
     },
     {
@@ -1690,7 +1690,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/skill-creator/SKILL.md",
-      "resolvedRevision": "8a1541c4a3ffa5a20a5a91de0dcf3f0bab1d1ef4",
+      "resolvedRevision": "683bc88e56f3e09ba94f7055977f3d3aa499f202",
       "sourceId": "anthropic"
     },
     {
@@ -1702,7 +1702,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/web-artifacts-builder/SKILL.md",
-      "resolvedRevision": "8a1541c4a3ffa5a20a5a91de0dcf3f0bab1d1ef4",
+      "resolvedRevision": "683bc88e56f3e09ba94f7055977f3d3aa499f202",
       "sourceId": "anthropic"
     },
     {
@@ -1714,7 +1714,7 @@
       },
       "redistribution": "metadata-only",
       "relativePath": "skills/xlsx/SKILL.md",
-      "resolvedRevision": "8a1541c4a3ffa5a20a5a91de0dcf3f0bab1d1ef4",
+      "resolvedRevision": "683bc88e56f3e09ba94f7055977f3d3aa499f202",
       "sourceId": "anthropic"
     },
     {
@@ -2003,7 +2003,7 @@
       "notes": "Flat layout (top-level */SKILL.md). SKILL.md are rendered from SKILL.md.tmpl upstream; deterministic per SHA.",
       "redistribution": "full",
       "repo": "https://github.com/garrytan/gstack.git",
-      "resolvedRevision": "7fca42ad8b6c707b8a38f579f72bf3c4f7de6d85",
+      "resolvedRevision": "857466ff8b93c0575bc9e46cf2838d1962077d8f",
       "selectedPaths": [
         "autoplan",
         "benchmark",
@@ -2217,7 +2217,7 @@
       },
       "redistribution": "full",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c0e35b78ad294c4ea8dbe7801c79bfeb6f67f3e9",
+      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
       "selectedPaths": [
         "skills/ab-testing",
         "skills/ad-creative",
@@ -2287,7 +2287,7 @@
       },
       "redistribution": "full",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "508d7e8955de3b3caf2d8676e85206723d41a887",
+      "resolvedRevision": "ece38d9904b8a619b3f77cab476eacad09c4fb11",
       "selectedPaths": [
         ".claude/skills/impeccable"
       ],
@@ -2391,7 +2391,7 @@
       "notes": "Per-skill LICENSE.txt (Apache-2.0); claude-api skipped (name collision).",
       "redistribution": "metadata-only",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "8a1541c4a3ffa5a20a5a91de0dcf3f0bab1d1ef4",
+      "resolvedRevision": "683bc88e56f3e09ba94f7055977f3d3aa499f202",
       "selectedPaths": [
         "skills/doc-coauthoring",
         "skills/docx",

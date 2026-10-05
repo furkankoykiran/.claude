@@ -23,7 +23,7 @@ repo: https://github.com/Panniantong/Agent-Reach.git · ref: `a19a171fa980a07858
 ## Anthropic skills (anthropics/skills)
 
 type: `git` · pack: `anthropic` · skills: 8 · redistribution: metadata-only
-repo: https://github.com/anthropics/skills.git · ref: `origin/HEAD` · revision: `8a1541c4a3ff`
+repo: https://github.com/anthropics/skills.git · ref: `origin/HEAD` · revision: `683bc88e56f3`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -66,7 +66,7 @@ _Runtime-only — see notes below._
 ## gstack (garrytan/gstack)
 
 type: `git` · pack: `gstack` · skills: 55 · redistribution: full
-repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `7fca42ad8b6c`
+repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `857466ff8b93`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -129,7 +129,7 @@ repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: 
 ## Impeccable (pbakaus/impeccable)
 
 type: `git` · pack: `impeccable` · skills: 1 · redistribution: full
-repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `508d7e8955de`
+repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `ece38d9904b8`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -158,7 +158,7 @@ repo: https://github.com/adithya-s-k/manim_skill.git · ref: `origin/HEAD` · re
 ## Marketing skills (coreyhaines31/marketingskills)
 
 type: `git` · pack: `marketing` · skills: 50 · redistribution: full
-repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `c0e35b78ad29`
+repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `dda3841f0b29`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -177,7 +177,7 @@ repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD`
 | [/competitors](../../docs/skills/marketing/competitors.md) | When the user wants to create competitor comparison or alternative pages for SEO and buyer-facing use. Also use when the | full |
 | [/content-strategy](../../docs/skills/marketing/content-strategy.md) | When the user wants to plan a content strategy, decide what content to create, or figure out what topics to cover. Also  | full |
 | [/copy-editing](../../docs/skills/marketing/copy-editing.md) | When the user wants to edit, review, or improve existing marketing copy, or refresh outdated content. Also use when the  | full |
-| [/copywriting](../../docs/skills/marketing/copywriting.md) | When the user wants to write, rewrite, or improve marketing copy for any page — including homepage, landing pages, prici | full |
+| [/copywriting](../../docs/skills/marketing/copywriting.md) | When the user wants to write, rewrite, or improve marketing copy for any page, including homepage, landing pages, pricin | full |
 | [/cro](../../docs/skills/marketing/cro.md) | When the user wants to optimize, improve, or increase conversions on any marketing page or form — including homepage, la | full |
 | [/customer-research](../../docs/skills/marketing/customer-research.md) | When the user wants to conduct, analyze, or synthesize customer research. Use when the user mentions "customer research, | full |
 | [/directory-submissions](../../docs/skills/marketing/directory-submissions.md) | When the user wants to submit their product to startup, SaaS, AI, agent, MCP, no-code, or review directories for backlin | full |
@@ -209,7 +209,7 @@ repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD`
 | [/seo-audit](../../docs/skills/marketing/seo-audit.md) | When the user wants to audit, review, or diagnose SEO issues on their site. Also use when the user mentions "SEO audit," | full |
 | [/signup](../../docs/skills/marketing/signup.md) | When the user wants to optimize signup, registration, account creation, or trial activation flows. Also use when the use | full |
 | [/site-architecture](../../docs/skills/marketing/site-architecture.md) | When the user wants to plan, map, or restructure their website's page hierarchy, navigation, URL structure, or internal  | full |
-| [/sms](../../docs/skills/marketing/sms.md) | When the user wants to plan, build, or optimize SMS or MMS marketing — including welcome flows, abandoned cart texts, po | full |
+| [/sms](../../docs/skills/marketing/sms.md) | When the user wants to plan, build, or optimize SMS, MMS, or WhatsApp marketing — including welcome flows, abandoned car | full |
 | [/social](../../docs/skills/marketing/social.md) | When the user wants help creating, scheduling, or optimizing social media content for LinkedIn, Twitter/X, Instagram, Ti | full |
 | [/video](../../docs/skills/marketing/video.md) | When the user wants to create, generate, or produce video content using AI tools or programmatic frameworks. Also use wh | full |
 
