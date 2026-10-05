@@ -1,774 +1,1427 @@
 {
-  "base": "/tmp/claude-0/-root--claude/13589106-58ff-44b3-954f-42773cd5ff25/scratchpad/base-catalog.json",
+  "base": null,
   "changes": [
     {
-      "detail": "digest 5393fd4497 -> d05a575c7e",
+      "key": "/ab-testing",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
       "key": "/ad-creative",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest c4cd09d8dd -> bab5b2024e",
       "key": "/ads",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest 7ecc1706a0 -> d51170ec4c",
+      "key": "/agent-reach",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
+      "sourceId": "agent_reach"
+    },
+    {
       "key": "/ai-seo",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest 3487d45728 -> ed6bb9bca5",
       "key": "/analytics",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest 17a53b6661 -> d3c3cf7df7",
+      "key": "/anthropics/skills:*",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "plugin-marketplaces"
+    },
+    {
+      "key": "/aso",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
       "key": "/attribution",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest 1ebbc9a022 -> e3ab841018",
       "key": "/autoplan",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:executable/binary",
+        "new-skill-capability:hooks"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 511430f8a3 -> fa2cb9459e",
+      "key": "/banner-design",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "ui_ux_pro_max"
+    },
+    {
       "key": "/benchmark",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 7f74546567 -> 45bb47e13d",
       "key": "/benchmark-models",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 85ef8e3f42 -> 1cd5aff6ee",
+      "key": "/brag",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:executable/binary"
+      ],
+      "securitySensitive": true,
+      "sourceId": "brag_full"
+    },
+    {
+      "key": "/brag-slim",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "brag_slim"
+    },
+    {
+      "key": "/brand",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:executable/binary"
+      ],
+      "securitySensitive": true,
+      "sourceId": "ui_ux_pro_max"
+    },
+    {
+      "key": "/brandkit",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "taste"
+    },
+    {
       "key": "/browse",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:executable/binary",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest e4ce01afa0 -> 622315fd29",
       "key": "/canary",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 8d25213194 -> da7c015691",
       "key": "/careful",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:executable/binary",
+        "new-skill-capability:hooks"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 8dc92bc624 -> f001d23b06",
       "key": "/churn-prevention",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest 83fadc4013 -> 5f7a9405e8",
       "key": "/co-marketing",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest 21ece6e3a1 -> 3deb4315bd",
       "key": "/codex",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 1981481e20 -> 034354dbc2",
       "key": "/cold-email",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest 4a96523df1 -> 46adecdbcd",
+      "key": "/community-marketing",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
       "key": "/competitor-profiling",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest ae48c45cf0 -> bf611a391a",
+      "key": "/competitors",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
       "key": "/content-strategy",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest 5265de31fe -> fdba95f3b9",
       "key": "/context-restore",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 06086da7d3 -> 03559477f2",
       "key": "/context-save",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest ea77b45112 -> 57ae5f1abd",
       "key": "/copy-editing",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest 2a5d3be8c1 -> 1e6e3224ff",
       "key": "/copywriting",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest dbcb496427 -> 99d848b585",
+      "key": "/cro",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
       "key": "/cso",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest ea1faaf82a -> d4e6cc5df7",
       "key": "/customer-research",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest 3ff7d73416 -> 29a60dbbb3",
+      "key": "/design",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "ui_ux_pro_max"
+    },
+    {
       "key": "/design-consultation",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest d0b0e5dc77 -> 94adee3763",
       "key": "/design-html",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 804b6ba922 -> d0942064cb",
       "key": "/design-review",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 4dd48c3e59 -> 38e0ab541e",
       "key": "/design-shotgun",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 2979decb10 -> 5bd51996b8",
+      "key": "/design-system",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:executable/binary"
+      ],
+      "securitySensitive": true,
+      "sourceId": "ui_ux_pro_max"
+    },
+    {
+      "key": "/design-taste-frontend",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "taste"
+    },
+    {
+      "key": "/design-taste-frontend-v1",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "taste"
+    },
+    {
+      "key": "/deslop-shared-libs",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
+      "sourceId": "gstack"
+    },
+    {
       "key": "/devex-review",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest c6ef5b2dcd -> be3d55370f",
       "key": "/diagram",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest b9f6d8d9b8 -> 76264d6411",
       "key": "/directory-submissions",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest 7fc99a4ed4 -> fa00d1e271",
+      "key": "/doc-coauthoring",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "anthropic"
+    },
+    {
       "key": "/document-generate",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:credential-reference"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 40bb193d5d -> c4884808c2",
       "key": "/document-release",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 511356dd95 -> e2a3ce7e55",
+      "key": "/docx",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:executable/binary"
+      ],
+      "securitySensitive": true,
+      "sourceId": "anthropic"
+    },
+    {
       "key": "/emails",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest 7b93dd6e06 -> af6c843ef5",
+      "key": "/events",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
+      "key": "/fk-gh-flow:find-issues",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "repository"
+    },
+    {
+      "key": "/fk-gh-flow:find-repos",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "repository"
+    },
+    {
+      "key": "/fk-gh-flow:github-comment",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
+      "sourceId": "repository"
+    },
+    {
+      "key": "/fk-gh-flow:pr-followup",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "repository"
+    },
+    {
+      "key": "/fk-gh-flow:solve-issue",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "repository"
+    },
+    {
+      "key": "/fk-toolkit-ops:add-mcp",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "repository"
+    },
+    {
+      "key": "/fk-toolkit-ops:openai-image",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
+      "sourceId": "repository"
+    },
+    {
+      "key": "/fk-toolkit-ops:toolkit-update",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
+      "sourceId": "repository"
+    },
+    {
+      "key": "/fk-writing-kit:blog-from-chat",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "repository"
+    },
+    {
+      "key": "/fk-writing-kit:github-profile-blog",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "repository"
+    },
+    {
+      "key": "/fk-writing-kit:humanizer",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "repository"
+    },
+    {
+      "key": "/fk-writing-kit:linkedin-post",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "repository"
+    },
+    {
+      "key": "/free-tools",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
       "key": "/freeze",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:executable/binary",
+        "new-skill-capability:hooks"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 1a45231c9c -> 029a2bd212",
+      "key": "/full-output-enforcement",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "taste"
+    },
+    {
+      "key": "/gpt-taste",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "taste"
+    },
+    {
+      "key": "/graphifyy",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "graphify"
+    },
+    {
       "key": "/gstack-upgrade",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:executable/binary",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest b48662917c -> b9c4f2b1b4",
       "key": "/guard",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:hooks"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 07aedf4020 -> 862cdc5f22",
       "key": "/health",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 50050b8789 -> 351b3c8192",
-      "key": "/image",
-      "kind": "updated",
+      "key": "/high-end-visual-design",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
+      "sourceId": "taste"
+    },
+    {
+      "key": "/image",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest 2b9379cdb3 -> 0b9e791176",
-      "key": "/impeccable",
-      "kind": "updated",
+      "key": "/image-to-code",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
+      "sourceId": "taste"
+    },
+    {
+      "key": "/imagegen-frontend-mobile",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "taste"
+    },
+    {
+      "key": "/imagegen-frontend-web",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "taste"
+    },
+    {
+      "key": "/impeccable",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:executable/binary"
+      ],
+      "securitySensitive": true,
       "sourceId": "impeccable"
     },
     {
-      "detail": "digest c3c3cad7c7 -> c6abe26ef4",
+      "key": "/industrial-brutalist-ui",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "taste"
+    },
+    {
       "key": "/influencer-marketing",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest 684ac6b06c -> 1371679f2c",
       "key": "/investigate",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:hooks"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 80c173faf9 -> 8b0dea681f",
       "key": "/ios-clean",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 4d034b49c6 -> eb243b6c34",
       "key": "/ios-design-review",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 954086004a -> 576b3f2d3f",
       "key": "/ios-fix",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest d4f0d805e5 -> 3db2ba89c9",
       "key": "/ios-qa",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 805d77191c -> f823b2de4a",
       "key": "/ios-sync",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 6ac17ec339 -> 6541e35ae6",
+      "key": "/karpathy-guidelines",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "karpathy"
+    },
+    {
       "key": "/land-and-deploy",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 105472c909 -> 8b533da98b",
       "key": "/landing-report",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 04a503bec9 -> d87bef7510",
       "key": "/launch",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest f6a50ec5ad -> 49fc8e0c2c",
+      "key": "/lead-magnets",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
       "key": "/learn",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 3a76ffe765 -> cdcc0dc51d",
       "key": "/make-pdf",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:executable/binary"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 7755764667 -> 50cbf23ccc",
+      "key": "/marketing-council",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
+      "key": "/marketing-ideas",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
       "key": "/marketing-loops",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest ea3109c870 -> 461e592f10",
       "key": "/marketing-plan",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest b80239a8af -> c82bed4eff",
+      "key": "/marketing-psychology",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
+      "key": "/mcp-builder",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "anthropic"
+    },
+    {
+      "key": "/minimalist-ui",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "taste"
+    },
+    {
+      "key": "/offers",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
       "key": "/office-hours",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 9ea746bbcd -> 2b4a637109",
+      "key": "/onboarding",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
       "key": "/open-gstack-browser",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest fb3dfe5585 -> 879ffd2d6d",
       "key": "/pair-agent",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 3771d98ccf -> f543475060",
+      "key": "/paywalls",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
+      "key": "/pdf",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:executable/binary"
+      ],
+      "securitySensitive": true,
+      "sourceId": "anthropic"
+    },
+    {
       "key": "/plan-ceo-review",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest e4bd3517d1 -> 7a67535f3d",
       "key": "/plan-design-review",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest ceec697d09 -> 59aefc5ea4",
       "key": "/plan-devex-review",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 8941280e0d -> 4681fbbba5",
       "key": "/plan-eng-review",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest d5a6d37785 -> 93d9fe997e",
       "key": "/plan-tune",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 01556c9a6e -> 1a241a2d69",
+      "key": "/popups",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
+      "key": "/pptx",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:executable/binary"
+      ],
+      "securitySensitive": true,
+      "sourceId": "anthropic"
+    },
+    {
       "key": "/pricing",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest 36df480e29 -> dc67f4ab6a",
+      "key": "/product-marketing",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
+      "key": "/programmatic-seo",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
       "key": "/prospecting",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest 359579a12d -> 82244d6403",
       "key": "/public-relations",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest fe4a2c0235 -> 2fe7bb2090",
       "key": "/qa",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest a0c7b0658f -> 163b47da66",
       "key": "/qa-only",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 7a95902a8f -> 56cecc52ea",
+      "key": "/redesign-existing-projects",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "taste"
+    },
+    {
       "key": "/referrals",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest 911fb788c4 -> 9001c9a6f2",
       "key": "/retro",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 3335385fa4 -> d00f3a2cf9",
       "key": "/review",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 42cae7cc81 -> e0f64f7b1a",
       "key": "/revops",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest 91dc90aec5 -> a55f061192",
+      "key": "/rtk",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "rtk"
+    },
+    {
       "key": "/sales-enablement",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest 21241e97dc -> 0a57805855",
+      "key": "/schema",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
       "key": "/scrape",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 98918d087f -> bb5f051c82",
+      "key": "/seo-audit",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
+      "sourceId": "marketing"
+    },
+    {
       "key": "/setup-browser-cookies",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest b19e81d4ed -> 02e027c9dc",
       "key": "/setup-deploy",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest ac6e195189 -> 15ece74de2",
       "key": "/setup-gbrain",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell",
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest d95e731b66 -> 574582ad64",
       "key": "/ship",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 9461d319fb -> ce2bb424b6",
+      "key": "/signup",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
+      "key": "/site-architecture",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
+      "key": "/skill-creator",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:executable/binary"
+      ],
+      "securitySensitive": true,
+      "sourceId": "anthropic"
+    },
+    {
       "key": "/skillify",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 8e9462f32e -> e9ccfd61df",
+      "key": "/slides",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "ui_ux_pro_max"
+    },
+    {
       "key": "/sms",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest 2d29d2d5a9 -> 91c8b4b93d",
       "key": "/social",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:network-access"
+      ],
+      "securitySensitive": true,
       "sourceId": "marketing"
     },
     {
-      "detail": "digest 6328aad2d6 -> 7d8087726b",
       "key": "/spec",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 5d3f88acd2 -> e5ece38801",
+      "key": "/stitch-design-taste",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "taste"
+    },
+    {
       "key": "/sync-gbrain",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest dc3d9ba449 -> 1727803941",
       "key": "/test-audit",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest 307090a790 -> d9f2c6234d",
+      "key": "/ui-styling",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:executable/binary"
+      ],
+      "securitySensitive": true,
+      "sourceId": "ui_ux_pro_max"
+    },
+    {
+      "key": "/ui-ux-pro-max",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "ui_ux_pro_max"
+    },
+    {
       "key": "/unfreeze",
-      "kind": "updated",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:bash/powershell"
+      ],
+      "securitySensitive": true,
       "sourceId": "gstack"
     },
     {
-      "detail": "digest f7f1bc966f -> 6c7ae1d26b",
       "key": "/video",
-      "kind": "updated",
+      "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "marketing"
+    },
+    {
+      "key": "/web-artifacts-builder",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:executable/binary"
+      ],
+      "securitySensitive": true,
+      "sourceId": "anthropic"
+    },
+    {
+      "key": "/xlsx",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:executable/binary"
+      ],
+      "securitySensitive": true,
+      "sourceId": "anthropic"
     }
   ],
   "schemaVersion": 2,
   "summary": {
-    "added": 0,
+    "added": 153,
     "licenseRestricted": 10,
-    "manualReviewRequired": false,
-    "massChange": true,
+    "manualReviewRequired": true,
+    "massChange": false,
     "removed": 0,
     "renamed": 0,
-    "reviewReasons": [],
+    "reviewReasons": [
+      "new-skill-capability:bash/powershell",
+      "new-skill-capability:credential-reference",
+      "new-skill-capability:executable/binary",
+      "new-skill-capability:hooks",
+      "new-skill-capability:network-access"
+    ],
     "runtimeOnly": 3,
-    "securitySensitive": 0,
-    "updated": 84
+    "securitySensitive": 73,
+    "updated": 0
   }
 }
