@@ -48,6 +48,16 @@ It is built for the boring parts that matter in a real setup:
 > skills alongside third-party and repository-owned ones, each under its own
 > licence.
 
+## Overview video
+
+[![FK Claude Toolkit, 22-second overview](docs/media/launch-poster.jpg)](docs/media/launch.mp4 "Play the 22-second overview (silent)")
+
+A 22-second silent overview: install, the implemented provider routes, and
+provider switching. The provider marks only identify which routes the
+repository supports. This project is not affiliated with, or endorsed by,
+Anthropic, OpenAI, NVIDIA or Z.ai. Logo sources are listed in
+[docs/media/LOGO-PROVENANCE.md](docs/media/LOGO-PROVENANCE.md).
+
 ## Quick start
 
 ### Just the plugins
