@@ -109,6 +109,17 @@ describe("same-digest detection: no false positives", () => {
     expect(d.summary.updated).toBe(1);
     expect(d.summary.manualReviewRequired).toBe(false);
   });
+
+  it("dropping an allowed tool is routine even though the list changed", () => {
+    // Shrinking the tool list narrows the surface; only a gained tool is an expansion.
+    const d = sameDigest(
+      { allowedTools: ["Bash", "Read", "Glob", "Grep", "AskUserQuestion"] },
+      { allowedTools: ["Bash", "Read", "Glob", "Grep", "Agent", "AskUserQuestion"] },
+    );
+    expect(d.summary.updated).toBe(1);
+    expect(d.summary.manualReviewRequired).toBe(false);
+    expect(d.changes[0]!.reasons).toEqual([]);
+  });
 });
 
 describe("same-digest detection: reasons name the field", () => {
