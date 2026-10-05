@@ -850,13 +850,20 @@ install_ui_ux_pro_max_skills() {
 }
 
 # ---------------------------------------------------------------------------
-# 7h. BRAG slim. The full BRAG runtime/media skill remains metadata-only; this
-#     installs only the lightweight brag-slim skill body.
+# 7h. BRAG. Both skills come from latent-spaces/brag at the locked SHA. The
+#     release never redistributes the full body (metadata-only); the installer
+#     copies it locally, as it does for karpathy.
 # ---------------------------------------------------------------------------
 install_brag_slim_skill() {
   local stage="$SKILL_SRC_DIR/brag_slim"
   stage_source "brag_slim" "$BRAG_REPO" "$stage" || warn "latent-spaces/brag staging failed — using whatever is on disk"
   install_managed_skill_dir "$stage/skills/brag-slim" "brag-slim" ".from_brag_slim" "$stage"
+}
+
+install_brag_full_skill() {
+  local stage="$SKILL_SRC_DIR/brag_full"
+  stage_source "brag_full" "$BRAG_REPO" "$stage" || warn "latent-spaces/brag staging failed — using whatever is on disk"
+  install_managed_skill_dir "$stage/skills/brag" "brag" ".from_brag_full" "$stage"
 }
 
 # ---------------------------------------------------------------------------
@@ -1016,6 +1023,7 @@ main() {
     run_step "Agent-Reach skill" install_agent_reach_skill
     run_step "UI/UX Pro Max skills" install_ui_ux_pro_max_skills
     run_step "BRAG slim skill"   install_brag_slim_skill
+    run_step "BRAG full skill"   install_brag_full_skill
     run_step "graphify"          install_graphify
     run_step "plugin marketplaces" register_plugin_marketplaces
   fi

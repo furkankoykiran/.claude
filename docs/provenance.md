@@ -27,7 +27,7 @@ bun run catalog:check      # parity, digests, licences, determinism
 | [Agent-Reach](https://github.com/Panniantong/Agent-Reach) | git | MIT / MIT | full | 1 | `a19a171fa980` |
 | [ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) | git | MIT / MIT plus component licences | full | 7 | `09170eec67ee` |
 | [BRAG slim](https://github.com/latent-spaces/brag) | git | MIT / MIT | full | 1 | `c893c5ed52ae` |
-| [BRAG full](https://github.com/latent-spaces/brag) | git, catalog-only | MIT / MIT | metadata-only | 1 | `c893c5ed52ae` |
+| [BRAG full](https://github.com/latent-spaces/brag) | git, installer-fetched | MIT / MIT | metadata-only | 1 | `c893c5ed52ae` |
 | [graphifyy](https://pypi.org/project/graphifyy/) | runtime | Apache-2.0 | metadata-only | — | *PyPI version* |
 | [rtk](https://github.com/rtk-ai/rtk) | runtime | — | metadata-only | — | *installer script* |
 | plugin marketplaces | runtime | per-plugin | metadata-only | — | *resolved by the `claude` CLI* |
@@ -61,9 +61,10 @@ A source lands in metadata-only for one of four reasons:
   `claude` CLI. There is no tree to digest, so they are recorded honestly as
   runtime components with the reason attached.
 - **The selected variant carries unsettled runtime or media rights.** Full BRAG
-  is cataloged so its existence, digest and revision are reviewable, but the
-  body stays metadata-only until its heavy runtime and bundled music-rights
-  boundary is settled.
+  is cataloged so its existence, digest and revision are reviewable, and the
+  release never redistributes its body (bundled music-rights boundary unsettled).
+  The installer copies the body from the locked upstream SHA into the user's
+  own skills directory, the same way it handles karpathy.
 
 The resolver **downgrades automatically**. A source declared `full` whose licence
 cannot be verified becomes metadata-only without anyone deciding to be careful
@@ -81,7 +82,7 @@ would be defensible, but it publishes someone else's work under our marketplace
 identity and makes our manifest depend on repositories we do not control. See
 [the architecture record](architecture-distribution.md) for the full reasoning.
 
-Third-party packs therefore stay installer-fetched or catalog-only, pinned to the reviewed SHAs above. The full bootstrap installs the reviewed safe subsets for Agent-Reach, UI/UX Pro Max, and BRAG slim. Catalog-only sources, such as full BRAG, are not copied into every bootstrap install; they exist so provenance, license, capability and routing data are reviewable without expanding the always-loaded skill set or crossing unresolved runtime boundaries.
+Third-party packs therefore stay installer-fetched, pinned to the reviewed SHAs above. The full bootstrap installs the reviewed safe subsets for Agent-Reach, UI/UX Pro Max, BRAG slim, and BRAG full. Redistribution stays metadata-only for BRAG full: the release assets never carry its body, but the user's bootstrap fetches it from the pinned upstream revision.
 
 ## Licence and notice files
 

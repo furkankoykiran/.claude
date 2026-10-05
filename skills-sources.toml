@@ -186,9 +186,10 @@ selection.names = ["banner-design", "brand", "design", "design-system", "slides"
 notes = "Full bootstrap installs the approved skill set. Current CLI is uipro; generated platform artifacts are not hand-edited here. Component licenses override the root license where present."
 
 # ---------------------------------------------------------------------------
-# BRAG (latent-spaces/brag) — MIT. The slim skill is redistributable; the full
-# runtime variant remains metadata-only because it carries heavy binary/media
-# dependencies and unresolved bundled music-rights notes upstream.
+# BRAG (latent-spaces/brag) — MIT. The slim skill is redistributable. The full
+# runtime variant is metadata-only for redistribution (heavy binary/media assets
+# and unresolved bundled music-rights notes), but the installer fetches it from
+# upstream at the locked SHA, the same way it fetches karpathy.
 # ---------------------------------------------------------------------------
 [sources.brag_slim]
 type = "git"
@@ -214,12 +215,11 @@ pack = "brag"
 license = "MIT"
 redistribution = "metadata-only"
 license_notice_files = ["LICENSE"]
-install_step = "catalog_only"
-catalog_only = true
+install_step = "install_brag_full_skill"
 selection.kind = "subpath"
 selection.path = "skills/brag"
 selection.dest = "skills/brag"
-notes = "Metadata-only. Full BRAG has Node/FFmpeg/media dependencies and upstream music-rights notes that must be settled before redistribution."
+notes = "Redistribution metadata-only: the release assets never carry the body (binary/media files, unresolved music-rights notes). The installer copies it into ~/.claude/skills/brag from the locked upstream SHA, so /brag is runnable locally. Node 22+ and FFmpeg are needed at runtime, not at install."
 
 # ---------------------------------------------------------------------------
 # graphifyy (PyPI) — Apache-2.0. Runtime-only: the `graphify` CLI installs a

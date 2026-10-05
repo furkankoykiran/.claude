@@ -815,6 +815,12 @@ function Install-BragSlimSkill {
     [void](Copy-ManagedSkillDir (Join-Path $stage 'skills\brag-slim') 'brag-slim' '.from_brag_slim' $stage)
 }
 
+function Install-BragFullSkill {
+    $stage = Join-Path $SkillSrcDir 'brag_full'
+    Update-SkillStage $BragRepo $stage -SourceId 'brag_full'
+    [void](Copy-ManagedSkillDir (Join-Path $stage 'skills\brag') 'brag' '.from_brag_full' $stage)
+}
+
 # Curated always-on subset from anthropics/skills (office docs + authoring +
 # meta). The rest of the repo stays on-demand via the plugin marketplace. Skips
 # `claude-api` (name-collides with an existing skill) and skills that overlap
@@ -933,6 +939,7 @@ function Invoke-Main {
         Invoke-Step 'Agent-Reach skill' { Install-AgentReachSkill }
         Invoke-Step 'UI/UX Pro Max skills' { Install-UiUxProMaxSkillSet }
         Invoke-Step 'BRAG slim skill' { Install-BragSlimSkill }
+        Invoke-Step 'BRAG full skill' { Install-BragFullSkill }
         Invoke-Step 'graphify' { Install-Graphify }
         Invoke-Step 'plugin marketplaces' { Register-PluginMarketplace }
     }
