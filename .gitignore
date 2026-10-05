@@ -146,6 +146,12 @@ settings.local.json
 !**/*.pub
 
 # ---------------------------------------------------------------------------
+# Local ChatGPT Project export (regenerated from docs/chatgpt-project.md;
+# uploaded by hand, never committed or linted as repository documentation)
+# ---------------------------------------------------------------------------
+/chatgpt-project-upload/
+
+# ---------------------------------------------------------------------------
 # OS and editor state
 # ---------------------------------------------------------------------------
 .DS_Store
