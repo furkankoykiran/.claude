@@ -2,7 +2,7 @@
   "name": "fk-toolkit-ops",
   "displayName": "Toolkit Ops",
   "description": "Operate the toolkit itself: check for and apply toolkit updates, wire MCP servers into Claude Code, and use Codex-native ImageGen when available with a clear optional API fallback boundary.",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "author": {
     "name": "Furkan Köykıran",
     "url": "https://github.com/furkankoykiran"

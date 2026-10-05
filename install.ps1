@@ -11,7 +11,7 @@
     Same fail-soft philosophy as install.sh: git is the only hard requirement.
     Set CLAUDE_BOOTSTRAP_NO_SYNC=1 to use the current checkout as-is, which is
     intended for CI and testing local changes.
-    Every other step (bun, gstack, rtk, manim, graphify) is optional. A step
+    Every other step (bun, gstack, rtk, graphify) is optional. A step
     that can't complete is reported in the summary at the end instead of
     aborting the whole bootstrap. Re-running is safe (idempotent).
 
@@ -23,7 +23,7 @@
 
 .PARAMETER Minimal
     Core install only (configs + gstack + rtk); skips the heavy upstream skill
-    packs and manim. Equivalent to CLAUDE_BOOTSTRAP_MINIMAL=1.
+    packs. Equivalent to CLAUDE_BOOTSTRAP_MINIMAL=1.
 
 .EXAMPLE
     irm https://raw.githubusercontent.com/furkankoykiran/.claude/main/install.ps1 | iex
@@ -565,44 +565,6 @@ function Install-UserCommand {
 }
 
 # ---------------------------------------------------------------------------
-# 7. Install manim-narration runtime deps (manim + edge-tts + ffmpeg)
-# ---------------------------------------------------------------------------
-function Install-ManimRuntime {
-    $py = Get-PythonCommand
-    if (-not $py) {
-        throw 'python not found - skipping manim/edge-tts. Install from https://python.org/ if you want the manim-narration skill.'
-    }
-
-    $needManim = $false
-    $needEdge  = $false
-    & $py.Exe @($py.Prefix) -c 'import manim'    2>$null; if ($LASTEXITCODE -ne 0) { $needManim = $true }
-    & $py.Exe @($py.Prefix) -c 'import edge_tts' 2>$null; if ($LASTEXITCODE -ne 0) { $needEdge  = $true }
-
-    if ($needManim -or $needEdge) {
-        $pkgs = @()
-        if ($needManim) { $pkgs += 'manim' }
-        if ($needEdge)  { $pkgs += 'edge-tts' }
-        Write-Step "Installing Python deps for manim-narration: $($pkgs -join ', ')"
-        # Windows ships prebuilt wheels for manimpango/pycairo, so no C toolchain
-        # is needed (unlike Linux). pip --user keeps it out of system Python.
-        & $py.Exe @($py.Prefix) -m pip install --user --upgrade @pkgs
-        if ($LASTEXITCODE -ne 0) { Write-Warn "pip install failed for: $($pkgs -join ', ')" }
-    }
-
-    if (-not (Test-Command 'ffmpeg')) {
-        if (Test-Command 'winget') {
-            Write-Step 'Installing ffmpeg via winget'
-            winget install --id Gyan.FFmpeg -e --source winget `
-                --accept-package-agreements --accept-source-agreements
-            Update-SessionPath
-        }
-        else {
-            Write-Warn 'ffmpeg missing and winget unavailable - install it (https://ffmpeg.org/) for manim-narration rendering.'
-        }
-    }
-}
-
-# ---------------------------------------------------------------------------
 # 8. Install graphify (knowledge-graph skill)
 # ---------------------------------------------------------------------------
 function Install-Graphify {
@@ -750,20 +712,6 @@ function Copy-SkillDir {
     Copy-Item -Path (Join-Path $Source '*') -Destination $dest -Recurse -Force
 }
 
-function Install-ManimUpstream {
-    $stage = Join-Path $SkillSrcDir 'manim'
-    Update-SkillStage 'https://github.com/adithya-s-k/manim_skill.git' $stage -SourceId 'manim'
-    foreach ($s in @('manimce-best-practices', 'manimgl-best-practices', 'manim-composer')) {
-        $src = Join-Path $stage "skills\$s"
-        if (Test-Path $src) {
-            Copy-SkillDir $src $s
-            $lic = Join-Path $stage 'LICENSE'
-            if (Test-Path $lic) { Copy-Item $lic (Join-Path $ClaudeDir "skills\$s\UPSTREAM_LICENSE") -Force }
-            Write-Step "Synced upstream skill: $s"
-        }
-    }
-}
-
 function Install-KarpathySkill {
     $stage = Join-Path $SkillSrcDir 'karpathy'
     Update-SkillStage 'https://github.com/multica-ai/andrej-karpathy-skills.git' $stage -SourceId 'karpathy'
@@ -867,6 +815,12 @@ function Install-BragSlimSkill {
     [void](Copy-ManagedSkillDir (Join-Path $stage 'skills\brag-slim') 'brag-slim' '.from_brag_slim' $stage)
 }
 
+function Install-BragFullSkill {
+    $stage = Join-Path $SkillSrcDir 'brag_full'
+    Update-SkillStage $BragRepo $stage -SourceId 'brag_full'
+    [void](Copy-ManagedSkillDir (Join-Path $stage 'skills\brag') 'brag' '.from_brag_full' $stage)
+}
+
 # Curated always-on subset from anthropics/skills (office docs + authoring +
 # meta). The rest of the repo stays on-demand via the plugin marketplace. Skips
 # `claude-api` (name-collides with an existing skill) and skills that overlap
@@ -964,11 +918,9 @@ function Invoke-Main {
     Invoke-Step 'providers'        { Set-Provider }
 
     if ($IsMinimal) {
-        Write-Step 'Minimal mode - skipping manim, graphify, and upstream skill packs.'
+        Write-Step 'Minimal mode - skipping graphify and upstream skill packs.'
     }
     else {
-        Invoke-Step 'manim deps'      { Install-ManimRuntime }
-        Invoke-Step 'manim skills'    { Install-ManimUpstream }
         Invoke-Step 'karpathy skill'  { Install-KarpathySkill }
         Invoke-Step 'marketing skills' {
             Install-SkillCollection `
@@ -987,6 +939,7 @@ function Invoke-Main {
         Invoke-Step 'Agent-Reach skill' { Install-AgentReachSkill }
         Invoke-Step 'UI/UX Pro Max skills' { Install-UiUxProMaxSkillSet }
         Invoke-Step 'BRAG slim skill' { Install-BragSlimSkill }
+        Invoke-Step 'BRAG full skill' { Install-BragFullSkill }
         Invoke-Step 'graphify' { Install-Graphify }
         Invoke-Step 'plugin marketplaces' { Register-PluginMarketplace }
     }

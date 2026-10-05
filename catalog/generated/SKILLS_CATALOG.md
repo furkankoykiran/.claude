@@ -6,9 +6,9 @@
 Generated index of every Claude Code skill, command, and runtime component represented by `furkankoykiran/.claude`.
 Resolver version 1 · schema v1.
 
-- **Sources:** 15
-- **Skills / entries:** 157
-- **Redistributable (full body):** 146
+- **Sources:** 14
+- **Skills / entries:** 153
+- **Redistributable (full body):** 143
 - **Runtime-only:** 3
 
 ## Agent-Reach (Panniantong/Agent-Reach)
@@ -23,7 +23,7 @@ repo: https://github.com/Panniantong/Agent-Reach.git · ref: `a19a171fa980a07858
 ## Anthropic skills (anthropics/skills)
 
 type: `git` · pack: `anthropic` · skills: 8 · redistribution: metadata-only
-repo: https://github.com/anthropics/skills.git · ref: `origin/HEAD` · revision: `8a1541c4a3ff`
+repo: https://github.com/anthropics/skills.git · ref: `origin/HEAD` · revision: `683bc88e56f3`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -66,7 +66,7 @@ _Runtime-only — see notes below._
 ## gstack (garrytan/gstack)
 
 type: `git` · pack: `gstack` · skills: 55 · redistribution: full
-repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: `7fca42ad8b6c`
+repo: https://github.com/garrytan/gstack.git · ref: `4015c2870b064644131ed6f7cfcc1469cfe9808c` · revision: `4015c2870b06`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -129,7 +129,7 @@ repo: https://github.com/garrytan/gstack.git · ref: `origin/HEAD` · revision: 
 ## Impeccable (pbakaus/impeccable)
 
 type: `git` · pack: `impeccable` · skills: 1 · redistribution: full
-repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `508d7e8955de`
+repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `489855d98d45`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -144,21 +144,10 @@ repo: https://github.com/multica-ai/andrej-karpathy-skills.git · ref: `origin/H
 | --- | --- | --- |
 | [/karpathy-guidelines](../../docs/skills/karpathy/karpathy-guidelines.md) | Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid ov | metadata-only |
 
-## Manim skills (adithya-s-k/manim_skill)
-
-type: `git` · pack: `manim` · skills: 3 · redistribution: metadata-only
-repo: https://github.com/adithya-s-k/manim_skill.git · ref: `origin/HEAD` · revision: `cef045011722`
-
-| invocation | description | redistribution |
-| --- | --- | --- |
-| [/manim-composer](../../docs/skills/manim/manim-composer.md) | Trigger when: (1) User wants to create an educational/explainer video, (2) User has a vague concept they want visualized | full |
-| [/manimce-best-practices](../../docs/skills/manim/manimce-best-practices.md) | Trigger when: (1) User mentions "manim" or "Manim Community" or "ManimCE", (2) Code contains `from manim import *`, (3)  | full |
-| [/manimgl-best-practices](../../docs/skills/manim/manimgl-best-practices.md) | Trigger when: (1) User mentions "manimgl" or "ManimGL" or "3b1b manim", (2) Code contains `from manimlib import *`, (3)  | metadata-only |
-
 ## Marketing skills (coreyhaines31/marketingskills)
 
 type: `git` · pack: `marketing` · skills: 50 · redistribution: full
-repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `c0e35b78ad29`
+repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `dda3841f0b29`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -177,7 +166,7 @@ repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD`
 | [/competitors](../../docs/skills/marketing/competitors.md) | When the user wants to create competitor comparison or alternative pages for SEO and buyer-facing use. Also use when the | full |
 | [/content-strategy](../../docs/skills/marketing/content-strategy.md) | When the user wants to plan a content strategy, decide what content to create, or figure out what topics to cover. Also  | full |
 | [/copy-editing](../../docs/skills/marketing/copy-editing.md) | When the user wants to edit, review, or improve existing marketing copy, or refresh outdated content. Also use when the  | full |
-| [/copywriting](../../docs/skills/marketing/copywriting.md) | When the user wants to write, rewrite, or improve marketing copy for any page — including homepage, landing pages, prici | full |
+| [/copywriting](../../docs/skills/marketing/copywriting.md) | When the user wants to write, rewrite, or improve marketing copy for any page, including homepage, landing pages, pricin | full |
 | [/cro](../../docs/skills/marketing/cro.md) | When the user wants to optimize, improve, or increase conversions on any marketing page or form — including homepage, la | full |
 | [/customer-research](../../docs/skills/marketing/customer-research.md) | When the user wants to conduct, analyze, or synthesize customer research. Use when the user mentions "customer research, | full |
 | [/directory-submissions](../../docs/skills/marketing/directory-submissions.md) | When the user wants to submit their product to startup, SaaS, AI, agent, MCP, no-code, or review directories for backlin | full |
@@ -209,7 +198,7 @@ repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD`
 | [/seo-audit](../../docs/skills/marketing/seo-audit.md) | When the user wants to audit, review, or diagnose SEO issues on their site. Also use when the user mentions "SEO audit," | full |
 | [/signup](../../docs/skills/marketing/signup.md) | When the user wants to optimize signup, registration, account creation, or trial activation flows. Also use when the use | full |
 | [/site-architecture](../../docs/skills/marketing/site-architecture.md) | When the user wants to plan, map, or restructure their website's page hierarchy, navigation, URL structure, or internal  | full |
-| [/sms](../../docs/skills/marketing/sms.md) | When the user wants to plan, build, or optimize SMS or MMS marketing — including welcome flows, abandoned cart texts, po | full |
+| [/sms](../../docs/skills/marketing/sms.md) | When the user wants to plan, build, or optimize SMS, MMS, or WhatsApp marketing — including welcome flows, abandoned car | full |
 | [/social](../../docs/skills/marketing/social.md) | When the user wants help creating, scheduling, or optimizing social media content for LinkedIn, Twitter/X, Instagram, Ti | full |
 | [/video](../../docs/skills/marketing/video.md) | When the user wants to create, generate, or produce video content using AI tools or programmatic frameworks. Also use wh | full |
 
@@ -224,7 +213,7 @@ _Runtime-only — see notes below._
 
 ## furkankoykiran/.claude (personal skills)
 
-type: `repo-owned` · pack: `repository` · skills: 13 · redistribution: full
+type: `repo-owned` · pack: `repository` · skills: 12 · redistribution: full
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -233,7 +222,6 @@ type: `repo-owned` · pack: `repository` · skills: 13 · redistribution: full
 | [/fk-gh-flow:github-comment](../../docs/skills/repository/fk-gh-flow-github-comment.md) | Write GitHub issue comments, PR descriptions and review replies that read like a real developer wrote them, matching the | full |
 | [/fk-gh-flow:pr-followup](../../docs/skills/repository/fk-gh-flow-pr-followup.md) | Read a pull request's latest review discussion and act on the pending feedback. Use for "follow up on PR | full |
 | [/fk-gh-flow:solve-issue](../../docs/skills/repository/fk-gh-flow-solve-issue.md) | Solve a GitHub issue end-to-end and open a pull request. Use when the user wants to fix or resolve a specific GitHub iss | full |
-| [/fk-manim-video:manim-narration](../../docs/skills/repository/fk-manim-video-manim-narration.md) | Build a Manim video with spoken narration synced to the animation. Use for a "narrated Manim video", "anlatımlı manim",  | full |
 | [/fk-toolkit-ops:add-mcp](../../docs/skills/repository/fk-toolkit-ops-add-mcp.md) | Wire an MCP server into Claude Code from a pasted JSON `mcpServers` block, via `claude mcp add` rather than hand-editing | full |
 | [/fk-toolkit-ops:openai-image](../../docs/skills/repository/fk-toolkit-ops-openai-image.md) | Generate/edit images via Codex ImageGen. | full |
 | [/fk-toolkit-ops:toolkit-update](../../docs/skills/repository/fk-toolkit-ops-toolkit-update.md) | Check for and apply FK Claude Toolkit updates, or switch the stable/edge channel. | full |

@@ -80,7 +80,6 @@ sessions/
 skills/*
 !skills/fk-eng-agents/
 !skills/fk-gh-flow/
-!skills/fk-manim-video/
 !skills/fk-toolkit-ops/
 !skills/fk-writing-kit/
 
@@ -145,6 +144,12 @@ settings.local.json
 *.pem
 *.key
 !**/*.pub
+
+# ---------------------------------------------------------------------------
+# Local ChatGPT Project export (regenerated from docs/chatgpt-project.md;
+# uploaded by hand, never committed or linted as repository documentation)
+# ---------------------------------------------------------------------------
+/chatgpt-project-upload/
 
 # ---------------------------------------------------------------------------
 # OS and editor state

@@ -32,7 +32,6 @@ It is also embedded in every automation PR body and enforced by
 | `gstack` | all-skills (repo root) | tracks upstream automatically |
 | `marketing` | all-skills (`skills/`) | tracks upstream automatically |
 | `taste` | all-skills (`skills/`) | tracks upstream automatically |
-| `manim` | named (3) | curated; new upstream skills are reported, not added |
 | `karpathy` | named (1) | curated; no upstream license → metadata-only |
 | `anthropic` | named (8) | curated; `claude-api` deliberately skipped (invocation collision) |
 | `impeccable` | subpath | one bundled skill |

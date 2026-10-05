@@ -126,7 +126,7 @@ const rows: Row[] = [
   pass(
     "plugin-skills",
     "Plugin skills",
-    pluginManifests.length >= 5 && pluginSkillFiles.length > 0,
+    pluginManifests.length >= 4 && pluginSkillFiles.length > 0,
     `${pluginManifests.length} Claude plugin manifests and ${pluginSkillFiles.length} plugin skill files detected`,
   ),
   pass(

@@ -25,5 +25,5 @@ SOFTWARE.
 This repository bundles, at install time, third-party skill packs that are
 cloned into ~/.claude/skills/ and are NOT redistributed here. Each retains its
 own upstream license (copied alongside it as UPSTREAM_LICENSE where provided):
-gstack, adithya-s-k/manim_skill, multica-ai/andrej-karpathy-skills,
+gstack, multica-ai/andrej-karpathy-skills,
 coreyhaines31/marketingskills, pbakaus/impeccable, and Leonxlnx/taste-skill.

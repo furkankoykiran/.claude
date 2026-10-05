@@ -12,7 +12,7 @@
 # Environment knobs:
 #   CLAUDE_DIR=/path             Install target (default: ~/.claude)
 #   CLAUDE_BOOTSTRAP_MINIMAL=1   Core install only (configs + gstack + rtk);
-#                                skips the heavy upstream skill packs and manim.
+#                                skips the heavy upstream skill packs.
 #                                Useful for CI and lean setups.
 #   CLAUDE_BOOTSTRAP_NO_SYNC=1   Use the working tree as-is; skip the git
 #                                fetch/update. For testing local changes, CI, and
@@ -42,7 +42,6 @@ CLAUDE_DIR="${CLAUDE_DIR:-$HOME/.claude}"
 SKILL_SRC_DIR="$CLAUDE_DIR/.cache/skill-src"
 GSTACK_REPO="https://github.com/garrytan/gstack.git"
 RTK_INSTALLER="https://raw.githubusercontent.com/rtk-ai/rtk/master/install.sh"
-MANIM_UPSTREAM_REPO="https://github.com/adithya-s-k/manim_skill.git"
 KARPATHY_REPO="https://github.com/multica-ai/andrej-karpathy-skills.git"
 MARKETING_REPO="https://github.com/coreyhaines31/marketingskills.git"
 IMPECCABLE_REPO="https://github.com/pbakaus/impeccable.git"
@@ -712,122 +711,6 @@ EOF
 }
 
 # ---------------------------------------------------------------------------
-# 6. Install Manim runtime deps (pip + system) for skills/manim-narration
-# ---------------------------------------------------------------------------
-ensure_manim_deps() {
-  # ---- 1. System build prerequisites ----
-  # manim pulls pycairo + manimpango, both build from source on Linux.
-  # Without cairo/pango dev headers + pkg-config + a C toolchain, pip will
-  # fail with "pangocairo >= 1.30.0 is required" or "cairo.h: not found".
-  if command -v apt-get >/dev/null 2>&1; then
-    local apt_pkgs=(
-      ffmpeg
-      pkg-config
-      build-essential
-      python3-dev
-      libcairo2-dev
-      libpango1.0-dev
-    )
-    local missing_apt=()
-    local p
-    for p in "${apt_pkgs[@]}"; do
-      dpkg -s "$p" >/dev/null 2>&1 || missing_apt+=("$p")
-    done
-    if [ ${#missing_apt[@]} -gt 0 ]; then
-      log "Installing system deps for manim-narration: ${missing_apt[*]}"
-      sudo apt-get update -y >/dev/null 2>&1 || true
-      sudo apt-get install -y "${missing_apt[@]}" \
-        || warn "apt-get install failed for: ${missing_apt[*]}"
-    fi
-  elif command -v brew >/dev/null 2>&1; then
-    local brew_pkgs=(ffmpeg cairo pango pkg-config)
-    local p
-    for p in "${brew_pkgs[@]}"; do
-      brew list --formula "$p" >/dev/null 2>&1 \
-        || brew install "$p" \
-        || warn "brew install $p failed"
-    done
-  else
-    command -v ffmpeg >/dev/null 2>&1 \
-      || warn "ffmpeg missing and no apt-get/brew detected — install manually."
-    warn "Also install: pkg-config, cairo + pango dev headers, a C compiler."
-  fi
-
-  # ---- 2. Python deps (manim + edge-tts) ----
-  if ! command -v python3 >/dev/null 2>&1; then
-    warn "python3 not found — skipping manim/edge-tts install."
-    return 0
-  fi
-
-  local need_manim=0 need_edge=0
-  python3 -c "import manim"    >/dev/null 2>&1 || need_manim=1
-  python3 -c "import edge_tts" >/dev/null 2>&1 || need_edge=1
-  if [ "$need_manim" -eq 0 ] && [ "$need_edge" -eq 0 ]; then
-    return 0
-  fi
-
-  local pkgs=()
-  [ "$need_manim" -eq 1 ] && pkgs+=("manim")
-  [ "$need_edge"  -eq 1 ] && pkgs+=("edge-tts")
-  log "Installing Python deps for manim-narration: ${pkgs[*]}"
-
-  # Prefer pip --user (works for pyenv and non-PEP-668 Pythons; both packages
-  # land in the same site-packages so the scene can import both).
-  if python3 -m pip install --user --upgrade "${pkgs[@]}" 2>/dev/null; then
-    log "Installed manim-narration deps via pip --user"
-  elif command -v pipx >/dev/null 2>&1; then
-    # PEP 668 fallback. Put manim + edge-tts in ONE venv via pipx inject —
-    # the scene imports both, and they must share a Python.
-    log "pip --user blocked (PEP 668?) — using pipx with shared venv"
-    if [ "$need_manim" -eq 1 ]; then
-      pipx install manim || warn "pipx install manim failed"
-    fi
-    if [ "$need_edge" -eq 1 ]; then
-      if pipx list 2>/dev/null | grep -q 'package manim '; then
-        pipx inject manim edge-tts || warn "pipx inject edge-tts failed"
-      else
-        pipx install edge-tts || warn "pipx install edge-tts failed"
-      fi
-    fi
-  else
-    warn "Neither pip --user nor pipx worked. Install manually:"
-    warn "  python3 -m pip install --user ${pkgs[*]}"
-  fi
-
-  # ---- 3. Final sanity check + actionable hint ----
-  # manim may live in a pipx-managed venv (the pip-blocked fallback above), where
-  # system python3 can't `import manim` even though the `manim` CLI works fine.
-  # Only warn when NEITHER path is usable — otherwise it's a false alarm.
-  if ! python3 -c "import manim" >/dev/null 2>&1 && ! command -v manim >/dev/null 2>&1; then
-    warn "manim not importable and the 'manim' CLI is not on PATH. Likely cause:"
-    warn "missing system headers. On Debian/Ubuntu, run:"
-    warn "  sudo apt install pkg-config build-essential python3-dev \\"
-    warn "                   libcairo2-dev libpango1.0-dev"
-    warn "Then re-run ./install.sh."
-  fi
-}
-
-# ---------------------------------------------------------------------------
-# 7. Install upstream Manim skills (manimce, manimgl, composer) — same
-#    pattern as gstack: cloned into skills/, ignored by parent .gitignore.
-# ---------------------------------------------------------------------------
-install_manim_upstream() {
-  local stage="$SKILL_SRC_DIR/manim"
-  stage_source "manim" "$MANIM_UPSTREAM_REPO" "$stage" || warn "adithya-s-k/manim_skill staging failed — using whatever is on disk"
-  for s in manimce-best-practices manimgl-best-practices manim-composer; do
-    local target="$CLAUDE_DIR/skills/$s"
-    if [ -d "$stage/skills/$s" ]; then
-      mkdir -p "$target"
-      cp -r "$stage/skills/$s/." "$target/"
-      [ -f "$stage/LICENSE" ] && cp "$stage/LICENSE" "$target/UPSTREAM_LICENSE"
-      log "Synced upstream skill: $s"
-    else
-      warn "Upstream skill not found in clone: $s"
-    fi
-  done
-}
-
-# ---------------------------------------------------------------------------
 # 7b. Karpathy coding-discipline skill (multica-ai/andrej-karpathy-skills)
 #     CLAUDE.md inlines the four principles for always-on guidance; this
 #     skill ships the full upstream text so it can be invoked on demand and
@@ -967,13 +850,20 @@ install_ui_ux_pro_max_skills() {
 }
 
 # ---------------------------------------------------------------------------
-# 7h. BRAG slim. The full BRAG runtime/media skill remains metadata-only; this
-#     installs only the lightweight brag-slim skill body.
+# 7h. BRAG. Both skills come from latent-spaces/brag at the locked SHA. The
+#     release never redistributes the full body (metadata-only); the installer
+#     copies it locally, as it does for karpathy.
 # ---------------------------------------------------------------------------
 install_brag_slim_skill() {
   local stage="$SKILL_SRC_DIR/brag_slim"
   stage_source "brag_slim" "$BRAG_REPO" "$stage" || warn "latent-spaces/brag staging failed — using whatever is on disk"
   install_managed_skill_dir "$stage/skills/brag-slim" "brag-slim" ".from_brag_slim" "$stage"
+}
+
+install_brag_full_skill() {
+  local stage="$SKILL_SRC_DIR/brag_full"
+  stage_source "brag_full" "$BRAG_REPO" "$stage" || warn "latent-spaces/brag staging failed — using whatever is on disk"
+  install_managed_skill_dir "$stage/skills/brag" "brag" ".from_brag_full" "$stage"
 }
 
 # ---------------------------------------------------------------------------
@@ -986,7 +876,7 @@ install_graphify() {
   # Always upgrade so a re-run pulls the latest graphifyy, mirroring the git
   # skill packs. graphifyy ships the `graphify` CLI, so when system pip is
   # missing ("No module named pip") or PEP 668 blocks --user, pipx (isolated
-  # venv) is the right tool — the same fallback ensure_manim_deps uses.
+  # venv) is the right tool.
   log "Installing/upgrading graphifyy (graphify CLI)"
   if python3 -m pip install --user --upgrade graphifyy 2>/dev/null; then
     :
@@ -1123,10 +1013,8 @@ main() {
 
   # Optional skill packs + heavy media deps. Skip in minimal mode (CI / lean).
   if [ "${CLAUDE_BOOTSTRAP_MINIMAL:-0}" = "1" ]; then
-    log "CLAUDE_BOOTSTRAP_MINIMAL=1 — skipping manim + upstream skill packs"
+    log "CLAUDE_BOOTSTRAP_MINIMAL=1 — skipping upstream skill packs"
   else
-    run_step "manim deps"        ensure_manim_deps
-    run_step "manim skills"      install_manim_upstream
     run_step "karpathy skill"    install_karpathy_skill
     run_step "marketing skills"  install_marketing_skills
     run_step "impeccable skill"  install_impeccable_skill
@@ -1135,6 +1023,7 @@ main() {
     run_step "Agent-Reach skill" install_agent_reach_skill
     run_step "UI/UX Pro Max skills" install_ui_ux_pro_max_skills
     run_step "BRAG slim skill"   install_brag_slim_skill
+    run_step "BRAG full skill"   install_brag_full_skill
     run_step "graphify"          install_graphify
     run_step "plugin marketplaces" register_plugin_marketplaces
   fi

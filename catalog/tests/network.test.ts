@@ -16,22 +16,23 @@ const ENABLED = process.env["CATALOG_NETWORK_TESTS"] === "1";
 const itOrSkip = ENABLED ? it : it.skip;
 
 describe("network: real configured sources (opt-in)", () => {
-  itOrSkip("resolves adithya-s-k/manim_skill to 3 skills at origin/HEAD", async () => {
+  itOrSkip("resolves multica-ai/andrej-karpathy-skills to 1 skill at origin/HEAD", async () => {
     const work = await mkdtemp(join(tmpdir(), "cat-net-"));
     try {
       const manifest = parseManifest(`
-[sources.manim]
+[sources.karpathy]
 type = "git"
-display_name = "Manim"
-repo = "https://github.com/adithya-s-k/manim_skill.git"
+display_name = "Karpathy guidelines"
+repo = "https://github.com/multica-ai/andrej-karpathy-skills.git"
 ref = "origin/HEAD"
-pack = "manim"
-license = "MIT"
-redistribution = "full"
-install_step = "install_manim_upstream"
+pack = "karpathy"
+license = "unknown"
+redistribution = "metadata-only"
+license_notice_files = []
+install_step = "install_karpathy_skill"
 selection.kind = "named"
 selection.root = "skills"
-selection.names = ["manimce-best-practices", "manimgl-best-practices", "manim-composer"]
+selection.names = ["karpathy-guidelines"]
 `);
       const resolved = await resolveCatalog(manifest, {
         mode: "update",
@@ -40,7 +41,7 @@ selection.names = ["manimce-best-practices", "manimgl-best-practices", "manim-co
         repoRoot: work,
         timeoutMs: 60_000,
       });
-      expect(resolved.skills.length).toBe(3);
+      expect(resolved.skills.length).toBe(1);
       for (const s of resolved.skills) {
         expect(s.digest).toMatch(/^[0-9a-f]{64}$/);
         expect(s.resolvedRevision).toMatch(/^[0-9a-f]{40}$/);
