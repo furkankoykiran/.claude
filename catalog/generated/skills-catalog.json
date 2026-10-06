@@ -4741,7 +4741,7 @@
       "ref": "origin/HEAD",
       "relativePath": ".claude/skills/impeccable/SKILL.md",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "489855d98d4502bc2f46af77d4de37e7ef650e10",
+      "resolvedRevision": "cf3d2fa07d3ad1814ac5fbbbb5b2043b795eaef1",
       "security": {
         "flags": [
           "executables:1"
@@ -8725,7 +8725,7 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "489855d98d4502bc2f46af77d4de37e7ef650e10",
+      "resolvedRevision": "cf3d2fa07d3ad1814ac5fbbbb5b2043b795eaef1",
       "runtimeOnly": false,
       "skillCount": 1,
       "type": "git"
