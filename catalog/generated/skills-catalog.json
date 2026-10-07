@@ -4741,7 +4741,7 @@
       "ref": "origin/HEAD",
       "relativePath": ".claude/skills/impeccable/SKILL.md",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "cf3d2fa07d3ad1814ac5fbbbb5b2043b795eaef1",
+      "resolvedRevision": "bbcb29d9dee6c94915d760bcfc36818ad5be66ad",
       "security": {
         "flags": [
           "executables:1"
@@ -4834,7 +4834,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/ab-testing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4880,7 +4880,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/ad-creative/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4902,11 +4902,11 @@
     {
       "canonicalInvocation": "/ads",
       "description": "When the user wants help with paid advertising campaigns on Google Ads, Meta (Facebook/Instagram), LinkedIn, Twitter/X, or other ad platforms. Also use when the user mentions 'PPC,' 'paid media,' 'ROAS,' 'CPA,' 'ad campaign,' 'retargeting,' 'audience targeting,' 'Google Ads,' 'Facebook ads,' 'LinkedIn ads,' 'ad budget,' 'cost per click,' 'ad spend,' 'should I run ads,' 'ABM,' 'account-based marketing,' 'B2B ads,' 'lead quality,' 'negative keywords,' 'Performance Max,' 'thought leader ads,' 'when should I kill an ad,' 'search terms report,' 'wasted spend,' or 'is this campaign working.' Use this for campaign strategy, audience targeting, bidding, and optimization. For bulk ad creative generation and iteration, see ad-creative. For landing page optimization, see cro.",
-      "digest": "bab5b2024e390ae242dc13ee5ab8a86f415ada5fe17db47906fcfb53887f7823",
+      "digest": "af33f5c0789e55565ce77f8ee6ef2c6d7f3036348810482494fbc353014f3e43",
       "frontmatter": {
         "description": "When the user wants help with paid advertising campaigns on Google Ads, Meta (Facebook/Instagram), LinkedIn, Twitter/X, or other ad platforms. Also use when the user mentions 'PPC,' 'paid media,' 'ROAS,' 'CPA,' 'ad campaign,' 'retargeting,' 'audience targeting,' 'Google Ads,' 'Facebook ads,' 'LinkedIn ads,' 'ad budget,' 'cost per click,' 'ad spend,' 'should I run ads,' 'ABM,' 'account-based marketing,' 'B2B ads,' 'lead quality,' 'negative keywords,' 'Performance Max,' 'thought leader ads,' 'when should I kill an ad,' 'search terms report,' 'wasted spend,' or 'is this campaign working.' Use this for campaign strategy, audience targeting, bidding, and optimization. For bulk ad creative generation and iteration, see ad-creative. For landing page optimization, see cro.",
         "metadata": {
-          "version": "2.4.3"
+          "version": "2.4.4"
         },
         "name": "ads"
       },
@@ -4926,7 +4926,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/ads/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4948,11 +4948,11 @@
     {
       "canonicalInvocation": "/ai-seo",
       "description": "When the user wants to optimize content for AI search engines, get cited by LLMs, or appear in AI-generated answers. Also use when the user mentions 'AI SEO,' 'AEO,' 'GEO,' 'LLMO,' 'answer engine optimization,' 'generative engine optimization,' 'LLM optimization,' 'AI Overviews,' 'optimize for ChatGPT,' 'optimize for Perplexity,' 'AI citations,' 'AI visibility,' 'zero-click search,' 'how do I show up in AI answers,' 'LLM mentions,' 'optimize for Claude/Gemini,' 'llms.txt,' 'llms-full.txt,' 'OKF,' 'Open Knowledge Format,' 'knowledge bundle,' 'agent-readable site,' 'agent readiness,' 'is my site agent-ready,' 'WebMCP,' 'do listicles still work for AI,' 'ChatGPT stopped citing comparison pages,' 'how do LLMs see our brand,' 'LinkedIn for AEO,' or 'AI citation format shift.' Use this whenever someone wants their content to be cited or surfaced by AI assistants and AI search engines. For traditional technical and on-page SEO audits, see seo-audit. For structured data implementation, see schema.",
-      "digest": "d51170ec4c8397a567df387486bad2f235b69a899a6bbce26aba5fd26b2c8b2b",
+      "digest": "7ebcf34a536d6fe6396dfa8cfae59344b6dc216d2cc4b1d60fa467871d747d1d",
       "frontmatter": {
         "description": "When the user wants to optimize content for AI search engines, get cited by LLMs, or appear in AI-generated answers. Also use when the user mentions 'AI SEO,' 'AEO,' 'GEO,' 'LLMO,' 'answer engine optimization,' 'generative engine optimization,' 'LLM optimization,' 'AI Overviews,' 'optimize for ChatGPT,' 'optimize for Perplexity,' 'AI citations,' 'AI visibility,' 'zero-click search,' 'how do I show up in AI answers,' 'LLM mentions,' 'optimize for Claude/Gemini,' 'llms.txt,' 'llms-full.txt,' 'OKF,' 'Open Knowledge Format,' 'knowledge bundle,' 'agent-readable site,' 'agent readiness,' 'is my site agent-ready,' 'WebMCP,' 'do listicles still work for AI,' 'ChatGPT stopped citing comparison pages,' 'how do LLMs see our brand,' 'LinkedIn for AEO,' or 'AI citation format shift.' Use this whenever someone wants their content to be cited or surfaced by AI assistants and AI search engines. For traditional technical and on-page SEO audits, see seo-audit. For structured data implementation, see schema.",
         "metadata": {
-          "version": "2.7.2"
+          "version": "2.7.3"
         },
         "name": "ai-seo"
       },
@@ -4972,7 +4972,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/ai-seo/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5018,7 +5018,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/analytics/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5064,7 +5064,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/aso/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5110,7 +5110,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/attribution/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5156,7 +5156,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/churn-prevention/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5202,7 +5202,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/co-marketing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5248,7 +5248,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/cold-email/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5294,7 +5294,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/community-marketing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5340,7 +5340,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/competitor-profiling/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5386,7 +5386,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/competitors/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5432,7 +5432,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/content-strategy/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5478,7 +5478,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/copy-editing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5524,7 +5524,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/copywriting/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5570,7 +5570,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/cro/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5616,7 +5616,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/customer-research/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5662,7 +5662,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/directory-submissions/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [
           "network-access"
@@ -5710,7 +5710,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/emails/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5756,7 +5756,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/events/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5802,7 +5802,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/free-tools/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5848,7 +5848,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/image/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [
           "network-access"
@@ -5896,7 +5896,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/influencer-marketing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5917,12 +5917,12 @@
     },
     {
       "canonicalInvocation": "/launch",
-      "description": "When the user wants to plan a product launch, feature announcement, or release strategy. Also use when the user mentions 'launch,' 'Product Hunt,' 'feature release,' 'announcement,' 'go-to-market,' 'beta launch,' 'early access,' 'waitlist,' 'product update,' 'how do I launch this,' 'launch checklist,' 'GTM plan,' or 'we're about to ship.' Use this whenever someone is preparing to release something publicly. For ongoing marketing after launch, see marketing-ideas. For the offer being launched (bonuses, guarantees, scarcity, naming), see offers.",
-      "digest": "d87bef7510943e1130d5a07db8bc2122b0cf325b88ef97ea8ff7633b779d5a27",
+      "description": "When the user wants to plan a product launch, feature announcement, or release strategy. Also use when the user mentions 'launch,' 'Product Hunt,' 'feature release,' 'announcement,' 'go-to-market,' 'beta launch,' 'early access,' 'waitlist,' 'product update,' 'how do I launch this,' 'site launch,' 'go live,' 'pre-launch QA,' 'launch checklist,' 'GTM plan,' or 'we're about to ship.' Use this whenever someone is preparing to release something publicly. For ongoing marketing after launch, see marketing-ideas. For the offer being launched (bonuses, guarantees, scarcity, naming), see offers.",
+      "digest": "6b810db6bfecbac4dcaf2b7dfcfdcedad454077a2b79c25cbac5051985af3b91",
       "frontmatter": {
-        "description": "When the user wants to plan a product launch, feature announcement, or release strategy. Also use when the user mentions 'launch,' 'Product Hunt,' 'feature release,' 'announcement,' 'go-to-market,' 'beta launch,' 'early access,' 'waitlist,' 'product update,' 'how do I launch this,' 'launch checklist,' 'GTM plan,' or 'we're about to ship.' Use this whenever someone is preparing to release something publicly. For ongoing marketing after launch, see marketing-ideas. For the offer being launched (bonuses, guarantees, scarcity, naming), see offers.",
+        "description": "When the user wants to plan a product launch, feature announcement, or release strategy. Also use when the user mentions 'launch,' 'Product Hunt,' 'feature release,' 'announcement,' 'go-to-market,' 'beta launch,' 'early access,' 'waitlist,' 'product update,' 'how do I launch this,' 'site launch,' 'go live,' 'pre-launch QA,' 'launch checklist,' 'GTM plan,' or 'we're about to ship.' Use this whenever someone is preparing to release something publicly. For ongoing marketing after launch, see marketing-ideas. For the offer being launched (bonuses, guarantees, scarcity, naming), see offers.",
         "metadata": {
-          "version": "2.0.3"
+          "version": "2.1.0"
         },
         "name": "launch"
       },
@@ -5942,7 +5942,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/launch/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5988,7 +5988,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/lead-magnets/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6034,7 +6034,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-council/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6080,7 +6080,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-ideas/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6126,7 +6126,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-loops/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6172,7 +6172,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-plan/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6218,7 +6218,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-psychology/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6264,7 +6264,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/offers/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6310,7 +6310,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/onboarding/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6356,7 +6356,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/paywalls/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6402,7 +6402,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/popups/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6448,7 +6448,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/pricing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6494,7 +6494,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/product-marketing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6515,12 +6515,12 @@
     },
     {
       "canonicalInvocation": "/programmatic-seo",
-      "description": "When the user wants to create SEO-driven pages at scale using templates and data. Also use when the user mentions \"programmatic SEO,\" \"template pages,\" \"pages at scale,\" \"directory pages,\" \"location pages,\" \"[keyword] + [city] pages,\" \"comparison pages,\" \"integration pages,\" \"building many pages for SEO,\" \"pSEO,\" \"generate 100 pages,\" \"data-driven pages,\" or \"templated landing pages.\" Use this whenever someone wants to create many similar pages targeting different keywords or locations. For auditing existing SEO issues, see seo-audit. For content strategy planning, see content-strategy.",
-      "digest": "c0d2f13da188c46109db06b46304fa75466dd8203946ed490830d1d1c6eee0f1",
+      "description": "When the user wants to create SEO-driven pages at scale using templates and data. Also use when the user mentions \"programmatic SEO,\" \"template pages,\" \"pages at scale,\" \"directory pages,\" \"location pages,\" \"[keyword] + [city] pages,\" \"comparison pages,\" \"integration pages,\" \"building many pages for SEO,\" \"pSEO,\" \"generate 100 pages,\" \"data-driven pages,\" \"templated landing pages,\" or \"which CMS for pSEO.\" Use this whenever someone wants to create many similar pages targeting different keywords or locations. For auditing existing SEO issues, see seo-audit. For content strategy planning, see content-strategy.",
+      "digest": "5bc3b6835df5294bc37d42cf62a4170b4d691d73e99339d3858e6a93ad7edf0d",
       "frontmatter": {
-        "description": "When the user wants to create SEO-driven pages at scale using templates and data. Also use when the user mentions \"programmatic SEO,\" \"template pages,\" \"pages at scale,\" \"directory pages,\" \"location pages,\" \"[keyword] + [city] pages,\" \"comparison pages,\" \"integration pages,\" \"building many pages for SEO,\" \"pSEO,\" \"generate 100 pages,\" \"data-driven pages,\" or \"templated landing pages.\" Use this whenever someone wants to create many similar pages targeting different keywords or locations. For auditing existing SEO issues, see seo-audit. For content strategy planning, see content-strategy.",
+        "description": "When the user wants to create SEO-driven pages at scale using templates and data. Also use when the user mentions \"programmatic SEO,\" \"template pages,\" \"pages at scale,\" \"directory pages,\" \"location pages,\" \"[keyword] + [city] pages,\" \"comparison pages,\" \"integration pages,\" \"building many pages for SEO,\" \"pSEO,\" \"generate 100 pages,\" \"data-driven pages,\" \"templated landing pages,\" or \"which CMS for pSEO.\" Use this whenever someone wants to create many similar pages targeting different keywords or locations. For auditing existing SEO issues, see seo-audit. For content strategy planning, see content-strategy.",
         "metadata": {
-          "version": "2.0.0"
+          "version": "2.1.0"
         },
         "name": "programmatic-seo"
       },
@@ -6540,7 +6540,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/programmatic-seo/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6562,11 +6562,11 @@
     {
       "canonicalInvocation": "/prospecting",
       "description": "When the user wants to find, qualify, and build a list of prospects to reach out to — across B2B SaaS, general B2B, or local small businesses. Also use when the user mentions \"prospecting,\" \"build a prospect list,\" \"find prospects,\" \"find leads,\" \"lead gen list,\" \"find SaaS companies that,\" \"find B2B companies,\" \"find local businesses,\" \"ICP-fit accounts,\" \"who should we go after,\" \"outbound list,\" \"target account list,\" \"find clients near me,\" \"businesses without websites,\" \"prospect research,\" \"qualified leads,\" \"find my first customers,\" \"early adopters,\" \"design partners,\" \"beta users,\" or \"who has this problem.\" Use this for the list-building and qualification phase. For writing the outbound copy after the list is built, see cold-email. For deep competitive research on specific accounts, see competitor-profiling.",
-      "digest": "dc67f4ab6a1f5a74f2b123c07f40cf7118bdec65143907253d3a97da9b670f18",
+      "digest": "ff586d8a92cd938cf851d7efb9e3f171db3b59db6fdc8d5251e58f680a0be140",
       "frontmatter": {
         "description": "When the user wants to find, qualify, and build a list of prospects to reach out to — across B2B SaaS, general B2B, or local small businesses. Also use when the user mentions \"prospecting,\" \"build a prospect list,\" \"find prospects,\" \"find leads,\" \"lead gen list,\" \"find SaaS companies that,\" \"find B2B companies,\" \"find local businesses,\" \"ICP-fit accounts,\" \"who should we go after,\" \"outbound list,\" \"target account list,\" \"find clients near me,\" \"businesses without websites,\" \"prospect research,\" \"qualified leads,\" \"find my first customers,\" \"early adopters,\" \"design partners,\" \"beta users,\" or \"who has this problem.\" Use this for the list-building and qualification phase. For writing the outbound copy after the list is built, see cold-email. For deep competitive research on specific accounts, see competitor-profiling.",
         "metadata": {
-          "version": "1.1.2"
+          "version": "1.1.3"
         },
         "name": "prospecting"
       },
@@ -6586,7 +6586,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/prospecting/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6632,7 +6632,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/public-relations/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6678,7 +6678,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/referrals/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6724,7 +6724,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/revops/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6770,7 +6770,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/sales-enablement/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6816,7 +6816,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/schema/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6862,7 +6862,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/seo-audit/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [
           "network-access"
@@ -6910,7 +6910,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/signup/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6931,12 +6931,12 @@
     },
     {
       "canonicalInvocation": "/site-architecture",
-      "description": "When the user wants to plan, map, or restructure their website's page hierarchy, navigation, URL structure, or internal linking. Also use when the user mentions \"sitemap,\" \"site map,\" \"visual sitemap,\" \"site structure,\" \"page hierarchy,\" \"information architecture,\" \"IA,\" \"navigation design,\" \"URL structure,\" \"breadcrumbs,\" \"internal linking strategy,\" \"website planning,\" \"what pages do I need,\" \"how should I organize my site,\" or \"site navigation.\" Use this whenever someone is planning what pages a website should have and how they connect. NOT for XML sitemaps (that's technical SEO — see seo-audit). For SEO audits, see seo-audit. For structured data, see schema.",
-      "digest": "d7a36855627080eb73a51d38bff35d9d84f0085a22ccc15a29dad6e8b9a5e815",
+      "description": "When the user wants to plan, map, or restructure their website's page hierarchy, navigation, URL structure, or internal linking. Also use when the user mentions \"sitemap,\" \"site map,\" \"visual sitemap,\" \"site structure,\" \"page hierarchy,\" \"information architecture,\" \"IA,\" \"navigation design,\" \"URL structure,\" \"breadcrumbs,\" \"internal linking strategy,\" \"website planning,\" \"what pages do I need,\" \"how should I organize my site,\" \"site navigation,\" \"which website builder should I use,\" \"migrate my website,\" or \"add a blog to my existing site.\" Use this whenever someone is planning what pages a website should have, how they connect, and where to build them. NOT for XML sitemaps (that's technical SEO — see seo-audit). For SEO audits, see seo-audit. For structured data, see schema.",
+      "digest": "3756d7ce96d0384e7cce5ef724e9895c41ee22bbbd7203d25783c3aba7209d82",
       "frontmatter": {
-        "description": "When the user wants to plan, map, or restructure their website's page hierarchy, navigation, URL structure, or internal linking. Also use when the user mentions \"sitemap,\" \"site map,\" \"visual sitemap,\" \"site structure,\" \"page hierarchy,\" \"information architecture,\" \"IA,\" \"navigation design,\" \"URL structure,\" \"breadcrumbs,\" \"internal linking strategy,\" \"website planning,\" \"what pages do I need,\" \"how should I organize my site,\" or \"site navigation.\" Use this whenever someone is planning what pages a website should have and how they connect. NOT for XML sitemaps (that's technical SEO — see seo-audit). For SEO audits, see seo-audit. For structured data, see schema.",
+        "description": "When the user wants to plan, map, or restructure their website's page hierarchy, navigation, URL structure, or internal linking. Also use when the user mentions \"sitemap,\" \"site map,\" \"visual sitemap,\" \"site structure,\" \"page hierarchy,\" \"information architecture,\" \"IA,\" \"navigation design,\" \"URL structure,\" \"breadcrumbs,\" \"internal linking strategy,\" \"website planning,\" \"what pages do I need,\" \"how should I organize my site,\" \"site navigation,\" \"which website builder should I use,\" \"migrate my website,\" or \"add a blog to my existing site.\" Use this whenever someone is planning what pages a website should have, how they connect, and where to build them. NOT for XML sitemaps (that's technical SEO — see seo-audit). For SEO audits, see seo-audit. For structured data, see schema.",
         "metadata": {
-          "version": "2.0.0"
+          "version": "2.1.0"
         },
         "name": "site-architecture"
       },
@@ -6956,7 +6956,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/site-architecture/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7002,7 +7002,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/sms/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7048,7 +7048,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/social/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [
           "network-access"
@@ -7096,7 +7096,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/video/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7768,7 +7768,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/brandkit/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "ce26fc25c0e5e8cab638f883de62d9a86ee5e45b",
+      "resolvedRevision": "b482f7a970abb98c4108d4a9f761e458c64cefc8",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7811,7 +7811,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/taste-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "ce26fc25c0e5e8cab638f883de62d9a86ee5e45b",
+      "resolvedRevision": "b482f7a970abb98c4108d4a9f761e458c64cefc8",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7854,7 +7854,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/taste-skill-v1/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "ce26fc25c0e5e8cab638f883de62d9a86ee5e45b",
+      "resolvedRevision": "b482f7a970abb98c4108d4a9f761e458c64cefc8",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7897,7 +7897,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/output-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "ce26fc25c0e5e8cab638f883de62d9a86ee5e45b",
+      "resolvedRevision": "b482f7a970abb98c4108d4a9f761e458c64cefc8",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7940,7 +7940,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/gpt-tasteskill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "ce26fc25c0e5e8cab638f883de62d9a86ee5e45b",
+      "resolvedRevision": "b482f7a970abb98c4108d4a9f761e458c64cefc8",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7983,7 +7983,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/soft-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "ce26fc25c0e5e8cab638f883de62d9a86ee5e45b",
+      "resolvedRevision": "b482f7a970abb98c4108d4a9f761e458c64cefc8",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8026,7 +8026,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/image-to-code-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "ce26fc25c0e5e8cab638f883de62d9a86ee5e45b",
+      "resolvedRevision": "b482f7a970abb98c4108d4a9f761e458c64cefc8",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8069,7 +8069,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/imagegen-frontend-mobile/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "ce26fc25c0e5e8cab638f883de62d9a86ee5e45b",
+      "resolvedRevision": "b482f7a970abb98c4108d4a9f761e458c64cefc8",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8112,7 +8112,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/imagegen-frontend-web/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "ce26fc25c0e5e8cab638f883de62d9a86ee5e45b",
+      "resolvedRevision": "b482f7a970abb98c4108d4a9f761e458c64cefc8",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8155,7 +8155,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/brutalist-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "ce26fc25c0e5e8cab638f883de62d9a86ee5e45b",
+      "resolvedRevision": "b482f7a970abb98c4108d4a9f761e458c64cefc8",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8198,7 +8198,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/minimalist-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "ce26fc25c0e5e8cab638f883de62d9a86ee5e45b",
+      "resolvedRevision": "b482f7a970abb98c4108d4a9f761e458c64cefc8",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8241,7 +8241,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/redesign-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "ce26fc25c0e5e8cab638f883de62d9a86ee5e45b",
+      "resolvedRevision": "b482f7a970abb98c4108d4a9f761e458c64cefc8",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8284,7 +8284,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/stitch-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "ce26fc25c0e5e8cab638f883de62d9a86ee5e45b",
+      "resolvedRevision": "b482f7a970abb98c4108d4a9f761e458c64cefc8",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8725,7 +8725,7 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "cf3d2fa07d3ad1814ac5fbbbb5b2043b795eaef1",
+      "resolvedRevision": "bbcb29d9dee6c94915d760bcfc36818ad5be66ad",
       "runtimeOnly": false,
       "skillCount": 1,
       "type": "git"
@@ -8749,7 +8749,7 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "resolvedRevision": "5e721d73ac85be8ba917d6a9ca9cb5bc98f02b80",
       "runtimeOnly": false,
       "skillCount": 50,
       "type": "git"
@@ -8789,7 +8789,7 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "ce26fc25c0e5e8cab638f883de62d9a86ee5e45b",
+      "resolvedRevision": "b482f7a970abb98c4108d4a9f761e458c64cefc8",
       "runtimeOnly": false,
       "skillCount": 13,
       "type": "git"
