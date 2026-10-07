@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "fk-eng-agents",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "Four focused subagents — researcher, planner, code-reviewer, debugger — for deep codebase research, dependency-aware planning, pre-commit review, and root-cause debugging. Adds no skill-listing context cost.",
   "author": {
     "name": "Furkan Köykıran",

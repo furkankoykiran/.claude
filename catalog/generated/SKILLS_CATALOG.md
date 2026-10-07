@@ -129,7 +129,7 @@ repo: https://github.com/garrytan/gstack.git · ref: `4015c2870b064644131ed6f7cf
 ## Impeccable (pbakaus/impeccable)
 
 type: `git` · pack: `impeccable` · skills: 1 · redistribution: full
-repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `cf3d2fa07d3a`
+repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `bbcb29d9dee6`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -147,7 +147,7 @@ repo: https://github.com/multica-ai/andrej-karpathy-skills.git · ref: `origin/H
 ## Marketing skills (coreyhaines31/marketingskills)
 
 type: `git` · pack: `marketing` · skills: 50 · redistribution: full
-repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `dda3841f0b29`
+repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `5e721d73ac85`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -242,7 +242,7 @@ _Runtime-only — see notes below._
 ## Taste skills (Leonxlnx/taste-skill)
 
 type: `git` · pack: `taste` · skills: 13 · redistribution: full
-repo: https://github.com/Leonxlnx/taste-skill.git · ref: `origin/HEAD` · revision: `ce26fc25c0e5`
+repo: https://github.com/Leonxlnx/taste-skill.git · ref: `origin/HEAD` · revision: `b482f7a970ab`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
