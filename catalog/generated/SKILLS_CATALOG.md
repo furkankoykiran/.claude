@@ -129,7 +129,7 @@ repo: https://github.com/garrytan/gstack.git · ref: `4015c2870b064644131ed6f7cf
 ## Impeccable (pbakaus/impeccable)
 
 type: `git` · pack: `impeccable` · skills: 1 · redistribution: full
-repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `bbcb29d9dee6`
+repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `778c8a7b71cc`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -147,7 +147,7 @@ repo: https://github.com/multica-ai/andrej-karpathy-skills.git · ref: `origin/H
 ## Marketing skills (coreyhaines31/marketingskills)
 
 type: `git` · pack: `marketing` · skills: 50 · redistribution: full
-repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `5e721d73ac85`
+repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `b9ba399dd88b`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -160,7 +160,7 @@ repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD`
 | [/attribution](../../docs/skills/marketing/attribution.md) | When the user wants to figure out which marketing actually drives conversions and revenue, choose or interpret an attrib | full |
 | [/churn-prevention](../../docs/skills/marketing/churn-prevention.md) | When the user wants to reduce churn, build cancellation flows, set up save offers, recover failed payments, or implement | full |
 | [/co-marketing](../../docs/skills/marketing/co-marketing.md) | When the user wants to find co-marketing partners, plan joint campaigns, or brainstorm partnership opportunities. Use wh | full |
-| [/cold-email](../../docs/skills/marketing/cold-email.md) | Write B2B cold emails and follow-up sequences that get replies. Use when the user wants to write cold outreach emails, p | full |
+| [/cold-email](../../docs/skills/marketing/cold-email.md) | Write and run B2B cold outbound that gets replies, from cold emails and follow-ups to sending setup, LinkedIn, multichan | full |
 | [/community-marketing](../../docs/skills/marketing/community-marketing.md) | Build and leverage online communities to drive product growth and brand loyalty. Use when the user wants to create a com | full |
 | [/competitor-profiling](../../docs/skills/marketing/competitor-profiling.md) | When the user wants to research, profile, or analyze competitors from their URLs. Also use when the user mentions 'compe | full |
 | [/competitors](../../docs/skills/marketing/competitors.md) | When the user wants to create competitor comparison or alternative pages for SEO and buyer-facing use. Also use when the | full |
@@ -189,7 +189,7 @@ repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD`
 | [/pricing](../../docs/skills/marketing/pricing.md) | When the user wants help with pricing decisions, packaging, or monetization strategy. Also use when the user mentions 'p | full |
 | [/product-marketing](../../docs/skills/marketing/product-marketing.md) | When the user wants to create or update their product marketing context document. Also use when the user mentions 'produ | full |
 | [/programmatic-seo](../../docs/skills/marketing/programmatic-seo.md) | When the user wants to create SEO-driven pages at scale using templates and data. Also use when the user mentions "progr | full |
-| [/prospecting](../../docs/skills/marketing/prospecting.md) | When the user wants to find, qualify, and build a list of prospects to reach out to — across B2B SaaS, general B2B, or l | full |
+| [/prospecting](../../docs/skills/marketing/prospecting.md) | When the user wants to find, qualify, and build a list of prospects to reach out to, across B2B SaaS, general B2B, or lo | full |
 | [/public-relations](../../docs/skills/marketing/public-relations.md) | When the user wants help with public relations, earned media, press coverage, journalist outreach, or media strategy (no | full |
 | [/referrals](../../docs/skills/marketing/referrals.md) | When the user wants to create, optimize, or analyze a referral program, affiliate program, or word-of-mouth strategy. Al | full |
 | [/revops](../../docs/skills/marketing/revops.md) | When the user wants help with revenue operations, lead lifecycle management, or marketing-to-sales handoff processes. Al | full |
