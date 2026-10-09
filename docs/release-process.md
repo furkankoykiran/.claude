@@ -35,9 +35,6 @@ heading. Every change was supposed to be hand-written into it. Two problems:
 The commits already carry the information, in a format CI can check. So the
 commits are the source, and the GitHub Release is where notes are published.
 
-The historical file is preserved verbatim at
-[docs/changelog-archive.md](changelog-archive.md).
-
 ## VERSION is the only version
 
 `VERSION` at the repository root feeds three things:

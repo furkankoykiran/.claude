@@ -7,6 +7,7 @@ settings.json.*
 # Provider system (local-only; providers/*.json hold auth tokens; .example templates tracked)
 providers/*.json
 !providers/*.json.example
+!providers/registry.json
 providers/.active
 # NVIDIA gateway config holds the nvapi- key; only its template is tracked
 providers/*.yaml
@@ -22,6 +23,7 @@ RTK.md
 # Runtime caches
 mcp-needs-auth-cache.json
 .cache/
+.update.lock
 
 # Python cache
 __pycache__/

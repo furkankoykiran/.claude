@@ -3,37 +3,14 @@
 | Document | What it covers |
 | --- | --- |
 | [Getting started](getting-started.md) | First run, setup preview, Codex activation, platforms, installer flags, updating, uninstalling, verifying a release |
-| [Updates](updates.md) | The two update layers, `fkt`, channels, migrations, advisories, opting out |
-| [Migrating to plugins](migration-plugins.md) | The namespace change, what to update, how to install only what you want |
 | [Configuration](configuration.md) | Personalization, API provider switching, MCP servers, plugin marketplaces |
 | [Provider capability matrix](provider-capability-matrix.md) | What each provider path supports, what is live-proven, and what remains experimental |
-| [Setup presets](presets.md) | `fkt setup` presets, runtime profiles, supported write flags, and backup behavior |
-| [Doctor guide](doctor-guide.md) | Which diagnostic command to run for provider, MCP, updater, installer, and catalog issues |
-| [Extending the toolkit](extending-toolkit.md) | How to add a provider, skill pack, MCP server, or public doc without breaking provenance or credentials |
-| [Installer parity](installer-parity.md) | Current POSIX, updater, PowerShell, PATH, upgrade, and uninstall evidence boundaries |
+| [ChatGPT project templates](chatgpt-project.md) | Prompt forge, routing, and project instructions for ChatGPT Projects |
 | [Security model](security-model.md) | Trust model, credentials, the supply-chain gate, third-party licensing |
-| [Provenance](provenance.md) | Every source, its licence, what is redistributed and what is only pointed at |
-| [Skill context economy](skill-context-economy.md) | What the skill listing costs, how it was measured, the enforced budget |
-| [Codex skill parity](codex-skill-parity.md) | Static skill compatibility matrix and live-parity evidence boundaries for `ccs codex` |
-| [Codex mode parity](codex-mode-parity.md) | Permission and model-mode support boundaries for `ccs codex` |
-| [Codex prompt forwarding](codex-prompt-forwarding.md) | Current custom-endpoint prompt-forwarding evidence and the fail-closed boundary |
-| [Codex session usage](codex-session-usage.md) | Session, account, rate-limit, and usage accounting boundaries for `ccs codex` |
-| [Codex model switching](codex-model-switching.md) | Default model selection, generated `/model` rows, and switching limits for `ccs codex` |
-| [Codex continuation](codex-continuation.md) | Supported resume primitives and the current boundary for usage-limit continuation under `ccs codex` |
-| [Codex image generation](codex-image-generation.md) | Native ImageGen first, the unproven Claude Code gateway boundary, and the optional API-key fallback |
-| [Free Claude Code pattern review](free-claude-code-patterns.md) | Adopted and rejected product patterns from the current Free Claude Code project |
-| [ChatGPT project prompting](chatgpt-project.md) | Turning rough intent into Claude Code or Codex prompts: files to upload, instructions, verification |
-| [Distribution architecture](architecture-distribution.md) | Why the toolkit ships this way: the decisions, the evidence, what was rejected |
-| [Modernization evidence](modernization-evidence.md) | Cross-agent work boundaries, baseline checks, and runtime proof limits |
-| [Troubleshooting](troubleshooting.md) | Common failures and fixes |
-| [FAQ](faq.md) | Short answers to common questions |
 | [Catalog architecture](catalog-architecture.md) | How the resolver, generator and lock produce a deterministic catalog |
-| [Catalog coverage](catalog-coverage.md) | What "all skills" means per source, and what is deliberately curated out |
-| [Release process](release-process.md) | What a contributor does: Conventional Commits, `VERSION`, how notes are generated |
-| [Release automation](release-automation.md) | Update PR lifecycle, the manual-review policy, versioning and release assets |
-| [Changelog archive](changelog-archive.md) | The hand-maintained changelog, preserved verbatim and no longer updated |
-| [Marketplace submission](marketplace-submission.md) | Checklist and prepared copy for the Anthropic community marketplace |
-| [Catalog research](catalog-research.md) | Background notes behind the catalog design |
+| [Skill context economy](skill-context-economy.md) | What the skill listing costs, how it was measured, the enforced budget |
+| [Troubleshooting](troubleshooting.md) | Common failures, diagnostics and fixes |
+| [Release process](release-process.md) | Conventional Commits, `VERSION`, and release workflow |
 
 Contributing guidelines live in [CONTRIBUTING.md](../CONTRIBUTING.md);
 security reporting in [SECURITY.md](../SECURITY.md).

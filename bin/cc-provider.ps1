@@ -48,6 +48,20 @@ function Assert-ProviderArg($cmd, $ProviderArgs) {
   return $ProviderArgs[0]
 }
 
+function Resolve-Provider($p) {
+  if ($p -in @('codex', 'chatgpt', 'chatgpt-entitlement')) { return 'codex' }
+  if ($p -in @('google', 'agy', 'antigravity', 'gemini')) { return 'google' }
+  if ($p -in @('zai', 'glm', 'zhipu')) { return 'zai' }
+  if ($p -in @('kimi', 'moonshot')) { return 'kimi' }
+  if ($p -in @('nvidia-nim', 'nim')) { return 'nvidia-nim' }
+  if ($p -in @('nvidia', 'nvidia-hosted', 'build-nvidia')) { return 'nvidia' }
+  return $p
+}
+
+function Test-GoogleProvider($p) {
+  return $p -in @('google', 'agy', 'antigravity', 'gemini')
+}
+
 function Test-CodexEntitlement($p) {
   return $p -in @('codex', 'chatgpt', 'chatgpt-entitlement')
 }
@@ -83,12 +97,13 @@ function Format-CodexDisplay($value) {
 }
 
 function Get-CredentialKey($p) {
-  $f = Join-Path $PDir "$p.json"
+  $resolved = Resolve-Provider $p
+  $f = Join-Path $PDir "$resolved.json"
   if (-not (Test-Path -LiteralPath $f)) { return $null }
   $data = Read-JsonMap $f
   if (-not $data.ContainsKey('env') -or -not ($data['env'] -is [hashtable])) { return $null }
   $found = @()
-  foreach ($k in @('ANTHROPIC_AUTH_TOKEN', 'ANTHROPIC_API_KEY')) {
+  foreach ($k in @('GEMINI_API_KEY', 'ANTHROPIC_AUTH_TOKEN', 'ANTHROPIC_API_KEY')) {
     if ($data['env'].ContainsKey($k)) {
       $found += @{ Key = $k; Value = [string]($data['env'][$k]) }
     }
@@ -101,34 +116,77 @@ function Get-CredentialKey($p) {
 
 function Get-CredentialValue($p, $key) {
   if ([string]::IsNullOrEmpty($key)) { return '' }
-  $data = Read-JsonMap (Join-Path $PDir "$p.json")
+  $resolved = Resolve-Provider $p
+  $data = Read-JsonMap (Join-Path $PDir "$resolved.json")
   if (-not $data.ContainsKey('env') -or -not ($data['env'] -is [hashtable]) -or -not $data['env'].ContainsKey($key)) { return '' }
   return [string]$data['env'][$key]
 }
 
+function Test-ConsumerAntigravityAuth {
+  $geminiDir = Join-Path $HOME '.gemini'
+  if (-not (Test-Path -LiteralPath $geminiDir)) { return $false }
+  $oauthFiles = @('oauth_credentials.json', 'antigravity_tokens.json', 'google_accounts.json')
+  foreach ($file in $oauthFiles) {
+    if (Test-Path -LiteralPath (Join-Path $geminiDir $file)) { return $true }
+  }
+  return $false
+}
+
+function Test-OfficialGoogleCredential($p) {
+  if ($env:GEMINI_API_KEY) { return $true }
+  if ($env:GOOGLE_APPLICATION_CREDENTIALS -and (Test-Path -LiteralPath $env:GOOGLE_APPLICATION_CREDENTIALS)) { return $true }
+  $key = Get-CredentialKey $p
+  if ($key) {
+    $val = Get-CredentialValue $p $key
+    if (-not [string]::IsNullOrEmpty($val) -and $val -notmatch '^<') { return $true }
+  }
+  return $false
+}
+
+function Write-NativeAgyAdvice {
+  Write-Host 'Claude Code requires official Gemini API (GEMINI_API_KEY) or Vertex AI credentials.'
+  Write-Host 'Personal Antigravity consumer OAuth tokens are not permitted to be reused or proxied into Claude Code.'
+  Write-Host 'For consumer Antigravity accounts, use native agy directly:'
+  Write-Host '  agy'
+  Write-Host 'To use Google inference in Claude Code, obtain an official API key from Google AI Studio and configure:'
+  Write-Host '  ccs login google'
+}
+
 function Write-ProviderAuthStatus($p) {
-  if (Test-CodexEntitlement $p) {
+  $resolved = Resolve-Provider $p
+  if (Test-CodexEntitlement $resolved) {
     'Auth mode: ChatGPT entitlement via official codex login/status/logout (no API key is copied).'
     return
   }
-  $f = Join-Path $PDir "$p.json"
-  if (-not (Test-Path -LiteralPath $f)) {
-    "Auth mode: not configured (no providers/$p.json yet)."
+  if (Test-GoogleProvider $resolved) {
+    if (Test-OfficialGoogleCredential $resolved) {
+      'Auth mode: official Google/Vertex credentials configured.'
+    } else {
+      'Auth mode: official Gemini API key or Vertex credentials required (not configured).'
+      if (Test-ConsumerAntigravityAuth) {
+        Write-NativeAgyAdvice
+      }
+    }
     return
   }
-  $key = Get-CredentialKey $p
+  $f = Join-Path $PDir "$resolved.json"
+  if (-not (Test-Path -LiteralPath $f)) {
+    "Auth mode: not configured (no providers/$resolved.json yet)."
+    return
+  }
+  $key = Get-CredentialKey $resolved
   if ([string]::IsNullOrEmpty($key)) {
     $data = Read-JsonMap $f
     $url = ''
     if ($data.ContainsKey('env') -and $data['env'] -is [hashtable] -and $data['env'].ContainsKey('ANTHROPIC_BASE_URL')) { $url = [string]$data['env']['ANTHROPIC_BASE_URL'] }
     if ($url -match '127\.0\.0\.1|localhost|0\.0\.0\.0') {
-      "Auth mode: local/gateway provider (no API key stored in providers/$p.json)."
+      "Auth mode: local/gateway provider (no API key stored in providers/$resolved.json)."
     } else {
-      "Auth mode: no API key field in providers/$p.json."
+      "Auth mode: no API key field in providers/$resolved.json."
     }
     return
   }
-  $value = Get-CredentialValue $p $key
+  $value = Get-CredentialValue $resolved $key
   if ([string]::IsNullOrEmpty($value) -or $value -match '^<') {
     "Auth mode: API key required in $key (not configured)."
   } else {
@@ -145,34 +203,36 @@ function Read-ProviderSecret($prompt) {
 }
 
 function Set-ProviderApiKey($p) {
-  if (Test-CodexEntitlement $p) {
+  $resolved = Resolve-Provider $p
+  if (Test-CodexEntitlement $resolved) {
     throw "$p uses ChatGPT entitlement. Use: ccs login $p (delegates to codex login), not an API key."
   }
-  if ((Get-ProviderList) -notcontains $p) { throw "unknown provider: $p" }
-  Initialize-Provider $p
-  $key = Get-CredentialKey $p
-  if ([string]::IsNullOrEmpty($key)) { throw "providers/$p.json has no ANTHROPIC_AUTH_TOKEN or ANTHROPIC_API_KEY field to fill" }
-  $secret = Read-ProviderSecret "Enter API key for $p ($key)"
-  if ([string]::IsNullOrEmpty($secret)) { throw "empty API key; providers/$p.json was not changed" }
-  $f = Join-Path $PDir "$p.json"
+  if ((Get-ProviderList) -notcontains $resolved) { throw "unknown provider: $p" }
+  Initialize-Provider $resolved
+  $key = Get-CredentialKey $resolved
+  if ([string]::IsNullOrEmpty($key)) { throw "providers/$resolved.json has no credential field to fill" }
+  $secret = Read-ProviderSecret "Enter API key for $resolved ($key)"
+  if ([string]::IsNullOrEmpty($secret)) { throw "empty API key; providers/$resolved.json was not changed" }
+  $f = Join-Path $PDir "$resolved.json"
   $data = Read-JsonMap $f
   $data['env'][$key] = $secret
   Set-Content -LiteralPath $f -Value ($data | ConvertTo-Json -Depth 32) -Encoding utf8NoBOM
   Protect-ProviderFile $f
-  "Updated providers/$p.json (${key}: $(Format-SecretRedaction $secret))."
-  if ((Test-Path -LiteralPath $Active) -and ((Get-Content -LiteralPath $Active -Raw).Trim() -eq $p)) {
-    Enable-Provider $p
+  "Updated providers/$resolved.json (${key}: $(Format-SecretRedaction $secret))."
+  if ((Test-Path -LiteralPath $Active) -and ((Get-Content -LiteralPath $Active -Raw).Trim() -eq $resolved)) {
+    Enable-Provider $resolved
   } else {
-    "Run `ccs use $p` to activate it."
+    "Run `ccs use $resolved` to activate it."
   }
 }
 
 function Clear-ProviderAuth($p) {
-  if (Test-CodexEntitlement $p) { Invoke-Codex logout; return }
-  if ((Get-ProviderList) -notcontains $p) { throw "unknown provider: $p" }
-  $f = Join-Path $PDir "$p.json"
+  $resolved = Resolve-Provider $p
+  if (Test-CodexEntitlement $resolved) { Invoke-Codex logout; return }
+  if ((Get-ProviderList) -notcontains $resolved) { throw "unknown provider: $p" }
+  $f = Join-Path $PDir "$resolved.json"
   if (-not (Test-Path -LiteralPath $f)) { "Provider $p has no local file to clear."; return }
-  $key = Get-CredentialKey $p
+  $key = Get-CredentialKey $resolved
   if ([string]::IsNullOrEmpty($key)) { "Provider $p has no API key field to clear."; return }
   $data = Read-JsonMap $f
   $data['env'][$key] = ''
@@ -736,38 +796,53 @@ switch ($Command) {
     if ($Rest.Count -gt 0) { throw 'permissions accepts no arguments' }
     Show-PermissionMatrix
   }
+  'update' {
+    Write-Host 'ccs update is not supported. Use fkt update to update the toolkit, provider registry, and components.'
+    exit 1
+  }
   'use' {
     $p = Assert-ProviderArg 'use' $Rest
-    if ((Get-ProviderList) -contains $p) { Enable-Provider $p } else { throw "unknown provider: $p" }
+    $resolved = Resolve-Provider $p
+    if ((Get-ProviderList) -contains $resolved) { Enable-Provider $resolved } else { throw "unknown provider: $p" }
   }
   'auth' {
     $p = Assert-ProviderArg 'auth' $Rest
-    if (Test-CodexEntitlement $p) { Write-ProviderAuthStatus $p; return }
-    if ((Get-ProviderList) -notcontains $p) { throw "unknown provider: $p" }
-    Initialize-Provider $p
-    Write-ProviderAuthStatus $p
-    $key = Get-CredentialKey $p
+    $resolved = Resolve-Provider $p
+    if (Test-CodexEntitlement $resolved) { Write-ProviderAuthStatus $resolved; return }
+    if (Test-GoogleProvider $resolved) {
+      Write-ProviderAuthStatus $resolved
+      if (-not (Test-OfficialGoogleCredential $resolved)) { Set-ProviderApiKey $resolved }
+      return
+    }
+    if ((Get-ProviderList) -notcontains $resolved) { throw "unknown provider: $p" }
+    Initialize-Provider $resolved
+    Write-ProviderAuthStatus $resolved
+    $key = Get-CredentialKey $resolved
     $value = ''
-    if (-not [string]::IsNullOrEmpty($key)) { $value = Get-CredentialValue $p $key }
-    if ([string]::IsNullOrEmpty($value) -or $value -match '^<') { Set-ProviderApiKey $p }
+    if (-not [string]::IsNullOrEmpty($key)) { $value = Get-CredentialValue $resolved $key }
+    if ([string]::IsNullOrEmpty($value) -or $value -match '^<') { Set-ProviderApiKey $resolved }
   }
   'login' {
     $p = Assert-ProviderArg 'login' $Rest
-    if (Test-CodexEntitlement $p) { Invoke-Codex login } else { Set-ProviderApiKey $p }
+    $resolved = Resolve-Provider $p
+    if (Test-CodexEntitlement $resolved) { Invoke-Codex login } else { Set-ProviderApiKey $resolved }
   }
   'api' {
     $p = Assert-ProviderArg 'api' $Rest
-    Set-ProviderApiKey $p
+    $resolved = Resolve-Provider $p
+    Set-ProviderApiKey $resolved
   }
   'logout' {
     $p = Assert-ProviderArg 'logout' $Rest
-    Clear-ProviderAuth $p
+    $resolved = Resolve-Provider $p
+    Clear-ProviderAuth $resolved
   }
   '-h' { Show-Usage; exit 0 }
   '--help' { Show-Usage; exit 0 }
   default {
-    if ($Command -and ((Get-ProviderList) -contains $Command) -and $Rest.Count -eq 0) {
-      Enable-Provider $Command
+    $resolved = Resolve-Provider $Command
+    if ($Command -and ((Get-ProviderList) -contains $resolved) -and $Rest.Count -eq 0) {
+      Enable-Provider $resolved
     } else {
       if ($Command) { "cc-provider.ps1: unknown provider or command: $Command" | Write-Host; '' | Write-Host }
       Show-Usage

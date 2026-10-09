@@ -205,6 +205,8 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
       # Third-party action pinned to a full commit SHA (oven-sh/setup-bun v2.2.0).
       # The SHA MUST match the v2.2.0 tag's commit; CI validates pin integrity.
       - name: Setup Bun

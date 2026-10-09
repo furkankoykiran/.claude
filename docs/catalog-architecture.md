@@ -142,7 +142,7 @@ introduces: a new upstream source, a source URL change, a license downgrade, an
 unexpected executable/binary, a secret, a symlink escape, a malformed manifest,
 a hook/MCP/agent introduction, or a significant permission expansion. Routine
 content updates may auto-merge after required checks pass. See
-[`docs/release-automation.md`](release-automation.md).
+[`docs/release-process.md`](release-process.md).
 
 ## Resolver safety invariants
 
