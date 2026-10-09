@@ -132,7 +132,7 @@ function Test-ConsumerAntigravityAuth {
   return $false
 }
 
-function Test-OfficialGoogleCreds($p) {
+function Test-OfficialGoogleCredential($p) {
   if ($env:GEMINI_API_KEY) { return $true }
   if ($env:GOOGLE_APPLICATION_CREDENTIALS -and (Test-Path -LiteralPath $env:GOOGLE_APPLICATION_CREDENTIALS)) { return $true }
   $key = Get-CredentialKey $p
@@ -159,7 +159,7 @@ function Write-ProviderAuthStatus($p) {
     return
   }
   if (Test-GoogleProvider $resolved) {
-    if (Test-OfficialGoogleCreds $resolved) {
+    if (Test-OfficialGoogleCredential $resolved) {
       'Auth mode: official Google/Vertex credentials configured.'
     } else {
       'Auth mode: official Gemini API key or Vertex credentials required (not configured).'
@@ -811,7 +811,7 @@ switch ($Command) {
     if (Test-CodexEntitlement $resolved) { Write-ProviderAuthStatus $resolved; return }
     if (Test-GoogleProvider $resolved) {
       Write-ProviderAuthStatus $resolved
-      if (-not (Test-OfficialGoogleCreds $resolved)) { Set-ProviderApiKey $resolved }
+      if (-not (Test-OfficialGoogleCredential $resolved)) { Set-ProviderApiKey $resolved }
       return
     }
     if ((Get-ProviderList) -notcontains $resolved) { throw "unknown provider: $p" }
