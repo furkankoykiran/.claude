@@ -1,0 +1,189 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": 1,
+  "runtimes": {
+    "claude-code": {
+      "name": "Claude Code CLI",
+      "pinnedVersion": "2.1.220",
+      "upstream": "npm:@anthropic-ai/claude-code"
+    },
+    "codex": {
+      "name": "OpenAI Codex CLI & App Server",
+      "pinnedVersion": "2.0.0",
+      "upstream": "npm:@openai/codex",
+      "protocol": "jsonrpc-2.0"
+    },
+    "agy": {
+      "name": "Antigravity CLI",
+      "pinnedVersion": "cli-2.21.1",
+      "upstream": "google:antigravity"
+    },
+    "litellm": {
+      "name": "LiteLLM Proxy (NVIDIA Hosted Gateway)",
+      "pinnedVersion": "1.74.1",
+      "upstream": "pypi:litellm"
+    },
+    "bun": {
+      "name": "Bun Runtime",
+      "pinnedVersion": "1.3.8",
+      "upstream": "github:oven-sh/bun"
+    }
+  },
+  "providers": [
+    {
+      "id": "anthropic",
+      "name": "Anthropic (official)",
+      "aliases": [],
+      "authMethod": "official-subscription",
+      "transportType": "direct-anthropic",
+      "modelDiscovery": false,
+      "lifecycle": "none",
+      "compatibility": {
+        "claudeCode": "supported"
+      },
+      "requiredRuntime": "none",
+      "description": "Official Claude Code service using claude.ai subscription or ANTHROPIC_API_KEY."
+    },
+    {
+      "id": "codex",
+      "name": "OpenAI Codex App Server",
+      "aliases": ["chatgpt", "chatgpt-entitlement"],
+      "authMethod": "delegated-cli",
+      "transportType": "local-sidecar",
+      "modelDiscovery": true,
+      "lifecycle": "session-sidecar",
+      "compatibility": {
+        "claudeCode": "experimental",
+        "nativeCli": "codex",
+        "notes": "Live parity pending; lifecycle and App Server RPCs proven, quota-bearing live inference deferred in this wave."
+      },
+      "requiredRuntime": "bun, codex",
+      "sidecar": {
+        "script": "scripts/codex-anthropic-gateway.ts",
+        "defaultPort": 4545,
+        "healthEndpoint": "/health"
+      },
+      "description": "Routes Claude Code through local Codex App Server adapter via loopback sidecar."
+    },
+    {
+      "id": "google",
+      "name": "Google Gemini / Vertex AI",
+      "aliases": ["agy", "antigravity", "gemini"],
+      "authMethod": "vertex-gemini-key",
+      "transportType": "direct-anthropic",
+      "modelDiscovery": false,
+      "lifecycle": "none",
+      "compatibility": {
+        "claudeCode": "supported",
+        "nativeCli": "agy",
+        "notes": "Claude Code inference requires officially supported GEMINI_API_KEY or Vertex credentials. Personal Antigravity consumer OAuth is rejected in favor of native agy."
+      },
+      "requiredRuntime": "none (agy for native)",
+      "description": "Google Gemini API / Vertex AI using official API keys or service account credentials."
+    },
+    {
+      "id": "zai",
+      "name": "ZAI GLM-4",
+      "aliases": ["glm", "zhipu"],
+      "authMethod": "environment",
+      "transportType": "direct-anthropic",
+      "modelDiscovery": false,
+      "lifecycle": "none",
+      "compatibility": {
+        "claudeCode": "supported"
+      },
+      "requiredRuntime": "none",
+      "description": "Zhipu AI GLM-4 model provider via Anthropic Messages compatibility."
+    },
+    {
+      "id": "deepseek",
+      "name": "DeepSeek",
+      "aliases": [],
+      "authMethod": "environment",
+      "transportType": "direct-anthropic",
+      "modelDiscovery": false,
+      "lifecycle": "none",
+      "compatibility": {
+        "claudeCode": "supported"
+      },
+      "requiredRuntime": "none",
+      "description": "DeepSeek API provider via Anthropic Messages compatibility."
+    },
+    {
+      "id": "kimi",
+      "name": "Moonshot Kimi",
+      "aliases": ["moonshot"],
+      "authMethod": "environment",
+      "transportType": "direct-anthropic",
+      "modelDiscovery": false,
+      "lifecycle": "none",
+      "compatibility": {
+        "claudeCode": "supported"
+      },
+      "requiredRuntime": "none",
+      "description": "Moonshot AI Kimi model provider via Anthropic Messages compatibility."
+    },
+    {
+      "id": "minimax",
+      "name": "MiniMax",
+      "aliases": [],
+      "authMethod": "environment",
+      "transportType": "direct-anthropic",
+      "modelDiscovery": false,
+      "lifecycle": "none",
+      "compatibility": {
+        "claudeCode": "supported"
+      },
+      "requiredRuntime": "none",
+      "description": "MiniMax model provider via Anthropic Messages compatibility."
+    },
+    {
+      "id": "openrouter",
+      "name": "OpenRouter",
+      "aliases": [],
+      "authMethod": "environment",
+      "transportType": "direct-anthropic",
+      "modelDiscovery": false,
+      "lifecycle": "none",
+      "compatibility": {
+        "claudeCode": "supported"
+      },
+      "requiredRuntime": "none",
+      "description": "OpenRouter multi-model gateway via Anthropic Messages compatibility."
+    },
+    {
+      "id": "nvidia-nim",
+      "name": "NVIDIA NIM (self-hosted container)",
+      "aliases": ["nim"],
+      "authMethod": "environment",
+      "transportType": "direct-anthropic",
+      "modelDiscovery": false,
+      "lifecycle": "none",
+      "compatibility": {
+        "claudeCode": "supported",
+        "notes": "Direct Anthropic Messages connection; no local translating gateway required."
+      },
+      "requiredRuntime": "none",
+      "description": "Self-hosted NVIDIA NIM container serving /v1/messages natively."
+    },
+    {
+      "id": "nvidia",
+      "name": "NVIDIA API Catalog (build.nvidia.com)",
+      "aliases": ["nvidia-hosted", "build-nvidia"],
+      "authMethod": "environment",
+      "transportType": "local-sidecar",
+      "modelDiscovery": false,
+      "lifecycle": "session-sidecar",
+      "compatibility": {
+        "claudeCode": "experimental"
+      },
+      "requiredRuntime": "python3 (litellm)",
+      "sidecar": {
+        "script": "scripts/nim-gateway.sh",
+        "defaultPort": 4000,
+        "healthEndpoint": "/health/liveliness"
+      },
+      "description": "Hosted build.nvidia.com catalog translating OpenAI shape to Anthropic Messages via LiteLLM."
+    }
+  ]
+}

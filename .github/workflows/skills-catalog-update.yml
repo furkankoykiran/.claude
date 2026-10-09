@@ -54,6 +54,7 @@ env:
     catalog/cache
     catalog/generated
     docs/skills
+    providers/registry.json
   # Everything that embeds VERSION. Rewritten by marketplace:generate when the
   # bump step raises VERSION, and staged alongside the catalog. Deliberately
   # NOT in CATALOG_PATHS: that set is the change-DETECTION set, and VERSION

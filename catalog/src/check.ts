@@ -19,6 +19,7 @@ import type { ResolvedCatalog } from "./resolver.ts";
 import { checkParityFiles } from "./parity.ts";
 import { stageOutputs } from "./generate.ts";
 import { buildCoverageReport } from "./coverage.ts";
+import { checkProviderIntegrity } from "./providers/watcher.ts";
 import { info, dim, warn } from "./log.ts";
 
 export interface CheckOptions {
@@ -106,6 +107,13 @@ export async function runCheck(
     `coverage: OK (${coverage.totals.sources} sources, ${coverage.totals.catalogedSkills} skills, ` +
       `${coverage.totals.curatedOut} upstream skill(s) not selected)`,
   );
+
+  // 2c. Provider control plane integrity check
+  const providerCheck = await checkProviderIntegrity(opts.repoRoot);
+  if (!providerCheck.ok) {
+    throw new CatalogError(`provider integrity check failed:\n  - ${providerCheck.findings.join("\n  - ")}`, "providers/registry.json");
+  }
+  dim(`providers: OK (${providerCheck.providersChecked} providers, ${providerCheck.runtimesChecked} runtimes, ${providerCheck.templatesChecked} templates)`);
 
   // 3. Policy scan.
   const policyFindings: string[] = [];

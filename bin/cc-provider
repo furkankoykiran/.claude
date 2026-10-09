@@ -51,6 +51,70 @@ need_provider_arg() {
   [ "${3:-}" = "" ] || die "$cmd accepts exactly one provider name"
 }
 
+REGISTRY="$CLAUDE_DIR/providers/registry.json"
+
+is_google_provider() {
+  case "$1" in
+    google|agy|antigravity|gemini) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+has_consumer_antigravity_auth() {
+  [ -n "${ANTIGRAVITY_AGENTAPI_EXE:-}" ] && return 0
+  [ -n "${ANTIGRAVITY_AGENT:-}" ] && return 0
+  [ -n "${ANTIGRAVITY_LS_ADDRESS:-}" ] && return 0
+  [ -d "$HOME/.gemini" ] && return 0
+  return 1
+}
+
+has_official_google_creds() {
+  [ -n "${GEMINI_API_KEY:-}" ] && return 0
+  [ -n "${GOOGLE_APPLICATION_CREDENTIALS:-}" ] && return 0
+  [ -n "${ANTHROPIC_VERTEX_PROJECT_ID:-}" ] && return 0
+  if [ -f "$PDIR/google.json" ] && command -v jq >/dev/null 2>&1; then
+    local k
+    k=$(jq -r '.env.GEMINI_API_KEY // .env.ANTHROPIC_AUTH_TOKEN // empty' "$PDIR/google.json" 2>/dev/null || true)
+    if [ -n "$k" ] && ! [[ "$k" =~ $PLACEHOLDER_RE ]]; then
+      return 0
+    fi
+  fi
+  return 1
+}
+
+native_agy_advice() {
+  printf 'cc-provider: Claude Code inference requires officially supported Gemini API or Vertex credentials.\n' >&2
+  printf 'Personal Antigravity consumer OAuth cannot be reused, copied, or proxied into Claude Code.\n' >&2
+  printf 'To use your Antigravity credentials, run the native CLI instead:\n' >&2
+  printf '  agy -p "your prompt" --model gemini-3.8-flash --effort medium\n\n' >&2
+  printf 'To configure Claude Code with Gemini API:\n' >&2
+  printf '  export GEMINI_API_KEY="your-api-key"\n' >&2
+  printf '  or run: ccs api google\n' >&2
+}
+
+resolve_provider() {
+  local p="${1:-}"
+  case "$p" in
+    codex|chatgpt|chatgpt-entitlement) printf 'codex' ;;
+    google|agy|antigravity|gemini) printf 'google' ;;
+    zai|glm|zhipu) printf 'zai' ;;
+    kimi|moonshot) printf 'kimi' ;;
+    nvidia-nim|nim) printf 'nvidia-nim' ;;
+    nvidia|nvidia-hosted|build-nvidia) printf 'nvidia' ;;
+    *)
+      if [ -f "$REGISTRY" ] && command -v jq >/dev/null 2>&1; then
+        local canonical
+        canonical=$(jq -r --arg q "$p" '(.providers[] | select(.id == $q or ((.aliases // [])[] == $q)) | .id) // empty' "$REGISTRY" 2>/dev/null | head -n 1)
+        if [ -n "$canonical" ]; then
+          printf '%s' "$canonical"
+          return 0
+        fi
+      fi
+      printf '%s' "$p"
+      ;;
+  esac
+}
+
 is_codex_entitlement() {
   case "$1" in
     codex|chatgpt|chatgpt-entitlement) return 0 ;;
@@ -311,22 +375,20 @@ stop_codex_gateway() {
   descendants=$(codex_gateway_descendants "$pid" | sort -rn || true)
   if [ "$pgid" = "$pid" ]; then
     kill -TERM -- "-$pid" 2>/dev/null || true
-  else
-    kill_codex_gateway_descendants -TERM "$descendants"
-    kill "$pid" 2>/dev/null || true
   fi
+  kill_codex_gateway_descendants -TERM "$descendants"
+  kill -TERM "$pid" 2>/dev/null || true
   local _wait
-  for _wait in 1 2 3 4 5; do
+  for _wait in 1 2 3 4 5 6 7 8 9 10; do
     kill -0 "$pid" 2>/dev/null || break
-    sleep 0.2
+    sleep 0.1
   done
   if kill -0 "$pid" 2>/dev/null; then
     if [ "$pgid" = "$pid" ]; then
       kill -KILL -- "-$pid" 2>/dev/null || true
-    else
-      kill_codex_gateway_descendants -KILL "$descendants"
-      kill -KILL "$pid" 2>/dev/null || true
     fi
+    kill_codex_gateway_descendants -KILL "$descendants"
+    kill -KILL "$pid" 2>/dev/null || true
   fi
   rm -f "$CODEX_GATEWAY_PID" "$CODEX_GATEWAY_META"
   printf 'Codex gateway stopped (pid %s).\n' "$pid"
@@ -684,7 +746,9 @@ list_providers() {
 }
 
 is_provider() {
-  list_providers | grep -qxF "$1"
+  local canonical
+  canonical=$(resolve_provider "$1")
+  list_providers | grep -qxF "$canonical"
 }
 
 ensure_provider_file() {
@@ -711,7 +775,7 @@ credential_key() {
   [ -f "$f" ] || return 1
   jq -r '
     (.env // {}) as $env
-    | (["ANTHROPIC_AUTH_TOKEN","ANTHROPIC_API_KEY"]
+    | (["ANTHROPIC_AUTH_TOKEN","ANTHROPIC_API_KEY","GEMINI_API_KEY"]
        | map(. as $k | select($env | has($k)) | {key: $k, value: (($env[$k] // "") | tostring)})) as $keys
     | (($keys | map(select(.value | test("^<[^>]+>$"))) | .[0].key)
        // ($keys | map(select(.value == "")) | .[0].key)
@@ -728,9 +792,28 @@ credential_value() {
 
 provider_auth_status() {
   local p="$1" f key value
+  p=$(resolve_provider "$p")
   f="$PDIR/$p.json"
   if is_codex_entitlement "$p"; then
     printf 'Auth mode: ChatGPT entitlement via official codex login/status/logout (no API key is copied).\n'
+    return 0
+  fi
+  if is_google_provider "$p"; then
+    if has_official_google_creds; then
+      local gkey
+      gkey="${GEMINI_API_KEY:-}"
+      [ -n "$gkey" ] || gkey=$(jq -r '.env.GEMINI_API_KEY // .env.ANTHROPIC_AUTH_TOKEN // empty' "$PDIR/google.json" 2>/dev/null || true)
+      if [ -n "$gkey" ] && ! [[ "$gkey" =~ $PLACEHOLDER_RE ]]; then
+        printf 'Auth mode: Google Gemini API (%s).\n' "$(redact_secret "$gkey")"
+      else
+        printf 'Auth mode: Google Vertex AI credentials configured.\n'
+      fi
+    elif has_consumer_antigravity_auth; then
+      printf 'Auth mode: personal Antigravity consumer OAuth detected (cannot be proxied into Claude Code).\n'
+      native_agy_advice
+    else
+      printf 'Auth mode: Gemini API key or Vertex credentials required (not configured).\n'
+    fi
     return 0
   fi
   [ -f "$f" ] || { printf 'Auth mode: not configured (no providers/%s.json yet).\n' "$p"; return 0; }
@@ -771,12 +854,28 @@ prompt_secret() {
 
 write_api_key() {
   local p="$1" key secret tmp
+  p=$(resolve_provider "$p")
   if is_codex_entitlement "$p"; then
     die "$p uses ChatGPT entitlement. Use: ccs login $p (delegates to codex login), not an API key."
   fi
   is_provider "$p" || die "unknown provider: $p"
   ensure_provider_file "$p"
   command -v jq >/dev/null 2>&1 || die "jq is required to update providers/$p.json"
+  if is_google_provider "$p"; then
+    secret=$(prompt_secret "Enter Gemini API key for $p: ")
+    [ -n "$secret" ] || die "empty API key; providers/google.json was not changed"
+    tmp="$(mktemp "$PDIR/.google.json.XXXXXX")"
+    jq --arg secret "$secret" '.env.GEMINI_API_KEY = $secret | .env.ANTHROPIC_AUTH_TOKEN = $secret' "$PDIR/google.json" > "$tmp"
+    chmod 600 "$tmp"
+    mv -f "$tmp" "$PDIR/google.json"
+    printf 'Updated providers/google.json (GEMINI_API_KEY: %s).\n' "$(redact_secret "$secret")"
+    if [ -f "$PDIR/.active" ] && [ "$(cat "$PDIR/.active")" = "google" ]; then
+      activate "google"
+    else
+      printf 'Run %s to activate it.\n' "ccs use google"
+    fi
+    return 0
+  fi
   key=$(credential_key "$p" || true)
   [ -n "$key" ] || die "providers/$p.json has no ANTHROPIC_AUTH_TOKEN or ANTHROPIC_API_KEY field to fill"
   secret=$(prompt_secret "Enter API key for $p ($key): ")
@@ -795,6 +894,7 @@ write_api_key() {
 
 logout_provider() {
   local p="$1" f key tmp
+  p=$(resolve_provider "$p")
   f="$PDIR/$p.json"
   if is_codex_entitlement "$p"; then
     delegate_codex logout
@@ -802,6 +902,17 @@ logout_provider() {
   fi
   is_provider "$p" || die "unknown provider: $p"
   [ -f "$f" ] || { printf 'Provider %s has no local file to clear.\n' "$p"; return 0; }
+  if is_google_provider "$p"; then
+    tmp="$(mktemp "$PDIR/.google.json.XXXXXX")"
+    jq '.env.GEMINI_API_KEY = "" | .env.ANTHROPIC_AUTH_TOKEN = ""' "$f" > "$tmp"
+    chmod 600 "$tmp"
+    mv -f "$tmp" "$f"
+    printf 'Cleared API key in providers/google.json (GEMINI_API_KEY).\n'
+    if [ -f "$PDIR/.active" ] && [ "$(cat "$PDIR/.active")" = "google" ]; then
+      activate "google"
+    fi
+    return 0
+  fi
   key=$(credential_key "$p" || true)
   [ -n "$key" ] || { printf 'Provider %s has no API key field to clear.\n' "$p"; return 0; }
   tmp="$(mktemp "$PDIR/.$p.json.XXXXXX")"
@@ -927,9 +1038,18 @@ merge_settings() {
 }
 
 activate() {
-  local p="$1"
+  local p
+  p=$(resolve_provider "$1")
   ensure_provider_file "$p"
   mkdir -p "$PDIR"
+
+  if is_google_provider "$p"; then
+    if ! has_official_google_creds; then
+      if has_consumer_antigravity_auth; then
+        native_agy_advice
+      fi
+    fi
+  fi
 
   # Refuse rather than write an unguarded settings.json. Shipping a safety
   # control that silently is not there is the failure mode this whole merge
@@ -1073,6 +1193,66 @@ usage() {
   for p in $(list_providers); do printf '  %s\n' "$p" >&2; done
 }
 
+should_launch_interactive() {
+  [ -z "${CCS_NO_LAUNCH:-}" ] || return 1
+  command -v claude >/dev/null 2>&1 || return 1
+  [ -t 0 ] && [ -t 1 ]
+}
+
+launch_session() {
+  local p="$1"
+  shift
+  local canonical
+  canonical=$(resolve_provider "$p")
+  activate "$canonical"
+
+  if [ "$canonical" = "codex" ]; then
+    local sess_id sess_pid sess_pid_file
+    sess_id="$$"
+    sess_pid_file="$CLAUDE_DIR/state/sidecar-$sess_id.pid"
+
+    if ! codex_gateway_available; then
+      start_codex_gateway >/dev/null
+    fi
+    sess_pid=$(cat "$CODEX_GATEWAY_PID" 2>/dev/null || true)
+    if [ -n "$sess_pid" ]; then
+      printf '%s\n' "$sess_pid" > "$sess_pid_file"
+    fi
+
+    cleanup_session() {
+      if [ -f "$sess_pid_file" ]; then
+        local spid
+        spid=$(cat "$sess_pid_file" 2>/dev/null || true)
+        rm -f "$sess_pid_file"
+        if [ -n "$spid" ]; then
+          stop_codex_gateway >/dev/null 2>&1 || true
+        fi
+      fi
+    }
+    trap cleanup_session EXIT INT TERM
+
+    claude "$@" || true
+    cleanup_session
+    trap - EXIT INT TERM
+  elif [ "$canonical" = "nvidia" ]; then
+    if [ -x "$CLAUDE_DIR/scripts/nim-gateway.sh" ]; then
+      "$CLAUDE_DIR/scripts/nim-gateway.sh" start >/dev/null 2>&1 || true
+    fi
+    cleanup_nvidia() {
+      if [ -x "$CLAUDE_DIR/scripts/nim-gateway.sh" ]; then
+        "$CLAUDE_DIR/scripts/nim-gateway.sh" stop >/dev/null 2>&1 || true
+      fi
+    }
+    trap cleanup_nvidia EXIT INT TERM
+    claude "$@" || true
+    cleanup_nvidia
+    trap - EXIT INT TERM
+  else
+    stop_codex_gateway >/dev/null 2>&1 || true
+    claude "$@"
+  fi
+}
+
 cmd="${1:-status}"
 case "$cmd" in
   status)    [ "${2:-}" = "" ] || die "status accepts no provider argument"; status ;;
@@ -1087,29 +1267,62 @@ case "$cmd" in
   codex-stop) [ "${2:-}" = "" ] || die "codex-stop accepts no arguments"; stop_codex_gateway ;;
   codex-status) [ "${2:-}" = "" ] || die "codex-status accepts no arguments"; status_codex_gateway ;;
   codex-model) set_codex_model "${2:-}" "${3:-medium}"; [ "${4:-}" = "" ] || die "codex-model accepts at most model and effort" ;;
+  update)    die "ccs does not manage updates. Use 'fkt update' to update the toolkit." ;;
+  run|launch)
+    need_provider_arg "$cmd" "${2:-}" ""
+    is_provider "$2" || die "unknown provider: $2"
+    target="$2"
+    shift 2
+    launch_session "$target" "$@"
+    ;;
   use)       need_provider_arg use "${2:-}" "${3:-}"; is_provider "$2" || die "unknown provider: $2"; activate "$2" ;;
   auth)
     need_provider_arg auth "${2:-}" "${3:-}"
-    if is_codex_entitlement "$2"; then
-      provider_auth_status "$2"
+    auth_p=$(resolve_provider "$2")
+    if is_codex_entitlement "$auth_p"; then
+      provider_auth_status "$auth_p"
+    elif is_google_provider "$auth_p"; then
+      provider_auth_status "$auth_p"
+      if ! has_official_google_creds; then
+        write_api_key "$auth_p"
+      fi
     else
-      is_provider "$2" || die "unknown provider: $2"
-      ensure_provider_file "$2"
-      provider_auth_status "$2"
-      key=$(credential_key "$2" || true)
+      is_provider "$auth_p" || die "unknown provider: $2"
+      ensure_provider_file "$auth_p"
+      provider_auth_status "$auth_p"
+      key=$(credential_key "$auth_p" || true)
       value=""
-      [ -n "$key" ] && value=$(credential_value "$2" "$key")
-      case "$value" in ''|\<*) write_api_key "$2" ;; esac
+      [ -n "$key" ] && value=$(credential_value "$auth_p" "$key")
+      case "$value" in ''|\<*) write_api_key "$auth_p" ;; esac
     fi
     ;;
-  login)     need_provider_arg login "${2:-}" "${3:-}"; if is_codex_entitlement "$2"; then delegate_codex login; else write_api_key "$2"; fi ;;
+  login)
+    need_provider_arg login "${2:-}" "${3:-}"
+    login_p=$(resolve_provider "$2")
+    if is_codex_entitlement "$login_p"; then
+      delegate_codex login
+    elif is_google_provider "$login_p"; then
+      provider_auth_status "$login_p"
+      if ! has_official_google_creds; then
+        write_api_key "$login_p"
+      fi
+    else
+      write_api_key "$login_p"
+    fi
+    ;;
   api)       need_provider_arg api "${2:-}" "${3:-}"; write_api_key "$2" ;;
   logout)    need_provider_arg logout "${2:-}" "${3:-}"; logout_provider "$2" ;;
   -h|--help) usage; exit 0 ;;
   '')        usage; exit 1 ;;
   *)
     if is_provider "$cmd"; then
-      activate "$cmd"
+      canonical_p=$(resolve_provider "$cmd")
+      shift
+      if [ $# -gt 0 ] || should_launch_interactive; then
+        launch_session "$canonical_p" "$@"
+      else
+        activate "$canonical_p"
+      fi
     else
       printf 'cc-provider: unknown provider or command: %s\n\n' "$cmd" >&2
       usage

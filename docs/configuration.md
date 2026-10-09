@@ -45,10 +45,11 @@ and adds that directory to the user PATH.
 | `ccs <name>` | Endpoint | You need | Notes |
 | --- | --- | --- | --- |
 | `anthropic` | `api.anthropic.com` | `claude login` | No token in the file; uses your normal claude.ai auth |
-| `codex` | `127.0.0.1:4545` | `ccs login codex` + experimental local gateway | Routes Claude Code to the isolated Codex adapter. Current live proof covers gateway lifecycle, model catalog, account/usage RPCs, and fail-closed handling when Claude Code does not forward an actionable prompt. Text and tool parity remain experimental. |
+| `codex` | `127.0.0.1:4545` | `ccs login codex` + experimental local gateway | Routes Claude Code to the isolated Codex adapter. Manages owned PID lifecycle per session. Official `codex login`/`logout`. Quota-bearing live inference deferred in this wave. |
+| `google` (`agy`, `antigravity`, `gemini`) | Anthropic-compatible (`rtk hook claude`) | Official `GEMINI_API_KEY` or Vertex AI credentials | Official Gemini API / Vertex credentials only. Personal Antigravity OAuth fails closed; use native `agy` CLI instead. |
 | `zai` | `api.z.ai/api/anthropic` | z.ai API key | GLM models. [Subscription link](https://z.ai/subscribe?ic=SNPFQIQ7BD) (my referral) |
-| `nvidia` | `127.0.0.1:4000` -> `build.nvidia.com` | NVIDIA API key + local gateway | Hosted NVIDIA catalog. [See below](#nvidia-nim) |
-| `nvidia-nim` | your NIM container | a NIM deployment | Self-hosted NIM, no gateway. [See below](#nvidia-nim) |
+| `nvidia` | `127.0.0.1:4000` -> `build.nvidia.com` | NVIDIA API key + local gateway | Hosted NVIDIA catalog. LiteLLM gateway started as FK-owned session process when needed. |
+| `nvidia-nim` | your NIM container | a NIM deployment | Self-hosted NIM direct Anthropic Messages connection; no proxy needed. [See below](#nvidia-nim) |
 | `deepseek` | `api.deepseek.com/anthropic` | DeepSeek API key | `deepseek-v4-pro` / `-flash` |
 | `kimi` | `api.moonshot.ai/anthropic` | Moonshot API key | `kimi-k3[1m]` |
 | `minimax` | `api.minimax.io/anthropic` | MiniMax API key | `MiniMax-M3[1m]`. Use `api.minimaxi.com` in China |
