@@ -315,6 +315,7 @@ AGENTS.md       shared cross-agent repository instructions
 bin/             executables on PATH (cc-provider, fkt)
 catalog/         catalog toolchain (src, tests, cache, generated)
 docs/            documentation — start at docs/README.md
+gateways/        pinned runtime submodules (Codex and Gemini gateways)
 hooks/           git and Claude Code hooks
 memory/          persistent memory files
 migrations/      versioned bootstrap migrations run by `fkt`

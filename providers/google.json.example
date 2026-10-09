@@ -15,9 +15,10 @@
   "enabledPlugins": {},
   "effortLevel": "xhigh",
   "env": {
-    "ANTHROPIC_BASE_URL": "https://generativelanguage.googleapis.com/v1beta/openai",
+    "ANTHROPIC_BASE_URL": "http://127.0.0.1:4141",
     "ANTHROPIC_AUTH_TOKEN": "<GEMINI_API_KEY>",
     "GEMINI_API_KEY": "<GEMINI_API_KEY>",
+    "GEMINI_GATEWAY_PORT": "4141",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "gemini-3.8-flash",
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "gemini-3.8-flash",
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "gemini-3.8-flash",

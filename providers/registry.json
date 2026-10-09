@@ -27,6 +27,20 @@
       "name": "Bun Runtime",
       "pinnedVersion": "1.3.8",
       "upstream": "github:oven-sh/bun"
+    },
+    "claude-codex-gateway": {
+      "name": "Canonical Claude Codex Gateway Submodule",
+      "pinnedVersion": "v0.1.3",
+      "pinnedSha": "b6c0f888dd0c3050d6648802089ec581e71fe7e9",
+      "upstream": "github:furkankoykiran/claude-codex-gateway",
+      "path": "gateways/claude-codex-gateway"
+    },
+    "claude-gemini-gateway": {
+      "name": "Policy-safe Claude Gemini Gateway Submodule",
+      "pinnedVersion": "v0.1.0",
+      "pinnedSha": "b778ac00c2a7f452fabee280f358d67420bbbc45",
+      "upstream": "github:furkankoykiran/claude-gemini-gateway",
+      "path": "gateways/claude-gemini-gateway"
     }
   },
   "providers": [
@@ -57,9 +71,9 @@
         "nativeCli": "codex",
         "notes": "Live parity pending; lifecycle and App Server RPCs proven, quota-bearing live inference deferred in this wave."
       },
-      "requiredRuntime": "bun, codex",
+      "requiredRuntime": "bun, codex, claude-codex-gateway",
       "sidecar": {
-        "script": "scripts/codex-anthropic-gateway.ts",
+        "script": "gateways/claude-codex-gateway/src/index.ts",
         "defaultPort": 4545,
         "healthEndpoint": "/health"
       },
@@ -70,16 +84,21 @@
       "name": "Google Gemini / Vertex AI",
       "aliases": ["agy", "antigravity", "gemini"],
       "authMethod": "vertex-gemini-key",
-      "transportType": "direct-anthropic",
+      "transportType": "local-sidecar",
       "modelDiscovery": false,
-      "lifecycle": "none",
+      "lifecycle": "session-sidecar",
       "compatibility": {
         "claudeCode": "supported",
         "nativeCli": "agy",
         "notes": "Claude Code inference requires officially supported GEMINI_API_KEY or Vertex credentials. Personal Antigravity consumer OAuth is rejected in favor of native agy."
       },
-      "requiredRuntime": "none (agy for native)",
-      "description": "Google Gemini API / Vertex AI using official API keys or service account credentials."
+      "requiredRuntime": "bun, claude-gemini-gateway",
+      "sidecar": {
+        "script": "gateways/claude-gemini-gateway/src/index.ts",
+        "defaultPort": 4141,
+        "healthEndpoint": "/health"
+      },
+      "description": "Google Gemini API / Vertex AI using official API keys or service account credentials via policy-safe gateway."
     },
     {
       "id": "zai",

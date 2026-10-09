@@ -46,6 +46,8 @@ export interface RuntimePin {
   pinnedVersion: string;
   upstream: string;
   protocol?: string;
+  pinnedSha?: string;
+  path?: string;
 }
 
 export interface ProviderRegistry {

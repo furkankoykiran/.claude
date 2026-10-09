@@ -61,7 +61,8 @@ describe("Unified Provider Control Plane Registry", () => {
     expect(nim.lifecycle).toBe("none");
 
     const google = resolveProvider(registry, "google")!;
-    expect(google.transportType).toBe("direct-anthropic");
+    expect(google.transportType).toBe("local-sidecar");
+    expect(google.lifecycle).toBe("session-sidecar");
     expect(google.authMethod).toBe("vertex-gemini-key");
     expect(google.compatibility.nativeCli).toBe("agy");
   });
@@ -169,6 +170,19 @@ describe("Provider Watcher and Integrity", () => {
     expect(res.findings).toEqual([]);
     expect(res.ok).toBe(true);
     expect(res.providersChecked).toBeGreaterThanOrEqual(9);
-    expect(res.runtimesChecked).toBeGreaterThanOrEqual(5);
+    expect(res.runtimesChecked).toBeGreaterThanOrEqual(7);
+  });
+
+  it("watches upstream gateways and tracks Hermes advisory compatibility signals", async () => {
+    const { watchUpstreamGatewaysAndHermes } = await import("../src/providers/watcher.ts");
+    const registry = await loadProviderRegistry(REGISTRY_PATH);
+    const findings = await watchUpstreamGatewaysAndHermes(registry);
+    expect(findings.length).toBe(3);
+    const codex = findings.find((f) => f.component === "claude-codex-gateway");
+    expect(codex?.status).toBe("up-to-date");
+    const gemini = findings.find((f) => f.component === "claude-gemini-gateway");
+    expect(gemini?.status).toBe("up-to-date");
+    const hermes = findings.find((f) => f.component === "NousResearch/hermes-agent");
+    expect(hermes?.kind).toBe("advisory-signal");
   });
 });

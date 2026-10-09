@@ -34,8 +34,9 @@ cat > "$SANDBOX/bin/bun" <<'EOF'
 if [ "${1:-}" = "run" ] && [ "${3:-}" = "serve" ]; then
   (while :; do sleep 60; done) &
   child=$!
-  trap 'kill "$child" 2>/dev/null || true' TERM INT EXIT
-  wait "$child"
+  trap 'kill "$child" 2>/dev/null || true; exit 0' TERM INT EXIT
+  wait "$child" 2>/dev/null || true
+  exit 0
 fi
 exec /root/.bun/bin/bun "$@"
 EOF
@@ -604,14 +605,16 @@ if [ -f "$SANDBOX/state/codex-gateway.pid" ]; then
   CODEX_PID=$(cat "$SANDBOX/state/codex-gateway.pid")
   CODEX_CHILDREN=$(pgrep -P "$CODEX_PID" 2>/dev/null || true)
   ccs anthropic >/dev/null 2>&1 || true
-  if ! kill -0 "$CODEX_PID" 2>/dev/null; then
+  codex_pid_stat=$(ps -o stat= -p "$CODEX_PID" 2>/dev/null | tr -d ' ' || true)
+  if ! kill -0 "$CODEX_PID" 2>/dev/null || [ "$codex_pid_stat" = "Z" ] || [ "$codex_pid_stat" = "Zs" ]; then
     ok "ccs anthropic stops the toolkit-owned Codex gateway pid"
   else
     bad "ccs anthropic left Codex gateway pid $CODEX_PID running"
   fi
   children_alive=0
   for child in $CODEX_CHILDREN; do
-    if kill -0 "$child" 2>/dev/null; then
+    child_stat=$(ps -o stat= -p "$child" 2>/dev/null | tr -d ' ' || true)
+    if kill -0 "$child" 2>/dev/null && [ "$child_stat" != "Z" ] && [ "$child_stat" != "Zs" ]; then
       children_alive=1
     fi
   done
@@ -685,13 +688,24 @@ case "$codex_env_status_out" in
   *"Codex gateway: running (health, port $OVERRIDE_CODEX_PORT)"*) ok "CODEX_GATEWAY_PORT overrides the configured Codex gateway port" ;;
   *) bad "CODEX_GATEWAY_PORT did not override the configured Codex gateway port: $codex_env_status_out" ;;
 esac
+FREE_CODEX_PORT=$(python3 -c "
+import socket
+s = socket.socket(); s.bind(('127.0.0.1', 0)); print(s.getsockname()[1]); s.close()")
+for codex_provider_file in "$SANDBOX/providers/codex.json" "$SANDBOX/providers/codex.json.example"; do
+  [ -f "$codex_provider_file" ] || continue
+  tmp_codex_provider="$(mktemp "$SANDBOX/providers/.codex-port.XXXXXX")"
+  jq --arg port "$FREE_CODEX_PORT" '.env.CODEX_GATEWAY_PORT = $port' "$codex_provider_file" > "$tmp_codex_provider"
+  mv -f "$tmp_codex_provider" "$codex_provider_file"
+done
 codex_reactivate_out=$(say codex)
 case "$codex_reactivate_out" in
   *"Active provider: codex"*"Codex gateway"*"port $FREE_CODEX_PORT"*) ok "ccs codex starts a fresh gateway after anthropic cleanup" ;;
   *) bad "ccs codex did not restart a fresh gateway after anthropic cleanup: $codex_reactivate_out" ;;
 esac
 if [ -f "$SANDBOX/state/codex-gateway.pid" ]; then
-  kill "$(cat "$SANDBOX/state/codex-gateway.pid")" 2>/dev/null || true
+  p_gw=$(cat "$SANDBOX/state/codex-gateway.pid")
+  kill "$p_gw" 2>/dev/null || true
+  wait "$p_gw" 2>/dev/null || true
   rm -f "$SANDBOX/state/codex-gateway.pid" "$SANDBOX/state/codex-gateway.meta"
 fi
 FKT_TEST_CODEX_PORT="$FREE_CODEX_PORT" python3 - <<'PY' >/tmp/fkt-codex-health.log 2>&1 &
@@ -744,6 +758,15 @@ case "$codex_usage_out" in
   *"already serving /health but is not a valid toolkit-owned gateway"*) ok "ccs usage refuses a pidless Codex /health listener" ;;
   *) bad "ccs usage trusted a pidless Codex gateway: $codex_usage_out" ;;
 esac
+FREE_CODEX_PORT=$(python3 -c "
+import socket
+s = socket.socket(); s.bind(('127.0.0.1', 0)); print(s.getsockname()[1]); s.close()")
+for codex_provider_file in "$SANDBOX/providers/codex.json" "$SANDBOX/providers/codex.json.example"; do
+  [ -f "$codex_provider_file" ] || continue
+  tmp_codex_provider="$(mktemp "$SANDBOX/providers/.codex-port.XXXXXX")"
+  jq --arg port "$FREE_CODEX_PORT" '.env.CODEX_GATEWAY_PORT = $port' "$codex_provider_file" > "$tmp_codex_provider"
+  mv -f "$tmp_codex_provider" "$codex_provider_file"
+done
 FKT_TEST_CODEX_PORT="$FREE_CODEX_PORT" bash -c '
   python3 - <<PY
 import os

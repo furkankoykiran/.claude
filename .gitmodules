@@ -1,0 +1,6 @@
+[submodule "gateways/claude-codex-gateway"]
+	path = gateways/claude-codex-gateway
+	url = https://github.com/furkankoykiran/claude-codex-gateway.git
+[submodule "gateways/claude-gemini-gateway"]
+	path = gateways/claude-gemini-gateway
+	url = https://github.com/furkankoykiran/claude-gemini-gateway.git

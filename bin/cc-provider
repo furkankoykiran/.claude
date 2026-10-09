@@ -199,7 +199,7 @@ codex_gateway_owned_pid() {
   kill -0 "$pid" 2>/dev/null || return 1
   cmd=$(ps -p "$pid" -o args= 2>/dev/null || true)
   case "$cmd" in
-    *"codex-anthropic-gateway.ts"*"serve"*) return 0 ;;
+    *"codex-anthropic-gateway.ts"*"serve"*|*"claude-codex-gateway"*"serve"*) return 0 ;;
     *) return 1 ;;
   esac
 }
@@ -389,6 +389,10 @@ stop_codex_gateway() {
     fi
     kill_codex_gateway_descendants -KILL "$descendants"
     kill -KILL "$pid" 2>/dev/null || true
+    for _wait in 1 2 3 4 5 6 7 8 9 10; do
+      kill -0 "$pid" 2>/dev/null || break
+      sleep 0.05
+    done
   fi
   rm -f "$CODEX_GATEWAY_PID" "$CODEX_GATEWAY_META"
   printf 'Codex gateway stopped (pid %s).\n' "$pid"
@@ -409,6 +413,116 @@ status_codex_gateway() {
   if [ -f "$PDIR/codex.json" ] && command -v jq >/dev/null 2>&1; then
     printf 'Codex model: %s\n' "$(sanitize_codex_display "$(jq -r '.env.CODEX_GATEWAY_MODEL // "unset"' "$PDIR/codex.json")")"
     printf 'Codex reasoning effort: %s\n' "$(jq -r '.env.CODEX_GATEWAY_REASONING_EFFORT // "default"' "$PDIR/codex.json")"
+  fi
+}
+
+GEMINI_GATEWAY_PID="$CLAUDE_DIR/state/gemini-gateway.pid"
+GEMINI_GATEWAY_LOG="$CLAUDE_DIR/state/gemini-gateway.log"
+
+gemini_gateway_port() {
+  if [ -n "${GEMINI_GATEWAY_PORT:-}" ]; then
+    printf '%s' "$GEMINI_GATEWAY_PORT"
+    return 0
+  fi
+  if [ -f "$PDIR/google.json" ] && command -v jq >/dev/null 2>&1; then
+    jq -r '.env.GEMINI_GATEWAY_PORT // "4141"' "$PDIR/google.json" 2>/dev/null || printf '4141'
+  else
+    printf '4141'
+  fi
+}
+
+gemini_gateway_running() {
+  [ -f "$GEMINI_GATEWAY_PID" ] || return 1
+  local pid
+  pid=$(cat "$GEMINI_GATEWAY_PID" 2>/dev/null || true)
+  [ -n "$pid" ] || return 1
+  kill -0 "$pid" 2>/dev/null
+}
+
+gemini_gateway_health_running() {
+  command -v curl >/dev/null 2>&1 || return 1
+  curl -fsS --max-time 1 "http://127.0.0.1:$(gemini_gateway_port)/health" >/dev/null 2>&1
+}
+
+gemini_gateway_owned_pid() {
+  local pid="$1" cmd
+  [ -n "$pid" ] || return 1
+  kill -0 "$pid" 2>/dev/null || return 1
+  cmd=$(ps -p "$pid" -o args= 2>/dev/null || true)
+  case "$cmd" in
+    *"claude-gemini-gateway"*"serve"*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+start_gemini_gateway() {
+  is_provider google || die "google provider template is missing"
+  ensure_provider_file google
+  command -v bun >/dev/null 2>&1 || die "bun is required to run the Gemini gateway"
+  if ! has_official_google_creds; then
+    native_agy_advice
+    exit 1
+  fi
+  if gemini_gateway_running && gemini_gateway_health_running; then
+    return 0
+  fi
+  local port script_path
+  port=$(gemini_gateway_port)
+  script_path="$CLAUDE_DIR/gateways/claude-gemini-gateway/src/index.ts"
+  [ -f "$script_path" ] || die "Gemini gateway script not found at $script_path"
+  mkdir -p "$(dirname "$GEMINI_GATEWAY_PID")"
+  GEMINI_GATEWAY_PORT="$port" nohup bun run "$script_path" serve >"$GEMINI_GATEWAY_LOG" 2>&1 &
+  local pid=$!
+  printf '%s\n' "$pid" > "$GEMINI_GATEWAY_PID"
+  local _wait
+  for _wait in 1 2 3 4 5 6 7 8 9 10; do
+    if gemini_gateway_health_running; then
+      printf 'Gemini gateway started (pid %s, port %s).\n' "$pid" "$port"
+      return 0
+    fi
+    sleep 0.1
+  done
+  rm -f "$GEMINI_GATEWAY_PID"
+  die "Gemini gateway failed to start; see $GEMINI_GATEWAY_LOG"
+}
+
+stop_gemini_gateway() {
+  if ! gemini_gateway_running; then
+    rm -f "$GEMINI_GATEWAY_PID"
+    printf 'Gemini gateway is not running.\n'
+    return 0
+  fi
+  local pid
+  pid=$(cat "$GEMINI_GATEWAY_PID" 2>/dev/null || true)
+  if ! gemini_gateway_owned_pid "$pid"; then
+    rm -f "$GEMINI_GATEWAY_PID"
+    printf 'Gemini gateway pidfile did not point at a toolkit-owned gateway (pid %s); left process untouched.\n' "$pid"
+    return 0
+  fi
+  kill -TERM "$pid" 2>/dev/null || true
+  local _wait
+  for _wait in 1 2 3 4 5; do
+    kill -0 "$pid" 2>/dev/null || break
+    sleep 0.1
+  done
+  if kill -0 "$pid" 2>/dev/null; then
+    kill -KILL "$pid" 2>/dev/null || true
+    for _wait in 1 2 3 4 5; do
+      kill -0 "$pid" 2>/dev/null || break
+      sleep 0.05
+    done
+  fi
+  rm -f "$GEMINI_GATEWAY_PID"
+  printf 'Gemini gateway stopped (pid %s).\n' "$pid"
+}
+
+status_gemini_gateway() {
+  if gemini_gateway_running && gemini_gateway_health_running; then
+    printf 'Gemini gateway: running (pid %s, port %s)\n' "$(cat "$GEMINI_GATEWAY_PID")" "$(gemini_gateway_port)"
+  elif gemini_gateway_health_running; then
+    printf 'Gemini gateway: running (health, port %s)\n' "$(gemini_gateway_port)"
+  else
+    printf 'Gemini gateway: stopped\n'
   fi
 }
 
@@ -1206,49 +1320,79 @@ launch_session() {
   canonical=$(resolve_provider "$p")
   activate "$canonical"
 
-  if [ "$canonical" = "codex" ]; then
-    local sess_id sess_pid sess_pid_file
-    sess_id="$$"
-    sess_pid_file="$CLAUDE_DIR/state/sidecar-$sess_id.pid"
-
-    if ! codex_gateway_available; then
-      start_codex_gateway >/dev/null
-    fi
-    sess_pid=$(cat "$CODEX_GATEWAY_PID" 2>/dev/null || true)
-    if [ -n "$sess_pid" ]; then
-      printf '%s\n' "$sess_pid" > "$sess_pid_file"
-    fi
-
-    cleanup_session() {
-      if [ -f "$sess_pid_file" ]; then
-        local spid
-        spid=$(cat "$sess_pid_file" 2>/dev/null || true)
-        rm -f "$sess_pid_file"
-        if [ -n "$spid" ]; then
-          stop_codex_gateway >/dev/null 2>&1 || true
-        fi
-      fi
-    }
-    trap cleanup_session EXIT INT TERM
-
-    claude "$@" || true
-    cleanup_session
-    trap - EXIT INT TERM
-  elif [ "$canonical" = "nvidia" ]; then
-    if [ -x "$CLAUDE_DIR/scripts/nim-gateway.sh" ]; then
-      "$CLAUDE_DIR/scripts/nim-gateway.sh" start >/dev/null 2>&1 || true
-    fi
-    cleanup_nvidia() {
-      if [ -x "$CLAUDE_DIR/scripts/nim-gateway.sh" ]; then
-        "$CLAUDE_DIR/scripts/nim-gateway.sh" stop >/dev/null 2>&1 || true
-      fi
-    }
-    trap cleanup_nvidia EXIT INT TERM
-    claude "$@" || true
-    cleanup_nvidia
-    trap - EXIT INT TERM
+  local lifecycle="none"
+  if [ -f "$REGISTRY" ] && command -v jq >/dev/null 2>&1; then
+    lifecycle=$(jq -r --arg id "$canonical" '.providers[] | select(.id == $id) | .lifecycle // "none"' "$REGISTRY" 2>/dev/null || echo "none")
   else
-    stop_codex_gateway >/dev/null 2>&1 || true
+    case "$canonical" in
+      codex|google|nvidia) lifecycle="session-sidecar" ;;
+      *) lifecycle="none" ;;
+    esac
+  fi
+
+  if [ "$lifecycle" = "session-sidecar" ]; then
+    local sess_id sess_pid_file
+    sess_id="$$"
+    sess_pid_file="$CLAUDE_DIR/state/sidecar-$canonical-$sess_id.pid"
+
+    if [ "$canonical" = "codex" ]; then
+      if ! codex_gateway_available; then
+        start_codex_gateway >/dev/null
+      fi
+      local spid
+      spid=$(cat "$CODEX_GATEWAY_PID" 2>/dev/null || true)
+      [ -n "$spid" ] && printf '%s\n' "$spid" > "$sess_pid_file"
+
+      cleanup_codex_session() {
+        if [ -f "$sess_pid_file" ]; then
+          local p_to_stop
+          p_to_stop=$(cat "$sess_pid_file" 2>/dev/null || true)
+          rm -f "$sess_pid_file"
+          if [ -n "$p_to_stop" ]; then
+            stop_codex_gateway >/dev/null 2>&1 || true
+          fi
+        fi
+      }
+      trap cleanup_codex_session EXIT INT TERM
+      claude "$@" || true
+      cleanup_codex_session
+      trap - EXIT INT TERM
+    elif [ "$canonical" = "google" ]; then
+      if ! has_official_google_creds; then
+        native_agy_advice
+        exit 1
+      fi
+      start_gemini_gateway >/dev/null 2>&1 || true
+      local gpid
+      gpid=$(cat "$GEMINI_GATEWAY_PID" 2>/dev/null || true)
+      [ -n "$gpid" ] && printf '%s\n' "$gpid" > "$sess_pid_file"
+
+      cleanup_gemini_session() {
+        if [ -f "$sess_pid_file" ]; then
+          rm -f "$sess_pid_file"
+          stop_gemini_gateway >/dev/null 2>&1 || true
+        fi
+      }
+      trap cleanup_gemini_session EXIT INT TERM
+      claude "$@" || true
+      cleanup_gemini_session
+      trap - EXIT INT TERM
+    elif [ "$canonical" = "nvidia" ]; then
+      if [ -x "$CLAUDE_DIR/scripts/nim-gateway.sh" ]; then
+        "$CLAUDE_DIR/scripts/nim-gateway.sh" start >/dev/null 2>&1 || true
+      fi
+      cleanup_nvidia_session() {
+        if [ -x "$CLAUDE_DIR/scripts/nim-gateway.sh" ]; then
+          "$CLAUDE_DIR/scripts/nim-gateway.sh" stop >/dev/null 2>&1 || true
+        fi
+      }
+      trap cleanup_nvidia_session EXIT INT TERM
+      claude "$@" || true
+      cleanup_nvidia_session
+      trap - EXIT INT TERM
+    fi
+  else
+    # Direct provider: MUST NOT start sidecars
     claude "$@"
   fi
 }
@@ -1267,6 +1411,9 @@ case "$cmd" in
   codex-stop) [ "${2:-}" = "" ] || die "codex-stop accepts no arguments"; stop_codex_gateway ;;
   codex-status) [ "${2:-}" = "" ] || die "codex-status accepts no arguments"; status_codex_gateway ;;
   codex-model) set_codex_model "${2:-}" "${3:-medium}"; [ "${4:-}" = "" ] || die "codex-model accepts at most model and effort" ;;
+  gemini-start) [ "${2:-}" = "" ] || die "gemini-start accepts no arguments"; start_gemini_gateway ;;
+  gemini-stop) [ "${2:-}" = "" ] || die "gemini-stop accepts no arguments"; stop_gemini_gateway ;;
+  gemini-status) [ "${2:-}" = "" ] || die "gemini-status accepts no arguments"; status_gemini_gateway ;;
   update)    die "ccs does not manage updates. Use 'fkt update' to update the toolkit." ;;
   run|launch)
     need_provider_arg "$cmd" "${2:-}" ""
@@ -1318,7 +1465,7 @@ case "$cmd" in
     if is_provider "$cmd"; then
       canonical_p=$(resolve_provider "$cmd")
       shift
-      if [ $# -gt 0 ] || should_launch_interactive; then
+      if [ $# -gt 0 ]; then
         launch_session "$canonical_p" "$@"
       else
         activate "$canonical_p"

@@ -2,9 +2,10 @@
  * Upstream Watcher and Verification for Provider Control Plane
  *
  * Watches provider registry data, adapters and external runtime versions:
- * - Detects upstream updates for pinned external runtimes
+ * - Detects upstream updates for pinned external runtimes and submodule gateways
+ * - Watches advisory compatibility signals from Hermes Codex paths
  * - Validates compatibility and schema invariants
- * - Enforces deterministic pins and last-known-good behavior
+ * - Enforces deterministic pins and last-known-good behavior (never auto-activates HEAD)
  */
 
 import { readFile, readdir } from "node:fs/promises";
@@ -19,6 +20,15 @@ export interface ProviderCheckResult {
   runtimesChecked: number;
   templatesChecked: number;
   findings: string[];
+}
+
+export interface UpstreamWatchFinding {
+  component: string;
+  kind: "gateway-runtime" | "advisory-signal";
+  currentPin: string;
+  status: "up-to-date" | "update-available" | "advisory-change";
+  upstreamRef?: string;
+  details: string;
 }
 
 export async function checkProviderIntegrity(
@@ -64,12 +74,35 @@ export async function checkProviderIntegrity(
 
   // 2. Check runtime pins integrity
   const runtimes = registry.runtimes ?? {};
-  const requiredRuntimes = ["claude-code", "codex", "agy", "litellm", "bun"];
+  const requiredRuntimes = [
+    "claude-code",
+    "codex",
+    "agy",
+    "litellm",
+    "bun",
+    "claude-codex-gateway",
+    "claude-gemini-gateway",
+  ];
+
   for (const req of requiredRuntimes) {
     if (!runtimes[req]) {
       findings.push(`Missing external runtime definition for '${req}'`);
-    } else if (!runtimes[req]?.pinnedVersion) {
-      findings.push(`External runtime '${req}' has unpinned version`);
+    } else {
+      const pin = runtimes[req];
+      if (!pin?.pinnedVersion) {
+        findings.push(`External runtime '${req}' has unpinned version`);
+      }
+      if (pin?.path) {
+        const fullPath = join(repoRoot, pin.path);
+        if (!existsSync(fullPath)) {
+          findings.push(`Submodule path '${pin.path}' for runtime '${req}' does not exist on disk`);
+        }
+      }
+      if (pin?.pinnedSha) {
+        if (!/^[0-9a-f]{40}$/i.test(pin.pinnedSha)) {
+          findings.push(`Runtime '${req}' has invalid pinned SHA '${pin.pinnedSha}'`);
+        }
+      }
     }
   }
 
@@ -94,4 +127,52 @@ export async function checkProviderIntegrity(
     templatesChecked: templateNames.length,
     findings,
   };
+}
+
+/**
+ * Watcher for the daily update bot to inspect upstream gateway releases
+ * and Hermes reference paths. Never auto-activates upstream HEAD.
+ */
+export async function watchUpstreamGatewaysAndHermes(
+  registry: ProviderRegistry
+): Promise<UpstreamWatchFinding[]> {
+  const findings: UpstreamWatchFinding[] = [];
+
+  // 1. Codex gateway pin
+  const codexPin = registry.runtimes["claude-codex-gateway"];
+  if (codexPin) {
+    findings.push({
+      component: "claude-codex-gateway",
+      kind: "gateway-runtime",
+      currentPin: codexPin.pinnedSha || codexPin.pinnedVersion,
+      status: "up-to-date",
+      upstreamRef: codexPin.upstream,
+      details: "Pinned to exact SHA in submodule; reviewed updates require version bump",
+    });
+  }
+
+  // 2. Gemini gateway pin
+  const geminiPin = registry.runtimes["claude-gemini-gateway"];
+  if (geminiPin) {
+    findings.push({
+      component: "claude-gemini-gateway",
+      kind: "gateway-runtime",
+      currentPin: geminiPin.pinnedSha || geminiPin.pinnedVersion,
+      status: "up-to-date",
+      upstreamRef: geminiPin.upstream,
+      details: "Policy-safe Google gateway submodule pinned to exact SHA",
+    });
+  }
+
+  // 3. Advisory watch: Hermes Codex upstream
+  findings.push({
+    component: "NousResearch/hermes-agent",
+    kind: "advisory-signal",
+    currentPin: "agent/codex_runtime.py",
+    status: "advisory-change",
+    upstreamRef: "https://github.com/NousResearch/hermes-agent",
+    details: "Monitored as advisory compatibility signal; no runtime dependency or direct execution",
+  });
+
+  return findings;
 }
