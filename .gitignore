@@ -23,6 +23,7 @@ RTK.md
 # Runtime caches
 mcp-needs-auth-cache.json
 .cache/
+.update.lock
 
 # Python cache
 __pycache__/

@@ -30,8 +30,6 @@ The Codex bridge keeps Claude Code as the harness. That means:
 - `model/list` is a catalog. Successful inference is the access check.
 - ChatGPT/Codex usage, ChatGPT image limits, and OpenAI API billing are different things. The toolkit does not blend them.
 
-See the detailed pages for [models](codex-model-switching.md), [modes](codex-mode-parity.md), [skills](codex-skill-parity.md), [sessions and usage](codex-session-usage.md), [continuation](codex-continuation.md), and [image generation](codex-image-generation.md).
-
 ## Mode support under Codex
 
 | Mode or feature | Codex bridge status | Notes |

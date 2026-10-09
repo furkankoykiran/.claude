@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "fk-toolkit-ops",
-  "version": "0.9.3",
+  "version": "1.0.0",
   "description": "Operate the toolkit itself: check for and apply toolkit updates, wire MCP servers into Claude Code, and use Codex-native ImageGen when available with a clear optional API fallback boundary.",
   "author": {
     "name": "Furkan Köykıran",

@@ -43,7 +43,7 @@ inspect it. Nothing is stashed, reset or resolved on your behalf.
 Applying an update is always explicit. The SessionStart hook only *notifies*;
 `fkt update` is what changes anything, and it prompts unless you pass `-y`.
 
-Full behaviour, including channels and migrations, in [Updates](updates.md).
+Full behaviour, including update checks, in [Getting started](getting-started.md#updating).
 
 ## Capability surface of the plugins
 
@@ -106,7 +106,7 @@ which the content digest does not cover.
 
 Detection does not depend on the content digest: the same bytes re-pointed at a
 different repository, relocated, or re-licensed is still a change. See
-[Release automation](release-automation.md#what-forces-manual-review).
+[Release process](release-process.md).
 
 **What this gate is not.** It reasons about capability surface and provenance,
 not intent. A rewritten body in a skill carrying no severe capability merges as
@@ -125,8 +125,7 @@ and the resolver verifies it against the upstream `LICENSE`. When a source
 grants no redistribution right, it is downgraded to **metadata-only**: the
 catalog records the name, description, digest and an immutable upstream link,
 and the body is not republished. See
-[Catalog coverage](catalog-coverage.md) and [Provenance](provenance.md) for the
-full inventory.
+[Catalog architecture](catalog-architecture.md) for details.
 
 The marketplaces publish **only** repository-owned plugins. No third-party pack is republished under this repository's name. Portable root `plugin.json` files and the repo-scoped `.agents/plugins/marketplace.json` are generated from the same inventory as the Claude marketplace.
 

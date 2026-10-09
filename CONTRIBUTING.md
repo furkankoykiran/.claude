@@ -67,8 +67,7 @@ docker run --rm -v "$PWD:/repo:ro" ubuntu:24.04 bash -c '
 - **Versions**: bump `VERSION` when your change is user-facing. That one file
   feeds every `plugin.json`, every marketplace entry and the release tag. If you
   bump it too little, CI prints the exact value to write. There is **no
-  CHANGELOG to edit** — the old one is archived at
-  [docs/changelog-archive.md](docs/changelog-archive.md).
+  CHANGELOG to edit** — release notes are generated from Conventional Commits.
 - **Shell**: keep `install.sh` POSIX-friendly bash, `shellcheck`-clean, and
   idempotent (safe to re-run). Optional steps must be fail-soft — never let one
   failed tool abort the whole bootstrap.

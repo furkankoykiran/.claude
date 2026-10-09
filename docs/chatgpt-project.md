@@ -106,7 +106,7 @@ curl -fLO $BASE/docs/skills/impeccable/impeccable.md
 `karpathy-guidelines.md` is deliberately absent. Its upstream is redistributed as
 metadata only, so the generated file carries the description rather than the skill body,
 and the discipline it encodes already lives in `CLAUDE.md`. See
-[Provenance](provenance.md) for what is redistributed in full and what is only pointed at.
+[Catalog architecture](catalog-architecture.md) for what is redistributed in full and what is only pointed at.
 
 ### Optional local adapter files
 

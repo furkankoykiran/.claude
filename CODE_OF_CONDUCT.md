@@ -37,7 +37,7 @@ spaces.
 ## Enforcement
 
 Instances of unacceptable behaviour may be reported privately to the project
-maintainer at **divimero.com@gmail.com**. All reports will be reviewed and
+maintainer at **furkankoykiran@gmail.com**. All reports will be reviewed and
 investigated promptly and fairly, and the maintainer will respect the privacy
 and security of the reporter.
 

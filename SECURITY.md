@@ -12,7 +12,7 @@ Please **do not open a public issue** for security problems.
 
 - Preferred: open a [private security advisory](https://github.com/furkankoykiran/.claude/security/advisories/new)
   on GitHub ("Report a vulnerability").
-- Alternatively, email **divimero.com@gmail.com** with the details and steps to
+- Alternatively, email **furkankoykiran@gmail.com** with the details and steps to
   reproduce.
 
 You can expect an initial response within a few days. Once a fix is ready it

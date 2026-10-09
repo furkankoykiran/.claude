@@ -31,14 +31,14 @@
     "claude-codex-gateway": {
       "name": "Canonical Claude Codex Gateway Submodule",
       "pinnedVersion": "v0.1.3",
-      "pinnedSha": "b6c0f888dd0c3050d6648802089ec581e71fe7e9",
+      "pinnedSha": "1c3d3584215e371b2f25d65001a8b1b94807a2e7",
       "upstream": "github:furkankoykiran/claude-codex-gateway",
       "path": "gateways/claude-codex-gateway"
     },
     "claude-gemini-gateway": {
       "name": "Policy-safe Claude Gemini Gateway Submodule",
       "pinnedVersion": "v0.1.0",
-      "pinnedSha": "b778ac00c2a7f452fabee280f358d67420bbbc45",
+      "pinnedSha": "ee4ff44ceea7988ae85090ce7f2ef0cda03fd5e7",
       "upstream": "github:furkankoykiran/claude-gemini-gateway",
       "path": "gateways/claude-gemini-gateway"
     }
