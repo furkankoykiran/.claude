@@ -23,7 +23,7 @@ repo: https://github.com/Panniantong/Agent-Reach.git · ref: `a19a171fa980a07858
 ## Anthropic skills (anthropics/skills)
 
 type: `git` · pack: `anthropic` · skills: 8 · redistribution: metadata-only
-repo: https://github.com/anthropics/skills.git · ref: `origin/HEAD` · revision: `683bc88e56f3`
+repo: https://github.com/anthropics/skills.git · ref: `origin/HEAD` · revision: `9d630808e4ad`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -129,7 +129,7 @@ repo: https://github.com/garrytan/gstack.git · ref: `4015c2870b064644131ed6f7cf
 ## Impeccable (pbakaus/impeccable)
 
 type: `git` · pack: `impeccable` · skills: 1 · redistribution: full
-repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `778c8a7b71cc`
+repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `d631a8827f99`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -147,7 +147,7 @@ repo: https://github.com/multica-ai/andrej-karpathy-skills.git · ref: `origin/H
 ## Marketing skills (coreyhaines31/marketingskills)
 
 type: `git` · pack: `marketing` · skills: 50 · redistribution: full
-repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `b9ba399dd88b`
+repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `1efedbc5148b`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -242,7 +242,7 @@ _Runtime-only — see notes below._
 ## Taste skills (Leonxlnx/taste-skill)
 
 type: `git` · pack: `taste` · skills: 13 · redistribution: full
-repo: https://github.com/Leonxlnx/taste-skill.git · ref: `origin/HEAD` · revision: `b482f7a970ab`
+repo: https://github.com/Leonxlnx/taste-skill.git · ref: `origin/HEAD` · revision: `18dfc928b135`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
