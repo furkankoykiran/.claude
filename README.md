@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="docs/media/logo.png" alt="Claude Code Toolkit Logo" width="128" />
+
 # Claude Code Toolkit
 
 **A reproducible, verifiable Claude Code setup — skills, agents, hooks and provider switching, installed with one command.**
