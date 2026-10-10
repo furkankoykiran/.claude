@@ -1427,7 +1427,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/brandkit/SKILL.md",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "sourceId": "taste"
     },
     {
@@ -1439,7 +1439,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/brutalist-skill/SKILL.md",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "sourceId": "taste"
     },
     {
@@ -1451,7 +1451,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/gpt-tasteskill/SKILL.md",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "sourceId": "taste"
     },
     {
@@ -1463,7 +1463,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/image-to-code-skill/SKILL.md",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "sourceId": "taste"
     },
     {
@@ -1475,7 +1475,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/imagegen-frontend-mobile/SKILL.md",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "sourceId": "taste"
     },
     {
@@ -1487,7 +1487,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/imagegen-frontend-web/SKILL.md",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "sourceId": "taste"
     },
     {
@@ -1499,7 +1499,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/minimalist-skill/SKILL.md",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "sourceId": "taste"
     },
     {
@@ -1511,7 +1511,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/output-skill/SKILL.md",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "sourceId": "taste"
     },
     {
@@ -1523,7 +1523,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/redesign-skill/SKILL.md",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "sourceId": "taste"
     },
     {
@@ -1535,7 +1535,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/soft-skill/SKILL.md",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "sourceId": "taste"
     },
     {
@@ -1547,7 +1547,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/stitch-skill/SKILL.md",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "sourceId": "taste"
     },
     {
@@ -1559,7 +1559,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/taste-skill-v1/SKILL.md",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "sourceId": "taste"
     },
     {
@@ -1571,7 +1571,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/taste-skill/SKILL.md",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "sourceId": "taste"
     },
     {
@@ -1583,7 +1583,7 @@
       },
       "redistribution": "metadata-only",
       "relativePath": "skills/doc-coauthoring/SKILL.md",
-      "resolvedRevision": "9d630808e4add0a7146de4af9384155d5dee350a",
+      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
       "sourceId": "anthropic"
     },
     {
@@ -1595,7 +1595,7 @@
       },
       "redistribution": "metadata-only",
       "relativePath": "skills/docx/SKILL.md",
-      "resolvedRevision": "9d630808e4add0a7146de4af9384155d5dee350a",
+      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
       "sourceId": "anthropic"
     },
     {
@@ -1607,7 +1607,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/mcp-builder/SKILL.md",
-      "resolvedRevision": "9d630808e4add0a7146de4af9384155d5dee350a",
+      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
       "sourceId": "anthropic"
     },
     {
@@ -1619,7 +1619,7 @@
       },
       "redistribution": "metadata-only",
       "relativePath": "skills/pdf/SKILL.md",
-      "resolvedRevision": "9d630808e4add0a7146de4af9384155d5dee350a",
+      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
       "sourceId": "anthropic"
     },
     {
@@ -1631,7 +1631,7 @@
       },
       "redistribution": "metadata-only",
       "relativePath": "skills/pptx/SKILL.md",
-      "resolvedRevision": "9d630808e4add0a7146de4af9384155d5dee350a",
+      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
       "sourceId": "anthropic"
     },
     {
@@ -1643,7 +1643,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/skill-creator/SKILL.md",
-      "resolvedRevision": "9d630808e4add0a7146de4af9384155d5dee350a",
+      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
       "sourceId": "anthropic"
     },
     {
@@ -1655,7 +1655,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/web-artifacts-builder/SKILL.md",
-      "resolvedRevision": "9d630808e4add0a7146de4af9384155d5dee350a",
+      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
       "sourceId": "anthropic"
     },
     {
@@ -1667,7 +1667,7 @@
       },
       "redistribution": "metadata-only",
       "relativePath": "skills/xlsx/SKILL.md",
-      "resolvedRevision": "9d630808e4add0a7146de4af9384155d5dee350a",
+      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
       "sourceId": "anthropic"
     },
     {
@@ -2261,7 +2261,7 @@
       },
       "redistribution": "full",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "selectedPaths": [
         "skills/brandkit",
         "skills/brutalist-skill",
@@ -2320,7 +2320,7 @@
       "notes": "Per-skill LICENSE.txt (Apache-2.0); claude-api skipped (name collision).",
       "redistribution": "metadata-only",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "9d630808e4add0a7146de4af9384155d5dee350a",
+      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
       "selectedPaths": [
         "skills/doc-coauthoring",
         "skills/docx",

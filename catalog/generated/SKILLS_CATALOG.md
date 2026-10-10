@@ -23,7 +23,7 @@ repo: https://github.com/Panniantong/Agent-Reach.git · ref: `a19a171fa980a07858
 ## Anthropic skills (anthropics/skills)
 
 type: `git` · pack: `anthropic` · skills: 8 · redistribution: metadata-only
-repo: https://github.com/anthropics/skills.git · ref: `origin/HEAD` · revision: `9d630808e4ad`
+repo: https://github.com/anthropics/skills.git · ref: `origin/HEAD` · revision: `dbd4588f9e10`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -242,7 +242,7 @@ _Runtime-only — see notes below._
 ## Taste skills (Leonxlnx/taste-skill)
 
 type: `git` · pack: `taste` · skills: 13 · redistribution: full
-repo: https://github.com/Leonxlnx/taste-skill.git · ref: `origin/HEAD` · revision: `18dfc928b135`
+repo: https://github.com/Leonxlnx/taste-skill.git · ref: `origin/HEAD` · revision: `717446e07a78`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
