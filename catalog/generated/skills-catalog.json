@@ -76,7 +76,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/doc-coauthoring/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "9d630808e4add0a7146de4af9384155d5dee350a",
+      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -123,7 +123,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/docx/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "9d630808e4add0a7146de4af9384155d5dee350a",
+      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
       "security": {
         "flags": [
           "executables:5"
@@ -171,7 +171,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/mcp-builder/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "9d630808e4add0a7146de4af9384155d5dee350a",
+      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -216,7 +216,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/pdf/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "9d630808e4add0a7146de4af9384155d5dee350a",
+      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
       "security": {
         "flags": [
           "executables:1"
@@ -265,7 +265,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/pptx/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "9d630808e4add0a7146de4af9384155d5dee350a",
+      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
       "security": {
         "flags": [
           "executables:4"
@@ -312,7 +312,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/skill-creator/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "9d630808e4add0a7146de4af9384155d5dee350a",
+      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
       "security": {
         "flags": [
           "executables:7"
@@ -358,7 +358,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/web-artifacts-builder/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "9d630808e4add0a7146de4af9384155d5dee350a",
+      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
       "security": {
         "flags": [
           "executables:2",
@@ -406,7 +406,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/xlsx/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "9d630808e4add0a7146de4af9384155d5dee350a",
+      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
       "security": {
         "flags": [
           "executables:2"
@@ -7768,7 +7768,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/brandkit/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7811,7 +7811,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/taste-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7854,7 +7854,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/taste-skill-v1/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7897,7 +7897,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/output-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7940,7 +7940,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/gpt-tasteskill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7983,7 +7983,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/soft-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8026,7 +8026,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/image-to-code-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8069,7 +8069,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/imagegen-frontend-mobile/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8112,7 +8112,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/imagegen-frontend-web/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8155,7 +8155,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/brutalist-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8198,7 +8198,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/minimalist-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8241,7 +8241,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/redesign-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8284,7 +8284,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/stitch-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8668,7 +8668,7 @@
       "redistribution": "metadata-only",
       "ref": "origin/HEAD",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "9d630808e4add0a7146de4af9384155d5dee350a",
+      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
       "runtimeOnly": false,
       "skillCount": 8,
       "type": "git"
@@ -8789,7 +8789,7 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "18dfc928b135629e0eddfdd445a06400d04ed439",
+      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
       "runtimeOnly": false,
       "skillCount": 13,
       "type": "git"
