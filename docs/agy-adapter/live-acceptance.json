@@ -1,0 +1,63 @@
+[
+  {
+    "event": "activation",
+    "code": 0,
+    "active": "agy",
+    "api_key_supplied": false
+  },
+  {
+    "event": "turn_result",
+    "is_error": false,
+    "marker_match": true,
+    "tool_expected": false,
+    "claude_tool_use": false,
+    "claude_tool_result": false,
+    "actual_mcp_executions": 0,
+    "stale_previous_marker": false
+  },
+  {
+    "event": "turn_result",
+    "is_error": false,
+    "marker_match": true,
+    "tool_expected": false,
+    "claude_tool_use": false,
+    "claude_tool_result": false,
+    "actual_mcp_executions": 0,
+    "stale_previous_marker": false
+  },
+  {
+    "event": "claude_tool_use",
+    "declared_tool": true,
+    "id": "call_af1c8aba-b196-438f-a644-c5b6121074b1"
+  },
+  {
+    "event": "claude_tool_result",
+    "id": "call_af1c8aba-b196-438f-a644-c5b6121074b1",
+    "is_error": false
+  },
+  {
+    "event": "turn_result",
+    "is_error": false,
+    "marker_match": true,
+    "tool_expected": true,
+    "claude_tool_use": true,
+    "claude_tool_result": true,
+    "actual_mcp_executions": 1,
+    "stale_previous_marker": false
+  },
+  {
+    "event": "turn_result",
+    "is_error": false,
+    "marker_match": true,
+    "tool_expected": false,
+    "claude_tool_use": false,
+    "claude_tool_result": false,
+    "actual_mcp_executions": 1,
+    "stale_previous_marker": false
+  },
+  {
+    "event": "acceptance",
+    "passed": true,
+    "gateway_sha": "6c4c502b2903c350b968426d10f545c952f7bc88"
+  }
+]

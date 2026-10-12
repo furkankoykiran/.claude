@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "rtk hook claude"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {},
+  "effortLevel": "xhigh",
+  "env": {
+    "ANTHROPIC_BASE_URL": "http://127.0.0.1:4141",
+    "ANTHROPIC_AUTH_TOKEN": "local-google-gateway",
+    "GEMINI_GATEWAY_PORT": "4141",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "API_TIMEOUT_MS": "3000000",
+    "GEMINI_GATEWAY_ADAPTER": "agy-cli",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "agy",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "agy",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "agy",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "agy"
+  }
+}

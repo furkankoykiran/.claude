@@ -46,7 +46,8 @@ and adds that directory to the user PATH.
 | --- | --- | --- | --- |
 | `anthropic` | `api.anthropic.com` | `claude login` | No token in the file; uses your normal claude.ai auth |
 | `codex` | `127.0.0.1:4545` | `ccs login codex` + experimental local gateway | Routes Claude Code to the isolated Codex adapter. Manages owned PID lifecycle per session. Official `codex login`/`logout`. Quota-bearing live inference deferred in this wave. |
-| `google` (`agy`, `antigravity`, `gemini`) | Local Gemini gateway | Official `GEMINI_API_KEY` or explicit Vertex project/access token | Official Gemini API / Vertex credentials only; ADC-file-only configuration is unsupported. Personal Antigravity OAuth fails closed; use native `agy` CLI instead. |
+| `agy` | Google gateway `agy-cli` adapter | Official local AGY CLI owns login/session | No Gemini API key. Native tool execution is denied; Claude Code owns tools, MCP, hooks, permissions and UI. Experimental. |
+| `gemini` | Google gateway `gemini-api` / `vertex` adapters | Own `GEMINI_API_KEY` or explicit Vertex project/access token | Requires a real credential/inference preflight and configured model before activation. ADC loading is unsupported; AGY auth is separate. |
 | `zai` | `api.z.ai/api/anthropic` | z.ai API key | GLM models. [Subscription link](https://z.ai/subscribe?ic=SNPFQIQ7BD) (my referral) |
 | `nvidia` | `127.0.0.1:4000` -> `build.nvidia.com` | NVIDIA API key + local gateway | Hosted NVIDIA catalog. LiteLLM gateway started as FK-owned session process when needed. |
 | `nvidia-nim` | your NIM container | a NIM deployment | Self-hosted NIM direct Anthropic Messages connection; no proxy needed. [See below](#nvidia-nim) |
@@ -315,3 +316,13 @@ Browse and install more with `/plugin` (or
 `claude plugin install <name>@<marketplace>`). **Trust note:** Claude Code does
 not vet marketplace contents — only add sources you trust. Remove one with
 `claude plugin marketplace remove <name>`.
+
+## AGY and Gemini configuration
+
+`ccs agy` discovers the official executable from PATH, or `AGY_GATEWAY_BIN`. Sign in using AGY itself. The toolkit never reads, copies or exports AGY OAuth. Optional `AGY_GATEWAY_MODEL` and `AGY_GATEWAY_EFFORT` select runtime-supported values; use `agy models` or, with AGY active, `ccs models` for the current catalog. Omitting them delegates model/effort to AGY. Native init may omit the selected model; the `agy` Claude model label then identifies the adapter, not a claimed concrete model.
+
+`ccs gemini` requires `GEMINI_GATEWAY_MODEL` from your API catalog and either `GEMINI_API_KEY`, or `GEMINI_GATEWAY_ADAPTER=vertex`, an explicit `VERTEX_PROJECT_ID` / `GOOGLE_CLOUD_PROJECT` / `ANTHROPIC_VERTEX_PROJECT_ID`, and `GOOGLE_OAUTH_TOKEN`. Only this explicit Cloud token transport is implemented; the caller owns refresh. ADC files and native AGY sessions are not API credentials. Model discovery is live for Developer API and configured-only for Vertex. `GEMINI_GATEWAY_API_BASE_URL` can configure the HTTP transport base; it is never an automatic provider fallback.
+
+Each provider has its own `providers/agy.json` or `providers/gemini.json`, seeded from its template. Settings change only after preflight and gateway startup succeed. `GEMINI_GATEWAY_PORT`, host and timeout come from runtime configuration. Changing adapter/configuration/source invalidates runtime reuse and pending tools. The `gemini-start` / `agy-start` commands start their named adapter; `gemini-stop` manages the shared owned Google sidecar.
+
+`ccs google` and `ccs antigravity` no longer switch. Use `ccs gemini` for API/Vertex or `ccs agy` for native authentication. Existing ignored `providers/google.json` is left intact and excluded from provider selection; migrate its supported API settings manually into `providers/gemini.json` if needed. Never move native AGY OAuth into either file.

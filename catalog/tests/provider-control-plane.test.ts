@@ -21,7 +21,10 @@ describe("Unified Provider Control Plane Registry", () => {
     const names = listAllProviderNames(registry);
     expect(names).toContain("anthropic");
     expect(names).toContain("codex");
-    expect(names).toContain("google");
+    expect(names).toContain("agy");
+    expect(names).toContain("gemini");
+    expect(names).not.toContain("google");
+    expect(names).not.toContain("antigravity");
     expect(names).toContain("zai");
     expect(names).toContain("nvidia-nim");
     expect(names).toContain("nvidia");
@@ -35,11 +38,10 @@ describe("Unified Provider Control Plane Registry", () => {
     expect(resolveProvider(registry, "chatgpt")?.id).toBe("codex");
     expect(resolveProvider(registry, "chatgpt-entitlement")?.id).toBe("codex");
 
-    // Google / Antigravity aliases
-    expect(resolveProvider(registry, "google")?.id).toBe("google");
-    expect(resolveProvider(registry, "agy")?.id).toBe("google");
-    expect(resolveProvider(registry, "antigravity")?.id).toBe("google");
-    expect(resolveProvider(registry, "gemini")?.id).toBe("google");
+    expect(resolveProvider(registry, "google")).toBeNull();
+    expect(resolveProvider(registry, "antigravity")).toBeNull();
+    expect(resolveProvider(registry, "agy")?.id).toBe("agy");
+    expect(resolveProvider(registry, "gemini")?.id).toBe("gemini");
 
     // Other aliases
     expect(resolveProvider(registry, "nim")?.id).toBe("nvidia-nim");
@@ -60,11 +62,17 @@ describe("Unified Provider Control Plane Registry", () => {
     expect(nim.transportType).toBe("direct-anthropic");
     expect(nim.lifecycle).toBe("none");
 
-    const google = resolveProvider(registry, "google")!;
+    const google = resolveProvider(registry, "gemini")!;
     expect(google.transportType).toBe("local-sidecar");
     expect(google.lifecycle).toBe("session-sidecar");
     expect(google.authMethod).toBe("vertex-gemini-key");
-    expect(google.compatibility.nativeCli).toBe("agy");
+    expect(google.compatibility.nativeCli).toBeUndefined();
+    const agy = resolveProvider(registry, "agy")!;
+    expect(agy.authMethod).toBe("delegated-cli");
+    expect(agy.compatibility.nativeCli).toBe("agy");
+    const auth = evaluateProviderAuth(agy, null, { claudeDir: "/tmp", env: {} });
+    expect(auth.redactedDisplay).toContain("native preflight");
+    expect(auth.configured).toBe(false);
   });
 
   it("rejects duplicate provider IDs or alias collisions in validation", () => {
@@ -113,9 +121,9 @@ describe("Centralized Auth UX", () => {
     expect(status.redactedDisplay).toContain("official codex CLI entitlement");
   });
 
-  it("requires official Gemini API or Vertex credentials for Google provider", async () => {
+  it("requires separate API/Vertex credentials for Gemini", async () => {
     const registry = await loadProviderRegistry(REGISTRY_PATH);
-    const google = resolveProvider(registry, "google")!;
+    const google = resolveProvider(registry, "gemini")!;
 
     // Scenario 1: GEMINI_API_KEY present in environment
     const withKey = evaluateProviderAuth(google, null, {
@@ -143,8 +151,8 @@ describe("Centralized Auth UX", () => {
     });
     expect(consumerOnly.configured).toBe(false);
     expect(consumerOnly.consumerOAuthDetected).toBe(true);
-    expect(consumerOnly.nativeFallbackMessage).toContain("agy -p");
-    expect(consumerOnly.nativeFallbackMessage).toContain("Personal Antigravity consumer OAuth cannot be reused");
+    expect(consumerOnly.nativeFallbackMessage).toContain("ccs agy");
+    expect(consumerOnly.nativeFallbackMessage).toContain("does not use the AGY session");
   });
 
   it("handles environment-based API key providers", async () => {

@@ -15,8 +15,8 @@
     },
     "agy": {
       "name": "Antigravity CLI",
-      "pinnedVersion": "cli-2.21.1",
-      "upstream": "google:antigravity"
+      "pinnedVersion": "1.3.3",
+      "upstream": "github:google-antigravity/antigravity-cli"
     },
     "litellm": {
       "name": "LiteLLM Proxy (NVIDIA Hosted Gateway)",
@@ -38,7 +38,7 @@
     "claude-gemini-gateway": {
       "name": "Policy-safe Claude Gemini Gateway Submodule",
       "pinnedVersion": "v0.1.0",
-      "pinnedSha": "228636a3ee77261de99b7ea67a2a147c0b2eb9cf",
+      "pinnedSha": "6c4c502b2903c350b968426d10f545c952f7bc88",
       "upstream": "github:furkankoykiran/claude-gemini-gateway",
       "path": "gateways/claude-gemini-gateway"
     }
@@ -80,17 +80,37 @@
       "description": "Routes Claude Code through local Codex App Server adapter via loopback sidecar."
     },
     {
-      "id": "google",
-      "name": "Google Gemini / Vertex AI",
-      "aliases": ["agy", "antigravity", "gemini"],
-      "authMethod": "vertex-gemini-key",
+      "id": "agy",
+      "name": "Official Antigravity CLI",
+      "aliases": [],
+      "authMethod": "delegated-cli",
       "transportType": "local-sidecar",
       "modelDiscovery": true,
       "lifecycle": "session-sidecar",
       "compatibility": {
         "claudeCode": "experimental",
         "nativeCli": "agy",
-        "notes": "Contract-tested Google gateway. Official GEMINI_API_KEY or explicit Vertex project/access token required; ADC-file-only and consumer OAuth fail closed. Live Google inference remains unproven."
+        "notes": "Official CLI owns authentication. Two sequential Claude text turns and one read-only Claude-owned MCP/result/new-turn path live-proven on the merged gateway. No Gemini API key or broad parity claim."
+      },
+      "requiredRuntime": "bun, agy, claude-gemini-gateway",
+      "sidecar": {
+        "script": "gateways/claude-gemini-gateway/src/index.ts",
+        "defaultPort": 4141,
+        "healthEndpoint": "/health"
+      },
+      "description": "Claude Code inference through the official local AGY CLI with a mandatory native execution deny guard."
+    },
+    {
+      "id": "gemini",
+      "name": "Google Gemini / Vertex AI",
+      "aliases": [],
+      "authMethod": "vertex-gemini-key",
+      "transportType": "local-sidecar",
+      "modelDiscovery": true,
+      "lifecycle": "session-sidecar",
+      "compatibility": {
+        "claudeCode": "experimental",
+        "notes": "Gemini Developer API or explicit Vertex credentials only. Activation requires a live inference nonce. AGY authentication is separate; no fallback. Live API/Vertex access remains unproven."
       },
       "requiredRuntime": "bun, claude-gemini-gateway",
       "sidecar": {
@@ -98,7 +118,7 @@
         "defaultPort": 4141,
         "healthEndpoint": "/health"
       },
-      "description": "Google Developer API / Vertex inference through a local gateway; Claude Code owns tool execution."
+      "description": "Google Developer API / Vertex through the Google gateway; supported credentials required before activation."
     },
     {
       "id": "zai",
