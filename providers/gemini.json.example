@@ -16,14 +16,15 @@
   "effortLevel": "xhigh",
   "env": {
     "ANTHROPIC_BASE_URL": "http://127.0.0.1:4141",
-    "ANTHROPIC_AUTH_TOKEN": "<GEMINI_API_KEY>",
-    "GEMINI_API_KEY": "<GEMINI_API_KEY>",
+    "ANTHROPIC_AUTH_TOKEN": "local-google-gateway",
     "GEMINI_GATEWAY_PORT": "4141",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "gemini-3.8-flash",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "gemini-3.8-flash",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "gemini-3.8-flash",
-    "CLAUDE_CODE_SUBAGENT_MODEL": "gemini-3.8-flash",
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
-    "API_TIMEOUT_MS": "3000000"
+    "API_TIMEOUT_MS": "3000000",
+    "GEMINI_GATEWAY_ADAPTER": "gemini-api",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "gemini",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "gemini",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "gemini",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "gemini",
+    "GEMINI_API_KEY": "<GEMINI_API_KEY>"
   }
 }

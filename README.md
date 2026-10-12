@@ -98,12 +98,19 @@ ccs login codex
 ccs codex
 ccs status
 
-# Google Gemini (requires GEMINI_API_KEY or Vertex credentials)
-ccs google
+# Official local AGY CLI (experimental; sign in with agy itself)
+# No Gemini API key; optional AGY_GATEWAY_MODEL comes from: agy models
+ccs agy
+
+# Gemini Developer API / Vertex (separate credentials and model required)
+# Set GEMINI_API_KEY and GEMINI_GATEWAY_MODEL, or configure supported Vertex.
+ccs gemini
 ```
 
+`ccs google` and `ccs antigravity` are non-switching migration errors. Failed Google preflight leaves the active provider unchanged.
+
 See [Provider capability matrix](docs/provider-capability-matrix.md) for tested boundaries.
-Codex and Gemini are **experimental** — see [Status and limitations](#status-and-limitations).
+Codex, AGY and Gemini are **experimental** — see [Status and limitations](#status-and-limitations).
 
 ### Updating
 
@@ -121,14 +128,15 @@ flowchart LR
   CC --> MCP["Claude-owned MCP servers"]
   P{"active provider"} --> A["Anthropic"]
   P --> C["Codex loopback gateway"]
-  P --> G["Gemini/Vertex gateway"]
+  P --> G["Google gateway adapters"]
   P --> O["other Anthropic-compatible providers"]
   CC --> P
   C --> APP["official Codex App Server"]
   APP --> CHATGPT["ChatGPT/Codex entitlement"]
-  G --> GEMINI["Google AI Studio / Vertex AI"]
+  G --> AGY["official local AGY CLI: own login/session"]
+  G --> GEMINI["Developer API / Vertex: own credentials"]
   C -. "no token copying" .-> MCP
-  G -. "no consumer OAuth" .-> MCP
+  G -. "Claude owns tool execution" .-> MCP
 ```
 
 Claude Code remains the executable you run. The toolkit changes configuration, not the

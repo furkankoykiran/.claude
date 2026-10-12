@@ -1,0 +1,22 @@
+[
+  {
+    "phase": "known_provider",
+    "exit": 0,
+    "active": "codex"
+  },
+  {
+    "phase": "invalid_gemini",
+    "exit": 1,
+    "status": "codex",
+    "settings_unchanged": true,
+    "codex_pid_unchanged": true,
+    "false_active_message": false
+  },
+  {
+    "phase": "native_default_activation",
+    "exit": 0,
+    "status": "agy",
+    "api_key_supplied": false,
+    "model_override_supplied": false
+  }
+]

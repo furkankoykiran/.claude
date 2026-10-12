@@ -46,3 +46,11 @@ That's the fail-soft design working — the rest of the setup still completed.
 Read the listed step name, fix its cause (often a missing system dependency),
 and re-run the installer; it's idempotent.
 </details>
+
+## AGY versus Gemini activation
+
+`ccs agy` uses the official local CLI session; `ccs gemini` uses separate Developer API/Vertex credentials. `google` and `antigravity` are migration errors. A failed preflight must leave `ccs status` and the previous settings unchanged.
+
+For AGY, check `agy --version`, `agy --help`, `agy models` and a harmless native prompt. Sign in through AGY itself, then retry `ccs agy`. Configure `AGY_GATEWAY_BIN` only if PATH discovery cannot find the official executable. A catalog is not login proof: activation requires a new nonce response and the native execution guard. Malformed, incompatible or uncorrelated protocol output fails closed. Do not paste OAuth/session files into toolkit config or issue reports.
+
+For Gemini, configure its own supported credentials and `GEMINI_GATEWAY_MODEL`. Vertex requires an explicit Cloud token/project and `GEMINI_GATEWAY_ADAPTER=vertex`; ADC loading is not implemented. Invalid/missing credentials, unavailable models, quota failures or bad nonce replies refuse activation. There is no silent AGY fallback. Start/reload changes must replace only the owned sidecar; an unrelated PID/listener is left untouched.

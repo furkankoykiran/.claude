@@ -50,7 +50,8 @@ function Assert-ProviderArg($cmd, $ProviderArgs) {
 
 function Resolve-Provider($p) {
   if ($p -in @('codex', 'chatgpt', 'chatgpt-entitlement')) { return 'codex' }
-  if ($p -in @('google', 'agy', 'antigravity', 'gemini')) { return 'google' }
+  if ($p -eq 'google') { throw "'google' no longer switches providers. Use 'ccs gemini' for API/Vertex or 'ccs agy' for native CLI." }
+  if ($p -eq 'antigravity') { throw "'antigravity' no longer switches providers. Use 'ccs agy'." }
   if ($p -in @('zai', 'glm', 'zhipu')) { return 'zai' }
   if ($p -in @('kimi', 'moonshot')) { return 'kimi' }
   if ($p -in @('nvidia-nim', 'nim')) { return 'nvidia-nim' }
@@ -59,7 +60,7 @@ function Resolve-Provider($p) {
 }
 
 function Test-GoogleProvider($p) {
-  return $p -in @('google', 'agy', 'antigravity', 'gemini')
+  return $p -in @('agy', 'gemini')
 }
 
 function Test-CodexEntitlement($p) {
@@ -133,23 +134,23 @@ function Test-ConsumerAntigravityAuth {
 }
 
 function Test-OfficialGoogleCredential($p) {
-  if ($env:GEMINI_API_KEY) { return $true }
-  if ($env:GOOGLE_OAUTH_TOKEN -and ($env:ANTHROPIC_VERTEX_PROJECT_ID -or $env:VERTEX_PROJECT_ID -or $env:GOOGLE_CLOUD_PROJECT)) { return $true }
-  $key = Get-CredentialKey $p
-  if ($key) {
-    $val = Get-CredentialValue $p $key
-    if (-not [string]::IsNullOrEmpty($val) -and $val -notmatch '^<') { return $true }
-  }
-  return $false
+  $config = Read-JsonMap (Join-Path $PDir "$p.json")
+  $configEnv = if ($config.ContainsKey('env')) { $config['env'] } else { @{} }
+  $key = if ($env:GEMINI_API_KEY) { $env:GEMINI_API_KEY } else { $configEnv['GEMINI_API_KEY'] }
+  if ($key -and $key -notmatch '^<') { return $true }
+  $token = if ($env:GOOGLE_OAUTH_TOKEN) { $env:GOOGLE_OAUTH_TOKEN } else { $configEnv['GOOGLE_OAUTH_TOKEN'] }
+  $project = $env:VERTEX_PROJECT_ID
+  if (-not $project) { $project = $env:GOOGLE_CLOUD_PROJECT }
+  if (-not $project) { $project = $env:ANTHROPIC_VERTEX_PROJECT_ID }
+  if (-not $project) { $project = $configEnv['VERTEX_PROJECT_ID'] }
+  if (-not $project) { $project = $configEnv['GOOGLE_CLOUD_PROJECT'] }
+  if (-not $project) { $project = $configEnv['ANTHROPIC_VERTEX_PROJECT_ID'] }
+  return ($token -and $token -notmatch '^<' -and $project -and $project -notmatch '^<')
 }
 
 function Write-NativeAgyAdvice {
-  Write-Host 'Claude Code requires official Gemini API (GEMINI_API_KEY) or Vertex AI credentials.'
-  Write-Host 'Personal Antigravity consumer OAuth tokens are not permitted to be reused or proxied into Claude Code.'
-  Write-Host 'For consumer Antigravity accounts, use native agy directly:'
-  Write-Host '  agy'
-  Write-Host 'To use Google inference in Claude Code, obtain an official API key from Google AI Studio and configure:'
-  Write-Host '  ccs login google'
+  Write-Host 'Gemini requires its own supported API/Vertex credentials and configured model.'
+  Write-Host 'AGY login is separate: ccs agy uses the official native CLI session without copying OAuth.'
 }
 
 function Write-ProviderAuthStatus($p) {
@@ -158,7 +159,11 @@ function Write-ProviderAuthStatus($p) {
     'Auth mode: ChatGPT entitlement via official codex login/status/logout (no API key is copied).'
     return
   }
-  if (Test-GoogleProvider $resolved) {
+  if ($resolved -eq 'agy') {
+    'Auth mode: official AGY CLI owns login/session; activation requires a nonce preflight (no API key).'
+    return
+  }
+  if ($resolved -eq 'gemini') {
     if (Test-OfficialGoogleCredential $resolved) {
       'Auth mode: official Google/Vertex credentials configured.'
     } else {
@@ -204,6 +209,7 @@ function Read-ProviderSecret($prompt) {
 
 function Set-ProviderApiKey($p) {
   $resolved = Resolve-Provider $p
+  if ($resolved -eq 'agy') { throw 'AGY owns login/session. Run the official agy CLI; no API key is copied.' }
   if (Test-CodexEntitlement $resolved) {
     throw "$p uses ChatGPT entitlement. Use: ccs login $p (delegates to codex login), not an API key."
   }
@@ -228,6 +234,7 @@ function Set-ProviderApiKey($p) {
 
 function Clear-ProviderAuth($p) {
   $resolved = Resolve-Provider $p
+  if ($resolved -eq 'agy') { throw 'AGY owns logout; use its native session controls.' }
   if (Test-CodexEntitlement $resolved) { Invoke-Codex logout; return }
   if ((Get-ProviderList) -notcontains $resolved) { throw "unknown provider: $p" }
   $f = Join-Path $PDir "$resolved.json"
@@ -657,7 +664,7 @@ function Get-ProviderList {
   foreach ($f in Get-ChildItem -LiteralPath $PDir -Filter '*.json' -ErrorAction SilentlyContinue) {
     $names += ($f.Name -replace '\.json$', '')
   }
-  return $names | Sort-Object -Unique
+  return $names | Where-Object { $_ -notin @('google', 'antigravity', 'registry') } | Sort-Object -Unique
 }
 
 function Initialize-Provider($p) {
@@ -692,7 +699,7 @@ function Write-WarningIfLocalEndpointDown($p) {
   $ok = $false
   try {
     $client = [System.Net.Sockets.TcpClient]::new()
-    $ok = $client.ConnectAsync($uri.Host, $uri.Port).Wait(1500)
+    $ok = $client.ConnectAsync($uri.DnsSafeHost, $uri.Port).Wait(1500)
   } catch { $ok = $false } finally { if ($client) { $client.Dispose() } }
   if (-not $ok) {
     "WARNING: nothing is listening on $($uri.Host):$($uri.Port), which providers/$p.json points at." | Write-Host
@@ -702,6 +709,116 @@ function Write-WarningIfLocalEndpointDown($p) {
     elseif ($p -eq 'codex') {
       "Start the experimental gateway first: bun run $env:CLAUDE_DIR\scripts\codex-anthropic-gateway.ts" | Write-Host
     }
+  }
+}
+
+function Get-GoogleAdapter($p) {
+  if ($p -eq 'agy') { return 'agy-cli' }
+  $config = Read-JsonMap (Join-Path $PDir "$p.json")
+  $adapter = 'gemini-api'
+  if ($config['env']['GEMINI_GATEWAY_ADAPTER']) { $adapter = [string]$config['env']['GEMINI_GATEWAY_ADAPTER'] }
+  if ($env:GEMINI_GATEWAY_ADAPTER) { $adapter = $env:GEMINI_GATEWAY_ADAPTER }
+  if ($adapter -notin @('gemini-api', 'vertex')) { throw 'ccs gemini accepts only gemini-api or vertex; no AGY fallback' }
+  return $adapter
+}
+
+function Invoke-GooglePreflight($p) {
+  if (-not (Get-Command bun -ErrorAction SilentlyContinue)) { throw 'Bun is required for the Google gateway' }
+  $script = Join-Path $env:CLAUDE_DIR 'gateways/claude-gemini-gateway/src/index.ts'
+  if (-not (Test-Path -LiteralPath $script)) { throw 'Google gateway submodule is unavailable' }
+  $previousConfig = $env:GEMINI_GATEWAY_CONFIG
+  $previousAdapter = $env:GEMINI_GATEWAY_ADAPTER
+  try {
+    $env:GEMINI_GATEWAY_CONFIG = Join-Path $PDir "$p.json"
+    $env:GEMINI_GATEWAY_ADAPTER = Get-GoogleAdapter $p
+    & bun run $script preflight
+    if ($LASTEXITCODE -ne 0) { throw 'Google preflight failed; active provider and settings remain unchanged' }
+  } finally {
+    $env:GEMINI_GATEWAY_CONFIG = $previousConfig
+    $env:GEMINI_GATEWAY_ADAPTER = $previousAdapter
+  }
+}
+
+function Get-GoogleOwnedProcess($pidFile) {
+  if (-not (Test-Path -LiteralPath $pidFile)) { return $null }
+  $gatewayPid = 0
+  if (-not [int]::TryParse((Get-Content -LiteralPath $pidFile -Raw).Trim(), [ref]$gatewayPid)) { throw 'Invalid Google gateway pidfile' }
+  $process = Get-Process -Id $gatewayPid -ErrorAction SilentlyContinue
+  if (-not $process) { return $null }
+  $commandLine = if ($env:OS -eq 'Windows_NT') { (Get-CimInstance Win32_Process -Filter "ProcessId = $gatewayPid").CommandLine } else { (& ps -p $gatewayPid -o args=) -join ' ' }
+  $script = Join-Path $env:CLAUDE_DIR 'gateways/claude-gemini-gateway/src/index.ts'
+  if (-not $commandLine.Contains($script) -or $commandLine -notmatch '\bserve\b') { throw 'Google pidfile points at an unrelated process; left untouched' }
+  return $process
+}
+
+function Stop-GoogleOwnedProcess($process) {
+  if ($env:OS -eq 'Windows_NT') { & taskkill /pid $process.Id /t /f | Out-Null }
+  else { & kill -TERM $process.Id; if (-not $process.WaitForExit(5000)) { Stop-Process -Id $process.Id -ErrorAction SilentlyContinue } }
+}
+
+function Stop-GoogleGateway {
+  $pidFile = Join-Path $env:CLAUDE_DIR 'state/gemini-gateway.pid'
+  $metaFile = Join-Path $env:CLAUDE_DIR 'state/gemini-gateway.meta'
+  $owned = Get-GoogleOwnedProcess $pidFile
+  if ($owned) { Stop-GoogleOwnedProcess $owned }
+  Remove-Item $pidFile, $metaFile -ErrorAction SilentlyContinue
+}
+
+function Get-GoogleGatewayUrl($p) {
+  $config = Read-JsonMap (Join-Path $PDir "$p.json")
+  $gatewayHost = if ($env:GEMINI_GATEWAY_HOST) { $env:GEMINI_GATEWAY_HOST } else { $config['env']['GEMINI_GATEWAY_HOST'] }
+  if (-not $gatewayHost) { $gatewayHost = '127.0.0.1' }
+  if ($gatewayHost -notin @('127.0.0.1', 'localhost', '::1')) { throw 'Google gateway must use loopback' }
+  if ($gatewayHost -eq '::1') { $gatewayHost = '[::1]' }
+  $port = if ($env:GEMINI_GATEWAY_PORT) { $env:GEMINI_GATEWAY_PORT } else { $config['env']['GEMINI_GATEWAY_PORT'] }
+  if (-not $port) { $port = '4141' }
+  return "http://${gatewayHost}:$port"
+}
+
+function Start-GoogleGateway($p) {
+  $stateDir = Join-Path $env:CLAUDE_DIR 'state'
+  if (-not (Test-Path -LiteralPath $stateDir)) { New-Item -ItemType Directory -Path $stateDir | Out-Null }
+  $pidFile = Join-Path $stateDir 'gemini-gateway.pid'
+  $metaFile = Join-Path $stateDir 'gemini-gateway.meta'
+  $script = Join-Path $env:CLAUDE_DIR 'gateways/claude-gemini-gateway/src/index.ts'
+  $configFile = Join-Path $PDir "$p.json"
+  $adapter = Get-GoogleAdapter $p
+  $signatureParts = @($p, $adapter, (Get-FileHash -LiteralPath $configFile -Algorithm SHA256).Hash)
+  foreach ($file in Get-ChildItem (Split-Path $script) -Recurse -File | Sort-Object FullName) { $signatureParts += (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash }
+  foreach ($key in @('AGY_GATEWAY_BIN', 'AGY_GATEWAY_MODEL', 'AGY_GATEWAY_EFFORT', 'GEMINI_GATEWAY_MODEL', 'GEMINI_MODEL', 'GEMINI_GATEWAY_PORT', 'GEMINI_GATEWAY_HOST', 'GEMINI_GATEWAY_TIMEOUT_MS', 'GEMINI_GATEWAY_API_BASE_URL', 'GEMINI_API_KEY', 'GOOGLE_OAUTH_TOKEN', 'VERTEX_PROJECT_ID', 'GOOGLE_CLOUD_PROJECT', 'ANTHROPIC_VERTEX_PROJECT_ID')) { $signatureParts += [Environment]::GetEnvironmentVariable($key) }
+  $sha = [Security.Cryptography.SHA256]::Create()
+  try { $signature = [Convert]::ToBase64String($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes(($signatureParts -join "`n")))) } finally { $sha.Dispose() }
+  $owned = Get-GoogleOwnedProcess $pidFile
+  $metadata = @{}
+  if (Test-Path -LiteralPath $metaFile) { try { $metadata = Read-JsonMap $metaFile } catch { $metadata = @{} } }
+  if ($owned -and $metadata['signature'] -eq $signature) {
+    try { $health = Invoke-RestMethod "$(Get-GoogleGatewayUrl $p)/health" -TimeoutSec 2; if ($health.ok -and $health.adapter -eq $adapter) { return } } catch { $health = $null }
+  }
+  $uri = [uri](Get-GoogleGatewayUrl $p)
+  $client = [Net.Sockets.TcpClient]::new()
+  $occupied = $false
+  try { $occupied = $client.ConnectAsync($uri.DnsSafeHost, $uri.Port).Wait(1000) } catch { $occupied = $false } finally { $client.Dispose() }
+  if ($occupied -and (-not $owned -or $metadata['url'] -ne $uri.AbsoluteUri.TrimEnd('/'))) { throw 'Google target endpoint is occupied; previous runtime/provider left unchanged' }
+  if ($owned) { Stop-GoogleOwnedProcess $owned }
+  $previousConfig = $env:GEMINI_GATEWAY_CONFIG
+  $previousAdapter = $env:GEMINI_GATEWAY_ADAPTER
+  try {
+    $env:GEMINI_GATEWAY_CONFIG = $configFile
+    $env:GEMINI_GATEWAY_ADAPTER = $adapter
+    if ($script.Contains('"')) { throw 'Unsupported gateway source path' }
+    $started = Start-Process (Get-Command bun).Source -ArgumentList @('run', ('"' + $script + '"'), 'serve') -PassThru -RedirectStandardOutput (Join-Path $stateDir 'gemini-gateway.log') -RedirectStandardError (Join-Path $stateDir 'gemini-gateway.err.log')
+    Set-Content -LiteralPath $pidFile -Value $started.Id
+    @{ signature = $signature; url = (Get-GoogleGatewayUrl $p); provider = $p } | ConvertTo-Json | Set-Content -LiteralPath $metaFile
+    for ($attempt = 0; $attempt -lt 20; $attempt++) {
+      Start-Sleep -Milliseconds 100
+      try { $health = Invoke-RestMethod "$(Get-GoogleGatewayUrl $p)/health" -TimeoutSec 1; if ($health.ok -and $health.adapter -eq $adapter -and -not $started.HasExited) { return } } catch { $health = $null }
+    }
+    if (-not $started.HasExited) { Stop-GoogleOwnedProcess $started }
+    Remove-Item $pidFile, $metaFile -ErrorAction SilentlyContinue
+    throw 'Google gateway startup failed; provider remains unchanged'
+  } finally {
+    $env:GEMINI_GATEWAY_CONFIG = $previousConfig
+    $env:GEMINI_GATEWAY_ADAPTER = $previousAdapter
   }
 }
 
@@ -715,6 +832,7 @@ function Enable-Provider($p) {
     throw "missing $BaseSettings; re-run install.ps1 to restore the repo-owned safety settings"
   }
   $merged = Build-MergedSetting (Join-Path $PDir "$p.json")
+  if (Test-GoogleProvider $p) { Invoke-GooglePreflight $p; $merged['env']['ANTHROPIC_BASE_URL'] = Get-GoogleGatewayUrl $p; Start-GoogleGateway $p }
 
   # Written whole to a temp file, then swapped: a half-written settings.json is
   # a broken Claude Code, and this file is read at startup.
@@ -724,12 +842,14 @@ function Enable-Provider($p) {
 
   Set-Content -LiteralPath $Active -Value $p -NoNewline
   "Active provider: $p"
+  if (-not (Test-GoogleProvider $p)) { try { Stop-GoogleGateway } catch { Write-Warning 'Unrelated Google pidfile process was left untouched' } }
   Write-WarningIfLocalEndpointDown $p
   "Restart Claude Code for the change to take effect (env is read at startup)."
 }
 
 function Show-Usage {
-  "usage: cc-provider.ps1 [list|status|doctor|account|usage|permissions|use <provider>|auth <provider>|login <provider>|api <provider>|logout <provider>|<provider>]" | Write-Host
+  "usage: cc-provider.ps1 [list|status|doctor|models|account|usage|permissions|use <provider>|auth <provider>|login <provider>|api <provider>|logout <provider>|<provider>]" | Write-Host
+  "  agy / gemini      native AGY session / separately authenticated API or Vertex" | Write-Host
   "  list              list available providers" | Write-Host
   "  status            print the active provider and auth summary" | Write-Host
   "  use <provider>    activate it (compatibility shorthand: cc-provider.ps1 <provider>)" | Write-Host
@@ -737,6 +857,7 @@ function Show-Usage {
   "  login <provider>  fill an API key; codex/chatgpt delegates to official codex login" | Write-Host
   "  api <provider>    fill an API key in providers\<provider>.json" | Write-Host
   "  logout <provider> clear a local API key; codex/chatgpt delegates to codex logout" | Write-Host
+  "  models            list the active Google gateway catalog" | Write-Host
   "  account           show supported Codex account/auth details" | Write-Host
   "  usage             show supported Codex usage and rate-limit details" | Write-Host
   "  permissions       show Claude/Codex permission and Auto ownership" | Write-Host
@@ -784,6 +905,15 @@ switch ($Command) {
     if ($Rest.Count -gt 0) { throw 'doctor accepts no provider argument' }
     Invoke-Doctor
   }
+  'models' {
+    if ($Rest.Count -gt 0) { throw 'models accepts no arguments' }
+    if (-not (Test-Path -LiteralPath $Active)) { throw 'Activate a Google provider before querying its models' }
+    $p = (Get-Content -LiteralPath $Active -Raw).Trim()
+    if (-not (Test-GoogleProvider $p)) { throw 'This PowerShell catalog command requires active agy or gemini' }
+    Invoke-GooglePreflight $p
+    Start-GoogleGateway $p
+    (Invoke-RestMethod "$(Get-GoogleGatewayUrl $p)/v1/models").data | ForEach-Object { $_.id }
+  }
   'account' {
     if ($Rest.Count -gt 0) { throw 'account accepts no arguments' }
     Show-CodexAccount
@@ -809,7 +939,8 @@ switch ($Command) {
     $p = Assert-ProviderArg 'auth' $Rest
     $resolved = Resolve-Provider $p
     if (Test-CodexEntitlement $resolved) { Write-ProviderAuthStatus $resolved; return }
-    if (Test-GoogleProvider $resolved) {
+    if ($resolved -eq 'agy') { Write-ProviderAuthStatus $resolved; return }
+    if ($resolved -eq 'gemini') {
       Write-ProviderAuthStatus $resolved
       if (-not (Test-OfficialGoogleCredential $resolved)) { Set-ProviderApiKey $resolved }
       return
@@ -825,6 +956,7 @@ switch ($Command) {
   'login' {
     $p = Assert-ProviderArg 'login' $Rest
     $resolved = Resolve-Provider $p
+    if ($resolved -eq 'agy') { throw 'AGY owns login; run the official agy CLI to sign in.' }
     if (Test-CodexEntitlement $resolved) { Invoke-Codex login } else { Set-ProviderApiKey $resolved }
   }
   'api' {

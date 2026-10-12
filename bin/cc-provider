@@ -55,7 +55,7 @@ REGISTRY="$CLAUDE_DIR/providers/registry.json"
 
 is_google_provider() {
   case "$1" in
-    google|agy|antigravity|gemini) return 0 ;;
+    agy|gemini) return 0 ;;
     *) return 1 ;;
   esac
 }
@@ -73,13 +73,13 @@ has_official_google_creds() {
   if [ -n "${GOOGLE_OAUTH_TOKEN:-}" ] && [ -n "${ANTHROPIC_VERTEX_PROJECT_ID:-${VERTEX_PROJECT_ID:-${GOOGLE_CLOUD_PROJECT:-}}}" ]; then
     return 0
   fi
-  if [ -f "$PDIR/google.json" ] && command -v jq >/dev/null 2>&1; then
+  if [ -f "$PDIR/gemini.json" ] && command -v jq >/dev/null 2>&1; then
     local k
-    k=$(jq -r '.env.GEMINI_API_KEY // empty' "$PDIR/google.json" 2>/dev/null || true)
+    k=$(jq -r '.env.GEMINI_API_KEY // empty' "$PDIR/gemini.json" 2>/dev/null || true)
     if [ -n "$k" ] && ! [[ "$k" =~ $PLACEHOLDER_RE ]]; then
       return 0
     fi
-    if jq -e '.env as $e | ($e.GOOGLE_OAUTH_TOKEN // "") as $token | ($e.ANTHROPIC_VERTEX_PROJECT_ID // $e.VERTEX_PROJECT_ID // $e.GOOGLE_CLOUD_PROJECT // "") as $project | ($token != "" and ($token | startswith("<") | not) and $project != "" and ($project | startswith("<") | not))' "$PDIR/google.json" >/dev/null 2>&1; then
+    if jq -e '.env as $e | ($e.GOOGLE_OAUTH_TOKEN // "") as $token | ($e.ANTHROPIC_VERTEX_PROJECT_ID // $e.VERTEX_PROJECT_ID // $e.GOOGLE_CLOUD_PROJECT // "") as $project | ($token != "" and ($token | startswith("<") | not) and $project != "" and ($project | startswith("<") | not))' "$PDIR/gemini.json" >/dev/null 2>&1; then
       return 0
     fi
   fi
@@ -87,20 +87,17 @@ has_official_google_creds() {
 }
 
 native_agy_advice() {
-  printf 'cc-provider: Claude Code inference requires officially supported Gemini API or Vertex credentials.\n' >&2
-  printf 'Personal Antigravity consumer OAuth cannot be reused, copied, or proxied into Claude Code.\n' >&2
-  printf 'To use your Antigravity credentials, run the native CLI instead:\n' >&2
-  printf '  agy -p "your prompt"  # choose your configured model and effort\n\n' >&2
-  printf 'To configure Claude Code with Gemini API:\n' >&2
-  printf '  export GEMINI_API_KEY="your-api-key"\n' >&2
-  printf '  or run: ccs api google\n' >&2
+  printf 'Gemini requires its own GEMINI_API_KEY or explicit Vertex project/access token and configured model.\n' >&2
+  printf 'AGY login is separate: use ccs agy for the official native CLI adapter; no API key or OAuth copying.\n' >&2
 }
 
 resolve_provider() {
   local p="${1:-}"
   case "$p" in
     codex|chatgpt|chatgpt-entitlement) printf 'codex' ;;
-    google|agy|antigravity|gemini) printf 'google' ;;
+    google) die "'google' no longer switches providers. Use 'ccs gemini' for API/Vertex or 'ccs agy' for native CLI." ;;
+    antigravity) die "'antigravity' no longer switches providers. Use 'ccs agy'." ;;
+    agy|gemini) printf '%s' "$p" ;;
     zai|glm|zhipu) printf 'zai' ;;
     kimi|moonshot) printf 'kimi' ;;
     nvidia-nim|nim) printf 'nvidia-nim' ;;
@@ -443,99 +440,129 @@ status_codex_gateway() {
 GEMINI_GATEWAY_PID="$CLAUDE_DIR/state/gemini-gateway.pid"
 GEMINI_GATEWAY_LOG="$CLAUDE_DIR/state/gemini-gateway.log"
 GEMINI_GATEWAY_META="$CLAUDE_DIR/state/gemini-gateway.meta"
+GOOGLE_GATEWAY_PROVIDER="${GEMINI_GATEWAY_PROVIDER:-$(cat "$PDIR/.active" 2>/dev/null || true)}"
+case "$GOOGLE_GATEWAY_PROVIDER" in agy|gemini) ;; *) GOOGLE_GATEWAY_PROVIDER=gemini ;; esac
+
+google_gateway_adapter() {
+  if [ "$GOOGLE_GATEWAY_PROVIDER" = "agy" ]; then printf 'agy-cli'; return; fi
+  local adapter
+  adapter="${GEMINI_GATEWAY_ADAPTER:-$(jq -r '.env.GEMINI_GATEWAY_ADAPTER // "gemini-api"' "$PDIR/gemini.json")}"
+  case "$adapter" in gemini-api|vertex) printf '%s' "$adapter" ;; *) die "ccs gemini accepts only gemini-api or vertex; no AGY fallback" ;; esac
+}
+
+google_gateway_preflight() {
+  local p="$1" script adapter
+  GOOGLE_GATEWAY_PROVIDER="$p"
+  command -v bun >/dev/null 2>&1 || return 1
+  script="$CLAUDE_DIR/gateways/claude-gemini-gateway/src/index.ts"
+  [ -f "$script" ] || return 1
+  adapter=$(google_gateway_adapter) || return 1
+  GEMINI_GATEWAY_CONFIG="$PDIR/$p.json" GEMINI_GATEWAY_ADAPTER="$adapter" bun run "$script" preflight
+}
 
 gemini_gateway_port() {
-  if [ -n "${GEMINI_GATEWAY_PORT:-}" ]; then
-    printf '%s' "$GEMINI_GATEWAY_PORT"
-    return 0
-  fi
-  if [ -f "$PDIR/google.json" ] && command -v jq >/dev/null 2>&1; then
-    jq -r '.env.GEMINI_GATEWAY_PORT // "4141"' "$PDIR/google.json" 2>/dev/null || printf '4141'
-  else
-    printf '4141'
-  fi
+  local port
+  port="${GEMINI_GATEWAY_PORT:-$(jq -r '.env.GEMINI_GATEWAY_PORT // "4141"' "$PDIR/$GOOGLE_GATEWAY_PROVIDER.json")}" || return 1
+  case "$port" in ''|*[!0-9]*) die "Google gateway port must be an integer from 1 to 65535" ;; esac
+  if [ "${#port}" -gt 5 ] || [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then die "Google gateway port must be an integer from 1 to 65535"; fi
+  printf '%s' "$port"
+}
+
+google_gateway_url() {
+  local host port
+  host="${GEMINI_GATEWAY_HOST:-$(jq -r '.env.GEMINI_GATEWAY_HOST // "127.0.0.1"' "$PDIR/$GOOGLE_GATEWAY_PROVIDER.json")}"
+  port=$(gemini_gateway_port) || return 1
+  case "$host" in 127.0.0.1|localhost) ;; ::1) host='[::1]' ;; *) die "Google gateway must use loopback" ;; esac
+  printf 'http://%s:%s' "$host" "$port"
+}
+
+google_gateway_port_listening() {
+  local host port
+  host="${GEMINI_GATEWAY_HOST:-$(jq -r '.env.GEMINI_GATEWAY_HOST // "127.0.0.1"' "$PDIR/$GOOGLE_GATEWAY_PROVIDER.json")}"
+  port=$(gemini_gateway_port)
+  (exec 3<>"/dev/tcp/$host/$port") >/dev/null 2>&1
 }
 
 gemini_gateway_running() {
   [ -f "$GEMINI_GATEWAY_PID" ] || return 1
   local pid
   pid=$(cat "$GEMINI_GATEWAY_PID" 2>/dev/null || true)
-  [ -n "$pid" ] || return 1
+  case "$pid" in ''|*[!0-9]*) return 1 ;; esac
   kill -0 "$pid" 2>/dev/null
 }
 
 gemini_gateway_health_running() {
   command -v curl >/dev/null 2>&1 || return 1
-  curl -fsS --max-time 1 "http://127.0.0.1:$(gemini_gateway_port)/health" 2>/dev/null | jq -e '.provider == "gemini" and .ok == true' >/dev/null 2>&1
+  curl -fsS --max-time 1 "$(google_gateway_url)/health" 2>/dev/null | jq -e --arg adapter "$(google_gateway_adapter)" '.provider == "gemini" and .adapter == $adapter and .ok == true' >/dev/null 2>&1
 }
 
 gemini_gateway_owned_pid() {
   local pid="$1" cmd
-  [ -n "$pid" ] || return 1
+  case "$pid" in ''|*[!0-9]*) return 1 ;; esac
   kill -0 "$pid" 2>/dev/null || return 1
   cmd=$(ps -p "$pid" -o args= 2>/dev/null || true)
-  case "$cmd" in
-    *"claude-gemini-gateway"*"serve"*) return 0 ;;
-    *) return 1 ;;
-  esac
+  case "$cmd" in *"$CLAUDE_DIR/gateways/claude-gemini-gateway/src/index.ts"*"serve"*) return 0 ;; *) return 1 ;; esac
 }
 
 gemini_gateway_signature() {
   local config
-  config=$(jq -c '.env | {GEMINI_GATEWAY_MODEL, GEMINI_MODEL, GEMINI_GATEWAY_HOST, GEMINI_GATEWAY_TIMEOUT_MS, ANTHROPIC_DEFAULT_SONNET_MODEL}' "$PDIR/google.json" 2>/dev/null || true)
-  printf 'port=%s\nmodel=%s\nhost=%s\ntimeout=%s\nconfig=%s\nsource=%s\n' \
-    "$(gemini_gateway_port)" "${GEMINI_GATEWAY_MODEL:-${GEMINI_MODEL:-}}" \
-    "${GEMINI_GATEWAY_HOST:-}" "${GEMINI_GATEWAY_TIMEOUT_MS:-}" "$config" "$(gateway_source_hash gemini)"
+  config=$(jq -Sc '.env' "$PDIR/$GOOGLE_GATEWAY_PROVIDER.json" | shasum -a 256 | cut -d ' ' -f 1)
+  { printf '%s\n' "$GOOGLE_GATEWAY_PROVIDER" "$(google_gateway_adapter)" "$(gemini_gateway_port)" "$config" "$(gateway_source_hash gemini)";
+    printf '%s\n' "${AGY_GATEWAY_BIN:-$(command -v agy || true)}" "${AGY_GATEWAY_MODEL:-}" "${AGY_GATEWAY_EFFORT:-}" "${GEMINI_GATEWAY_MODEL:-${GEMINI_MODEL:-}}" "${GEMINI_GATEWAY_HOST:-}" "${GEMINI_GATEWAY_TIMEOUT_MS:-}" "${GEMINI_GATEWAY_API_BASE_URL:-}" "${GEMINI_API_KEY:-}" "${GOOGLE_OAUTH_TOKEN:-}" "${VERTEX_PROJECT_ID:-${GOOGLE_CLOUD_PROJECT:-${ANTHROPIC_VERTEX_PROJECT_ID:-}}}";
+  } | shasum -a 256 | cut -d ' ' -f 1
 }
 
 gemini_gateway_valid() {
   gemini_gateway_running || return 1
   local pid
-  pid=$(cat "$GEMINI_GATEWAY_PID" 2>/dev/null || true)
+  pid=$(cat "$GEMINI_GATEWAY_PID")
   gemini_gateway_owned_pid "$pid" || return 1
   [ -f "$GEMINI_GATEWAY_META" ] || return 1
-  [ "$(cat "$GEMINI_GATEWAY_META")" = "$(gemini_gateway_signature)" ]
+  [ "$(jq -r 'try .signature // empty' "$GEMINI_GATEWAY_META" 2>/dev/null)" = "$(gemini_gateway_signature)" ]
 }
 
 start_gemini_gateway() {
-  is_provider google || die "google provider template is missing"
-  ensure_provider_file google
-  command -v bun >/dev/null 2>&1 || die "bun is required to run the Gemini gateway"
-  if ! has_official_google_creds; then
-    native_agy_advice
-    exit 1
-  fi
-  if gemini_gateway_valid && gemini_gateway_health_running; then
-    return 0
+  GOOGLE_GATEWAY_PROVIDER="${1:-$GOOGLE_GATEWAY_PROVIDER}"
+  ensure_provider_file "$GOOGLE_GATEWAY_PROVIDER"
+  command -v bun >/dev/null 2>&1 || die "bun is required for the Google gateway"
+  local startup_ms started now
+  startup_ms="${GEMINI_GATEWAY_STARTUP_TIMEOUT_MS:-$(jq -r '.env.GEMINI_GATEWAY_STARTUP_TIMEOUT_MS // "10000"' "$PDIR/$GOOGLE_GATEWAY_PROVIDER.json")}"
+  case "$startup_ms" in ''|*[!0-9]*) die "Google startup timeout must be a positive integer" ;; esac
+  if [ "${#startup_ms}" -gt 6 ] || [ "$startup_ms" -lt 1 ] || [ "$startup_ms" -gt 300000 ]; then die "Google startup timeout must be from 1 to 300000 milliseconds"; fi
+  if gemini_gateway_valid && gemini_gateway_health_running; then return 0; fi
+  # Never stop a working runtime until the replacement's authentication/protocol passes.
+  if [ "${2:-}" != "preflighted" ]; then google_gateway_preflight "$GOOGLE_GATEWAY_PROVIDER" || die "Google preflight failed; provider remains unchanged"; fi
+  if google_gateway_port_listening; then
+    local existing_url
+    existing_url=$(jq -r 'try .url // empty' "$GEMINI_GATEWAY_META" 2>/dev/null || true)
+    if ! gemini_gateway_running || [ "$existing_url" != "$(google_gateway_url)" ]; then die "Google target endpoint is occupied; previous runtime/provider left unchanged"; fi
   fi
   if gemini_gateway_running; then
     local previous
     previous=$(cat "$GEMINI_GATEWAY_PID")
-    gemini_gateway_owned_pid "$previous" || die "Gemini pidfile points at an unrelated process; refusing reuse"
+    gemini_gateway_owned_pid "$previous" || die "Google pidfile points at an unrelated process; refusing reuse"
     stop_gemini_gateway >/dev/null
   fi
-  if gemini_gateway_health_running; then
-    die "Gemini port $(gemini_gateway_port) serves an unowned gateway; choose another GEMINI_GATEWAY_PORT"
-  fi
-  local port script_path
+  local port script_path adapter
   port=$(gemini_gateway_port)
+  # Any responding listener is unowned at this point, including another adapter.
+  if curl -fsS --max-time 1 "$(google_gateway_url)/health" >/dev/null 2>&1; then die "Google port $port is occupied by an unowned gateway"; fi
   script_path="$CLAUDE_DIR/gateways/claude-gemini-gateway/src/index.ts"
-  [ -f "$script_path" ] || die "Gemini gateway script not found at $script_path"
+  adapter=$(google_gateway_adapter)
   mkdir -p "$(dirname "$GEMINI_GATEWAY_PID")"
-  GEMINI_GATEWAY_CONFIG="$PDIR/google.json" GEMINI_GATEWAY_PORT="$port" nohup bun run "$script_path" serve >"$GEMINI_GATEWAY_LOG" 2>&1 &
+  GEMINI_GATEWAY_CONFIG="$PDIR/$GOOGLE_GATEWAY_PROVIDER.json" GEMINI_GATEWAY_ADAPTER="$adapter" GEMINI_GATEWAY_PORT="$port" nohup bun run "$script_path" serve >"$GEMINI_GATEWAY_LOG" 2>&1 &
   local pid=$!
   printf '%s\n' "$pid" > "$GEMINI_GATEWAY_PID"
-  gemini_gateway_signature > "$GEMINI_GATEWAY_META"
-  local _wait
-  for _wait in 1 2 3 4 5 6 7 8 9 10; do
-    if gemini_gateway_valid && gemini_gateway_health_running; then
-      printf 'Gemini gateway started (pid %s, port %s).\n' "$pid" "$port"
-      return 0
-    fi
+  jq -n --arg signature "$(gemini_gateway_signature)" --arg url "$(google_gateway_url)" --arg provider "$GOOGLE_GATEWAY_PROVIDER" '{signature:$signature,url:$url,provider:$provider}' > "$GEMINI_GATEWAY_META"
+  started=$(bun -e 'process.stdout.write(String(Date.now()))')
+  while kill -0 "$pid" 2>/dev/null; do
+    now=$(bun -e 'process.stdout.write(String(Date.now()))')
+    [ "$((now - started))" -lt "$startup_ms" ] || break
+    if gemini_gateway_valid && gemini_gateway_health_running; then printf 'Google gateway started (%s, pid %s, port %s).\n' "$adapter" "$pid" "$port"; return 0; fi
     sleep 0.1
   done
   stop_gemini_gateway >/dev/null
-  die "Gemini gateway failed to start; see $GEMINI_GATEWAY_LOG"
+  die "Google gateway failed to start; provider remains unchanged; see $GEMINI_GATEWAY_LOG"
 }
 
 stop_gemini_gateway() {
@@ -570,11 +597,11 @@ stop_gemini_gateway() {
 
 status_gemini_gateway() {
   if gemini_gateway_valid && gemini_gateway_health_running; then
-    printf 'Gemini gateway: running (pid %s, port %s)\n' "$(cat "$GEMINI_GATEWAY_PID")" "$(gemini_gateway_port)"
+    printf 'Google gateway: running (pid %s, port %s)\n' "$(cat "$GEMINI_GATEWAY_PID")" "$(gemini_gateway_port)"
   elif gemini_gateway_health_running; then
-    printf 'Gemini gateway: running (health, port %s)\n' "$(gemini_gateway_port)"
+    printf 'Google gateway: blocked (unowned/stale listener, port %s)\n' "$(gemini_gateway_port)"
   else
-    printf 'Gemini gateway: stopped\n'
+    printf 'Google gateway: stopped\n'
   fi
 }
 
@@ -909,12 +936,12 @@ list_providers() {
       [ -e "$f" ] || continue
       name=${f##*/}; printf '%s\n' "${name%.json}"
     done
-  } | sort -u
+  } | sort -u | sed '/^[g]oogle$/d; /^[a]ntigravity$/d; /^registry$/d'
 }
 
 is_provider() {
   local canonical
-  canonical=$(resolve_provider "$1")
+  canonical=$(resolve_provider "$1") || return 1
   list_providers | grep -qxF "$canonical"
 }
 
@@ -965,18 +992,22 @@ provider_auth_status() {
     printf 'Auth mode: ChatGPT entitlement via official codex login/status/logout (no API key is copied).\n'
     return 0
   fi
-  if is_google_provider "$p"; then
+  if [ "$p" = "agy" ]; then
+    printf 'Auth mode: official AGY CLI owns login/session; activation requires native nonce preflight (no API key).\n'
+    return 0
+  fi
+  if [ "$p" = "gemini" ]; then
     if has_official_google_creds; then
       local gkey
       gkey="${GEMINI_API_KEY:-}"
-      [ -n "$gkey" ] || gkey=$(jq -r '.env.GEMINI_API_KEY // .env.ANTHROPIC_AUTH_TOKEN // empty' "$PDIR/google.json" 2>/dev/null || true)
+      [ -n "$gkey" ] || gkey=$(jq -r '.env.GEMINI_API_KEY // empty' "$PDIR/gemini.json" 2>/dev/null || true)
       if [ -n "$gkey" ] && ! [[ "$gkey" =~ $PLACEHOLDER_RE ]]; then
         printf 'Auth mode: Google Gemini API (%s).\n' "$(redact_secret "$gkey")"
       else
         printf 'Auth mode: Google Vertex AI credentials configured.\n'
       fi
     elif has_consumer_antigravity_auth; then
-      printf 'Auth mode: personal Antigravity consumer OAuth detected (cannot be proxied into Claude Code).\n'
+      printf 'Auth mode: native AGY state is separate from Gemini API/Vertex credentials.\n'
       native_agy_advice
     else
       printf 'Auth mode: Gemini API key or Vertex credentials required (not configured).\n'
@@ -1028,18 +1059,19 @@ write_api_key() {
   is_provider "$p" || die "unknown provider: $p"
   ensure_provider_file "$p"
   command -v jq >/dev/null 2>&1 || die "jq is required to update providers/$p.json"
-  if is_google_provider "$p"; then
+  [ "$p" != "agy" ] || die "AGY owns its login/session. Run the official agy CLI to sign in; no API key is copied."
+  if [ "$p" = "gemini" ]; then
     secret=$(prompt_secret "Enter Gemini API key for $p: ")
-    [ -n "$secret" ] || die "empty API key; providers/google.json was not changed"
-    tmp="$(mktemp "$PDIR/.google.json.XXXXXX")"
-    jq --arg secret "$secret" '.env.GEMINI_API_KEY = $secret | .env.ANTHROPIC_AUTH_TOKEN = $secret' "$PDIR/google.json" > "$tmp"
+    [ -n "$secret" ] || die "empty API key; providers/gemini.json was not changed"
+    tmp="$(mktemp "$PDIR/.gemini.json.XXXXXX")"
+    jq --arg secret "$secret" '.env.GEMINI_API_KEY = $secret' "$PDIR/gemini.json" > "$tmp"
     chmod 600 "$tmp"
-    mv -f "$tmp" "$PDIR/google.json"
-    printf 'Updated providers/google.json (GEMINI_API_KEY: %s).\n' "$(redact_secret "$secret")"
-    if [ -f "$PDIR/.active" ] && [ "$(cat "$PDIR/.active")" = "google" ]; then
-      activate "google"
+    mv -f "$tmp" "$PDIR/gemini.json"
+    printf 'Updated providers/gemini.json (GEMINI_API_KEY: %s).\n' "$(redact_secret "$secret")"
+    if [ -f "$PDIR/.active" ] && [ "$(cat "$PDIR/.active")" = "gemini" ]; then
+      activate "gemini"
     else
-      printf 'Run %s to activate it.\n' "ccs use google"
+      printf 'Run %s to activate it.\n' "ccs use gemini"
     fi
     return 0
   fi
@@ -1067,16 +1099,17 @@ logout_provider() {
     delegate_codex logout
     return
   fi
+  [ "$p" != "agy" ] || die "AGY owns logout; use its native session controls."
   is_provider "$p" || die "unknown provider: $p"
   [ -f "$f" ] || { printf 'Provider %s has no local file to clear.\n' "$p"; return 0; }
   if is_google_provider "$p"; then
-    tmp="$(mktemp "$PDIR/.google.json.XXXXXX")"
+    tmp="$(mktemp "$PDIR/.gemini.json.XXXXXX")"
     jq '.env.GEMINI_API_KEY = "" | .env.ANTHROPIC_AUTH_TOKEN = ""' "$f" > "$tmp"
     chmod 600 "$tmp"
     mv -f "$tmp" "$f"
-    printf 'Cleared API key in providers/google.json (GEMINI_API_KEY).\n'
-    if [ -f "$PDIR/.active" ] && [ "$(cat "$PDIR/.active")" = "google" ]; then
-      activate "google"
+    printf 'Cleared API key in providers/gemini.json (GEMINI_API_KEY).\n'
+    if [ -f "$PDIR/.active" ] && [ "$(cat "$PDIR/.active")" = "gemini" ]; then
+      activate "gemini"
     fi
     return 0
   fi
@@ -1134,11 +1167,13 @@ warn_if_local_endpoint_down() {
 # because a deny rule that a later layer happens not to mention must not be
 # dropped. Everything else is last-writer-wins.
 merge_settings() {
-  local provider_file="$1" out="$2" base='{}' current='{}'
+  local provider_file="$1" out="$2" base='{}' current='{}' google_url=''
+  case "${provider_file##*/}" in agy.json|gemini.json) GOOGLE_GATEWAY_PROVIDER=${provider_file##*/}; GOOGLE_GATEWAY_PROVIDER=${GOOGLE_GATEWAY_PROVIDER%.json}; google_url=$(google_gateway_url) || return 1 ;; esac
   [ -f "$BASE_SETTINGS" ] && base="$(cat "$BASE_SETTINGS")"
   [ -f "$SETTINGS" ] && current="$(cat "$SETTINGS")"
 
   jq -n \
+    --arg google_url "$google_url" \
     --argjson provider_keys "$PROVIDER_KEYS" \
     --slurpfile base_arr <(printf '%s' "$base") \
     --slurpfile cur_arr <(printf '%s' "$current") \
@@ -1201,22 +1236,15 @@ merge_settings() {
     # reduce, not iteration, so this stays one document however many keys move.
     | reduce ($provider_keys[]) as $k (.;
         if ($prov | has($k)) then .[$k] = $prov[$k] else del(.[$k]) end)
+    | if $google_url != "" then .env.ANTHROPIC_BASE_URL=$google_url else . end
     ' > "$out"
 }
 
 activate() {
   local p
-  p=$(resolve_provider "$1")
+  p=$(resolve_provider "$1") || exit 1
   ensure_provider_file "$p"
   mkdir -p "$PDIR"
-
-  if is_google_provider "$p"; then
-    if ! has_official_google_creds; then
-      if has_consumer_antigravity_auth; then
-        native_agy_advice
-      fi
-    fi
-  fi
 
   # Refuse rather than write an unguarded settings.json. Shipping a safety
   # control that silently is not there is the failure mode this whole merge
@@ -1234,6 +1262,11 @@ activate() {
   fi
   # Written whole, then swapped: a half-written settings.json is a broken
   # Claude Code, and this file is read at startup.
+  if is_google_provider "$p"; then
+    if ! google_gateway_preflight "$p"; then rm -f "$tmp"; die "Google preflight failed; active provider and settings remain unchanged"; fi
+    # Startup also precedes activation. Settings are never committed for a failed runtime.
+    if ! (start_gemini_gateway "$p" preflighted); then rm -f "$tmp"; die "Google gateway startup failed; active provider and settings remain unchanged"; fi
+  fi
   chmod 600 "$tmp"
   mv -f "$tmp" "$SETTINGS"
 
@@ -1254,6 +1287,7 @@ activate() {
     stop_codex_gateway >/dev/null 2>&1 || true
     warn_if_local_endpoint_down "$p"
   fi
+  if ! is_google_provider "$p"; then stop_gemini_gateway >/dev/null 2>&1 || true; fi
   printf 'Restart Claude Code for the change to take effect (env is read at startup).\n'
 }
 
@@ -1338,6 +1372,7 @@ doctor() {
 
 usage() {
   printf 'usage: cc-provider [list|status|doctor|models|account|usage|permissions|model <model> [effort]|use <provider>|auth <provider>|login <provider>|api <provider>|logout <provider>|codex-start|codex-stop|codex-status|codex-model <model> [effort]|<provider>]\n' >&2
+  printf '  agy / gemini      native AGY session / separately authenticated API or Vertex\n' >&2
   printf '  list              list available providers\n' >&2
   printf '  status            print the active provider (default) and auth summary on stderr\n' >&2
   printf '  use <provider>    activate it (compatibility shorthand: cc-provider <provider>)\n' >&2
@@ -1346,7 +1381,7 @@ usage() {
   printf '  api <provider>    fill an API key in providers/<provider>.json\n' >&2
   printf '  logout <provider> clear a local API key; codex/chatgpt delegates to codex logout\n' >&2
   printf '  doctor            check provider setup, safety merge and local gateway state\n' >&2
-  printf '  models            list live Codex models from the local gateway catalog\n' >&2
+  printf '  models            list the active Codex/AGY/Gemini gateway catalog\n' >&2
   printf '  account           show supported Codex account/auth details\n' >&2
   printf '  usage             show supported Codex usage and rate-limit details\n' >&2
   printf '  permissions       show Claude/Codex permission and Auto ownership\n' >&2
@@ -1378,7 +1413,7 @@ launch_session() {
     lifecycle=$(jq -r --arg id "$canonical" '.providers[] | select(.id == $id) | .lifecycle // "none"' "$REGISTRY" 2>/dev/null || echo "none")
   else
     case "$canonical" in
-      codex|google|nvidia) lifecycle="session-sidecar" ;;
+      codex|agy|gemini|nvidia) lifecycle="session-sidecar" ;;
       *) lifecycle="none" ;;
     esac
   fi
@@ -1410,12 +1445,9 @@ launch_session() {
       claude "$@" || true
       cleanup_codex_session
       trap - EXIT INT TERM
-    elif [ "$canonical" = "google" ]; then
-      if ! has_official_google_creds; then
-        native_agy_advice
-        exit 1
-      fi
-      start_gemini_gateway >/dev/null
+    elif is_google_provider "$canonical"; then
+      GOOGLE_GATEWAY_PROVIDER="$canonical"
+      start_gemini_gateway "$canonical" >/dev/null
       local gpid
       gpid=$(cat "$GEMINI_GATEWAY_PID" 2>/dev/null || true)
       [ -n "$gpid" ] && printf '%s\n' "$gpid" > "$sess_pid_file"
@@ -1451,11 +1483,19 @@ launch_session() {
 }
 
 cmd="${1:-status}"
+case "$cmd" in google|antigravity) resolve_provider "$cmd" ;; esac
 case "$cmd" in
   status)    [ "${2:-}" = "" ] || die "status accepts no provider argument"; status ;;
   list)      [ "${2:-}" = "" ] || die "list accepts no provider argument"; list_providers ;;
   doctor)    [ "${2:-}" = "" ] || die "doctor accepts no provider argument"; doctor ;;
-  models)    [ "${2:-}" = "" ] || die "models accepts no arguments"; list_codex_models ;;
+  models)
+    [ "${2:-}" = "" ] || die "models accepts no arguments"
+    if [ -f "$PDIR/.active" ] && is_google_provider "$(cat "$PDIR/.active")"; then
+      GOOGLE_GATEWAY_PROVIDER=$(cat "$PDIR/.active")
+      start_gemini_gateway "$GOOGLE_GATEWAY_PROVIDER" >/dev/null
+      curl -fsS "$(google_gateway_url)/v1/models" | jq -r '.data[].id'
+    else list_codex_models; fi
+    ;;
   account)   [ "${2:-}" = "" ] || die "account accepts no arguments"; print_codex_account ;;
   usage)     [ "${2:-}" = "" ] || die "usage accepts no arguments"; print_codex_usage ;;
   permissions) [ "${2:-}" = "" ] || die "permissions accepts no arguments"; print_permission_matrix ;;
@@ -1464,7 +1504,8 @@ case "$cmd" in
   codex-stop) [ "${2:-}" = "" ] || die "codex-stop accepts no arguments"; stop_codex_gateway ;;
   codex-status) [ "${2:-}" = "" ] || die "codex-status accepts no arguments"; status_codex_gateway ;;
   codex-model) set_codex_model "${2:-}" "${3:-medium}"; [ "${4:-}" = "" ] || die "codex-model accepts at most model and effort" ;;
-  gemini-start) [ "${2:-}" = "" ] || die "gemini-start accepts no arguments"; start_gemini_gateway ;;
+  agy-start) [ "${2:-}" = "" ] || die "agy-start accepts no arguments"; start_gemini_gateway agy ;;
+  gemini-start) [ "${2:-}" = "" ] || die "gemini-start accepts no arguments"; start_gemini_gateway gemini ;;
   gemini-stop) [ "${2:-}" = "" ] || die "gemini-stop accepts no arguments"; stop_gemini_gateway ;;
   gemini-status) [ "${2:-}" = "" ] || die "gemini-status accepts no arguments"; status_gemini_gateway ;;
   update)    die "ccs does not manage updates. Use 'fkt update' to update the toolkit." ;;
@@ -1481,7 +1522,9 @@ case "$cmd" in
     auth_p=$(resolve_provider "$2")
     if is_codex_entitlement "$auth_p"; then
       provider_auth_status "$auth_p"
-    elif is_google_provider "$auth_p"; then
+    elif [ "$auth_p" = "agy" ]; then
+      provider_auth_status "$auth_p"
+    elif [ "$auth_p" = "gemini" ]; then
       provider_auth_status "$auth_p"
       if ! has_official_google_creds; then
         write_api_key "$auth_p"
@@ -1501,7 +1544,9 @@ case "$cmd" in
     login_p=$(resolve_provider "$2")
     if is_codex_entitlement "$login_p"; then
       delegate_codex login
-    elif is_google_provider "$login_p"; then
+    elif [ "$login_p" = "agy" ]; then
+      die "AGY owns login; run the official agy CLI to sign in."
+    elif [ "$login_p" = "gemini" ]; then
       provider_auth_status "$login_p"
       if ! has_official_google_creds; then
         write_api_key "$login_p"

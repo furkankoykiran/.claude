@@ -4,15 +4,14 @@
  * Rules:
  * - Delegates authentication to official provider mechanisms.
  * - Codex: preserves official Codex authentication/login ownership.
- * - Google / agy / antigravity: Claude Code inference may use only officially
- *   supported Gemini API / Vertex credentials. Never reuse, copy or proxy
- *   personal Antigravity consumer OAuth into Claude Code. If only consumer
- *   Antigravity auth exists, fail clearly and offer native agy usage instead.
+ * - AGY delegates inference and authentication to the official local CLI.
+ * - Gemini API / Vertex never reuse native AGY credentials.
  * - API-key providers retain simple environment-based auth.
  * - No silent provider fallback.
  */
 
 import { existsSync } from "node:fs";
+import { homedir } from "node:os";
 import { join } from "node:path";
 import type { AuthStatus, ProviderDefinition } from "./types.ts";
 
@@ -24,7 +23,7 @@ export interface AuthContext {
 
 export function detectConsumerAntigravityAuth(ctx: AuthContext): boolean {
   const env = ctx.env ?? process.env;
-  const home = ctx.homeDir ?? env["HOME"] ?? "/root";
+  const home = ctx.homeDir ?? env["HOME"] ?? homedir();
 
   // Check consumer Antigravity indicators
   if (env["ANTIGRAVITY_AGENTAPI_EXE"] || env["ANTIGRAVITY_AGENT"] || env["ANTIGRAVITY_LS_ADDRESS"]) {
@@ -55,7 +54,12 @@ export function evaluateProviderAuth(
     }
 
     case "delegated-cli": {
-      // Codex: preserve official Codex login ownership
+      const runtime = provider.compatibility.nativeCli;
+      if (runtime !== "codex") return {
+        providerId: provider.id, authMethod: provider.authMethod, configured: false,
+        redactedDisplay: `official ${runtime ?? "provider"} CLI session; authentication requires native preflight`,
+      };
+      // Preserve existing Codex entitlement UX.
       return {
         providerId: provider.id,
         authMethod: provider.authMethod,
@@ -105,13 +109,8 @@ export function evaluateProviderAuth(
         redactedDisplay: "missing",
         consumerOAuthDetected: consumerAuth,
         nativeFallbackMessage: consumerAuth
-          ? "Personal Antigravity consumer OAuth cannot be reused or proxied into Claude Code.\n" +
-            "Claude Code inference requires an official GEMINI_API_KEY or Vertex credentials.\n" +
-            "To use your existing Antigravity session natively, run:\n" +
-            "  agy -p \"your prompt\" # choose your configured model and effort\n" +
-            "To configure Claude Code with Gemini API:\n" +
-            "  export GEMINI_API_KEY=\"your-key\"\n" +
-            "  or run: ccs api google"
+          ? "Gemini API/Vertex does not use the AGY session. Use ccs agy for the official native CLI adapter, " +
+            "or configure GEMINI_API_KEY / supported Vertex credentials and run ccs gemini. No OAuth copying or silent fallback."
           : undefined,
       };
     }
