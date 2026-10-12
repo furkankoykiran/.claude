@@ -101,7 +101,7 @@ jobs:
       - name: Validate (typecheck + tests + check)
         run: |
           bun run typecheck
-          bun test catalog
+          bun test catalog/tests
           bun run catalog:check
 
       # Single source of truth for "is there anything to ship?". Every mutating

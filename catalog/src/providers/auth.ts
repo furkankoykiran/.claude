@@ -68,15 +68,14 @@ export function evaluateProviderAuth(
       // Check official Gemini API / Vertex credentials
       const configEnv = (providerConfig?.["env"] as Record<string, string> | undefined) ?? {};
       const geminiKey =
-        env["GEMINI_API_KEY"] ||
+        (env["GEMINI_API_KEY"] && !env["GEMINI_API_KEY"].startsWith("<") ? env["GEMINI_API_KEY"] : undefined) ||
         (configEnv["GEMINI_API_KEY"] && !configEnv["GEMINI_API_KEY"].startsWith("<")
           ? configEnv["GEMINI_API_KEY"]
           : undefined);
-      const vertexCreds =
-        env["GOOGLE_APPLICATION_CREDENTIALS"] ||
-        env["ANTHROPIC_VERTEX_PROJECT_ID"] ||
-        configEnv["GOOGLE_APPLICATION_CREDENTIALS"] ||
-        configEnv["ANTHROPIC_VERTEX_PROJECT_ID"];
+      const vertexProject = env["ANTHROPIC_VERTEX_PROJECT_ID"] || env["VERTEX_PROJECT_ID"] || env["GOOGLE_CLOUD_PROJECT"]
+        || configEnv["ANTHROPIC_VERTEX_PROJECT_ID"] || configEnv["VERTEX_PROJECT_ID"] || configEnv["GOOGLE_CLOUD_PROJECT"];
+      const vertexToken = env["GOOGLE_OAUTH_TOKEN"] || configEnv["GOOGLE_OAUTH_TOKEN"];
+      const vertexCreds = vertexProject && !vertexProject.startsWith("<") && vertexToken && !vertexToken.startsWith("<");
 
       if (geminiKey) {
         const masked = geminiKey.length > 4 ? `****${geminiKey.slice(-4)}` : "****";
@@ -109,7 +108,7 @@ export function evaluateProviderAuth(
           ? "Personal Antigravity consumer OAuth cannot be reused or proxied into Claude Code.\n" +
             "Claude Code inference requires an official GEMINI_API_KEY or Vertex credentials.\n" +
             "To use your existing Antigravity session natively, run:\n" +
-            "  agy -p \"your prompt\" --model gemini-3.8-flash --effort medium\n" +
+            "  agy -p \"your prompt\" # choose your configured model and effort\n" +
             "To configure Claude Code with Gemini API:\n" +
             "  export GEMINI_API_KEY=\"your-key\"\n" +
             "  or run: ccs api google"

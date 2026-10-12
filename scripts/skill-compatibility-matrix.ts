@@ -203,7 +203,7 @@ const rows: Row[] = [
     area: "ccs codex broad skill parity",
     status: "pending-live-proof",
     evidence: "partial live evidence only",
-    limitation: "Still needs automatic selection, references/assets/scripts execution, and native Claude comparison. Subagent dispatch is explicitly unsupported in the current bridge.",
+    limitation: "Still needs automatic selection, references/assets/scripts execution, and native Claude comparison. Current gateway subagent dispatch remains unproven; older unsupported probes do not establish current behavior.",
   },
 ];
 

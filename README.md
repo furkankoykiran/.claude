@@ -92,7 +92,7 @@ Switch provider and verify:
 # Anthropic (default)
 ccs anthropic
 
-# Codex (experimental — live inference pending; see provider matrix)
+# Codex (experimental; see provider matrix for live-tested paths)
 fkt setup --yes --provider codex --model gpt-5.5 --effort medium
 ccs login codex
 ccs codex
@@ -103,7 +103,7 @@ ccs google
 ```
 
 See [Provider capability matrix](docs/provider-capability-matrix.md) for tested boundaries.
-Codex and Gemini are **experimental / live-test-pending** — see [Status and limitations](#status-and-limitations).
+Codex and Gemini are **experimental** — see [Status and limitations](#status-and-limitations).
 
 ### Updating
 
@@ -159,7 +159,7 @@ digest. Two consecutive `bun run catalog:generate` runs produce byte-identical o
 | Provider | Status | Notes |
 | --- | --- | --- |
 | Anthropic | **Stable default** | Full Claude Code feature parity |
-| Codex | **Experimental** | Live text inference pending — current custom-endpoint probes did not forward the actionable prompt; gateway fails closed |
+| Codex | **Experimental** | GPT-6.1 Sol text, Claude-owned Bash, timeout recovery, and upstream Auto tested; see provider matrix |
 | Google / Gemini | **Experimental** | Requires official AI Studio key or Vertex credentials; no consumer OAuth |
 | NVIDIA, Z.ai, DeepSeek, Kimi, MiniMax, OpenRouter | Template | Provider-dependent; not live-tested in this repository |
 
@@ -211,7 +211,7 @@ Before opening a pull request:
 ```bash
 bun install --frozen-lockfile
 bun run typecheck
-bun test catalog
+bun test catalog/tests
 bun run catalog:check
 bun run docs:check
 ```

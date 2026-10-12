@@ -44,10 +44,14 @@ bun run typecheck && bun test catalog/tests && bun run catalog:check \
   && bun run marketplace:check && bun run catalog:budget && bun run instructions:check \
   && bun run docs:check
 
-# 4. Updater behaviour (hermetic: throwaway repos, no network)
+# 4. Provider and gateway lifecycle (fixture auth, disposable state)
+./scripts/test-providers.sh
+./scripts/test-gateway-family.sh
+
+# 5. Updater behaviour (hermetic: throwaway repos, no network)
 ./scripts/test-fkt.sh
 
-# 5. Smoke-test the installer end-to-end on a clean Ubuntu (proves the bootstrap works)
+# 6. Smoke-test the installer end-to-end on a clean Ubuntu (proves the bootstrap works)
 docker run --rm -v "$PWD:/repo:ro" ubuntu:24.04 bash -c '
   apt-get update && apt-get install -y git curl unzip ca-certificates &&
   cp -r /repo /root/.claude && cd /root/.claude &&
