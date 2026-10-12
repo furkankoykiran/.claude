@@ -102,6 +102,8 @@ resolve_provider() {
     kimi|moonshot) printf 'kimi' ;;
     nvidia-nim|nim) printf 'nvidia-nim' ;;
     nvidia|nvidia-hosted|build-nvidia) printf 'nvidia' ;;
+    orcarouter|orca) printf 'orcarouter' ;;
+    onerouter|one) printf 'onerouter' ;;
     *)
       if [ -f "$REGISTRY" ] && command -v jq >/dev/null 2>&1; then
         local canonical
@@ -926,7 +928,7 @@ set_codex_model() {
 # Provider names, one per line: every .json.example template, plus any local
 # .json a user added by hand. Sorted and de-duplicated.
 list_providers() {
-  local f name
+  local f name cand
   {
     for f in "$PDIR"/*.json.example; do
       [ -e "$f" ] || continue
@@ -936,7 +938,9 @@ list_providers() {
       [ -e "$f" ] || continue
       name=${f##*/}; printf '%s\n' "${name%.json}"
     done
-  } | sort -u | sed '/^[g]oogle$/d; /^[a]ntigravity$/d; /^registry$/d'
+  } | while IFS= read -r cand; do
+    printf '%s\n' "$(resolve_provider "$cand")"
+  done | sort -u | sed '/^[g]oogle$/d; /^[a]ntigravity$/d; /^registry$/d'
 }
 
 is_provider() {
@@ -946,7 +950,26 @@ is_provider() {
 }
 
 ensure_provider_file() {
-  local p="$1"
+  local p
+  p=$(resolve_provider "$1")
+  if [ ! -f "$PDIR/$p.json" ]; then
+    case "$p" in
+      orcarouter)
+        if [ -f "$PDIR/orca.json" ]; then
+          mv "$PDIR/orca.json" "$PDIR/orcarouter.json"
+          chmod 600 "$PDIR/orcarouter.json" 2>/dev/null || true
+          printf 'Migrated legacy providers/orca.json to providers/orcarouter.json.\n' >&2
+        fi
+        ;;
+      onerouter)
+        if [ -f "$PDIR/one.json" ]; then
+          mv "$PDIR/one.json" "$PDIR/onerouter.json"
+          chmod 600 "$PDIR/onerouter.json" 2>/dev/null || true
+          printf 'Migrated legacy providers/one.json to providers/onerouter.json.\n' >&2
+        fi
+        ;;
+    esac
+  fi
   if [ ! -f "$PDIR/$p.json" ]; then
     if [ -f "$PDIR/$p.json.example" ]; then
       cp "$PDIR/$p.json.example" "$PDIR/$p.json"
@@ -1151,6 +1174,102 @@ warn_if_local_endpoint_down() {
   fi
 }
 
+# Probes live /v1/models endpoint when supported to discover authoritative metadata
+probe_live_models() {
+  local p
+  p=$(resolve_provider "$1")
+  local f="$PDIR/$p.json"
+  [ -f "$f" ] || return 0
+  command -v curl >/dev/null 2>&1 || return 0
+  command -v jq >/dev/null 2>&1 || return 0
+  local base_url auth_token tmp_discovery state_dir
+  base_url=$(jq -r '.env.ANTHROPIC_BASE_URL // empty' "$f" 2>/dev/null || true)
+  auth_token=$(jq -r '.env.ANTHROPIC_AUTH_TOKEN // .env.ANTHROPIC_API_KEY // empty' "$f" 2>/dev/null || true)
+  case "$base_url" in
+    http://*|https://*) ;;
+    *) return 0 ;;
+  esac
+  if [[ "$auth_token" =~ $PLACEHOLDER_RE ]]; then return 0; fi
+  state_dir="$CLAUDE_DIR/state"
+  mkdir -p "$state_dir"
+  tmp_discovery="$(mktemp "$state_dir/.discovery-$p.XXXXXX")"
+  if curl -sS --connect-timeout 2 --max-time 3 \
+      -H "Authorization: Bearer $auth_token" \
+      "${base_url}/v1/models" > "$tmp_discovery" 2>/dev/null && \
+      jq -e '.data | type == "array"' "$tmp_discovery" >/dev/null 2>&1; then
+    chmod 600 "$tmp_discovery"
+    mv -f "$tmp_discovery" "$state_dir/discovery-$p.json"
+  else
+    rm -f "$tmp_discovery"
+  fi
+}
+
+resolve_provider_capabilities() {
+  local provider_file="$1"
+  local p canonical model user_ctx user_retries final_ctx="" final_retries=""
+  p=${provider_file##*/}; p=${p%.json}
+  canonical=$(resolve_provider "$p")
+  model=$(jq -r '.env.ANTHROPIC_MODEL // .model // empty' "$provider_file" 2>/dev/null || true)
+  user_ctx=$(jq -r '.env.CLAUDE_CODE_MAX_CONTEXT_TOKENS // empty' "$provider_file" 2>/dev/null || true)
+  user_retries=$(jq -r '.env.CLAUDE_CODE_MAX_RETRIES // empty' "$provider_file" 2>/dev/null || true)
+
+  # Precedence 1: Explicit user override
+  if [ -n "$user_ctx" ] && ! [[ "$user_ctx" =~ $PLACEHOLDER_RE ]] && [ "$user_ctx" -gt 0 ] 2>/dev/null; then
+    final_ctx="$user_ctx"
+  fi
+  if [ -n "$user_retries" ] && ! [[ "$user_retries" =~ $PLACEHOLDER_RE ]]; then
+    final_retries="$user_retries"
+  fi
+
+  # Precedence 2: Live provider metadata (/v1/models)
+  if [ -z "$final_ctx" ] && [ -n "$model" ]; then
+    local discovery_file="$CLAUDE_DIR/state/discovery-$canonical.json"
+    if [ -f "$discovery_file" ]; then
+      local live_ctx
+      live_ctx=$(jq -r --arg m "$model" '(.data[]? | select(.id == $m) | (.context_length // .max_context_length // .context_window // empty)) // empty' "$discovery_file" 2>/dev/null || true)
+      if [ -n "$live_ctx" ] && [ "$live_ctx" != "null" ] && [ "$live_ctx" -gt 0 ] 2>/dev/null; then
+        final_ctx="$live_ctx"
+      fi
+    fi
+  fi
+
+  # Precedence 3: Registry capability metadata
+  if [ -f "$REGISTRY" ]; then
+    if [ -z "$final_ctx" ] && [ -n "$model" ]; then
+      local reg_ctx
+      reg_ctx=$(jq -r --arg id "$canonical" --arg m "$model" '(.providers[] | select(.id == $id) | .capabilities.knownModels[$m].contextTokens) // empty' "$REGISTRY" 2>/dev/null || true)
+      if [ -n "$reg_ctx" ] && [ "$reg_ctx" -gt 0 ] 2>/dev/null; then
+        final_ctx="$reg_ctx"
+      fi
+    fi
+    if [ -z "$final_ctx" ]; then
+      local reg_def
+      reg_def=$(jq -r --arg id "$canonical" '(.providers[] | select(.id == $id) | .capabilities.defaultContextTokens) // empty' "$REGISTRY" 2>/dev/null || true)
+      if [ -n "$reg_def" ] && [ "$reg_def" -gt 0 ] 2>/dev/null; then
+        final_ctx="$reg_def"
+      fi
+    fi
+    if [ -z "$final_retries" ]; then
+      local reg_retries
+      reg_retries=$(jq -r --arg id "$canonical" '(.providers[] | select(.id == $id) | .capabilities.defaultRetries) // empty' "$REGISTRY" 2>/dev/null || true)
+      if [ -n "$reg_retries" ]; then
+        final_retries="$reg_retries"
+      fi
+    fi
+  fi
+
+  # Precedence 4: Conservative Claude Code fallback for third-party routers/models
+  if [ -z "$final_ctx" ]; then
+    local base_url
+    base_url=$(jq -r '.env.ANTHROPIC_BASE_URL // empty' "$provider_file" 2>/dev/null || true)
+    if [ -n "$base_url" ]; then
+      final_ctx="200000"
+    fi
+  fi
+
+  printf '%s %s\n' "${final_ctx:-none}" "${final_retries:-none}"
+}
+
 # settings.json used to be a straight `cp` of the provider file. That silently
 # deleted every repo-owned safety control the moment anyone switched provider:
 # the 12 docker-volume deny rules and all three safety hooks shipped by this
@@ -1172,8 +1291,15 @@ merge_settings() {
   [ -f "$BASE_SETTINGS" ] && base="$(cat "$BASE_SETTINGS")"
   [ -f "$SETTINGS" ] && current="$(cat "$SETTINGS")"
 
+  local caps dyn_ctx dyn_retries
+  caps=$(resolve_provider_capabilities "$provider_file")
+  dyn_ctx=${caps%% *}; dyn_ctx=${dyn_ctx#none}
+  dyn_retries=${caps##* }; dyn_retries=${dyn_retries#none}
+
   jq -n \
     --arg google_url "$google_url" \
+    --arg dynamic_ctx "$dyn_ctx" \
+    --arg dynamic_retries "$dyn_retries" \
     --argjson provider_keys "$PROVIDER_KEYS" \
     --slurpfile base_arr <(printf '%s' "$base") \
     --slurpfile cur_arr <(printf '%s' "$current") \
@@ -1236,6 +1362,12 @@ merge_settings() {
     # reduce, not iteration, so this stays one document however many keys move.
     | reduce ($provider_keys[]) as $k (.;
         if ($prov | has($k)) then .[$k] = $prov[$k] else del(.[$k]) end)
+    | if ($prov.env.CLAUDE_CODE_MAX_CONTEXT_TOKENS // "") != "" then .
+      elif $dynamic_ctx != "" then .env.CLAUDE_CODE_MAX_CONTEXT_TOKENS = $dynamic_ctx
+      else . end
+    | if ($prov.env.CLAUDE_CODE_MAX_RETRIES // "") != "" then .
+      elif $dynamic_retries != "" then .env.CLAUDE_CODE_MAX_RETRIES = $dynamic_retries
+      else . end
     | if $google_url != "" then .env.ANTHROPIC_BASE_URL=$google_url else . end
     ' > "$out"
 }
@@ -1245,6 +1377,8 @@ activate() {
   p=$(resolve_provider "$1") || exit 1
   ensure_provider_file "$p"
   mkdir -p "$PDIR"
+
+  probe_live_models "$p"
 
   # Refuse rather than write an unguarded settings.json. Shipping a safety
   # control that silently is not there is the failure mode this whole merge

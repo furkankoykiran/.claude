@@ -223,6 +223,66 @@
         "healthEndpoint": "/health/liveliness"
       },
       "description": "Hosted build.nvidia.com catalog translating OpenAI shape to Anthropic Messages via LiteLLM."
+    },
+    {
+      "id": "orcarouter",
+      "name": "OrcaRouter",
+      "aliases": ["orca"],
+      "authMethod": "environment",
+      "transportType": "direct-anthropic",
+      "modelDiscovery": true,
+      "lifecycle": "none",
+      "compatibility": {
+        "claudeCode": "supported",
+        "notes": "OrcaRouter multi-model gateway via Anthropic Messages compatibility. Dynamic context length discovery via /v1/models."
+      },
+      "requiredRuntime": "none",
+      "capabilities": {
+        "supportsModelDiscovery": true,
+        "modelsEndpoint": "/v1/models",
+        "defaultContextTokens": 200000,
+        "supportsToolSearch": false,
+        "defaultRetries": 2,
+        "knownModels": {
+          "z-ai/glm-5.3-flash": {
+            "contextTokens": 1000000
+          },
+          "z-ai/glm-5.3-flash-free": {
+            "contextTokens": 1000000
+          }
+        }
+      },
+      "description": "OrcaRouter multi-model gateway via Anthropic Messages compatibility."
+    },
+    {
+      "id": "onerouter",
+      "name": "OneRouter",
+      "aliases": ["one"],
+      "authMethod": "environment",
+      "transportType": "direct-anthropic",
+      "modelDiscovery": true,
+      "lifecycle": "none",
+      "compatibility": {
+        "claudeCode": "supported",
+        "notes": "OneRouter multi-model gateway via Anthropic Messages compatibility. Dynamic context length discovery via /v1/models."
+      },
+      "requiredRuntime": "none",
+      "capabilities": {
+        "supportsModelDiscovery": true,
+        "modelsEndpoint": "/v1/models",
+        "defaultContextTokens": 200000,
+        "supportsToolSearch": false,
+        "defaultRetries": 2,
+        "knownModels": {
+          "qwen/qwen3.8-27b-abliterated-cyber:free": {
+            "contextTokens": 256000
+          },
+          "qwen/qwen3.8-27b": {
+            "contextTokens": 262144
+          }
+        }
+      },
+      "description": "OneRouter multi-model gateway via Anthropic Messages compatibility."
     }
   ]
 }

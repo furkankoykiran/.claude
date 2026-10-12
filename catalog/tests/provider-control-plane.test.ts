@@ -5,6 +5,7 @@ import {
   resolveProvider,
   listAllProviderNames,
   validateProviderRegistry,
+  resolveCapabilityPrecedence,
 } from "../src/providers/registry.ts";
 import { evaluateProviderAuth, detectConsumerAntigravityAuth } from "../src/providers/auth.ts";
 import { checkProviderIntegrity } from "../src/providers/watcher.ts";
@@ -47,6 +48,8 @@ describe("Unified Provider Control Plane Registry", () => {
     expect(resolveProvider(registry, "nim")?.id).toBe("nvidia-nim");
     expect(resolveProvider(registry, "glm")?.id).toBe("zai");
     expect(resolveProvider(registry, "moonshot")?.id).toBe("kimi");
+    expect(resolveProvider(registry, "orca")?.id).toBe("orcarouter");
+    expect(resolveProvider(registry, "one")?.id).toBe("onerouter");
   });
 
   it("classifies transport types and lifecycles correctly", async () => {
@@ -197,3 +200,93 @@ describe("Provider Watcher and Integrity", () => {
     expect(hermes?.kind).toBe("advisory-signal");
   });
 });
+
+describe("Dynamic Capability Resolution & Precedence", () => {
+  it("enforces explicit user override over live discovery and registry metadata", async () => {
+    const registry = await loadProviderRegistry(REGISTRY_PATH);
+    const orca = resolveProvider(registry, "orcarouter")!;
+
+    const result = resolveCapabilityPrecedence({
+      providerId: "orcarouter",
+      model: "z-ai/glm-5.3-flash",
+      userOverrideContext: 32000,
+      userOverrideRetries: 4,
+      liveModelCatalog: [{ id: "z-ai/glm-5.3-flash", context_length: 1000000 }],
+      providerDefinition: orca,
+    });
+
+    expect(result.maxContextTokens).toBe(32000);
+    expect(result.contextSource).toBe("user-override");
+    expect(result.maxRetries).toBe(4);
+    expect(result.retriesSource).toBe("user-override");
+    expect(result.supportsToolSearch).toBe(false);
+  });
+
+  it("prefers authoritative live /v1/models metadata over registry metadata", async () => {
+    const registry = await loadProviderRegistry(REGISTRY_PATH);
+    const orca = resolveProvider(registry, "orcarouter")!;
+
+    const result = resolveCapabilityPrecedence({
+      providerId: "orcarouter",
+      model: "z-ai/glm-5.3-flash",
+      liveModelCatalog: [{ id: "z-ai/glm-5.3-flash", context_length: 1000000 }],
+      providerDefinition: orca,
+    });
+
+    expect(result.maxContextTokens).toBe(1000000);
+    expect(result.contextSource).toBe("live-discovery");
+    expect(result.maxRetries).toBe(2);
+    expect(result.retriesSource).toBe("registry-metadata");
+  });
+
+  it("falls back to registry capability metadata when live metadata is null or missing", async () => {
+    const registry = await loadProviderRegistry(REGISTRY_PATH);
+    const orca = resolveProvider(registry, "orcarouter")!;
+
+    // Live metadata returns null for free alias
+    const result = resolveCapabilityPrecedence({
+      providerId: "orcarouter",
+      model: "z-ai/glm-5.3-flash-free",
+      liveModelCatalog: [{ id: "z-ai/glm-5.3-flash-free", context_length: null }],
+      providerDefinition: orca,
+    });
+
+    expect(result.maxContextTokens).toBe(1000000);
+    expect(result.contextSource).toBe("registry-metadata");
+    expect(result.maxRetries).toBe(2);
+  });
+
+  it("derives exact context length for OneRouter Qwen models from live metadata", async () => {
+    const registry = await loadProviderRegistry(REGISTRY_PATH);
+    const one = resolveProvider(registry, "onerouter")!;
+
+    const result = resolveCapabilityPrecedence({
+      providerId: "onerouter",
+      model: "qwen/qwen3.8-27b-abliterated-cyber:free",
+      liveModelCatalog: [{ id: "qwen/qwen3.8-27b-abliterated-cyber:free", context_length: 256000 }],
+      providerDefinition: one,
+    });
+
+    expect(result.maxContextTokens).toBe(256000);
+    expect(result.contextSource).toBe("live-discovery");
+    expect(result.maxRetries).toBe(2);
+    expect(result.supportsToolSearch).toBe(false);
+  });
+
+  it("never guesses context size from model names and falls back conservatively to 200k", async () => {
+    const registry = await loadProviderRegistry(REGISTRY_PATH);
+    const zai = resolveProvider(registry, "zai")!;
+
+    // Model name mentions 1m or 128k, but no live or registry metadata exists
+    const result = resolveCapabilityPrecedence({
+      providerId: "zai",
+      model: "custom/unregistered-model-1m-tokens",
+      liveModelCatalog: null,
+      providerDefinition: zai,
+    });
+
+    expect(result.maxContextTokens).toBe(200000);
+    expect(result.contextSource).toBe("conservative-fallback");
+  });
+});
+
