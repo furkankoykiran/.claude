@@ -1415,19 +1415,19 @@
       },
       "redistribution": "full",
       "relativePath": ".claude/skills/impeccable/SKILL.md",
-      "resolvedRevision": "c63b8dd7dd5a5f3c32eaabe1af76d0694f863ed2",
+      "resolvedRevision": "919dbeba520df760a157fe635be62faae88d58da",
       "sourceId": "impeccable"
     },
     {
       "canonicalInvocation": "/brandkit",
-      "digest": "bc0138dac26d692b94d12594828f2c0276900948153d41c90e8bcee556522374",
+      "digest": "68d88dfad5228c5e5a1a2e79381439c8899b07f2188ac170109d698f1488be8e",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/brandkit/SKILL.md",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "sourceId": "taste"
     },
     {
@@ -1439,19 +1439,19 @@
       },
       "redistribution": "full",
       "relativePath": "skills/brutalist-skill/SKILL.md",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "sourceId": "taste"
     },
     {
       "canonicalInvocation": "/gpt-taste",
-      "digest": "f5ea0e433f3db84805bf8902afb6b0858fb2fdc29ae52ea69b479c05e044be38",
+      "digest": "d9d493cfd3f68c3f81136d73fc1f9630de4ea1a44f531387de76288ce8410813",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/gpt-tasteskill/SKILL.md",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "sourceId": "taste"
     },
     {
@@ -1463,7 +1463,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/image-to-code-skill/SKILL.md",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "sourceId": "taste"
     },
     {
@@ -1475,7 +1475,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/imagegen-frontend-mobile/SKILL.md",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "sourceId": "taste"
     },
     {
@@ -1487,19 +1487,19 @@
       },
       "redistribution": "full",
       "relativePath": "skills/imagegen-frontend-web/SKILL.md",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "sourceId": "taste"
     },
     {
       "canonicalInvocation": "/minimalist-ui",
-      "digest": "a23c87d6534931b5accbc1020fea58c41bccc341cdc4d92cbf3c5ee5160d518b",
+      "digest": "4ef81e1685f1436d95b1a2e6c3692c9abfa4bbb0b812624dd94d799ef862769b",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/minimalist-skill/SKILL.md",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "sourceId": "taste"
     },
     {
@@ -1511,19 +1511,19 @@
       },
       "redistribution": "full",
       "relativePath": "skills/output-skill/SKILL.md",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "sourceId": "taste"
     },
     {
       "canonicalInvocation": "/redesign-existing-projects",
-      "digest": "da0ff10c094fa8c1f298c51f3c4945b4d0b5b1485a60a44700afb11b8485f744",
+      "digest": "1c9eb169a5d157088924b3008b329313dd1cd959f5e2cd763d3b13aa397dd411",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/redesign-skill/SKILL.md",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "sourceId": "taste"
     },
     {
@@ -1535,7 +1535,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/soft-skill/SKILL.md",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "sourceId": "taste"
     },
     {
@@ -1547,7 +1547,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/stitch-skill/SKILL.md",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "sourceId": "taste"
     },
     {
@@ -1559,19 +1559,19 @@
       },
       "redistribution": "full",
       "relativePath": "skills/taste-skill-v1/SKILL.md",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "sourceId": "taste"
     },
     {
       "canonicalInvocation": "/design-taste-frontend",
-      "digest": "fc6760a09148f089f8c9343ef6869081817f1555de40872335a4927d2a790154",
+      "digest": "2975cfbcfd06335b026348213e60f7293026989f13f0b5b3a92adb4653260654",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/taste-skill/SKILL.md",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "sourceId": "taste"
     },
     {
@@ -2216,7 +2216,7 @@
       },
       "redistribution": "full",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "c63b8dd7dd5a5f3c32eaabe1af76d0694f863ed2",
+      "resolvedRevision": "919dbeba520df760a157fe635be62faae88d58da",
       "selectedPaths": [
         ".claude/skills/impeccable"
       ],
@@ -2261,7 +2261,7 @@
       },
       "redistribution": "full",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "selectedPaths": [
         "skills/brandkit",
         "skills/brutalist-skill",

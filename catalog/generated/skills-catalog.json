@@ -4741,7 +4741,7 @@
       "ref": "origin/HEAD",
       "relativePath": ".claude/skills/impeccable/SKILL.md",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "c63b8dd7dd5a5f3c32eaabe1af76d0694f863ed2",
+      "resolvedRevision": "919dbeba520df760a157fe635be62faae88d58da",
       "security": {
         "flags": [
           "executables:1"
@@ -7747,7 +7747,7 @@
     {
       "canonicalInvocation": "/brandkit",
       "description": "Premium brand-kit image generation skill for creating high-end brand-guidelines boards, logo systems, identity decks, and visual-world presentations. Trained for minimalist, cinematic, editorial, dark-tech, luxury, cultural, security, gaming, developer-tool, and consumer-app brand systems. Optimized for intentional logo concepting, refined composition, sparse typography, strong symbolic meaning, premium mockups, art-directed imagery, and flexible grid layouts.",
-      "digest": "bc0138dac26d692b94d12594828f2c0276900948153d41c90e8bcee556522374",
+      "digest": "68d88dfad5228c5e5a1a2e79381439c8899b07f2188ac170109d698f1488be8e",
       "frontmatter": {
         "description": "Premium brand-kit image generation skill for creating high-end brand-guidelines boards, logo systems, identity decks, and visual-world presentations. Trained for minimalist, cinematic, editorial, dark-tech, luxury, cultural, security, gaming, developer-tool, and consumer-app brand systems. Optimized for intentional logo concepting, refined composition, sparse typography, strong symbolic meaning, premium mockups, art-directed imagery, and flexible grid layouts.",
         "name": "brandkit"
@@ -7768,7 +7768,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/brandkit/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7790,7 +7790,7 @@
     {
       "canonicalInvocation": "/design-taste-frontend",
       "description": "Anti-slop frontend skill for landing pages, portfolios, and redesigns. The agent reads the brief, infers the right design direction, and ships interfaces that do not look templated. Real design systems when applicable, audit-first on redesigns, strict pre-flight check.",
-      "digest": "fc6760a09148f089f8c9343ef6869081817f1555de40872335a4927d2a790154",
+      "digest": "2975cfbcfd06335b026348213e60f7293026989f13f0b5b3a92adb4653260654",
       "frontmatter": {
         "description": "Anti-slop frontend skill for landing pages, portfolios, and redesigns. The agent reads the brief, infers the right design direction, and ships interfaces that do not look templated. Real design systems when applicable, audit-first on redesigns, strict pre-flight check.",
         "name": "design-taste-frontend"
@@ -7811,7 +7811,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/taste-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7854,7 +7854,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/taste-skill-v1/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7897,7 +7897,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/output-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7919,7 +7919,7 @@
     {
       "canonicalInvocation": "/gpt-taste",
       "description": "Elite UX/UI & Advanced GSAP Motion Engineer. Enforces Python-driven true randomization for layout variance, strict AIDA page structure, wide editorial typography (bans 6-line wraps), gapless bento grids, strict GSAP ScrollTriggers (pinning, stacking, scrubbing), inline micro-images, and massive section spacing.",
-      "digest": "f5ea0e433f3db84805bf8902afb6b0858fb2fdc29ae52ea69b479c05e044be38",
+      "digest": "d9d493cfd3f68c3f81136d73fc1f9630de4ea1a44f531387de76288ce8410813",
       "frontmatter": {
         "description": "Elite UX/UI & Advanced GSAP Motion Engineer. Enforces Python-driven true randomization for layout variance, strict AIDA page structure, wide editorial typography (bans 6-line wraps), gapless bento grids, strict GSAP ScrollTriggers (pinning, stacking, scrubbing), inline micro-images, and massive section spacing.",
         "name": "gpt-taste"
@@ -7940,7 +7940,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/gpt-tasteskill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7983,7 +7983,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/soft-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8026,7 +8026,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/image-to-code-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8069,7 +8069,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/imagegen-frontend-mobile/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8112,7 +8112,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/imagegen-frontend-web/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8155,7 +8155,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/brutalist-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8177,7 +8177,7 @@
     {
       "canonicalInvocation": "/minimalist-ui",
       "description": "Clean editorial-style interfaces. Warm monochrome palette, typographic contrast, flat bento grids, muted pastels. No gradients, no heavy shadows.",
-      "digest": "a23c87d6534931b5accbc1020fea58c41bccc341cdc4d92cbf3c5ee5160d518b",
+      "digest": "4ef81e1685f1436d95b1a2e6c3692c9abfa4bbb0b812624dd94d799ef862769b",
       "frontmatter": {
         "description": "Clean editorial-style interfaces. Warm monochrome palette, typographic contrast, flat bento grids, muted pastels. No gradients, no heavy shadows.",
         "name": "minimalist-ui"
@@ -8198,7 +8198,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/minimalist-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8220,7 +8220,7 @@
     {
       "canonicalInvocation": "/redesign-existing-projects",
       "description": "Upgrades existing websites and apps to premium quality. Audits current design, identifies generic AI patterns, and applies high-end design standards without breaking functionality. Works with any CSS framework or vanilla CSS.",
-      "digest": "da0ff10c094fa8c1f298c51f3c4945b4d0b5b1485a60a44700afb11b8485f744",
+      "digest": "1c9eb169a5d157088924b3008b329313dd1cd959f5e2cd763d3b13aa397dd411",
       "frontmatter": {
         "description": "Upgrades existing websites and apps to premium quality. Audits current design, identifies generic AI patterns, and applies high-end design standards without breaking functionality. Works with any CSS framework or vanilla CSS.",
         "name": "redesign-existing-projects"
@@ -8241,7 +8241,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/redesign-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8284,7 +8284,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/stitch-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8725,7 +8725,7 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "c63b8dd7dd5a5f3c32eaabe1af76d0694f863ed2",
+      "resolvedRevision": "919dbeba520df760a157fe635be62faae88d58da",
       "runtimeOnly": false,
       "skillCount": 1,
       "type": "git"
@@ -8789,7 +8789,7 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "717446e07a78d4e6d7918b1fde1a263378eebac9",
+      "resolvedRevision": "d237dd399d57524945c0c81327da5da19f7a468d",
       "runtimeOnly": false,
       "skillCount": 13,
       "type": "git"
