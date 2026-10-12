@@ -172,16 +172,19 @@ codex_gateway_running() {
 
 codex_gateway_source_hash() {
   local script="$CLAUDE_DIR/scripts/codex-anthropic-gateway.ts"
+  local runtime="$CLAUDE_DIR/gateways/claude-codex-gateway/src/index.ts"
+  local sources=("$script")
   if [ ! -f "$script" ]; then
     printf 'missing:%s\n' "$script"
     return 0
   fi
+  [ ! -f "$runtime" ] || sources+=("$runtime")
   if command -v sha256sum >/dev/null 2>&1; then
-    sha256sum "$script" 2>/dev/null | awk '{print $1}'
+    cat "${sources[@]}" | sha256sum | awk '{print $1}'
   elif command -v shasum >/dev/null 2>&1; then
-    shasum -a 256 "$script" 2>/dev/null | awk '{print $1}'
+    cat "${sources[@]}" | shasum -a 256 | awk '{print $1}'
   else
-    cksum "$script" 2>/dev/null | awk '{print $1 "-" $2}'
+    cat "${sources[@]}" | cksum | awk '{print $1 "-" $2}'
   fi
 }
 
@@ -761,7 +764,8 @@ refresh_codex_model_discovery() {
           model: .id,
           label: (.display_name // .id),
           description: (.metadata.description // .description // "Codex model"),
-          behavesAs: "claude-sonnet-4-5"
+          # Only GPT-6.1 Sol has a recorded live Claude-owned Auto proof.
+          behavesAs: (if .id == "gpt-6.1-sol" then "claude-sonnet-4-6" else "claude-sonnet-4-5" end)
         });
     .modelDiscoveryEnabled = true
     | .inferenceModelPricingEnabled = false

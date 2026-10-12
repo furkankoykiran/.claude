@@ -62,6 +62,26 @@ rc() { CODEX_CONFIG="$SANDBOX/codex-config.toml" CLAUDE_DIR="$SANDBOX" "$CC_PROV
 # Like say(), but feeds a fake API key through the noninteractive test path.
 say_key() { CC_PROVIDER_API_KEY="$1" CODEX_CONFIG="$SANDBOX/codex-config.toml" CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "${@:2}" 2>&1 || true; }
 
+# The launcher delegates to a submodule; both files determine runtime identity.
+HASH_SANDBOX="$SANDBOX/source-proof"
+mkdir -p "$HASH_SANDBOX/scripts" "$HASH_SANDBOX/gateways/claude-codex-gateway/src"
+printf 'launcher fixture\n' > "$HASH_SANDBOX/scripts/codex-anthropic-gateway.ts"
+printf 'runtime before\n' > "$HASH_SANDBOX/gateways/claude-codex-gateway/src/index.ts"
+awk '/^codex_gateway_source_hash\(\)/,/^}/' "$CC_PROVIDER" > "$SANDBOX/source-hash.sh"
+if (
+  # shellcheck source=/dev/null
+  source "$SANDBOX/source-hash.sh"
+  export CLAUDE_DIR="$HASH_SANDBOX"
+  before=$(codex_gateway_source_hash)
+  printf 'runtime after\n' > "$HASH_SANDBOX/gateways/claude-codex-gateway/src/index.ts"
+  after=$(codex_gateway_source_hash)
+  [ "$before" != "$after" ]
+); then
+  ok "gateway identity changes when only the canonical submodule runtime changes"
+else
+  bad "gateway identity ignores the canonical submodule runtime"
+fi
+
 # --- templates are well-formed and self-consistent -------------------------
 head_ "Provider templates"
 for ex in "$REPO_DIR"/providers/*.json.example; do
@@ -776,6 +796,8 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/health":
             body = b"{\"ok\":true,\"provider\":\"codex-app-server\",\"model\":\"gpt-5.5\"}"
+        elif self.path == "/v1/models":
+            body = b"{\"data\":[{\"id\":\"gpt-5.5\",\"display_name\":\"GPT-5.5\"},{\"id\":\"gpt-6.1-sol\",\"display_name\":\"GPT-6.1-Sol\"}]}"
         elif self.path == "/codex/account":
             body = b"{\"account\":{\"type\":\"chatgpt\",\"email\":\"sample@example.com\",\"planType\":\"plus\"},\"requiresOpenaiAuth\":false}"
         elif self.path == "/codex/rate-limits":
@@ -804,6 +826,13 @@ printf 'port=%s\nmodel=%s\neffort=%s\nsource=missing:%s/scripts/codex-anthropic-
 sleep 1
 codex_account_out=$(say account)
 codex_usage_out=$(say usage)
+codex_refresh_out=$(say codex)
+if [ "$(jq -r '.modelPicker.options[] | select(.model == "gpt-6.1-sol") | .behavesAs' "$SANDBOX/settings.json")" = "claude-sonnet-4-6" ] \
+   && [ "$(jq -r '.modelPicker.options[] | select(.model == "gpt-6.1-sol") | .label' "$SANDBOX/settings.json")" = "GPT-6.1-Sol" ]; then
+  ok "Codex GPT-6.1-Sol uses the live-verified upstream Auto capability mapping and preserves its identity"
+else
+  bad "Codex GPT-6.1-Sol did not receive its verified Auto capability mapping: $codex_refresh_out"
+fi
 kill "$OWNED_HEALTH_PID" 2>/dev/null || true
 wait "$OWNED_HEALTH_PID" 2>/dev/null || true
 rm -f "$SANDBOX/state/codex-gateway.pid" "$SANDBOX/state/codex-gateway.meta"
