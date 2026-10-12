@@ -617,7 +617,7 @@ function Merge-HookMap($layers) {
 # silently deleted every repo-owned safety control on each switch. It is now a
 # merge of three layers, lowest precedence first:
 #   1. the existing settings.json  - carried over, minus $ProviderKeys
-function Get-ProviderCapabilities($providerFile) {
+function Get-ProviderCapability($providerFile) {
   $prov = Read-JsonMap $providerFile
   $baseName = [System.IO.Path]::GetFileNameWithoutExtension($providerFile)
   $canonical = Resolve-Provider $baseName
@@ -651,7 +651,9 @@ function Get-ProviderCapabilities($providerFile) {
           }
         }
       }
-    } catch {}
+    } catch {
+      $disc = $null
+    }
   }
 
   $regPath = Join-Path $PDir 'registry.json'
@@ -678,7 +680,9 @@ function Get-ProviderCapabilities($providerFile) {
           }
         }
       }
-    } catch {}
+    } catch {
+      $reg = $null
+    }
   }
 
   if (-not $finalCtx -and $envBlock.ContainsKey('ANTHROPIC_BASE_URL') -and [string]$envBlock['ANTHROPIC_BASE_URL']) {
@@ -729,7 +733,7 @@ function Build-MergedSetting($providerFile) {
 
   foreach ($k in $ProviderKeys) { if (-not $prov.ContainsKey($k)) { $merged.Remove($k) } }
 
-  $dynCaps = Get-ProviderCapabilities $providerFile
+  $dynCaps = Get-ProviderCapability $providerFile
   if (-not $merged.ContainsKey('env') -or -not ($merged['env'] -is [hashtable])) { $merged['env'] = @{} }
   $provEnv = if ($prov.ContainsKey('env') -and ($prov['env'] -is [hashtable])) { $prov['env'] } else { @{} }
   if (-not $provEnv.ContainsKey('CLAUDE_CODE_MAX_CONTEXT_TOKENS') -and $dynCaps.ContextTokens) {

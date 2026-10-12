@@ -451,7 +451,7 @@ ensure_bun() {
     return 0
   fi
   log "Installing bun (required by gstack)"
-  if ! curl -fsSL https://bun.sh/install | bash; then
+  if ! curl -fsSL --retry 3 --retry-delay 2 --retry-connrefused https://bun.sh/install | bash; then
     warn "bun install failed. gstack/browser skills need it — install manually"
     warn "from https://bun.sh and re-run. Continuing with the rest of the setup."
     return 1
