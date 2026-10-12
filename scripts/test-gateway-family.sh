@@ -84,6 +84,9 @@ if AGY_GATEWAY_BIN="$TASK_DIR/missing" GEMINI_API_KEY='' run_provider agy >/dev/
 [ "$NATIVE_BEFORE" = "$(shasum -a 256 "$TASK_DIR/settings.json")" ]
 [ "$(cat "$TASK_DIR/providers/.active")" = "gemini" ]
 kill -0 "$API_GATEWAY_PID"
+if GEMINI_GATEWAY_PORT=0 GEMINI_API_KEY='' run_provider agy >/dev/null 2>&1; then echo 'invalid port activated' >&2; exit 1; fi
+[ "$NATIVE_BEFORE" = "$(shasum -a 256 "$TASK_DIR/settings.json")" ]
+kill -0 "$API_GATEWAY_PID"
 jq --arg port "$API_PORT" '.env.GEMINI_GATEWAY_PORT=$port' "$TASK_DIR/providers/agy.json" > "$TASK_DIR/providers/agy.next.json"
 mv "$TASK_DIR/providers/agy.next.json" "$TASK_DIR/providers/agy.json"
 if GEMINI_API_KEY='' run_provider agy >/dev/null 2>&1; then echo 'occupied target activated' >&2; exit 1; fi

@@ -699,7 +699,7 @@ function Write-WarningIfLocalEndpointDown($p) {
   $ok = $false
   try {
     $client = [System.Net.Sockets.TcpClient]::new()
-    $ok = $client.ConnectAsync($uri.Host, $uri.Port).Wait(1500)
+    $ok = $client.ConnectAsync($uri.DnsSafeHost, $uri.Port).Wait(1500)
   } catch { $ok = $false } finally { if ($client) { $client.Dispose() } }
   if (-not $ok) {
     "WARNING: nothing is listening on $($uri.Host):$($uri.Port), which providers/$p.json points at." | Write-Host
@@ -797,7 +797,7 @@ function Start-GoogleGateway($p) {
   $uri = [uri](Get-GoogleGatewayUrl $p)
   $client = [Net.Sockets.TcpClient]::new()
   $occupied = $false
-  try { $occupied = $client.ConnectAsync($uri.Host, $uri.Port).Wait(1000) } catch { $occupied = $false } finally { $client.Dispose() }
+  try { $occupied = $client.ConnectAsync($uri.DnsSafeHost, $uri.Port).Wait(1000) } catch { $occupied = $false } finally { $client.Dispose() }
   if ($occupied -and (-not $owned -or $metadata['url'] -ne $uri.AbsoluteUri.TrimEnd('/'))) { throw 'Google target endpoint is occupied; previous runtime/provider left unchanged' }
   if ($owned) { Stop-GoogleOwnedProcess $owned }
   $previousConfig = $env:GEMINI_GATEWAY_CONFIG

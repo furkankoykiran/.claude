@@ -16,7 +16,7 @@
 - [ ] `shellcheck install.sh hooks/*.sh scripts/*.sh migrations/*.sh bin/cc-provider bin/fkt` passes
 - [ ] `scripts/test-providers.sh` passes (if the provider system changed)
 - [ ] `scripts/test-fkt.sh` passes (if the updater, hooks or migrations changed)
-- [ ] `bun run typecheck && bun test catalog && bun run catalog:check
+- [ ] `bun run typecheck && bun test catalog/tests && bun run catalog:check
       && bun run marketplace:check && bun run catalog:budget && bun run docs:check`
       passes (if anything under `catalog/`, `skills/fk-*` or `marketplace.toml` changed)
 - [ ] `install.ps1`, `bin/cc-provider.ps1`, `scripts/nim-gateway.ps1` are clean

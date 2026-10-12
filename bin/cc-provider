@@ -461,14 +461,17 @@ google_gateway_preflight() {
 }
 
 gemini_gateway_port() {
-  if [ -n "${GEMINI_GATEWAY_PORT:-}" ]; then printf '%s' "$GEMINI_GATEWAY_PORT"; return; fi
-  jq -r '.env.GEMINI_GATEWAY_PORT // "4141"' "$PDIR/$GOOGLE_GATEWAY_PROVIDER.json"
+  local port
+  port="${GEMINI_GATEWAY_PORT:-$(jq -r '.env.GEMINI_GATEWAY_PORT // "4141"' "$PDIR/$GOOGLE_GATEWAY_PROVIDER.json")}" || return 1
+  case "$port" in ''|*[!0-9]*) die "Google gateway port must be an integer from 1 to 65535" ;; esac
+  if [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then die "Google gateway port must be an integer from 1 to 65535"; fi
+  printf '%s' "$port"
 }
 
 google_gateway_url() {
   local host port
   host="${GEMINI_GATEWAY_HOST:-$(jq -r '.env.GEMINI_GATEWAY_HOST // "127.0.0.1"' "$PDIR/$GOOGLE_GATEWAY_PROVIDER.json")}"
-  port=$(gemini_gateway_port)
+  port=$(gemini_gateway_port) || return 1
   case "$host" in 127.0.0.1|localhost) ;; ::1) host='[::1]' ;; *) die "Google gateway must use loopback" ;; esac
   printf 'http://%s:%s' "$host" "$port"
 }
@@ -1159,7 +1162,7 @@ warn_if_local_endpoint_down() {
 # dropped. Everything else is last-writer-wins.
 merge_settings() {
   local provider_file="$1" out="$2" base='{}' current='{}' google_url=''
-  case "${provider_file##*/}" in agy.json|gemini.json) GOOGLE_GATEWAY_PROVIDER=${provider_file##*/}; GOOGLE_GATEWAY_PROVIDER=${GOOGLE_GATEWAY_PROVIDER%.json}; google_url=$(google_gateway_url) ;; esac
+  case "${provider_file##*/}" in agy.json|gemini.json) GOOGLE_GATEWAY_PROVIDER=${provider_file##*/}; GOOGLE_GATEWAY_PROVIDER=${GOOGLE_GATEWAY_PROVIDER%.json}; google_url=$(google_gateway_url) || return 1 ;; esac
   [ -f "$BASE_SETTINGS" ] && base="$(cat "$BASE_SETTINGS")"
   [ -f "$SETTINGS" ] && current="$(cat "$SETTINGS")"
 
