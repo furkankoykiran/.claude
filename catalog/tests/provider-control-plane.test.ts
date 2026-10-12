@@ -128,10 +128,13 @@ describe("Centralized Auth UX", () => {
     // Scenario 2: Vertex credentials present
     const withVertex = evaluateProviderAuth(google, null, {
       claudeDir: "/tmp",
-      env: { GOOGLE_APPLICATION_CREDENTIALS: "/path/to/sa.json" },
+      env: { VERTEX_PROJECT_ID: "fixture-project", GOOGLE_OAUTH_TOKEN: "fixture-cloud-token" },
     });
     expect(withVertex.configured).toBe(true);
     expect(withVertex.redactedDisplay).toContain("Vertex AI credentials");
+
+    const adcOnly = evaluateProviderAuth(google, null, { claudeDir: "/tmp", env: { GOOGLE_APPLICATION_CREDENTIALS: "/fixture/adc.json" } });
+    expect(adcOnly.configured).toBe(false);
 
     // Scenario 3: Only consumer Antigravity auth present -> FAILS clearly, suggests native agy
     const consumerOnly = evaluateProviderAuth(google, null, {

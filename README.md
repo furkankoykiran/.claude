@@ -211,7 +211,7 @@ Before opening a pull request:
 ```bash
 bun install --frozen-lockfile
 bun run typecheck
-bun test catalog
+bun test catalog/tests
 bun run catalog:check
 bun run docs:check
 ```

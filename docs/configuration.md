@@ -46,7 +46,7 @@ and adds that directory to the user PATH.
 | --- | --- | --- | --- |
 | `anthropic` | `api.anthropic.com` | `claude login` | No token in the file; uses your normal claude.ai auth |
 | `codex` | `127.0.0.1:4545` | `ccs login codex` + experimental local gateway | Routes Claude Code to the isolated Codex adapter. Manages owned PID lifecycle per session. Official `codex login`/`logout`. Quota-bearing live inference deferred in this wave. |
-| `google` (`agy`, `antigravity`, `gemini`) | Anthropic-compatible (`rtk hook claude`) | Official `GEMINI_API_KEY` or Vertex AI credentials | Official Gemini API / Vertex credentials only. Personal Antigravity OAuth fails closed; use native `agy` CLI instead. |
+| `google` (`agy`, `antigravity`, `gemini`) | Local Gemini gateway | Official `GEMINI_API_KEY` or explicit Vertex project/access token | Official Gemini API / Vertex credentials only; ADC-file-only configuration is unsupported. Personal Antigravity OAuth fails closed; use native `agy` CLI instead. |
 | `zai` | `api.z.ai/api/anthropic` | z.ai API key | GLM models. [Subscription link](https://z.ai/subscribe?ic=SNPFQIQ7BD) (my referral) |
 | `nvidia` | `127.0.0.1:4000` -> `build.nvidia.com` | NVIDIA API key + local gateway | Hosted NVIDIA catalog. LiteLLM gateway started as FK-owned session process when needed. |
 | `nvidia-nim` | your NIM container | a NIM deployment | Self-hosted NIM direct Anthropic Messages connection; no proxy needed. [See below](#nvidia-nim) |
@@ -95,7 +95,7 @@ Manual mode and Plan mode are Claude Code client behavior. Auto is live-proven o
 
 Use `ccs permissions` to inspect the layered authority model for the active provider. Under `ccs codex`, Claude Code remains the authority for Bash, file tools, hooks, Claude-side MCP, tool results, and the permission UI. The Codex bridge starts Codex turns with a read-only sandbox, `approvalPolicy=never`, and no authoritative Codex auto-review path. Native Codex sandbox and approval-reviewer settings, including Codex Auto Review, apply when you use the official Codex CLI directly; they do not silently approve operations that Claude Code is expected to review.
 
-[Wave 1 evidence](codex-wave1-evidence.md) records successful live text turns, a Claude-owned Bash cycle followed by a fresh turn, a real Bash timeout followed by a fresh turn, and upstream Auto with a permission check and PreToolUse hook. Reminder-only requests still fail closed. Penpot `execute_code` followed by an independent user turn is also live-proven; other MCP paths, subagents, context-dependent resume, and broad parity remain unproven; see the [provider capability matrix](provider-capability-matrix.md).
+Gateway protocol details and historical live evidence are owned by the [Codex gateway](../gateways/claude-codex-gateway/docs/contract.md) and [Gemini gateway](../gateways/claude-gemini-gateway/docs/contract.md). The toolkit pins their tested commits and handles selection, configuration, lifecycle, and capability discovery. See the [provider capability matrix](provider-capability-matrix.md) for model-specific proof and remaining limitations.
 
 ### How it works
 

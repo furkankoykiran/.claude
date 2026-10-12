@@ -69,13 +69,17 @@ has_consumer_antigravity_auth() {
 }
 
 has_official_google_creds() {
-  [ -n "${GEMINI_API_KEY:-}" ] && return 0
-  [ -n "${GOOGLE_APPLICATION_CREDENTIALS:-}" ] && return 0
-  [ -n "${ANTHROPIC_VERTEX_PROJECT_ID:-}" ] && return 0
+  if [ -n "${GEMINI_API_KEY:-}" ] && ! [[ "$GEMINI_API_KEY" =~ $PLACEHOLDER_RE ]]; then return 0; fi
+  if [ -n "${GOOGLE_OAUTH_TOKEN:-}" ] && [ -n "${ANTHROPIC_VERTEX_PROJECT_ID:-${VERTEX_PROJECT_ID:-${GOOGLE_CLOUD_PROJECT:-}}}" ]; then
+    return 0
+  fi
   if [ -f "$PDIR/google.json" ] && command -v jq >/dev/null 2>&1; then
     local k
-    k=$(jq -r '.env.GEMINI_API_KEY // .env.ANTHROPIC_AUTH_TOKEN // empty' "$PDIR/google.json" 2>/dev/null || true)
+    k=$(jq -r '.env.GEMINI_API_KEY // empty' "$PDIR/google.json" 2>/dev/null || true)
     if [ -n "$k" ] && ! [[ "$k" =~ $PLACEHOLDER_RE ]]; then
+      return 0
+    fi
+    if jq -e '.env as $e | ($e.GOOGLE_OAUTH_TOKEN // "") as $token | ($e.ANTHROPIC_VERTEX_PROJECT_ID // $e.VERTEX_PROJECT_ID // $e.GOOGLE_CLOUD_PROJECT // "") as $project | ($token != "" and ($token | startswith("<") | not) and $project != "" and ($project | startswith("<") | not))' "$PDIR/google.json" >/dev/null 2>&1; then
       return 0
     fi
   fi
@@ -86,7 +90,7 @@ native_agy_advice() {
   printf 'cc-provider: Claude Code inference requires officially supported Gemini API or Vertex credentials.\n' >&2
   printf 'Personal Antigravity consumer OAuth cannot be reused, copied, or proxied into Claude Code.\n' >&2
   printf 'To use your Antigravity credentials, run the native CLI instead:\n' >&2
-  printf '  agy -p "your prompt" --model gemini-3.8-flash --effort medium\n\n' >&2
+  printf '  agy -p "your prompt"  # choose your configured model and effort\n\n' >&2
   printf 'To configure Claude Code with Gemini API:\n' >&2
   printf '  export GEMINI_API_KEY="your-api-key"\n' >&2
   printf '  or run: ccs api google\n' >&2
@@ -170,15 +174,30 @@ codex_gateway_running() {
   kill -0 "$pid" 2>/dev/null
 }
 
-codex_gateway_source_hash() {
+gateway_source_hash() {
+  local provider="$1"
   local script="$CLAUDE_DIR/scripts/codex-anthropic-gateway.ts"
-  local runtime="$CLAUDE_DIR/gateways/claude-codex-gateway/src/index.ts"
-  local sources=("$script")
-  if [ ! -f "$script" ]; then
-    printf 'missing:%s\n' "$script"
+  local runtime_dir="$CLAUDE_DIR/gateways/claude-$provider-gateway/src"
+  local runtime
+  local sources=()
+  if [ "$provider" = "codex" ]; then
+    if [ ! -f "$script" ]; then
+      printf 'missing:%s\n' "$script"
+      return 0
+    fi
+    sources+=("$script")
+  fi
+  if [ -d "$runtime_dir" ]; then
+    while IFS= read -r runtime; do
+      sources+=("$runtime")
+    done < <(find "$runtime_dir" -type f -name '*.ts' -print | LC_ALL=C sort)
+  fi
+  runtime="$runtime_dir/../package.json"
+  [ ! -f "$runtime" ] || sources+=("$runtime")
+  if [ "${#sources[@]}" -eq 0 ]; then
+    printf 'missing:%s\n' "$runtime_dir"
     return 0
   fi
-  [ ! -f "$runtime" ] || sources+=("$runtime")
   if command -v sha256sum >/dev/null 2>&1; then
     cat "${sources[@]}" | sha256sum | awk '{print $1}'
   elif command -v shasum >/dev/null 2>&1; then
@@ -187,6 +206,8 @@ codex_gateway_source_hash() {
     cat "${sources[@]}" | cksum | awk '{print $1 "-" $2}'
   fi
 }
+
+codex_gateway_source_hash() { gateway_source_hash codex; }
 
 codex_gateway_signature() {
   printf 'port=%s\nmodel=%s\neffort=%s\nsource=%s\n' \
@@ -421,6 +442,7 @@ status_codex_gateway() {
 
 GEMINI_GATEWAY_PID="$CLAUDE_DIR/state/gemini-gateway.pid"
 GEMINI_GATEWAY_LOG="$CLAUDE_DIR/state/gemini-gateway.log"
+GEMINI_GATEWAY_META="$CLAUDE_DIR/state/gemini-gateway.meta"
 
 gemini_gateway_port() {
   if [ -n "${GEMINI_GATEWAY_PORT:-}" ]; then
@@ -444,7 +466,7 @@ gemini_gateway_running() {
 
 gemini_gateway_health_running() {
   command -v curl >/dev/null 2>&1 || return 1
-  curl -fsS --max-time 1 "http://127.0.0.1:$(gemini_gateway_port)/health" >/dev/null 2>&1
+  curl -fsS --max-time 1 "http://127.0.0.1:$(gemini_gateway_port)/health" 2>/dev/null | jq -e '.provider == "gemini" and .ok == true' >/dev/null 2>&1
 }
 
 gemini_gateway_owned_pid() {
@@ -458,6 +480,23 @@ gemini_gateway_owned_pid() {
   esac
 }
 
+gemini_gateway_signature() {
+  local config
+  config=$(jq -c '.env | {GEMINI_GATEWAY_MODEL, GEMINI_MODEL, GEMINI_GATEWAY_HOST, GEMINI_GATEWAY_TIMEOUT_MS, ANTHROPIC_DEFAULT_SONNET_MODEL}' "$PDIR/google.json" 2>/dev/null || true)
+  printf 'port=%s\nmodel=%s\nhost=%s\ntimeout=%s\nconfig=%s\nsource=%s\n' \
+    "$(gemini_gateway_port)" "${GEMINI_GATEWAY_MODEL:-${GEMINI_MODEL:-}}" \
+    "${GEMINI_GATEWAY_HOST:-}" "${GEMINI_GATEWAY_TIMEOUT_MS:-}" "$config" "$(gateway_source_hash gemini)"
+}
+
+gemini_gateway_valid() {
+  gemini_gateway_running || return 1
+  local pid
+  pid=$(cat "$GEMINI_GATEWAY_PID" 2>/dev/null || true)
+  gemini_gateway_owned_pid "$pid" || return 1
+  [ -f "$GEMINI_GATEWAY_META" ] || return 1
+  [ "$(cat "$GEMINI_GATEWAY_META")" = "$(gemini_gateway_signature)" ]
+}
+
 start_gemini_gateway() {
   is_provider google || die "google provider template is missing"
   ensure_provider_file google
@@ -466,39 +505,49 @@ start_gemini_gateway() {
     native_agy_advice
     exit 1
   fi
-  if gemini_gateway_running && gemini_gateway_health_running; then
+  if gemini_gateway_valid && gemini_gateway_health_running; then
     return 0
+  fi
+  if gemini_gateway_running; then
+    local previous
+    previous=$(cat "$GEMINI_GATEWAY_PID")
+    gemini_gateway_owned_pid "$previous" || die "Gemini pidfile points at an unrelated process; refusing reuse"
+    stop_gemini_gateway >/dev/null
+  fi
+  if gemini_gateway_health_running; then
+    die "Gemini port $(gemini_gateway_port) serves an unowned gateway; choose another GEMINI_GATEWAY_PORT"
   fi
   local port script_path
   port=$(gemini_gateway_port)
   script_path="$CLAUDE_DIR/gateways/claude-gemini-gateway/src/index.ts"
   [ -f "$script_path" ] || die "Gemini gateway script not found at $script_path"
   mkdir -p "$(dirname "$GEMINI_GATEWAY_PID")"
-  GEMINI_GATEWAY_PORT="$port" nohup bun run "$script_path" serve >"$GEMINI_GATEWAY_LOG" 2>&1 &
+  GEMINI_GATEWAY_CONFIG="$PDIR/google.json" GEMINI_GATEWAY_PORT="$port" nohup bun run "$script_path" serve >"$GEMINI_GATEWAY_LOG" 2>&1 &
   local pid=$!
   printf '%s\n' "$pid" > "$GEMINI_GATEWAY_PID"
+  gemini_gateway_signature > "$GEMINI_GATEWAY_META"
   local _wait
   for _wait in 1 2 3 4 5 6 7 8 9 10; do
-    if gemini_gateway_health_running; then
+    if gemini_gateway_valid && gemini_gateway_health_running; then
       printf 'Gemini gateway started (pid %s, port %s).\n' "$pid" "$port"
       return 0
     fi
     sleep 0.1
   done
-  rm -f "$GEMINI_GATEWAY_PID"
+  stop_gemini_gateway >/dev/null
   die "Gemini gateway failed to start; see $GEMINI_GATEWAY_LOG"
 }
 
 stop_gemini_gateway() {
   if ! gemini_gateway_running; then
-    rm -f "$GEMINI_GATEWAY_PID"
+    rm -f "$GEMINI_GATEWAY_PID" "$GEMINI_GATEWAY_META"
     printf 'Gemini gateway is not running.\n'
     return 0
   fi
   local pid
   pid=$(cat "$GEMINI_GATEWAY_PID" 2>/dev/null || true)
   if ! gemini_gateway_owned_pid "$pid"; then
-    rm -f "$GEMINI_GATEWAY_PID"
+    rm -f "$GEMINI_GATEWAY_PID" "$GEMINI_GATEWAY_META"
     printf 'Gemini gateway pidfile did not point at a toolkit-owned gateway (pid %s); left process untouched.\n' "$pid"
     return 0
   fi
@@ -515,12 +564,12 @@ stop_gemini_gateway() {
       sleep 0.05
     done
   fi
-  rm -f "$GEMINI_GATEWAY_PID"
+  rm -f "$GEMINI_GATEWAY_PID" "$GEMINI_GATEWAY_META"
   printf 'Gemini gateway stopped (pid %s).\n' "$pid"
 }
 
 status_gemini_gateway() {
-  if gemini_gateway_running && gemini_gateway_health_running; then
+  if gemini_gateway_valid && gemini_gateway_health_running; then
     printf 'Gemini gateway: running (pid %s, port %s)\n' "$(cat "$GEMINI_GATEWAY_PID")" "$(gemini_gateway_port)"
   elif gemini_gateway_health_running; then
     printf 'Gemini gateway: running (health, port %s)\n' "$(gemini_gateway_port)"
@@ -1366,7 +1415,7 @@ launch_session() {
         native_agy_advice
         exit 1
       fi
-      start_gemini_gateway >/dev/null 2>&1 || true
+      start_gemini_gateway >/dev/null
       local gpid
       gpid=$(cat "$GEMINI_GATEWAY_PID" 2>/dev/null || true)
       [ -n "$gpid" ] && printf '%s\n' "$gpid" > "$sess_pid_file"

@@ -62,15 +62,17 @@ rc() { CODEX_CONFIG="$SANDBOX/codex-config.toml" CLAUDE_DIR="$SANDBOX" "$CC_PROV
 # Like say(), but feeds a fake API key through the noninteractive test path.
 say_key() { CC_PROVIDER_API_KEY="$1" CODEX_CONFIG="$SANDBOX/codex-config.toml" CLAUDE_DIR="$SANDBOX" "$CC_PROVIDER" "${@:2}" 2>&1 || true; }
 
-# The launcher delegates to a submodule; both files determine runtime identity.
+# The launcher delegates to a modular submodule; every source determines identity.
 HASH_SANDBOX="$SANDBOX/source-proof"
 mkdir -p "$HASH_SANDBOX/scripts" "$HASH_SANDBOX/gateways/claude-codex-gateway/src"
 printf 'launcher fixture\n' > "$HASH_SANDBOX/scripts/codex-anthropic-gateway.ts"
 printf 'runtime before\n' > "$HASH_SANDBOX/gateways/claude-codex-gateway/src/index.ts"
-awk '/^codex_gateway_source_hash\(\)/,/^}/' "$CC_PROVIDER" > "$SANDBOX/source-hash.sh"
+awk '/^(codex_gateway_source_hash|gateway_source_hash)\(\)/,/^}/' "$CC_PROVIDER" > "$SANDBOX/source-hash.sh"
 if (
   # shellcheck source=/dev/null
   source "$SANDBOX/source-hash.sh"
+  # Each fixture intentionally sets its own subshell environment.
+  # shellcheck disable=SC2030,SC2031
   export CLAUDE_DIR="$HASH_SANDBOX"
   before=$(codex_gateway_source_hash)
   printf 'runtime after\n' > "$HASH_SANDBOX/gateways/claude-codex-gateway/src/index.ts"
@@ -80,6 +82,23 @@ if (
   ok "gateway identity changes when only the canonical submodule runtime changes"
 else
   bad "gateway identity ignores the canonical submodule runtime"
+fi
+
+if (
+  # shellcheck source=/dev/null
+  source "$SANDBOX/source-hash.sh"
+  # Each fixture intentionally sets its own subshell environment.
+  # shellcheck disable=SC2030,SC2031
+  export CLAUDE_DIR="$HASH_SANDBOX"
+  printf 'adapter before\n' > "$HASH_SANDBOX/gateways/claude-codex-gateway/src/client.ts"
+  before=$(codex_gateway_source_hash)
+  printf 'adapter after\n' > "$HASH_SANDBOX/gateways/claude-codex-gateway/src/client.ts"
+  after=$(codex_gateway_source_hash)
+  [ "$before" != "$after" ]
+); then
+  ok "gateway identity changes when a provider adapter module changes"
+else
+  bad "gateway identity ignores provider adapter modules"
 fi
 
 # --- templates are well-formed and self-consistent -------------------------

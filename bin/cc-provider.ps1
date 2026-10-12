@@ -134,7 +134,7 @@ function Test-ConsumerAntigravityAuth {
 
 function Test-OfficialGoogleCredential($p) {
   if ($env:GEMINI_API_KEY) { return $true }
-  if ($env:GOOGLE_APPLICATION_CREDENTIALS -and (Test-Path -LiteralPath $env:GOOGLE_APPLICATION_CREDENTIALS)) { return $true }
+  if ($env:GOOGLE_OAUTH_TOKEN -and ($env:ANTHROPIC_VERTEX_PROJECT_ID -or $env:VERTEX_PROJECT_ID -or $env:GOOGLE_CLOUD_PROJECT)) { return $true }
   $key = Get-CredentialKey $p
   if ($key) {
     $val = Get-CredentialValue $p $key

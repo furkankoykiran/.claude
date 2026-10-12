@@ -56,7 +56,7 @@ jobs:
       - name: Validate
         run: |
           bun run typecheck
-          bun test catalog
+          bun test catalog/tests
           bun run catalog:check
           bun run marketplace:check
           bun run catalog:budget
