@@ -1,0 +1,32 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "rtk hook claude"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {},
+  "effortLevel": "xhigh",
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://llm.onerouter.pro",
+    "ANTHROPIC_AUTH_TOKEN": "<ONEROUTER_API_KEY>",
+    "ANTHROPIC_API_KEY": "<ONEROUTER_API_KEY>",
+    "ANTHROPIC_MODEL": "qwen/qwen3.8-27b-abliterated-cyber:free",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "qwen/qwen3.8-27b-abliterated-cyber:free",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "qwen/qwen3.8-27b-abliterated-cyber:free",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "qwen/qwen3.8-27b-abliterated-cyber:free",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "qwen/qwen3.8-27b-abliterated-cyber:free",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "CLAUDE_CODE_MAX_RETRIES": "2",
+    "API_TIMEOUT_MS": "300000"
+  },
+  "model": "qwen/qwen3.8-27b-abliterated-cyber:free"
+}
+

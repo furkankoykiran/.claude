@@ -27,6 +27,19 @@ export interface ProviderCompatibility {
   notes?: string;
 }
 
+export interface KnownModelCapability {
+  contextTokens: number;
+}
+
+export interface ProviderCapabilities {
+  supportsModelDiscovery?: boolean;
+  modelsEndpoint?: string;
+  defaultContextTokens?: number;
+  supportsToolSearch?: boolean;
+  defaultRetries?: number;
+  knownModels?: Record<string, KnownModelCapability>;
+}
+
 export interface ProviderDefinition {
   id: string;
   name: string;
@@ -38,6 +51,7 @@ export interface ProviderDefinition {
   compatibility: ProviderCompatibility;
   requiredRuntime: string;
   sidecar?: SidecarConfig;
+  capabilities?: ProviderCapabilities;
   description: string;
 }
 

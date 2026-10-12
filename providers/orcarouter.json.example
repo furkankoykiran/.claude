@@ -1,0 +1,31 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "rtk hook claude"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {},
+  "effortLevel": "xhigh",
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.orcarouter.ai",
+    "ANTHROPIC_AUTH_TOKEN": "<ORCAROUTER_API_KEY>",
+    "ANTHROPIC_MODEL": "z-ai/glm-5.3-flash",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "z-ai/glm-5.3-flash",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "z-ai/glm-5.3-flash",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "z-ai/glm-5.3-flash",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "z-ai/glm-5.3-flash",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "CLAUDE_CODE_MAX_RETRIES": "2",
+    "API_TIMEOUT_MS": "300000"
+  },
+  "model": "z-ai/glm-5.3-flash"
+}
+

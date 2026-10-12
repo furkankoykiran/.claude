@@ -56,6 +56,8 @@ function Resolve-Provider($p) {
   if ($p -in @('kimi', 'moonshot')) { return 'kimi' }
   if ($p -in @('nvidia-nim', 'nim')) { return 'nvidia-nim' }
   if ($p -in @('nvidia', 'nvidia-hosted', 'build-nvidia')) { return 'nvidia' }
+  if ($p -in @('orcarouter', 'orca')) { return 'orcarouter' }
+  if ($p -in @('onerouter', 'one')) { return 'onerouter' }
   return $p
 }
 
@@ -615,6 +617,85 @@ function Merge-HookMap($layers) {
 # silently deleted every repo-owned safety control on each switch. It is now a
 # merge of three layers, lowest precedence first:
 #   1. the existing settings.json  - carried over, minus $ProviderKeys
+function Get-ProviderCapability($providerFile) {
+  $prov = Read-JsonMap $providerFile
+  $baseName = [System.IO.Path]::GetFileNameWithoutExtension($providerFile)
+  $canonical = Resolve-Provider $baseName
+  $envBlock = if ($prov.ContainsKey('env') -and ($prov['env'] -is [hashtable])) { $prov['env'] } else { @{} }
+  $model = if ($envBlock.ContainsKey('ANTHROPIC_MODEL')) { [string]$envBlock['ANTHROPIC_MODEL'] } elseif ($prov.ContainsKey('model')) { [string]$prov['model'] } else { '' }
+  $userCtx = if ($envBlock.ContainsKey('CLAUDE_CODE_MAX_CONTEXT_TOKENS')) { [string]$envBlock['CLAUDE_CODE_MAX_CONTEXT_TOKENS'] } else { '' }
+  $userRetries = if ($envBlock.ContainsKey('CLAUDE_CODE_MAX_RETRIES')) { [string]$envBlock['CLAUDE_CODE_MAX_RETRIES'] } else { '' }
+  $finalCtx = ''
+  $finalRetries = ''
+
+  if ($userCtx -and $userCtx -notmatch '^<' -and [int]::TryParse($userCtx, [ref]$null)) {
+    $finalCtx = $userCtx
+  }
+  if ($userRetries -and $userRetries -notmatch '^<') {
+    $finalRetries = $userRetries
+  }
+
+  $stateDir = Join-Path $env:CLAUDE_DIR 'state'
+  $discoveryFile = Join-Path $stateDir "discovery-$canonical.json"
+  if (-not $finalCtx -and $model -and (Test-Path -LiteralPath $discoveryFile)) {
+    try {
+      $disc = Read-JsonMap $discoveryFile
+      if ($disc.ContainsKey('data') -and ($disc['data'] -is [System.Collections.IEnumerable])) {
+        foreach ($item in $disc['data']) {
+          if ($item -is [hashtable] -and $item['id'] -eq $model) {
+            $len = if ($item.ContainsKey('context_length')) { $item['context_length'] } elseif ($item.ContainsKey('max_context_length')) { $item['max_context_length'] } elseif ($item.ContainsKey('context_window')) { $item['context_window'] } else { $null }
+            if ($null -ne $len -and [int]::TryParse([string]$len, [ref]$null) -and [int]$len -gt 0) {
+              $finalCtx = [string]$len
+              break
+            }
+          }
+        }
+      }
+    } catch {
+      $disc = $null
+    }
+  }
+
+  $regPath = Join-Path $PDir 'registry.json'
+  if (Test-Path -LiteralPath $regPath) {
+    try {
+      $reg = Read-JsonMap $regPath
+      if ($reg.ContainsKey('providers') -and ($reg['providers'] -is [System.Collections.IEnumerable])) {
+        foreach ($pDef in $reg['providers']) {
+          if ($pDef -is [hashtable] -and $pDef['id'] -eq $canonical -and $pDef.ContainsKey('capabilities')) {
+            $caps = $pDef['capabilities']
+            if (-not $finalCtx -and $model -and $caps.ContainsKey('knownModels') -and $caps['knownModels'].ContainsKey($model)) {
+              $km = $caps['knownModels'][$model]
+              if ($km.ContainsKey('contextTokens') -and [int]$km['contextTokens'] -gt 0) {
+                $finalCtx = [string]$km['contextTokens']
+              }
+            }
+            if (-not $finalCtx -and $caps.ContainsKey('defaultContextTokens') -and [int]$caps['defaultContextTokens'] -gt 0) {
+              $finalCtx = [string]$caps['defaultContextTokens']
+            }
+            if (-not $finalRetries -and $caps.ContainsKey('defaultRetries')) {
+              $finalRetries = [string]$caps['defaultRetries']
+            }
+            break
+          }
+        }
+      }
+    } catch {
+      $reg = $null
+    }
+  }
+
+  if (-not $finalCtx -and $envBlock.ContainsKey('ANTHROPIC_BASE_URL') -and [string]$envBlock['ANTHROPIC_BASE_URL']) {
+    $finalCtx = '200000'
+  }
+
+  return @{ ContextTokens = $finalCtx; Retries = $finalRetries }
+}
+
+# settings.json used to be a straight Copy-Item of the provider file, which
+# silently deleted every repo-owned safety control on each switch. It is now a
+# merge of three layers, lowest precedence first:
+#   1. the existing settings.json  - carried over, minus $ProviderKeys
 #   2. settings.base.json          - repo-owned safety config, always applied
 #   3. providers\<name>.json       - the provider's own keys, applied last
 function Build-MergedSetting($providerFile) {
@@ -651,6 +732,17 @@ function Build-MergedSetting($providerFile) {
   $merged['hooks'] = Merge-HookMap @($carry, $base, $prov)
 
   foreach ($k in $ProviderKeys) { if (-not $prov.ContainsKey($k)) { $merged.Remove($k) } }
+
+  $dynCaps = Get-ProviderCapability $providerFile
+  if (-not $merged.ContainsKey('env') -or -not ($merged['env'] -is [hashtable])) { $merged['env'] = @{} }
+  $provEnv = if ($prov.ContainsKey('env') -and ($prov['env'] -is [hashtable])) { $prov['env'] } else { @{} }
+  if (-not $provEnv.ContainsKey('CLAUDE_CODE_MAX_CONTEXT_TOKENS') -and $dynCaps.ContextTokens) {
+    $merged['env']['CLAUDE_CODE_MAX_CONTEXT_TOKENS'] = [string]$dynCaps.ContextTokens
+  }
+  if (-not $provEnv.ContainsKey('CLAUDE_CODE_MAX_RETRIES') -and $dynCaps.Retries) {
+    $merged['env']['CLAUDE_CODE_MAX_RETRIES'] = [string]$dynCaps.Retries
+  }
+
   return $merged
 }
 
@@ -659,28 +751,47 @@ function Build-MergedSetting($providerFile) {
 function Get-ProviderList {
   $names = @()
   foreach ($f in Get-ChildItem -LiteralPath $PDir -Filter '*.json.example' -ErrorAction SilentlyContinue) {
-    $names += ($f.Name -replace '\.json\.example$', '')
+    $names += (Resolve-Provider ($f.Name -replace '\.json\.example$', ''))
   }
   foreach ($f in Get-ChildItem -LiteralPath $PDir -Filter '*.json' -ErrorAction SilentlyContinue) {
-    $names += ($f.Name -replace '\.json$', '')
+    $names += (Resolve-Provider ($f.Name -replace '\.json$', ''))
   }
   return $names | Where-Object { $_ -notin @('google', 'antigravity', 'registry') } | Sort-Object -Unique
 }
 
 function Initialize-Provider($p) {
-  $f = Join-Path $PDir "$p.json"
+  $resolved = Resolve-Provider $p
+  $f = Join-Path $PDir "$resolved.json"
   if (-not (Test-Path -LiteralPath $f)) {
-    $ex = Join-Path $PDir "$p.json.example"
+    if ($resolved -eq 'orcarouter') {
+      $legacy = Join-Path $PDir 'orca.json'
+      if (Test-Path -LiteralPath $legacy) {
+        Move-Item -LiteralPath $legacy -Destination $f -Force
+        Protect-ProviderFile $f
+        "Migrated legacy providers/orca.json to providers/orcarouter.json." | Write-Host
+      }
+    }
+    elseif ($resolved -eq 'onerouter') {
+      $legacy = Join-Path $PDir 'one.json'
+      if (Test-Path -LiteralPath $legacy) {
+        Move-Item -LiteralPath $legacy -Destination $f -Force
+        Protect-ProviderFile $f
+        "Migrated legacy providers/one.json to providers/onerouter.json." | Write-Host
+      }
+    }
+  }
+  if (-not (Test-Path -LiteralPath $f)) {
+    $ex = Join-Path $PDir "$resolved.json.example"
     if (Test-Path -LiteralPath $ex) {
       Copy-Item -LiteralPath $ex -Destination $f -Force
       Protect-ProviderFile $f
-      "Created providers/$p.json from template." | Write-Host
+      "Created providers/$resolved.json from template." | Write-Host
     } else {
-      throw "no providers/$p.json or $p.json.example to seed from"
+      throw "no providers/$resolved.json or $resolved.json.example to seed from"
     }
   }
   if ((Get-Content -LiteralPath $f -Raw) -match '<[A-Z_]+>') {
-    "WARNING: providers/$p.json still has placeholder values (<...>)." | Write-Host
+    "WARNING: providers/$resolved.json still has placeholder values (<...>)." | Write-Host
     "Edit it and fill your real token before relying on this provider." | Write-Host
   }
 }

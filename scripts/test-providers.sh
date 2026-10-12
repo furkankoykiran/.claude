@@ -44,6 +44,7 @@ chmod +x "$SANDBOX/bin/bun"
 export PATH="$SANDBOX/bin:$PATH"
 cp "$REPO_DIR"/providers/*.json.example "$SANDBOX/providers/"
 cp "$REPO_DIR"/providers/*.yaml.example "$SANDBOX/providers/" 2>/dev/null || true
+cp "$REPO_DIR/providers/registry.json" "$SANDBOX/providers/" 2>/dev/null || true
 cp "$REPO_DIR/settings.base.json" "$SANDBOX/"
 INITIAL_CODEX_PORT=$(python3 -c "
 import socket
@@ -194,11 +195,18 @@ fi
 # --- discovery -------------------------------------------------------------
 head_ "Discovery (list)"
 listed=$(ccs list)
-for want in anthropic zai nvidia nvidia-nim deepseek kimi minimax openrouter codex; do
+for want in anthropic zai nvidia nvidia-nim deepseek kimi minimax openrouter codex orcarouter onerouter; do
   if printf '%s\n' "$listed" | grep -qxF "$want"; then
     ok "list includes $want"
   else
     bad "list is missing $want"
+  fi
+done
+for alias in orca one; do
+  if printf '%s\n' "$listed" | grep -qxF "$alias"; then
+    bad "list should not include alias $alias"
+  else
+    ok "list deduplicates alias $alias"
   fi
 done
 
@@ -338,6 +346,90 @@ if grep -q 'api.z.ai' "$SANDBOX/settings.json"; then
   bad "switching back to anthropic left z.ai config behind (merge, not replace)"
 else
   ok "switching back leaves no trace of the previous provider"
+fi
+
+# --- router aliases, legacy migration, and dynamic runtime capabilities ----
+head_ "Dynamic runtime resolution and retry bounding"
+
+# Alias activation
+out=$(say use orca)
+case "$out" in
+  *"Active provider: orcarouter"*) ok "ccs use orca resolves to canonical orcarouter" ;;
+  *) bad "ccs use orca failed to resolve to orcarouter: $out" ;;
+esac
+out=$(say use one)
+case "$out" in
+  *"Active provider: onerouter"*) ok "ccs use one resolves to canonical onerouter" ;;
+  *) bad "ccs use one failed to resolve to onerouter: $out" ;;
+esac
+
+# Dynamic capability resolution and retry bounding for orcarouter
+ccs orcarouter >/dev/null 2>&1
+ctx_orca=$(jq -r '.env.CLAUDE_CODE_MAX_CONTEXT_TOKENS // empty' "$SANDBOX/settings.json")
+retries_orca=$(jq -r '.env.CLAUDE_CODE_MAX_RETRIES // empty' "$SANDBOX/settings.json")
+if [ "$ctx_orca" = "1000000" ]; then
+  ok "orcarouter derives 1000000 max context tokens from registry capability"
+else
+  bad "orcarouter derived $ctx_orca max context tokens, expected 1000000"
+fi
+if [ "$retries_orca" = "2" ]; then
+  ok "orcarouter bounds retries to 2 attempts"
+else
+  bad "orcarouter retries is $retries_orca, expected 2"
+fi
+
+# Dynamic capability resolution and retry bounding for onerouter
+ccs onerouter >/dev/null 2>&1
+ctx_one=$(jq -r '.env.CLAUDE_CODE_MAX_CONTEXT_TOKENS // empty' "$SANDBOX/settings.json")
+retries_one=$(jq -r '.env.CLAUDE_CODE_MAX_RETRIES // empty' "$SANDBOX/settings.json")
+if [ "$ctx_one" = "256000" ]; then
+  ok "onerouter derives 256000 max context tokens from registry capability"
+else
+  bad "onerouter derived $ctx_one max context tokens, expected 256000"
+fi
+if [ "$retries_one" = "2" ]; then
+  ok "onerouter bounds retries to 2 attempts"
+else
+  bad "onerouter retries is $retries_one, expected 2"
+fi
+
+# Tool Search decision: Third-party router does not force ENABLE_TOOL_SEARCH (eager loading preserved)
+ts_one=$(jq -r '.env.ENABLE_TOOL_SEARCH // empty' "$SANDBOX/settings.json")
+if [ -z "$ts_one" ]; then
+  ok "onerouter preserves compatible eager tool loading (ENABLE_TOOL_SEARCH unset)"
+else
+  bad "onerouter unexpectedly set ENABLE_TOOL_SEARCH=$ts_one"
+fi
+
+# Precedence 1: Explicit user override survives and is not overwritten
+jq '.env.CLAUDE_CODE_MAX_CONTEXT_TOKENS = "64000"' "$SANDBOX/providers/onerouter.json" > "$SANDBOX/providers/onerouter.json.tmp"
+mv -f "$SANDBOX/providers/onerouter.json.tmp" "$SANDBOX/providers/onerouter.json"
+ccs onerouter >/dev/null 2>&1
+ctx_override=$(jq -r '.env.CLAUDE_CODE_MAX_CONTEXT_TOKENS // empty' "$SANDBOX/settings.json")
+if [ "$ctx_override" = "64000" ]; then
+  ok "explicit user override for context window is preserved over registry capability"
+else
+  bad "explicit override was overwritten: got $ctx_override, expected 64000"
+fi
+
+# Legacy migration: migrating orca.json to orcarouter.json
+rm -f "$SANDBOX/providers/orcarouter.json"
+printf '{"env":{"ANTHROPIC_BASE_URL":"https://api.orcarouter.ai","ANTHROPIC_AUTH_TOKEN":"migrated-token"}}\n' \
+  > "$SANDBOX/providers/orca.json"
+ccs orcarouter >/dev/null 2>&1
+if [ -f "$SANDBOX/providers/orcarouter.json" ] && grep -q 'migrated-token' "$SANDBOX/providers/orcarouter.json"; then
+  ok "legacy orca.json is migrated to orcarouter.json without losing credentials"
+else
+  bad "legacy orca.json migration failed"
+fi
+rm -f "$SANDBOX/providers/orca.json"
+
+ccs anthropic >/dev/null 2>&1
+if [ -z "$(jq -r '.env.CLAUDE_CODE_MAX_CONTEXT_TOKENS // empty' "$SANDBOX/settings.json")" ] \
+   && [ -z "$(jq -r '.env.CLAUDE_CODE_MAX_RETRIES // empty' "$SANDBOX/settings.json")" ]; then
+  ok "switching back to official Anthropic purges dynamic router capabilities"
+else
+  bad "switching back to Anthropic leaked router capability env vars"
 fi
 
 # --- the safety block survives every switch --------------------------------

@@ -55,6 +55,8 @@ and adds that directory to the user PATH.
 | `kimi` | `api.moonshot.ai/anthropic` | Moonshot API key | `kimi-k3[1m]` |
 | `minimax` | `api.minimax.io/anthropic` | MiniMax API key | `MiniMax-M3[1m]`. Use `api.minimaxi.com` in China |
 | `openrouter` | `openrouter.ai/api` | OpenRouter API key | Anthropic-format "skin"; any OpenRouter model slug |
+| `orcarouter` | `api.orcarouter.ai` | OrcaRouter API key | Multi-model router; dynamic context discovery (1M for GLM-5.3), bounded retries (alias: `orca`) |
+| `onerouter` | `llm.onerouter.pro` | OneRouter API key | Multi-model router; dynamic context discovery (256k for Qwen 3.8), bounded retries (alias: `one`) |
 
 Most remote providers in the table speak the Anthropic Messages API directly.
 `nvidia` and `codex` are different: they route Claude Code to a local loopback

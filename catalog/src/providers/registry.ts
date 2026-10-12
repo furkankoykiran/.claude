@@ -108,3 +108,117 @@ export function listAllAliases(registry: ProviderRegistry): Record<string, strin
   }
   return map;
 }
+
+export interface CapabilityResolutionInput {
+  providerId: string;
+  model?: string;
+  userOverrideContext?: number | null;
+  userOverrideRetries?: number | null;
+  liveModelCatalog?: Array<{
+    id: string;
+    context_length?: number | null;
+    max_context_length?: number | null;
+    context_window?: number | null;
+  }> | null;
+  providerDefinition?: ProviderDefinition | null;
+}
+
+export interface CapabilityResolutionResult {
+  maxContextTokens: number;
+  contextSource: "user-override" | "live-discovery" | "registry-metadata" | "conservative-fallback";
+  maxRetries: number;
+  retriesSource: "user-override" | "registry-metadata" | "default";
+  supportsToolSearch: boolean;
+}
+
+export function resolveCapabilityPrecedence(input: CapabilityResolutionInput): CapabilityResolutionResult {
+  // Precedence 1: Explicit user override
+  if (
+    typeof input.userOverrideContext === "number" &&
+    Number.isInteger(input.userOverrideContext) &&
+    input.userOverrideContext > 0
+  ) {
+    return {
+      maxContextTokens: input.userOverrideContext,
+      contextSource: "user-override",
+      maxRetries: resolveRetries(input),
+      retriesSource: resolveRetriesSource(input),
+      supportsToolSearch: Boolean(input.providerDefinition?.capabilities?.supportsToolSearch),
+    };
+  }
+
+  // Precedence 2: Authoritative live provider metadata (/v1/models)
+  if (input.model && Array.isArray(input.liveModelCatalog)) {
+    const liveMatch = input.liveModelCatalog.find((m) => m && m.id === input.model);
+    const liveLength = liveMatch?.context_length ?? liveMatch?.max_context_length ?? liveMatch?.context_window;
+    if (typeof liveLength === "number" && Number.isInteger(liveLength) && liveLength > 0) {
+      return {
+        maxContextTokens: liveLength,
+        contextSource: "live-discovery",
+        maxRetries: resolveRetries(input),
+        retriesSource: resolveRetriesSource(input),
+        supportsToolSearch: Boolean(input.providerDefinition?.capabilities?.supportsToolSearch),
+      };
+    }
+  }
+
+  // Precedence 3: Registry capability metadata
+  const capabilities = input.providerDefinition?.capabilities;
+  if (capabilities) {
+    if (input.model && capabilities.knownModels?.[input.model]) {
+      const knownTokens = capabilities.knownModels[input.model]?.contextTokens;
+      if (typeof knownTokens === "number" && Number.isInteger(knownTokens) && knownTokens > 0) {
+        return {
+          maxContextTokens: knownTokens,
+          contextSource: "registry-metadata",
+          maxRetries: resolveRetries(input),
+          retriesSource: resolveRetriesSource(input),
+          supportsToolSearch: Boolean(capabilities.supportsToolSearch),
+        };
+      }
+    }
+    if (
+      typeof capabilities.defaultContextTokens === "number" &&
+      Number.isInteger(capabilities.defaultContextTokens) &&
+      capabilities.defaultContextTokens > 0
+    ) {
+      return {
+        maxContextTokens: capabilities.defaultContextTokens,
+        contextSource: "registry-metadata",
+        maxRetries: resolveRetries(input),
+        retriesSource: resolveRetriesSource(input),
+        supportsToolSearch: Boolean(capabilities.supportsToolSearch),
+      };
+    }
+  }
+
+  // Precedence 4: Conservative Claude Code fallback
+  return {
+    maxContextTokens: 200000,
+    contextSource: "conservative-fallback",
+    maxRetries: resolveRetries(input),
+    retriesSource: resolveRetriesSource(input),
+    supportsToolSearch: Boolean(capabilities?.supportsToolSearch),
+  };
+}
+
+function resolveRetries(input: CapabilityResolutionInput): number {
+  if (typeof input.userOverrideRetries === "number" && input.userOverrideRetries >= 0) {
+    return input.userOverrideRetries;
+  }
+  if (typeof input.providerDefinition?.capabilities?.defaultRetries === "number") {
+    return input.providerDefinition.capabilities.defaultRetries;
+  }
+  return 10;
+}
+
+function resolveRetriesSource(input: CapabilityResolutionInput): "user-override" | "registry-metadata" | "default" {
+  if (typeof input.userOverrideRetries === "number" && input.userOverrideRetries >= 0) {
+    return "user-override";
+  }
+  if (typeof input.providerDefinition?.capabilities?.defaultRetries === "number") {
+    return "registry-metadata";
+  }
+  return "default";
+}
+
