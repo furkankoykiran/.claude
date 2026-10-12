@@ -7,6 +7,11 @@ TASK_DIR=$(mktemp -d)
 UNRELATED_PID=""
 API_PID=""
 cleanup() {
+  local exit_status=$?
+  if [ "$exit_status" -ne 0 ] && [ -f "$TASK_DIR/state/gemini-gateway.log" ]; then
+    # This gateway uses only synthetic prompts/fixture credentials; never log live provider bodies.
+    cat "$TASK_DIR/state/gemini-gateway.log" >&2
+  fi
   CLAUDE_DIR="$TASK_DIR" "$REPO_ROOT/bin/cc-provider" gemini-stop >/dev/null 2>&1 || true
   [ -z "$API_PID" ] || kill "$API_PID" 2>/dev/null || true
   [ -z "$UNRELATED_PID" ] || kill "$UNRELATED_PID" 2>/dev/null || true
@@ -22,6 +27,16 @@ jq --arg port "$PORT" '.env.ANTHROPIC_BASE_URL=("http://127.0.0.1:"+$port) | .en
 cp "$TASK_DIR/providers/gemini.json" "$TASK_DIR/providers/gemini.json.example"
 cp "$REPO_ROOT/settings.base.json" "$TASK_DIR/"
 cp "$REPO_ROOT/providers/anthropic.json.example" "$TASK_DIR/providers/"
+REAL_BUN=$(command -v bun)
+mkdir -p "$TASK_DIR/bin"
+cat > "$TASK_DIR/bin/bun" <<'EOF_BUN'
+#!/usr/bin/env bash
+if [ "${1:-}" = "run" ] && [ "${3:-}" = "serve" ]; then sleep 1.5; fi
+exec "$GATEWAY_FIXTURE_REAL_BUN" "$@"
+EOF_BUN
+chmod +x "$TASK_DIR/bin/bun"
+export GATEWAY_FIXTURE_REAL_BUN="$REAL_BUN"
+export PATH="$TASK_DIR/bin:$PATH"
 cat > "$TASK_DIR/api.ts" <<'EOF_API'
 const server=Bun.serve({port:0,hostname:'127.0.0.1',async fetch(req){
   if(req.headers.get('x-goog-api-key')!=='fixture-key')return new Response('denied',{status:401});
@@ -84,7 +99,9 @@ if AGY_GATEWAY_BIN="$TASK_DIR/missing" GEMINI_API_KEY='' run_provider agy >/dev/
 [ "$NATIVE_BEFORE" = "$(shasum -a 256 "$TASK_DIR/settings.json")" ]
 [ "$(cat "$TASK_DIR/providers/.active")" = "gemini" ]
 kill -0 "$API_GATEWAY_PID"
-if GEMINI_GATEWAY_PORT=0 GEMINI_API_KEY='' run_provider agy >/dev/null 2>&1; then echo 'invalid port activated' >&2; exit 1; fi
+for invalid_port in 0 65536 999999999999999999999; do
+  if GEMINI_GATEWAY_PORT="$invalid_port" GEMINI_API_KEY='' run_provider agy >/dev/null 2>&1; then echo 'invalid port activated' >&2; exit 1; fi
+done
 [ "$NATIVE_BEFORE" = "$(shasum -a 256 "$TASK_DIR/settings.json")" ]
 kill -0 "$API_GATEWAY_PID"
 jq --arg port "$API_PORT" '.env.GEMINI_GATEWAY_PORT=$port' "$TASK_DIR/providers/agy.json" > "$TASK_DIR/providers/agy.next.json"

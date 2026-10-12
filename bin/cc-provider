@@ -464,7 +464,7 @@ gemini_gateway_port() {
   local port
   port="${GEMINI_GATEWAY_PORT:-$(jq -r '.env.GEMINI_GATEWAY_PORT // "4141"' "$PDIR/$GOOGLE_GATEWAY_PROVIDER.json")}" || return 1
   case "$port" in ''|*[!0-9]*) die "Google gateway port must be an integer from 1 to 65535" ;; esac
-  if [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then die "Google gateway port must be an integer from 1 to 65535"; fi
+  if [ "${#port}" -gt 5 ] || [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then die "Google gateway port must be an integer from 1 to 65535"; fi
   printf '%s' "$port"
 }
 
@@ -525,6 +525,10 @@ start_gemini_gateway() {
   GOOGLE_GATEWAY_PROVIDER="${1:-$GOOGLE_GATEWAY_PROVIDER}"
   ensure_provider_file "$GOOGLE_GATEWAY_PROVIDER"
   command -v bun >/dev/null 2>&1 || die "bun is required for the Google gateway"
+  local startup_ms started now
+  startup_ms="${GEMINI_GATEWAY_STARTUP_TIMEOUT_MS:-$(jq -r '.env.GEMINI_GATEWAY_STARTUP_TIMEOUT_MS // "10000"' "$PDIR/$GOOGLE_GATEWAY_PROVIDER.json")}"
+  case "$startup_ms" in ''|*[!0-9]*) die "Google startup timeout must be a positive integer" ;; esac
+  if [ "${#startup_ms}" -gt 6 ] || [ "$startup_ms" -lt 1 ] || [ "$startup_ms" -gt 300000 ]; then die "Google startup timeout must be from 1 to 300000 milliseconds"; fi
   if gemini_gateway_valid && gemini_gateway_health_running; then return 0; fi
   # Never stop a working runtime until the replacement's authentication/protocol passes.
   if [ "${2:-}" != "preflighted" ]; then google_gateway_preflight "$GOOGLE_GATEWAY_PROVIDER" || die "Google preflight failed; provider remains unchanged"; fi
@@ -550,8 +554,10 @@ start_gemini_gateway() {
   local pid=$!
   printf '%s\n' "$pid" > "$GEMINI_GATEWAY_PID"
   jq -n --arg signature "$(gemini_gateway_signature)" --arg url "$(google_gateway_url)" --arg provider "$GOOGLE_GATEWAY_PROVIDER" '{signature:$signature,url:$url,provider:$provider}' > "$GEMINI_GATEWAY_META"
-  local _wait
-  for _wait in 1 2 3 4 5 6 7 8 9 10; do
+  started=$(bun -e 'process.stdout.write(String(Date.now()))')
+  while kill -0 "$pid" 2>/dev/null; do
+    now=$(bun -e 'process.stdout.write(String(Date.now()))')
+    [ "$((now - started))" -lt "$startup_ms" ] || break
     if gemini_gateway_valid && gemini_gateway_health_running; then printf 'Google gateway started (%s, pid %s, port %s).\n' "$adapter" "$pid" "$port"; return 0; fi
     sleep 0.1
   done

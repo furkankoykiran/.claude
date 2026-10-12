@@ -326,3 +326,5 @@ not vet marketplace contents — only add sources you trust. Remove one with
 Each provider has its own `providers/agy.json` or `providers/gemini.json`, seeded from its template. Settings change only after preflight and gateway startup succeed. `GEMINI_GATEWAY_PORT`, host and timeout come from runtime configuration. Changing adapter/configuration/source invalidates runtime reuse and pending tools. The `gemini-start` / `agy-start` commands start their named adapter; `gemini-stop` manages the shared owned Google sidecar.
 
 `ccs google` and `ccs antigravity` no longer switch. Use `ccs gemini` for API/Vertex or `ccs agy` for native authentication. Existing ignored `providers/google.json` is left intact and excluded from provider selection; migrate its supported API settings manually into `providers/gemini.json` if needed. Never move native AGY OAuth into either file.
+
+`GEMINI_GATEWAY_STARTUP_TIMEOUT_MS` bounds POSIX sidecar readiness (default 10000 ms, maximum 300000 ms). A slower valid cold start is awaited within that bound instead of being stopped after a fixed one-second poll. Gateway HTTP/tool-cycle deadlines remain separate.

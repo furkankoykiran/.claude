@@ -75,3 +75,6 @@ return Response.json({candidates:[{finishReason:'STOP',content:{parts:[{text}]}}
   $env:GEMINI_GATEWAY_ADAPTER = $previousAdapter
   Remove-Item $taskDir -Recurse -Force -ErrorAction SilentlyContinue
 }
+
+# Expected negative native preflights must not become the successful test process exit code.
+exit 0

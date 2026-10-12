@@ -28,11 +28,11 @@
   {
     "event": "claude_tool_use",
     "declared_tool": true,
-    "id": "call_af1c8aba-b196-438f-a644-c5b6121074b1"
+    "id": "call_e5b8ec52-7960-466c-ab0f-968d43a2fd63"
   },
   {
     "event": "claude_tool_result",
-    "id": "call_af1c8aba-b196-438f-a644-c5b6121074b1",
+    "id": "call_e5b8ec52-7960-466c-ab0f-968d43a2fd63",
     "is_error": false
   },
   {
@@ -58,6 +58,6 @@
   {
     "event": "acceptance",
     "passed": true,
-    "gateway_sha": "6c4c502b2903c350b968426d10f545c952f7bc88"
+    "gateway_sha": "bd182ebf368b34f1026e449a97cf57a867f9952b"
   }
 ]

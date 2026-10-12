@@ -848,7 +848,7 @@ function Enable-Provider($p) {
 }
 
 function Show-Usage {
-  "usage: cc-provider.ps1 [list|status|doctor|account|usage|permissions|use <provider>|auth <provider>|login <provider>|api <provider>|logout <provider>|<provider>]" | Write-Host
+  "usage: cc-provider.ps1 [list|status|doctor|models|account|usage|permissions|use <provider>|auth <provider>|login <provider>|api <provider>|logout <provider>|<provider>]" | Write-Host
   "  agy / gemini      native AGY session / separately authenticated API or Vertex" | Write-Host
   "  list              list available providers" | Write-Host
   "  status            print the active provider and auth summary" | Write-Host
@@ -857,6 +857,7 @@ function Show-Usage {
   "  login <provider>  fill an API key; codex/chatgpt delegates to official codex login" | Write-Host
   "  api <provider>    fill an API key in providers\<provider>.json" | Write-Host
   "  logout <provider> clear a local API key; codex/chatgpt delegates to codex logout" | Write-Host
+  "  models            list the active Google gateway catalog" | Write-Host
   "  account           show supported Codex account/auth details" | Write-Host
   "  usage             show supported Codex usage and rate-limit details" | Write-Host
   "  permissions       show Claude/Codex permission and Auto ownership" | Write-Host

@@ -38,7 +38,7 @@
     "claude-gemini-gateway": {
       "name": "Policy-safe Claude Gemini Gateway Submodule",
       "pinnedVersion": "v0.1.0",
-      "pinnedSha": "6c4c502b2903c350b968426d10f545c952f7bc88",
+      "pinnedSha": "bd182ebf368b34f1026e449a97cf57a867f9952b",
       "upstream": "github:furkankoykiran/claude-gemini-gateway",
       "path": "gateways/claude-gemini-gateway"
     }
