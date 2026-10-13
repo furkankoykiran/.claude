@@ -109,6 +109,15 @@ graphify-out/
 # Local-only state we never want committed
 .last-cleanup
 .contextify/
+# Codex runtime state (local databases, session snapshots, plugin cache).
+# Preserves intentional project configuration such as .codex/config.toml.
+.codex/*.sqlite*
+.codex/installation_id
+.codex/.sandbox_migration
+.codex/shell_snapshots/
+.codex/.tmp/
+.codex/tmp/
+.codex/skills/
 
 # ---------------------------------------------------------------------------
 # Build / test / release transients
