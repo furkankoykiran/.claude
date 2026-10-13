@@ -4741,7 +4741,7 @@
       "ref": "origin/HEAD",
       "relativePath": ".claude/skills/impeccable/SKILL.md",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "919dbeba520df760a157fe635be62faae88d58da",
+      "resolvedRevision": "245ad82def45831dc56a21b683c7a1ff530b06cc",
       "security": {
         "flags": [
           "executables:1"
@@ -4834,7 +4834,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/ab-testing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4855,12 +4855,12 @@
     },
     {
       "canonicalInvocation": "/ad-creative",
-      "description": "When the user wants to generate, iterate, or scale ad creative — headlines, descriptions, primary text, or full ad variations — for any paid advertising platform. Also use when the user mentions 'ad copy variations,' 'ad creative,' 'generate headlines,' 'RSA headlines,' 'bulk ad copy,' 'ad iterations,' 'creative testing,' 'write me some ads,' 'Facebook ad copy,' 'Google ad headlines,' 'LinkedIn ad text,' 'static ads,' 'ad templates,' 'iMessage ad,' 'chat reveal ad,' 'ChatGPT ad,' 'Apple Notes ad,' 'AirDrop ad,' 'creative strategy,' 'creative roadmap,' 'creative retro,' 'hook writing,' 'creative review page,' 'present ad creative for approval,' 'motion video ad,' 'faceless video ad,' 'UGC ad,' 'greenscreen ad,' 'TikTok/Reels ad format,' 'which ad format to make,' 'Meta ad format tier list,' or 'creative format taxonomy.' Use it to produce or iterate ad copy at scale. Copy avoids AI tells like 'it's not X, it's Y' reveals. For campaign strategy and targeting, see ads. For landing page copy, see copywriting.",
-      "digest": "f5be7f1b3d2b7e8e82db4693b464cf0d53aa1587f2965081ee67f55589397947",
+      "description": "When the user wants to generate, iterate, or scale ad creative — headlines, descriptions, primary text, or full ad variations — for any paid advertising platform. Also use when the user mentions 'ad copy variations,' 'ad creative,' 'generate headlines,' 'RSA headlines,' 'bulk ad copy,' 'creative testing,' 'write me some ads,' 'Facebook ad copy,' 'Google ad headlines,' 'LinkedIn ad text,' 'static ads,' 'ad templates,' 'iMessage ad,' 'ChatGPT ad,' 'creative strategy,' 'creative roadmap,' 'creative retro,' 'hook writing,' 'creative review page,' 'motion video ad,' 'faceless video ad,' 'UGC ad,' 'greenscreen ad,' 'TikTok/Reels ad format,' 'Meta ad format tier list,' or 'creative format taxonomy.' Use it to produce or iterate ad copy at scale. Copy avoids AI tells like 'it's not X, it's Y' reveals. For campaign strategy and targeting, see ads. For landing page copy, see copywriting. Test hypotheses must be falsifiable, naming the metric, the comparison, and the expected direction.",
+      "digest": "67d932257fd1e747e016cf2256197f18626b50795335447212cdc079b792893b",
       "frontmatter": {
-        "description": "When the user wants to generate, iterate, or scale ad creative — headlines, descriptions, primary text, or full ad variations — for any paid advertising platform. Also use when the user mentions 'ad copy variations,' 'ad creative,' 'generate headlines,' 'RSA headlines,' 'bulk ad copy,' 'ad iterations,' 'creative testing,' 'write me some ads,' 'Facebook ad copy,' 'Google ad headlines,' 'LinkedIn ad text,' 'static ads,' 'ad templates,' 'iMessage ad,' 'chat reveal ad,' 'ChatGPT ad,' 'Apple Notes ad,' 'AirDrop ad,' 'creative strategy,' 'creative roadmap,' 'creative retro,' 'hook writing,' 'creative review page,' 'present ad creative for approval,' 'motion video ad,' 'faceless video ad,' 'UGC ad,' 'greenscreen ad,' 'TikTok/Reels ad format,' 'which ad format to make,' 'Meta ad format tier list,' or 'creative format taxonomy.' Use it to produce or iterate ad copy at scale. Copy avoids AI tells like 'it's not X, it's Y' reveals. For campaign strategy and targeting, see ads. For landing page copy, see copywriting.",
+        "description": "When the user wants to generate, iterate, or scale ad creative — headlines, descriptions, primary text, or full ad variations — for any paid advertising platform. Also use when the user mentions 'ad copy variations,' 'ad creative,' 'generate headlines,' 'RSA headlines,' 'bulk ad copy,' 'creative testing,' 'write me some ads,' 'Facebook ad copy,' 'Google ad headlines,' 'LinkedIn ad text,' 'static ads,' 'ad templates,' 'iMessage ad,' 'ChatGPT ad,' 'creative strategy,' 'creative roadmap,' 'creative retro,' 'hook writing,' 'creative review page,' 'motion video ad,' 'faceless video ad,' 'UGC ad,' 'greenscreen ad,' 'TikTok/Reels ad format,' 'Meta ad format tier list,' or 'creative format taxonomy.' Use it to produce or iterate ad copy at scale. Copy avoids AI tells like 'it's not X, it's Y' reveals. For campaign strategy and targeting, see ads. For landing page copy, see copywriting. Test hypotheses must be falsifiable, naming the metric, the comparison, and the expected direction.",
         "metadata": {
-          "version": "2.10.0"
+          "version": "2.11.0"
         },
         "name": "ad-creative"
       },
@@ -4880,7 +4880,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/ad-creative/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4926,7 +4926,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/ads/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4972,7 +4972,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/ai-seo/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4993,12 +4993,12 @@
     },
     {
       "canonicalInvocation": "/analytics",
-      "description": "When the user wants to set up, improve, or audit analytics tracking and measurement. Also use when the user mentions \"set up tracking,\" \"GA4,\" \"Google Analytics,\" \"conversion tracking,\" \"event tracking,\" \"UTM parameters,\" \"tag manager,\" \"GTM,\" \"analytics implementation,\" \"tracking plan,\" \"how do I measure this,\" \"track conversions,\" \"Mixpanel,\" \"Segment,\" \"are my events firing,\" or \"analytics isn't working.\" Use this whenever someone asks how to know if something is working or wants to measure marketing results. For choosing attribution models, comparing multi-touch/MMM/incrementality, or reconciling conflicting numbers across tools, see attribution. For A/B test measurement, see ab-testing.",
-      "digest": "51b78c5e86547b72e7fdf8138255cbaf00ddf2171d9ced74847d8a2ede119bc2",
+      "description": "When the user wants to set up, improve, or audit analytics tracking and measurement. Also use when the user mentions \"set up tracking,\" \"GA4,\" \"Google Analytics,\" \"conversion tracking,\" \"event tracking,\" \"UTM parameters,\" \"tag manager,\" \"GTM,\" \"analytics implementation,\" \"tracking plan,\" \"how do I measure this,\" \"track conversions,\" \"Mixpanel,\" \"Segment,\" \"are my events firing,\" or \"analytics isn't working.\" Use this whenever someone asks how to know if something is working or wants to measure marketing results. For choosing attribution models, comparing multi-touch/MMM/incrementality, or reconciling conflicting numbers across tools, see attribution. For A/B test measurement, see ab-testing. Rate metrics divide matching closed windows — never full-period spend by partial-period results. Rate metrics divide matching closed windows, never full-period spend by partial-period results.",
+      "digest": "df79731ec93c4a2136b4f4a639e7fbbc54d54c36874d96b75fb9a7cd58df6358",
       "frontmatter": {
-        "description": "When the user wants to set up, improve, or audit analytics tracking and measurement. Also use when the user mentions \"set up tracking,\" \"GA4,\" \"Google Analytics,\" \"conversion tracking,\" \"event tracking,\" \"UTM parameters,\" \"tag manager,\" \"GTM,\" \"analytics implementation,\" \"tracking plan,\" \"how do I measure this,\" \"track conversions,\" \"Mixpanel,\" \"Segment,\" \"are my events firing,\" or \"analytics isn't working.\" Use this whenever someone asks how to know if something is working or wants to measure marketing results. For choosing attribution models, comparing multi-touch/MMM/incrementality, or reconciling conflicting numbers across tools, see attribution. For A/B test measurement, see ab-testing.",
+        "description": "When the user wants to set up, improve, or audit analytics tracking and measurement. Also use when the user mentions \"set up tracking,\" \"GA4,\" \"Google Analytics,\" \"conversion tracking,\" \"event tracking,\" \"UTM parameters,\" \"tag manager,\" \"GTM,\" \"analytics implementation,\" \"tracking plan,\" \"how do I measure this,\" \"track conversions,\" \"Mixpanel,\" \"Segment,\" \"are my events firing,\" or \"analytics isn't working.\" Use this whenever someone asks how to know if something is working or wants to measure marketing results. For choosing attribution models, comparing multi-touch/MMM/incrementality, or reconciling conflicting numbers across tools, see attribution. For A/B test measurement, see ab-testing. Rate metrics divide matching closed windows — never full-period spend by partial-period results. Rate metrics divide matching closed windows, never full-period spend by partial-period results.",
         "metadata": {
-          "version": "2.0.3"
+          "version": "2.1.0"
         },
         "name": "analytics"
       },
@@ -5018,7 +5018,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/analytics/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5064,7 +5064,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/aso/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5110,7 +5110,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/attribution/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5156,7 +5156,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/churn-prevention/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5202,7 +5202,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/co-marketing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5248,7 +5248,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/cold-email/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5294,7 +5294,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/community-marketing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5340,7 +5340,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/competitor-profiling/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5386,7 +5386,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/competitors/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5432,7 +5432,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/content-strategy/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5478,7 +5478,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/copy-editing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5499,12 +5499,12 @@
     },
     {
       "canonicalInvocation": "/copywriting",
-      "description": "When the user wants to write, rewrite, or improve marketing copy for any page, including homepage, landing pages, pricing pages, feature pages, about pages, or product pages. Also use when the user says \"write copy for,\" \"improve this copy,\" \"rewrite this page,\" \"marketing copy,\" \"headline help,\" \"CTA copy,\" \"value proposition,\" \"tagline,\" \"subheadline,\" \"hero section copy,\" \"above the fold,\" \"this copy is weak,\" \"make this more compelling,\" \"this sounds like AI,\" \"AI slop,\" \"make it sound human,\" or \"help me describe my product.\" Use this whenever someone is working on website text that needs to persuade or convert. Drafts never use AI tells like \"it's not X, it's Y\" reveals, \"no X, no Y, no Z\" lists, or sentences that trail into extra comma clauses. For email copy, see emails. For popup copy, see popups. For editing existing copy, see copy-editing. For the offer underneath the copy (bonuses, guarantees, value framing), see offers.",
-      "digest": "1e6e3224ff7ef3d8490abc2efb116d580fa7796206f0cfc039ab5c40b7f25731",
+      "description": "When the user wants to write, rewrite, or improve marketing copy for any page, including homepage, landing pages, pricing pages, feature pages, about pages, or product pages. Also use when the user says \"write copy for,\" \"improve this copy,\" \"rewrite this page,\" \"marketing copy,\" \"headline help,\" \"CTA copy,\" \"value proposition,\" \"tagline,\" \"hero section copy,\" \"this copy is weak,\" \"this sounds like AI,\" \"AI slop,\" \"make it sound human,\" or \"help me describe my product.\" Use this whenever someone is working on website text that needs to persuade or convert. Drafts never use AI tells like \"it's not X, it's Y\" reveals, \"no X, no Y, no Z\" lists, or sentences that trail into extra comma clauses. For email copy, see emails. For popup copy, see popups. For editing existing copy, see copy-editing. For the offer underneath the copy (bonuses, guarantees, value framing), see offers. Claims must be supportable, and a declined claim names the evidence that would unlock it.",
+      "digest": "527bbd795c2f6e9bddac653ede0dfe14f61021febc50f5e92176f5f718d4daf2",
       "frontmatter": {
-        "description": "When the user wants to write, rewrite, or improve marketing copy for any page, including homepage, landing pages, pricing pages, feature pages, about pages, or product pages. Also use when the user says \"write copy for,\" \"improve this copy,\" \"rewrite this page,\" \"marketing copy,\" \"headline help,\" \"CTA copy,\" \"value proposition,\" \"tagline,\" \"subheadline,\" \"hero section copy,\" \"above the fold,\" \"this copy is weak,\" \"make this more compelling,\" \"this sounds like AI,\" \"AI slop,\" \"make it sound human,\" or \"help me describe my product.\" Use this whenever someone is working on website text that needs to persuade or convert. Drafts never use AI tells like \"it's not X, it's Y\" reveals, \"no X, no Y, no Z\" lists, or sentences that trail into extra comma clauses. For email copy, see emails. For popup copy, see popups. For editing existing copy, see copy-editing. For the offer underneath the copy (bonuses, guarantees, value framing), see offers.",
+        "description": "When the user wants to write, rewrite, or improve marketing copy for any page, including homepage, landing pages, pricing pages, feature pages, about pages, or product pages. Also use when the user says \"write copy for,\" \"improve this copy,\" \"rewrite this page,\" \"marketing copy,\" \"headline help,\" \"CTA copy,\" \"value proposition,\" \"tagline,\" \"hero section copy,\" \"this copy is weak,\" \"this sounds like AI,\" \"AI slop,\" \"make it sound human,\" or \"help me describe my product.\" Use this whenever someone is working on website text that needs to persuade or convert. Drafts never use AI tells like \"it's not X, it's Y\" reveals, \"no X, no Y, no Z\" lists, or sentences that trail into extra comma clauses. For email copy, see emails. For popup copy, see popups. For editing existing copy, see copy-editing. For the offer underneath the copy (bonuses, guarantees, value framing), see offers. Claims must be supportable, and a declined claim names the evidence that would unlock it.",
         "metadata": {
-          "version": "2.1.0"
+          "version": "2.2.0"
         },
         "name": "copywriting"
       },
@@ -5524,7 +5524,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/copywriting/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5570,7 +5570,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/cro/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5616,7 +5616,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/customer-research/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5662,7 +5662,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/directory-submissions/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [
           "network-access"
@@ -5710,7 +5710,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/emails/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5756,7 +5756,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/events/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5802,7 +5802,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/free-tools/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5848,7 +5848,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/image/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [
           "network-access"
@@ -5871,12 +5871,12 @@
     },
     {
       "canonicalInvocation": "/influencer-marketing",
-      "description": "When the user wants to run influencer, creator, or ambassador partnerships to promote their product — finding and vetting partners, structuring deals, briefing creators, disclosure compliance, and measuring ROI. Also use when the user mentions 'influencer marketing,' 'creator partnerships,' 'sponsorships,' 'YouTube sponsorships,' 'podcast sponsorships,' 'brand ambassador,' 'ambassador program,' 'creator program,' 'UGC creators,' 'tech UGC,' 'UGC creator program,' 'creator network,' 'B2B influencers,' 'thought leader ads,' 'gifting,' 'product seeding,' 'whitelisting creator content,' 'how much to pay an influencer,' or 'FTC disclosure.' For affiliate/referral payout mechanics, see referrals. For community-led advocacy, see community-marketing. For turning creator content into paid ads, see ad-creative.",
-      "digest": "c6abe26ef4cb45e48e32ea6c13c762da7105b33df7b213cfd249ea118af25042",
+      "description": "When the user wants to run influencer, creator, or ambassador partnerships to promote their product — finding and vetting partners, structuring deals, briefing creators, disclosure compliance, and measuring ROI. Also use when the user mentions 'influencer marketing,' 'creator partnerships,' 'sponsorships,' 'YouTube sponsorships,' 'podcast sponsorships,' 'brand ambassador,' 'ambassador program,' 'creator program,' 'UGC creators,' 'tech UGC,' 'UGC creator program,' 'creator network,' 'B2B influencers,' 'thought leader ads,' 'gifting,' 'product seeding,' 'whitelisting creator content,' 'Telegram channel ads,' 'buy a post in a Telegram channel,' 'how much to pay an influencer,' or 'FTC disclosure.' For affiliate/referral payout mechanics, see referrals. For community-led advocacy, see community-marketing. For turning creator content into paid ads, see ad-creative.",
+      "digest": "3fcbcc9434c609fc00e0ee19800df2bfcf1822c223673eafb52704601e995849",
       "frontmatter": {
-        "description": "When the user wants to run influencer, creator, or ambassador partnerships to promote their product — finding and vetting partners, structuring deals, briefing creators, disclosure compliance, and measuring ROI. Also use when the user mentions 'influencer marketing,' 'creator partnerships,' 'sponsorships,' 'YouTube sponsorships,' 'podcast sponsorships,' 'brand ambassador,' 'ambassador program,' 'creator program,' 'UGC creators,' 'tech UGC,' 'UGC creator program,' 'creator network,' 'B2B influencers,' 'thought leader ads,' 'gifting,' 'product seeding,' 'whitelisting creator content,' 'how much to pay an influencer,' or 'FTC disclosure.' For affiliate/referral payout mechanics, see referrals. For community-led advocacy, see community-marketing. For turning creator content into paid ads, see ad-creative.",
+        "description": "When the user wants to run influencer, creator, or ambassador partnerships to promote their product — finding and vetting partners, structuring deals, briefing creators, disclosure compliance, and measuring ROI. Also use when the user mentions 'influencer marketing,' 'creator partnerships,' 'sponsorships,' 'YouTube sponsorships,' 'podcast sponsorships,' 'brand ambassador,' 'ambassador program,' 'creator program,' 'UGC creators,' 'tech UGC,' 'UGC creator program,' 'creator network,' 'B2B influencers,' 'thought leader ads,' 'gifting,' 'product seeding,' 'whitelisting creator content,' 'Telegram channel ads,' 'buy a post in a Telegram channel,' 'how much to pay an influencer,' or 'FTC disclosure.' For affiliate/referral payout mechanics, see referrals. For community-led advocacy, see community-marketing. For turning creator content into paid ads, see ad-creative.",
         "metadata": {
-          "version": "1.1.2"
+          "version": "1.2.0"
         },
         "name": "influencer-marketing"
       },
@@ -5896,7 +5896,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/influencer-marketing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5942,7 +5942,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/launch/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5988,7 +5988,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/lead-magnets/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6034,7 +6034,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-council/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6080,7 +6080,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-ideas/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6126,7 +6126,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-loops/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6148,11 +6148,11 @@
     {
       "canonicalInvocation": "/marketing-plan",
       "description": "When the user needs a comprehensive marketing plan for a client, a company they advise, or their own product. Also use when the user mentions \"marketing plan,\" \"growth plan,\" \"GTM plan,\" \"go-to-market plan,\" \"AARRR plan,\" \"90-day marketing plan,\" \"12-month marketing roadmap,\" \"fractional CMO plan,\" \"fCMO plan,\" \"market sizing,\" \"TAM SAM SOM,\" \"how big is this market,\" or \"market research.\" Generates an exhaustive 13-section plan structured by AARRR (Acquisition, Activation, Retention, Referral, Revenue), customized to the client's current budget, team, and stage, mapped to future funding milestones, cross-referenced with the 139-idea marketing-ideas library and an embedded 17-section current-state audit rubric, with a marketing operations stack showing which skills and MCP/API integrations execute each part. Outputs a Notion-paste-ready markdown document. For positioning and ICP context before planning, see product-marketing. For stage-specific deep work, see onboarding, signup, emails, referrals, pricing.",
-      "digest": "93aa37a98df3fc4fa85aced8846b3554850766f4765b6ffb7473297114d72115",
+      "digest": "2e0517ece989bda320922a51c0a002b3dc014a8a5bd9c6812ea29ff11a8df3ef",
       "frontmatter": {
         "description": "When the user needs a comprehensive marketing plan for a client, a company they advise, or their own product. Also use when the user mentions \"marketing plan,\" \"growth plan,\" \"GTM plan,\" \"go-to-market plan,\" \"AARRR plan,\" \"90-day marketing plan,\" \"12-month marketing roadmap,\" \"fractional CMO plan,\" \"fCMO plan,\" \"market sizing,\" \"TAM SAM SOM,\" \"how big is this market,\" or \"market research.\" Generates an exhaustive 13-section plan structured by AARRR (Acquisition, Activation, Retention, Referral, Revenue), customized to the client's current budget, team, and stage, mapped to future funding milestones, cross-referenced with the 139-idea marketing-ideas library and an embedded 17-section current-state audit rubric, with a marketing operations stack showing which skills and MCP/API integrations execute each part. Outputs a Notion-paste-ready markdown document. For positioning and ICP context before planning, see product-marketing. For stage-specific deep work, see onboarding, signup, emails, referrals, pricing.",
         "metadata": {
-          "version": "1.2.1"
+          "version": "1.2.2"
         },
         "name": "marketing-plan"
       },
@@ -6172,7 +6172,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-plan/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6218,7 +6218,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-psychology/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6264,7 +6264,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/offers/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6310,7 +6310,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/onboarding/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6356,7 +6356,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/paywalls/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6402,7 +6402,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/popups/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6448,7 +6448,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/pricing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6494,7 +6494,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/product-marketing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6540,7 +6540,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/programmatic-seo/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6586,7 +6586,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/prospecting/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6632,7 +6632,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/public-relations/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6678,7 +6678,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/referrals/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6724,7 +6724,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/revops/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6770,7 +6770,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/sales-enablement/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6816,7 +6816,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/schema/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6862,7 +6862,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/seo-audit/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [
           "network-access"
@@ -6910,7 +6910,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/signup/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6956,7 +6956,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/site-architecture/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7002,7 +7002,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/sms/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7024,11 +7024,11 @@
     {
       "canonicalInvocation": "/social",
       "description": "When the user wants help creating, scheduling, or optimizing social media content for LinkedIn, Twitter/X, Instagram, TikTok, or Facebook, or wants to do social listening and engagement triage. Also use when the user mentions 'LinkedIn post,' 'Twitter thread,' 'social media,' 'content calendar,' 'social scheduling,' 'engagement,' 'viral content,' 'what should I post,' 'repurpose this content,' 'tweet ideas,' 'LinkedIn carousel,' 'social media strategy,' 'grow my following,' 'TikTok video,' 'Reels,' 'Shorts,' 'video script,' 'video hook,' 'short-form video,' 'create a reel,' 'social listening,' 'brand mentions,' 'competitor monitoring,' 'top posts to comment on,' 'find people asking for,' 'carousel,' 'slide-by-slide,' or 'document post.' Use this for social content, repurposing, scheduling, video scripts, and listening. Posts avoid AI tells like 'it's not X, it's Y' reveals and broetry. For broader content strategy, see content-strategy. For paid ads, see ad-creative. For earned media, see public-relations.",
-      "digest": "9459ebfb79b16957530fdae3aa4dfc70a0e398ff6460f2055ebbfdb5604c1870",
+      "digest": "b6485ac781cbba897a4a27aa2a5ce35ee76ea7120e680ee805ec2384ab43e0b1",
       "frontmatter": {
         "description": "When the user wants help creating, scheduling, or optimizing social media content for LinkedIn, Twitter/X, Instagram, TikTok, or Facebook, or wants to do social listening and engagement triage. Also use when the user mentions 'LinkedIn post,' 'Twitter thread,' 'social media,' 'content calendar,' 'social scheduling,' 'engagement,' 'viral content,' 'what should I post,' 'repurpose this content,' 'tweet ideas,' 'LinkedIn carousel,' 'social media strategy,' 'grow my following,' 'TikTok video,' 'Reels,' 'Shorts,' 'video script,' 'video hook,' 'short-form video,' 'create a reel,' 'social listening,' 'brand mentions,' 'competitor monitoring,' 'top posts to comment on,' 'find people asking for,' 'carousel,' 'slide-by-slide,' or 'document post.' Use this for social content, repurposing, scheduling, video scripts, and listening. Posts avoid AI tells like 'it's not X, it's Y' reveals and broetry. For broader content strategy, see content-strategy. For paid ads, see ad-creative. For earned media, see public-relations.",
         "metadata": {
-          "version": "2.3.3"
+          "version": "2.3.4"
         },
         "name": "social"
       },
@@ -7048,7 +7048,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/social/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [
           "network-access"
@@ -7096,7 +7096,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/video/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8725,7 +8725,7 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "919dbeba520df760a157fe635be62faae88d58da",
+      "resolvedRevision": "245ad82def45831dc56a21b683c7a1ff530b06cc",
       "runtimeOnly": false,
       "skillCount": 1,
       "type": "git"
@@ -8749,7 +8749,7 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff",
+      "resolvedRevision": "28e4a81a3464475cbccc3c2bbcfe414bcabae32b",
       "runtimeOnly": false,
       "skillCount": 50,
       "type": "git"
