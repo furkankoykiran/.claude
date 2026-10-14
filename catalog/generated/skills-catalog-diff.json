@@ -391,6 +391,14 @@
       "sourceId": "taste"
     },
     {
+      "key": "/design-taste-frontend-v2-experimental",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "taste"
+    },
+    {
       "key": "/deslop-shared-libs",
       "kind": "added",
       "manualReviewRequired": true,
@@ -1407,7 +1415,7 @@
   ],
   "schemaVersion": 2,
   "summary": {
-    "added": 153,
+    "added": 154,
     "licenseRestricted": 10,
     "manualReviewRequired": true,
     "massChange": false,
