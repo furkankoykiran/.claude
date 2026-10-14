@@ -7,8 +7,8 @@ Generated index of every Claude Code skill, command, and runtime component repre
 Resolver version 1 · schema v1.
 
 - **Sources:** 14
-- **Skills / entries:** 153
-- **Redistributable (full body):** 143
+- **Skills / entries:** 154
+- **Redistributable (full body):** 144
 - **Runtime-only:** 3
 
 ## Agent-Reach (Panniantong/Agent-Reach)
@@ -129,7 +129,7 @@ repo: https://github.com/garrytan/gstack.git · ref: `4015c2870b064644131ed6f7cf
 ## Impeccable (pbakaus/impeccable)
 
 type: `git` · pack: `impeccable` · skills: 1 · redistribution: full
-repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `245ad82def45`
+repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `2f98774f86bc`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -147,7 +147,7 @@ repo: https://github.com/multica-ai/andrej-karpathy-skills.git · ref: `origin/H
 ## Marketing skills (coreyhaines31/marketingskills)
 
 type: `git` · pack: `marketing` · skills: 50 · redistribution: full
-repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `28e4a81a3464`
+repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `c7d7dfb6b460`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -241,14 +241,15 @@ _Runtime-only — see notes below._
 
 ## Taste skills (Leonxlnx/taste-skill)
 
-type: `git` · pack: `taste` · skills: 13 · redistribution: full
-repo: https://github.com/Leonxlnx/taste-skill.git · ref: `origin/HEAD` · revision: `d237dd399d57`
+type: `git` · pack: `taste` · skills: 14 · redistribution: full
+repo: https://github.com/Leonxlnx/taste-skill.git · ref: `origin/HEAD` · revision: `a60a36dc2bb3`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
 | [/brandkit](../../docs/skills/taste/brandkit.md) | Premium brand-kit image generation skill for creating high-end brand-guidelines boards, logo systems, identity decks, an | full |
-| [/design-taste-frontend](../../docs/skills/taste/design-taste-frontend.md) | Anti-slop frontend skill for landing pages, portfolios, and redesigns. The agent reads the brief, infers the right desig | full |
+| [/design-taste-frontend](../../docs/skills/taste/design-taste-frontend.md) | tasteskill v2, the anti-slop frontend skill. Art direction for websites, distilled from a study of 247 curated gallery s | full |
 | [/design-taste-frontend-v1](../../docs/skills/taste/design-taste-frontend-v1.md) | The original v1 taste-skill, preserved for projects depending on its exact behavior. The current default is `design-tast | full |
+| [/design-taste-frontend-v2-experimental](../../docs/skills/taste/design-taste-frontend-v2-experimental.md) | Old v2 (experimental) of taste-skill, the single-file dial-driven version, preserved for projects depending on its exact | full |
 | [/full-output-enforcement](../../docs/skills/taste/full-output-enforcement.md) | Overrides default LLM truncation behavior. Enforces complete code generation, bans placeholder patterns, and handles tok | full |
 | [/gpt-taste](../../docs/skills/taste/gpt-taste.md) | Elite UX/UI & Advanced GSAP Motion Engineer. Enforces Python-driven true randomization for layout variance, strict AIDA  | full |
 | [/high-end-visual-design](../../docs/skills/taste/high-end-visual-design.md) | Teaches the AI to design like a high-end agency. Defines the exact fonts, spacing, shadows, card structures, and animati | full |

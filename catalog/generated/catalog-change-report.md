@@ -2,7 +2,7 @@
 
 # Catalog change report
 
-- added: 153
+- added: 154
 - updated: 0
 - removed: 0
 - renamed: 0
@@ -11,7 +11,7 @@
 - security-sensitive: 73
 - **manual-review-required: true**
 
-## Added (153)
+## Added (154)
 
 - `/ab-testing`
 - `/ad-creative`
@@ -56,6 +56,7 @@
 - `/design-system`
 - `/design-taste-frontend`
 - `/design-taste-frontend-v1`
+- `/design-taste-frontend-v2-experimental`
 - `/deslop-shared-libs`
 - `/devex-review`
 - `/diagram`
