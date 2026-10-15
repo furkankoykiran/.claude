@@ -815,43 +815,43 @@
       },
       "redistribution": "full",
       "relativePath": "skills/ab-testing/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/ad-creative",
-      "digest": "67d932257fd1e747e016cf2256197f18626b50795335447212cdc079b792893b",
+      "digest": "38543b833b73cbd9384ecef56b01d9794ae506fed1c3eb808323a62c849d1002",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/ad-creative/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/ads",
-      "digest": "a954a10149712b23d6051fa0e6ca4a5c8348b2fc979b3c4ec8831fa9479cb7c3",
+      "digest": "53faac446c2dae0b416d720f09414ca528e1cbff82ada8eaf5aa434929ff89cb",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/ads/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/ai-seo",
-      "digest": "e0388b0e927f664b241f612e212b8889593f09e037819e2ee7ccf9556770b4bb",
+      "digest": "a01aa92c2580a93b115d61ecb7224a2ba2569b9f0f918f411d1f427295fd363d",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/ai-seo/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -863,7 +863,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/analytics/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -875,7 +875,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/aso/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -887,7 +887,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/attribution/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -899,7 +899,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/churn-prevention/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -911,7 +911,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/co-marketing/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -923,7 +923,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/cold-email/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -935,7 +935,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/community-marketing/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -947,7 +947,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/competitor-profiling/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -959,7 +959,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/competitors/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -971,7 +971,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/content-strategy/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -983,7 +983,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/copy-editing/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -995,7 +995,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/copywriting/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1007,7 +1007,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/cro/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1019,7 +1019,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/customer-research/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1031,7 +1031,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/directory-submissions/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1043,7 +1043,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/emails/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1055,7 +1055,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/events/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1067,7 +1067,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/free-tools/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1079,19 +1079,19 @@
       },
       "redistribution": "full",
       "relativePath": "skills/image/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/influencer-marketing",
-      "digest": "3fcbcc9434c609fc00e0ee19800df2bfcf1822c223673eafb52704601e995849",
+      "digest": "265d8ef2a77ea0106d8cf10019989d91085a14cc625925b9e0b0f7751ef20a5c",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/influencer-marketing/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1103,7 +1103,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/launch/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1115,7 +1115,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/lead-magnets/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1127,7 +1127,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/marketing-council/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1139,19 +1139,19 @@
       },
       "redistribution": "full",
       "relativePath": "skills/marketing-ideas/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/marketing-loops",
-      "digest": "c3c5b4f152498d7141458de1638af6f3642090653a00652786797a181a7e3622",
+      "digest": "5c92dcaac5c47e34dbfb7010ff70f0ff59a0cd693bbf3a7e5916bf0633c4de19",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/marketing-loops/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1163,7 +1163,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/marketing-plan/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1175,7 +1175,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/marketing-psychology/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1187,7 +1187,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/offers/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1199,7 +1199,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/onboarding/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1211,7 +1211,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/paywalls/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1223,7 +1223,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/popups/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1235,7 +1235,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/pricing/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1247,7 +1247,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/product-marketing/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1259,7 +1259,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/programmatic-seo/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1271,7 +1271,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/prospecting/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1283,7 +1283,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/public-relations/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1295,7 +1295,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/referrals/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1307,7 +1307,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/revops/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1319,7 +1319,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/sales-enablement/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1331,7 +1331,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/schema/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1343,7 +1343,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/seo-audit/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1355,7 +1355,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/signup/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1367,7 +1367,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/site-architecture/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1379,19 +1379,19 @@
       },
       "redistribution": "full",
       "relativePath": "skills/sms/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
       "canonicalInvocation": "/social",
-      "digest": "b6485ac781cbba897a4a27aa2a5ce35ee76ea7120e680ee805ec2384ab43e0b1",
+      "digest": "1283dfcd44aceb243da5a436523cd8fa7e3e1f7d7aa28d5a087fe8309856d17d",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/social/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1403,7 +1403,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/video/SKILL.md",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "sourceId": "marketing"
     },
     {
@@ -1415,7 +1415,7 @@
       },
       "redistribution": "full",
       "relativePath": ".claude/skills/impeccable/SKILL.md",
-      "resolvedRevision": "2f98774f86bc05563876643db37e6c37c322850f",
+      "resolvedRevision": "abf5779cabc20147fd9c013fa4705088c200bf8a",
       "sourceId": "impeccable"
     },
     {
@@ -1427,7 +1427,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/brandkit/SKILL.md",
-      "resolvedRevision": "a60a36dc2bb3bb77ccf17f2f62041f5ca8a458b9",
+      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
       "sourceId": "taste"
     },
     {
@@ -1439,7 +1439,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/brutalist-skill/SKILL.md",
-      "resolvedRevision": "a60a36dc2bb3bb77ccf17f2f62041f5ca8a458b9",
+      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
       "sourceId": "taste"
     },
     {
@@ -1451,7 +1451,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/gpt-tasteskill/SKILL.md",
-      "resolvedRevision": "a60a36dc2bb3bb77ccf17f2f62041f5ca8a458b9",
+      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
       "sourceId": "taste"
     },
     {
@@ -1463,7 +1463,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/image-to-code-skill/SKILL.md",
-      "resolvedRevision": "a60a36dc2bb3bb77ccf17f2f62041f5ca8a458b9",
+      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
       "sourceId": "taste"
     },
     {
@@ -1475,7 +1475,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/imagegen-frontend-mobile/SKILL.md",
-      "resolvedRevision": "a60a36dc2bb3bb77ccf17f2f62041f5ca8a458b9",
+      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
       "sourceId": "taste"
     },
     {
@@ -1487,7 +1487,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/imagegen-frontend-web/SKILL.md",
-      "resolvedRevision": "a60a36dc2bb3bb77ccf17f2f62041f5ca8a458b9",
+      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
       "sourceId": "taste"
     },
     {
@@ -1499,7 +1499,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/minimalist-skill/SKILL.md",
-      "resolvedRevision": "a60a36dc2bb3bb77ccf17f2f62041f5ca8a458b9",
+      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
       "sourceId": "taste"
     },
     {
@@ -1511,7 +1511,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/output-skill/SKILL.md",
-      "resolvedRevision": "a60a36dc2bb3bb77ccf17f2f62041f5ca8a458b9",
+      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
       "sourceId": "taste"
     },
     {
@@ -1523,7 +1523,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/redesign-skill/SKILL.md",
-      "resolvedRevision": "a60a36dc2bb3bb77ccf17f2f62041f5ca8a458b9",
+      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
       "sourceId": "taste"
     },
     {
@@ -1535,7 +1535,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/soft-skill/SKILL.md",
-      "resolvedRevision": "a60a36dc2bb3bb77ccf17f2f62041f5ca8a458b9",
+      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
       "sourceId": "taste"
     },
     {
@@ -1547,7 +1547,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/stitch-skill/SKILL.md",
-      "resolvedRevision": "a60a36dc2bb3bb77ccf17f2f62041f5ca8a458b9",
+      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
       "sourceId": "taste"
     },
     {
@@ -1559,7 +1559,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/taste-skill-v1/SKILL.md",
-      "resolvedRevision": "a60a36dc2bb3bb77ccf17f2f62041f5ca8a458b9",
+      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
       "sourceId": "taste"
     },
     {
@@ -1571,7 +1571,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/taste-skill-v2-experimental/SKILL.md",
-      "resolvedRevision": "a60a36dc2bb3bb77ccf17f2f62041f5ca8a458b9",
+      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
       "sourceId": "taste"
     },
     {
@@ -1583,7 +1583,7 @@
       },
       "redistribution": "full",
       "relativePath": "skills/taste-skill/SKILL.md",
-      "resolvedRevision": "a60a36dc2bb3bb77ccf17f2f62041f5ca8a458b9",
+      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
       "sourceId": "taste"
     },
     {
@@ -2158,7 +2158,7 @@
       },
       "redistribution": "full",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "c7d7dfb6b460fc376b4b2204b78a9c9fd5ca6467",
+      "resolvedRevision": "55ff469422c3592dac45bcad08dfb40221981c02",
       "selectedPaths": [
         "skills/ab-testing",
         "skills/ad-creative",
@@ -2228,7 +2228,7 @@
       },
       "redistribution": "full",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "2f98774f86bc05563876643db37e6c37c322850f",
+      "resolvedRevision": "abf5779cabc20147fd9c013fa4705088c200bf8a",
       "selectedPaths": [
         ".claude/skills/impeccable"
       ],
@@ -2275,7 +2275,7 @@
       },
       "redistribution": "full",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "a60a36dc2bb3bb77ccf17f2f62041f5ca8a458b9",
+      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
       "selectedPaths": [
         "skills/brandkit",
         "skills/brutalist-skill",
