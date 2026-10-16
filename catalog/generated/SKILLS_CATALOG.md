@@ -129,11 +129,11 @@ repo: https://github.com/garrytan/gstack.git · ref: `4015c2870b064644131ed6f7cf
 ## Impeccable (pbakaus/impeccable)
 
 type: `git` · pack: `impeccable` · skills: 1 · redistribution: full
-repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `abf5779cabc2`
+repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `6af45ac9a5eb`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
-| [/impeccable](../../docs/skills/impeccable/impeccable.md) | Use when the user wants to design, redesign, shape, critique, audit, polish, clarify, distill, harden, optimize, adapt,  | full |
+| [/impeccable](../../docs/skills/impeccable/impeccable.md) | Use when the user wants to design, redesign, shape, critique, audit, polish, simplify, harden, animate, or otherwise imp | full |
 
 ## Karpathy guidelines (multica-ai/andrej-karpathy-skills)
 
@@ -147,7 +147,7 @@ repo: https://github.com/multica-ai/andrej-karpathy-skills.git · ref: `origin/H
 ## Marketing skills (coreyhaines31/marketingskills)
 
 type: `git` · pack: `marketing` · skills: 50 · redistribution: full
-repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `55ff469422c3`
+repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `365b412152b9`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
