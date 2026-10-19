@@ -1415,175 +1415,163 @@
       },
       "redistribution": "full",
       "relativePath": ".claude/skills/impeccable/SKILL.md",
-      "resolvedRevision": "9304afa97f89b30609e4c538584fb3e0cd4df013",
+      "resolvedRevision": "0665bd812ae0908fcab17b96fd4f840defb882d9",
       "sourceId": "impeccable"
     },
     {
       "canonicalInvocation": "/brandkit",
-      "digest": "68d88dfad5228c5e5a1a2e79381439c8899b07f2188ac170109d698f1488be8e",
+      "digest": "d2b3f732d02db463433f3e7336b02b836e247bd295190405e930b15fa672f308",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/brandkit/SKILL.md",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "sourceId": "taste"
     },
     {
       "canonicalInvocation": "/industrial-brutalist-ui",
-      "digest": "ffd95c3651267383f330d63baca790e9ddadabf301a78887a0d9af546c2d197b",
+      "digest": "7fcac7a96bcdfda98ef0c792ef044e601ebfca5596415af07a562654acc0b883",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/brutalist-skill/SKILL.md",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "sourceId": "taste"
     },
     {
       "canonicalInvocation": "/gpt-taste",
-      "digest": "d9d493cfd3f68c3f81136d73fc1f9630de4ea1a44f531387de76288ce8410813",
+      "digest": "254e397b8d4c50224f20cea7cc9e50594dfdbb56f8d231416ea30751228c9638",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/gpt-tasteskill/SKILL.md",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "sourceId": "taste"
     },
     {
       "canonicalInvocation": "/image-to-code",
-      "digest": "2ff717a550fc0f0e04922cd5e999d1dd285d3433ad236cbf88723b68cb807454",
+      "digest": "39962dc14c3e3f6914ad086ea97e90d9d51dcf63a0af78a120c725800985028a",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/image-to-code-skill/SKILL.md",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "sourceId": "taste"
     },
     {
       "canonicalInvocation": "/imagegen-frontend-mobile",
-      "digest": "c8e760b90269975a2f62c8b2d012834195106c553275d59d329d4fdf8f970d61",
+      "digest": "e6eabb5fb8d80c1298657529a2df8b60965ab138e0949d2a79541bee7b0cd2ec",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/imagegen-frontend-mobile/SKILL.md",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "sourceId": "taste"
     },
     {
       "canonicalInvocation": "/imagegen-frontend-web",
-      "digest": "08db04d0f9dd6cd21f1ecb2e233bd63a9fd1b03032e733126e7ec0388bb945b6",
+      "digest": "a349b256fcaa0f8dc91454a27c4193fc2d652b7907d9384e595e0ff0a1aa7335",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/imagegen-frontend-web/SKILL.md",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "sourceId": "taste"
     },
     {
       "canonicalInvocation": "/minimalist-ui",
-      "digest": "4ef81e1685f1436d95b1a2e6c3692c9abfa4bbb0b812624dd94d799ef862769b",
+      "digest": "b0eff135e8d45f0605b3f4cfabb11cb429e7af3569ceefc52e8d35528ea07509",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/minimalist-skill/SKILL.md",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
-      "sourceId": "taste"
-    },
-    {
-      "canonicalInvocation": "/full-output-enforcement",
-      "digest": "8b762528d90b6e18f70a8b2a2e8c1ff6116629270769936355593e0a94e63e62",
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT"
-      },
-      "redistribution": "full",
-      "relativePath": "skills/output-skill/SKILL.md",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "sourceId": "taste"
     },
     {
       "canonicalInvocation": "/redesign-existing-projects",
-      "digest": "1c9eb169a5d157088924b3008b329313dd1cd959f5e2cd763d3b13aa397dd411",
+      "digest": "b4bcd6478ab46568eb4e947e42b2641e63472795c777d6f7a2facb60b333b316",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/redesign-skill/SKILL.md",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "sourceId": "taste"
     },
     {
       "canonicalInvocation": "/high-end-visual-design",
-      "digest": "d1ec08dc59dff2675ff2f223b4d43177ef0d6431e7d5015eabda697cdb175f95",
+      "digest": "8dddc2294f1365a6af9ce2516729e5e9936c8e0f9d9df093890691da38ab5516",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/soft-skill/SKILL.md",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "sourceId": "taste"
     },
     {
       "canonicalInvocation": "/stitch-design-taste",
-      "digest": "424f89d439ac40580586fcd3311de378619cc0693ea90fa9f8c026fbdaf64ada",
+      "digest": "fd9bfe99d9ee07c80874e7ece706c479528b6b99e57a9429b9c4629935e6e52a",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/stitch-skill/SKILL.md",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "sourceId": "taste"
     },
     {
       "canonicalInvocation": "/design-taste-frontend-v1",
-      "digest": "5f6d8795cda85edf7602407e670e7254b9ed9913498e2dbef6b28fe01e291dcb",
+      "digest": "9743efedea08de8aa1d2f7e7ef286269faa6e57d55708a4f1f2f081f391af98b",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/taste-skill-v1/SKILL.md",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "sourceId": "taste"
     },
     {
       "canonicalInvocation": "/design-taste-frontend-v2-experimental",
-      "digest": "dd6de800d8fe4ebaa414418e7d593f48f10717a286e97b3f25f576177ebde1d8",
+      "digest": "16aa30c895f8d63115d0c78a3108cf7487721005a4e1e1dcb51240565c4641b9",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/taste-skill-v2-experimental/SKILL.md",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "sourceId": "taste"
     },
     {
       "canonicalInvocation": "/design-taste-frontend",
-      "digest": "8429f8f5efecf7f802ec8d0f5659cc2b53dae092f1e47f340f9ab56ae0726400",
+      "digest": "67f757bbe0683c8badb896bda8b961ff55c1e4366bd7edcde9f54e4a90cf94ca",
       "license": {
         "declared": "MIT",
         "detected": "MIT"
       },
       "redistribution": "full",
       "relativePath": "skills/taste-skill/SKILL.md",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "sourceId": "taste"
     },
     {
@@ -2228,7 +2216,7 @@
       },
       "redistribution": "full",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "9304afa97f89b30609e4c538584fb3e0cd4df013",
+      "resolvedRevision": "0665bd812ae0908fcab17b96fd4f840defb882d9",
       "selectedPaths": [
         ".claude/skills/impeccable"
       ],
@@ -2243,7 +2231,6 @@
         "imagegen-frontend-mobile",
         "imagegen-frontend-web",
         "minimalist-skill",
-        "output-skill",
         "redesign-skill",
         "soft-skill",
         "stitch-skill",
@@ -2259,7 +2246,6 @@
         "/imagegen-frontend-mobile",
         "/imagegen-frontend-web",
         "/minimalist-ui",
-        "/full-output-enforcement",
         "/redesign-existing-projects",
         "/high-end-visual-design",
         "/stitch-design-taste",
@@ -2275,7 +2261,7 @@
       },
       "redistribution": "full",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "selectedPaths": [
         "skills/brandkit",
         "skills/brutalist-skill",
@@ -2284,7 +2270,6 @@
         "skills/imagegen-frontend-mobile",
         "skills/imagegen-frontend-web",
         "skills/minimalist-skill",
-        "skills/output-skill",
         "skills/redesign-skill",
         "skills/soft-skill",
         "skills/stitch-skill",

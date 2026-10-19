@@ -2,7 +2,7 @@
 
 # Catalog change report
 
-- added: 154
+- added: 153
 - updated: 0
 - removed: 0
 - renamed: 0
@@ -11,7 +11,7 @@
 - security-sensitive: 73
 - **manual-review-required: true**
 
-## Added (154)
+## Added (153)
 
 - `/ab-testing`
 - `/ad-creative`
@@ -81,7 +81,6 @@
 - `/fk-writing-kit:linkedin-post`
 - `/free-tools`
 - `/freeze`
-- `/full-output-enforcement`
 - `/gpt-taste`
 - `/graphifyy`
 - `/gstack-upgrade`

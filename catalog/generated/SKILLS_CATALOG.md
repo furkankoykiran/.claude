@@ -7,8 +7,8 @@ Generated index of every Claude Code skill, command, and runtime component repre
 Resolver version 1 · schema v1.
 
 - **Sources:** 14
-- **Skills / entries:** 154
-- **Redistributable (full body):** 144
+- **Skills / entries:** 153
+- **Redistributable (full body):** 143
 - **Runtime-only:** 3
 
 ## Agent-Reach (Panniantong/Agent-Reach)
@@ -129,7 +129,7 @@ repo: https://github.com/garrytan/gstack.git · ref: `4015c2870b064644131ed6f7cf
 ## Impeccable (pbakaus/impeccable)
 
 type: `git` · pack: `impeccable` · skills: 1 · redistribution: full
-repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `9304afa97f89`
+repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `0665bd812ae0`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -241,25 +241,24 @@ _Runtime-only — see notes below._
 
 ## Taste skills (Leonxlnx/taste-skill)
 
-type: `git` · pack: `taste` · skills: 14 · redistribution: full
-repo: https://github.com/Leonxlnx/taste-skill.git · ref: `origin/HEAD` · revision: `f624f37a8c65`
+type: `git` · pack: `taste` · skills: 13 · redistribution: full
+repo: https://github.com/Leonxlnx/taste-skill.git · ref: `origin/HEAD` · revision: `b9ca2fd8047f`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
-| [/brandkit](../../docs/skills/taste/brandkit.md) | Premium brand-kit image generation skill for creating high-end brand-guidelines boards, logo systems, identity decks, an | full |
+| [/brandkit](../../docs/skills/taste/brandkit.md) | Moved to github.com/Leonxlnx/imagegen-skills. Runs only when called by name. | full |
 | [/design-taste-frontend](../../docs/skills/taste/design-taste-frontend.md) | tasteskill v2, the anti-slop frontend skill. Art direction for websites, distilled from a study of 247 curated gallery s | full |
-| [/design-taste-frontend-v1](../../docs/skills/taste/design-taste-frontend-v1.md) | The original v1 taste-skill, preserved for projects depending on its exact behavior. The current default is `design-tast | full |
-| [/design-taste-frontend-v2-experimental](../../docs/skills/taste/design-taste-frontend-v2-experimental.md) | Old v2 (experimental) of taste-skill, the single-file dial-driven version, preserved for projects depending on its exact | full |
-| [/full-output-enforcement](../../docs/skills/taste/full-output-enforcement.md) | Overrides default LLM truncation behavior. Enforces complete code generation, bans placeholder patterns, and handles tok | full |
-| [/gpt-taste](../../docs/skills/taste/gpt-taste.md) | Elite UX/UI & Advanced GSAP Motion Engineer. Enforces Python-driven true randomization for layout variance, strict AIDA  | full |
-| [/high-end-visual-design](../../docs/skills/taste/high-end-visual-design.md) | Teaches the AI to design like a high-end agency. Defines the exact fonts, spacing, shadows, card structures, and animati | full |
-| [/image-to-code](../../docs/skills/taste/image-to-code.md) | Elite website image-to-code skill for Codex. For visually important web tasks, it must first generate the design image(s | full |
-| [/imagegen-frontend-mobile](../../docs/skills/taste/imagegen-frontend-mobile.md) | Elite mobile app image-generation skill for creating premium, app-native screen concepts and flows. Designed for iOS, An | full |
-| [/imagegen-frontend-web](../../docs/skills/taste/imagegen-frontend-web.md) | Elite frontend image-direction skill for generating premium, conversion-aware website design references. CRITICAL OUTPUT | full |
-| [/industrial-brutalist-ui](../../docs/skills/taste/industrial-brutalist-ui.md) | Raw mechanical interfaces fusing Swiss typographic print with military terminal aesthetics. Rigid grids, extreme type sc | full |
-| [/minimalist-ui](../../docs/skills/taste/minimalist-ui.md) | Clean editorial-style interfaces. Warm monochrome palette, typographic contrast, flat bento grids, muted pastels. No gra | full |
-| [/redesign-existing-projects](../../docs/skills/taste/redesign-existing-projects.md) | Upgrades existing websites and apps to premium quality. Audits current design, identifies generic AI patterns, and appli | full |
-| [/stitch-design-taste](../../docs/skills/taste/stitch-design-taste.md) | Semantic Design System Skill for Google Stitch. Generates agent-friendly DESIGN.md files that enforce premium, anti-gene | full |
+| [/design-taste-frontend-v1](../../docs/skills/taste/design-taste-frontend-v1.md) | The original taste-skill v1, kept for projects that depend on its exact behaviour. Opt-in: it runs only when called by n | full |
+| [/design-taste-frontend-v2-experimental](../../docs/skills/taste/design-taste-frontend-v2-experimental.md) | The single-file, dial-driven taste-skill that was the default before v2, kept for projects that depend on its exact beha | full |
+| [/gpt-taste](../../docs/skills/taste/gpt-taste.md) | Classic skill for GPT and Codex, opt-in: it runs only when called by name. Layout variance, a strict AIDA page structure | full |
+| [/high-end-visual-design](../../docs/skills/taste/high-end-visual-design.md) | Classic style skill, opt-in: it runs only when called by name. A calm, polished look with soft contrast, generous whites | full |
+| [/image-to-code](../../docs/skills/taste/image-to-code.md) | Moved to github.com/Leonxlnx/imagegen-skills. Runs only when called by name. | full |
+| [/imagegen-frontend-mobile](../../docs/skills/taste/imagegen-frontend-mobile.md) | Moved to github.com/Leonxlnx/imagegen-skills. Runs only when called by name. | full |
+| [/imagegen-frontend-web](../../docs/skills/taste/imagegen-frontend-web.md) | Moved to github.com/Leonxlnx/imagegen-skills. Runs only when called by name. | full |
+| [/industrial-brutalist-ui](../../docs/skills/taste/industrial-brutalist-ui.md) | Classic style skill, opt-in: it runs only when called by name. A hard mechanical look with Swiss type, rigid grids, extr | full |
+| [/minimalist-ui](../../docs/skills/taste/minimalist-ui.md) | Classic style skill, opt-in: it runs only when called by name. Editorial product UI with a warm monochrome palette, typo | full |
+| [/redesign-existing-projects](../../docs/skills/taste/redesign-existing-projects.md) | Retired: redesigns, restyles and design reviews are part of design-taste-frontend. Runs only when called by name. | full |
+| [/stitch-design-taste](../../docs/skills/taste/stitch-design-taste.md) | Classic skill for Google Stitch, opt-in: it runs only when called by name. Writes an agent-friendly DESIGN.md with stric | full |
 
 ## UI/UX Pro Max (nextlevelbuilder/ui-ux-pro-max-skill)
 

@@ -619,14 +619,6 @@
       "sourceId": "gstack"
     },
     {
-      "key": "/full-output-enforcement",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "taste"
-    },
-    {
       "key": "/gpt-taste",
       "kind": "added",
       "manualReviewRequired": false,
@@ -1415,7 +1407,7 @@
   ],
   "schemaVersion": 2,
   "summary": {
-    "added": 154,
+    "added": 153,
     "licenseRestricted": 10,
     "manualReviewRequired": true,
     "massChange": false,

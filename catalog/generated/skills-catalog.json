@@ -4741,7 +4741,7 @@
       "ref": "origin/HEAD",
       "relativePath": ".claude/skills/impeccable/SKILL.md",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "9304afa97f89b30609e4c538584fb3e0cd4df013",
+      "resolvedRevision": "0665bd812ae0908fcab17b96fd4f840defb882d9",
       "security": {
         "flags": [
           "executables:1"
@@ -7746,10 +7746,11 @@
     },
     {
       "canonicalInvocation": "/brandkit",
-      "description": "Premium brand-kit image generation skill for creating high-end brand-guidelines boards, logo systems, identity decks, and visual-world presentations. Trained for minimalist, cinematic, editorial, dark-tech, luxury, cultural, security, gaming, developer-tool, and consumer-app brand systems. Optimized for intentional logo concepting, refined composition, sparse typography, strong symbolic meaning, premium mockups, art-directed imagery, and flexible grid layouts.",
-      "digest": "68d88dfad5228c5e5a1a2e79381439c8899b07f2188ac170109d698f1488be8e",
+      "description": "Moved to github.com/Leonxlnx/imagegen-skills. Runs only when called by name.",
+      "digest": "d2b3f732d02db463433f3e7336b02b836e247bd295190405e930b15fa672f308",
       "frontmatter": {
-        "description": "Premium brand-kit image generation skill for creating high-end brand-guidelines boards, logo systems, identity decks, and visual-world presentations. Trained for minimalist, cinematic, editorial, dark-tech, luxury, cultural, security, gaming, developer-tool, and consumer-app brand systems. Optimized for intentional logo concepting, refined composition, sparse typography, strong symbolic meaning, premium mockups, art-directed imagery, and flexible grid layouts.",
+        "description": "Moved to github.com/Leonxlnx/imagegen-skills. Runs only when called by name.",
+        "disable-model-invocation": true,
         "name": "brandkit"
       },
       "fullPagePath": "docs/skills/taste/brandkit.md",
@@ -7768,7 +7769,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/brandkit/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7789,10 +7790,10 @@
     },
     {
       "canonicalInvocation": "/design-taste-frontend",
-      "description": "tasteskill v2, the anti-slop frontend skill. Art direction for websites, distilled from a study of 247 curated gallery sites (One Page Love, Awwwards Sites of the Day). Deals researched directions (idea, composition, type, palette, photographs, section blueprints) from a library, enforces a strict no-slop house style with a real-browser inspector, and runs a look-and-fix loop on screenshots. Use this whenever you build, design, redesign, restyle, polish or review a landing page, marketing site, portfolio, product page, one-pager, hero or any public-facing web page, in any stack (HTML/CSS, React, Next.js, Vue, Svelte, Astro, Tailwind) — also when the user says a page looks generic, templated, \"AI-made\", sloppy, or asks to make it look designed, premium, award-level or less like every other site. Not for dashboards or app screens.",
-      "digest": "8429f8f5efecf7f802ec8d0f5659cc2b53dae092f1e47f340f9ab56ae0726400",
+      "description": "tasteskill v2, the anti-slop frontend skill. Art direction for websites, distilled from a study of 247 curated gallery sites (One Page Love, Awwwards Sites of the Day). Deals researched directions (idea, composition, type, palette, photographs, section blueprints) from a library, enforces a strict no-slop house style with a real-browser inspector, and runs a look-and-fix loop on screenshots. Use this whenever you build, design, redesign, restyle, polish or review a landing page, marketing site, portfolio, product page, one-pager, hero or any public-facing web page, in any stack (HTML/CSS, React, Next.js, Vue, Svelte, Astro, Tailwind) — also when the user says a page looks generic, templated, \"AI-made\", sloppy, or asks to make it look designed, premium, award-level or less like every other site. Also for app screens: dashboards, admin and analytics views, settings, inboxes and other screens people work in, with their own run and rules.",
+      "digest": "67f757bbe0683c8badb896bda8b961ff55c1e4366bd7edcde9f54e4a90cf94ca",
       "frontmatter": {
-        "description": "tasteskill v2, the anti-slop frontend skill. Art direction for websites, distilled from a study of 247 curated gallery sites (One Page Love, Awwwards Sites of the Day). Deals researched directions (idea, composition, type, palette, photographs, section blueprints) from a library, enforces a strict no-slop house style with a real-browser inspector, and runs a look-and-fix loop on screenshots. Use this whenever you build, design, redesign, restyle, polish or review a landing page, marketing site, portfolio, product page, one-pager, hero or any public-facing web page, in any stack (HTML/CSS, React, Next.js, Vue, Svelte, Astro, Tailwind) — also when the user says a page looks generic, templated, \"AI-made\", sloppy, or asks to make it look designed, premium, award-level or less like every other site. Not for dashboards or app screens.",
+        "description": "tasteskill v2, the anti-slop frontend skill. Art direction for websites, distilled from a study of 247 curated gallery sites (One Page Love, Awwwards Sites of the Day). Deals researched directions (idea, composition, type, palette, photographs, section blueprints) from a library, enforces a strict no-slop house style with a real-browser inspector, and runs a look-and-fix loop on screenshots. Use this whenever you build, design, redesign, restyle, polish or review a landing page, marketing site, portfolio, product page, one-pager, hero or any public-facing web page, in any stack (HTML/CSS, React, Next.js, Vue, Svelte, Astro, Tailwind) — also when the user says a page looks generic, templated, \"AI-made\", sloppy, or asks to make it look designed, premium, award-level or less like every other site. Also for app screens: dashboards, admin and analytics views, settings, inboxes and other screens people work in, with their own run and rules.",
         "name": "design-taste-frontend"
       },
       "fullPagePath": "docs/skills/taste/design-taste-frontend.md",
@@ -7811,7 +7812,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/taste-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7832,10 +7833,11 @@
     },
     {
       "canonicalInvocation": "/design-taste-frontend-v1",
-      "description": "The original v1 taste-skill, preserved for projects depending on its exact behavior. The current default is `design-taste-frontend` (v2), which is a new skill. Use this v1 install name only if you need exact backward compatibility.",
-      "digest": "5f6d8795cda85edf7602407e670e7254b9ed9913498e2dbef6b28fe01e291dcb",
+      "description": "The original taste-skill v1, kept for projects that depend on its exact behaviour. Opt-in: it runs only when called by name.",
+      "digest": "9743efedea08de8aa1d2f7e7ef286269faa6e57d55708a4f1f2f081f391af98b",
       "frontmatter": {
-        "description": "The original v1 taste-skill, preserved for projects depending on its exact behavior. The current default is `design-taste-frontend` (v2), which is a new skill. Use this v1 install name only if you need exact backward compatibility.",
+        "description": "The original taste-skill v1, kept for projects that depend on its exact behaviour. Opt-in: it runs only when called by name.",
+        "disable-model-invocation": true,
         "name": "design-taste-frontend-v1"
       },
       "fullPagePath": "docs/skills/taste/design-taste-frontend-v1.md",
@@ -7854,7 +7856,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/taste-skill-v1/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7875,10 +7877,11 @@
     },
     {
       "canonicalInvocation": "/design-taste-frontend-v2-experimental",
-      "description": "Old v2 (experimental) of taste-skill, the single-file dial-driven version, preserved for projects depending on its exact behavior. The current default is `design-taste-frontend` (v2). Use this install name only if you need the earlier behavior. Anti-slop frontend rules for landing pages, portfolios, and redesigns, with real design systems when applicable, audit-first redesigns and a strict pre-flight check.",
-      "digest": "dd6de800d8fe4ebaa414418e7d593f48f10717a286e97b3f25f576177ebde1d8",
+      "description": "The single-file, dial-driven taste-skill that was the default before v2, kept for projects that depend on its exact behaviour. Opt-in: it runs only when called by name.",
+      "digest": "16aa30c895f8d63115d0c78a3108cf7487721005a4e1e1dcb51240565c4641b9",
       "frontmatter": {
-        "description": "Old v2 (experimental) of taste-skill, the single-file dial-driven version, preserved for projects depending on its exact behavior. The current default is `design-taste-frontend` (v2). Use this install name only if you need the earlier behavior. Anti-slop frontend rules for landing pages, portfolios, and redesigns, with real design systems when applicable, audit-first redesigns and a strict pre-flight check.",
+        "description": "The single-file, dial-driven taste-skill that was the default before v2, kept for projects that depend on its exact behaviour. Opt-in: it runs only when called by name.",
+        "disable-model-invocation": true,
         "name": "design-taste-frontend-v2-experimental"
       },
       "fullPagePath": "docs/skills/taste/design-taste-frontend-v2-experimental.md",
@@ -7897,7 +7900,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/taste-skill-v2-experimental/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7917,54 +7920,12 @@
       "warnings": []
     },
     {
-      "canonicalInvocation": "/full-output-enforcement",
-      "description": "Overrides default LLM truncation behavior. Enforces complete code generation, bans placeholder patterns, and handles token-limit splits cleanly. Apply to any task requiring exhaustive, unabridged output.",
-      "digest": "8b762528d90b6e18f70a8b2a2e8c1ff6116629270769936355593e0a94e63e62",
-      "frontmatter": {
-        "description": "Overrides default LLM truncation behavior. Enforces complete code generation, bans placeholder patterns, and handles token-limit splits cleanly. Apply to any task requiring exhaustive, unabridged output.",
-        "name": "full-output-enforcement"
-      },
-      "fullPagePath": "docs/skills/taste/full-output-enforcement.md",
-      "generated": true,
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT",
-        "matchesDeclaration": true,
-        "redistribution": "full"
-      },
-      "namespacedInvocations": [
-        "/full-output-enforcement"
-      ],
-      "pack": "taste",
-      "redistribution": "full",
-      "ref": "origin/HEAD",
-      "relativePath": "skills/output-skill/SKILL.md",
-      "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
-      "security": {
-        "flags": [],
-        "hasAgents": false,
-        "hasBashOrPowershell": false,
-        "hasCredentialRef": false,
-        "hasDynamicShell": false,
-        "hasExecutable": false,
-        "hasHiddenFiles": false,
-        "hasHooks": false,
-        "hasMcpOrLsp": false,
-        "hasNetworkRef": false,
-        "toolCount": 0
-      },
-      "skillName": "full-output-enforcement",
-      "sourceId": "taste",
-      "sourceType": "git",
-      "warnings": []
-    },
-    {
       "canonicalInvocation": "/gpt-taste",
-      "description": "Elite UX/UI & Advanced GSAP Motion Engineer. Enforces Python-driven true randomization for layout variance, strict AIDA page structure, wide editorial typography (bans 6-line wraps), gapless bento grids, strict GSAP ScrollTriggers (pinning, stacking, scrubbing), inline micro-images, and massive section spacing.",
-      "digest": "d9d493cfd3f68c3f81136d73fc1f9630de4ea1a44f531387de76288ce8410813",
+      "description": "Classic skill for GPT and Codex, opt-in: it runs only when called by name. Layout variance, a strict AIDA page structure and GSAP scroll motion.",
+      "digest": "254e397b8d4c50224f20cea7cc9e50594dfdbb56f8d231416ea30751228c9638",
       "frontmatter": {
-        "description": "Elite UX/UI & Advanced GSAP Motion Engineer. Enforces Python-driven true randomization for layout variance, strict AIDA page structure, wide editorial typography (bans 6-line wraps), gapless bento grids, strict GSAP ScrollTriggers (pinning, stacking, scrubbing), inline micro-images, and massive section spacing.",
+        "description": "Classic skill for GPT and Codex, opt-in: it runs only when called by name. Layout variance, a strict AIDA page structure and GSAP scroll motion.",
+        "disable-model-invocation": true,
         "name": "gpt-taste"
       },
       "fullPagePath": "docs/skills/taste/gpt-taste.md",
@@ -7983,7 +7944,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/gpt-tasteskill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8004,10 +7965,11 @@
     },
     {
       "canonicalInvocation": "/high-end-visual-design",
-      "description": "Teaches the AI to design like a high-end agency. Defines the exact fonts, spacing, shadows, card structures, and animations that make a website feel expensive. Blocks all the common defaults that make AI designs look cheap or generic.",
-      "digest": "d1ec08dc59dff2675ff2f223b4d43177ef0d6431e7d5015eabda697cdb175f95",
+      "description": "Classic style skill, opt-in: it runs only when called by name. A calm, polished look with soft contrast, generous whitespace and spring motion.",
+      "digest": "8dddc2294f1365a6af9ce2516729e5e9936c8e0f9d9df093890691da38ab5516",
       "frontmatter": {
-        "description": "Teaches the AI to design like a high-end agency. Defines the exact fonts, spacing, shadows, card structures, and animations that make a website feel expensive. Blocks all the common defaults that make AI designs look cheap or generic.",
+        "description": "Classic style skill, opt-in: it runs only when called by name. A calm, polished look with soft contrast, generous whitespace and spring motion.",
+        "disable-model-invocation": true,
         "name": "high-end-visual-design"
       },
       "fullPagePath": "docs/skills/taste/high-end-visual-design.md",
@@ -8026,7 +7988,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/soft-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8047,10 +8009,11 @@
     },
     {
       "canonicalInvocation": "/image-to-code",
-      "description": "Elite website image-to-code skill for Codex. For visually important web tasks, it must first generate the design image(s) itself, deeply analyze them, then implement the website to match them as closely as possible. In Codex, it must prefer large, readable, section-specific images instead of tiny compressed boards, generate fresh standalone images for sections or detail views instead of cropping old ones, avoid lazy under-generation, avoid cards-inside-cards-inside-cards UI, and keep the hero clean, spacious, readable, and visible on a small laptop.",
-      "digest": "2ff717a550fc0f0e04922cd5e999d1dd285d3433ad236cbf88723b68cb807454",
+      "description": "Moved to github.com/Leonxlnx/imagegen-skills. Runs only when called by name.",
+      "digest": "39962dc14c3e3f6914ad086ea97e90d9d51dcf63a0af78a120c725800985028a",
       "frontmatter": {
-        "description": "Elite website image-to-code skill for Codex. For visually important web tasks, it must first generate the design image(s) itself, deeply analyze them, then implement the website to match them as closely as possible. In Codex, it must prefer large, readable, section-specific images instead of tiny compressed boards, generate fresh standalone images for sections or detail views instead of cropping old ones, avoid lazy under-generation, avoid cards-inside-cards-inside-cards UI, and keep the hero clean, spacious, readable, and visible on a small laptop.",
+        "description": "Moved to github.com/Leonxlnx/imagegen-skills. Runs only when called by name.",
+        "disable-model-invocation": true,
         "name": "image-to-code"
       },
       "fullPagePath": "docs/skills/taste/image-to-code.md",
@@ -8069,7 +8032,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/image-to-code-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8090,10 +8053,11 @@
     },
     {
       "canonicalInvocation": "/imagegen-frontend-mobile",
-      "description": "Elite mobile app image-generation skill for creating premium, app-native screen concepts and flows. Designed for iOS, Android, and cross-platform mobile products. Prioritizes clean hierarchy, comfortably readable text, strong multi-screen consistency, controlled color palettes, non-generic creative direction, textured surfaces, image-led composition, tasteful custom iconography, and clean phone mockup framing. By default, screens should be shown inside a subtle premium iPhone or similar phone mockup with a visible frame, while the main focus stays on the app content itself. This skill generates images only. It does not write code.",
-      "digest": "c8e760b90269975a2f62c8b2d012834195106c553275d59d329d4fdf8f970d61",
+      "description": "Moved to github.com/Leonxlnx/imagegen-skills. Runs only when called by name.",
+      "digest": "e6eabb5fb8d80c1298657529a2df8b60965ab138e0949d2a79541bee7b0cd2ec",
       "frontmatter": {
-        "description": "Elite mobile app image-generation skill for creating premium, app-native screen concepts and flows. Designed for iOS, Android, and cross-platform mobile products. Prioritizes clean hierarchy, comfortably readable text, strong multi-screen consistency, controlled color palettes, non-generic creative direction, textured surfaces, image-led composition, tasteful custom iconography, and clean phone mockup framing. By default, screens should be shown inside a subtle premium iPhone or similar phone mockup with a visible frame, while the main focus stays on the app content itself. This skill generates images only. It does not write code.",
+        "description": "Moved to github.com/Leonxlnx/imagegen-skills. Runs only when called by name.",
+        "disable-model-invocation": true,
         "name": "imagegen-frontend-mobile"
       },
       "fullPagePath": "docs/skills/taste/imagegen-frontend-mobile.md",
@@ -8112,7 +8076,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/imagegen-frontend-mobile/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8133,10 +8097,11 @@
     },
     {
       "canonicalInvocation": "/imagegen-frontend-web",
-      "description": "Elite frontend image-direction skill for generating premium, conversion-aware website design references. CRITICAL OUTPUT RULE — generate ONE separate horizontal image FOR EVERY section. A landing page with 8 sections produces 8 images. Never compress multiple sections into one image. Enforces composition variety (not always left-text / right-image), background-image freedom, varied CTAs, varied hero scales (giant / mid / mini minimalist), narrative concept spine, second-read moments, and a single consistent palette across all images. Optimized for landing pages, marketing sites, and product comps that developers or coding models can accurately recreate.",
-      "digest": "08db04d0f9dd6cd21f1ecb2e233bd63a9fd1b03032e733126e7ec0388bb945b6",
+      "description": "Moved to github.com/Leonxlnx/imagegen-skills. Runs only when called by name.",
+      "digest": "a349b256fcaa0f8dc91454a27c4193fc2d652b7907d9384e595e0ff0a1aa7335",
       "frontmatter": {
-        "description": "Elite frontend image-direction skill for generating premium, conversion-aware website design references. CRITICAL OUTPUT RULE — generate ONE separate horizontal image FOR EVERY section. A landing page with 8 sections produces 8 images. Never compress multiple sections into one image. Enforces composition variety (not always left-text / right-image), background-image freedom, varied CTAs, varied hero scales (giant / mid / mini minimalist), narrative concept spine, second-read moments, and a single consistent palette across all images. Optimized for landing pages, marketing sites, and product comps that developers or coding models can accurately recreate.",
+        "description": "Moved to github.com/Leonxlnx/imagegen-skills. Runs only when called by name.",
+        "disable-model-invocation": true,
         "name": "imagegen-frontend-web"
       },
       "fullPagePath": "docs/skills/taste/imagegen-frontend-web.md",
@@ -8155,7 +8120,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/imagegen-frontend-web/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8176,10 +8141,11 @@
     },
     {
       "canonicalInvocation": "/industrial-brutalist-ui",
-      "description": "Raw mechanical interfaces fusing Swiss typographic print with military terminal aesthetics. Rigid grids, extreme type scale contrast, utilitarian color, analog degradation effects. For data-heavy dashboards, portfolios, or editorial sites that need to feel like declassified blueprints.",
-      "digest": "ffd95c3651267383f330d63baca790e9ddadabf301a78887a0d9af546c2d197b",
+      "description": "Classic style skill, opt-in: it runs only when called by name. A hard mechanical look with Swiss type, rigid grids, extreme scale contrast and utilitarian colour.",
+      "digest": "7fcac7a96bcdfda98ef0c792ef044e601ebfca5596415af07a562654acc0b883",
       "frontmatter": {
-        "description": "Raw mechanical interfaces fusing Swiss typographic print with military terminal aesthetics. Rigid grids, extreme type scale contrast, utilitarian color, analog degradation effects. For data-heavy dashboards, portfolios, or editorial sites that need to feel like declassified blueprints.",
+        "description": "Classic style skill, opt-in: it runs only when called by name. A hard mechanical look with Swiss type, rigid grids, extreme scale contrast and utilitarian colour.",
+        "disable-model-invocation": true,
         "name": "industrial-brutalist-ui"
       },
       "fullPagePath": "docs/skills/taste/industrial-brutalist-ui.md",
@@ -8198,7 +8164,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/brutalist-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8219,10 +8185,11 @@
     },
     {
       "canonicalInvocation": "/minimalist-ui",
-      "description": "Clean editorial-style interfaces. Warm monochrome palette, typographic contrast, flat bento grids, muted pastels. No gradients, no heavy shadows.",
-      "digest": "4ef81e1685f1436d95b1a2e6c3692c9abfa4bbb0b812624dd94d799ef862769b",
+      "description": "Classic style skill, opt-in: it runs only when called by name. Editorial product UI with a warm monochrome palette, typographic contrast and flat bento grids.",
+      "digest": "b0eff135e8d45f0605b3f4cfabb11cb429e7af3569ceefc52e8d35528ea07509",
       "frontmatter": {
-        "description": "Clean editorial-style interfaces. Warm monochrome palette, typographic contrast, flat bento grids, muted pastels. No gradients, no heavy shadows.",
+        "description": "Classic style skill, opt-in: it runs only when called by name. Editorial product UI with a warm monochrome palette, typographic contrast and flat bento grids.",
+        "disable-model-invocation": true,
         "name": "minimalist-ui"
       },
       "fullPagePath": "docs/skills/taste/minimalist-ui.md",
@@ -8241,7 +8208,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/minimalist-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8262,10 +8229,11 @@
     },
     {
       "canonicalInvocation": "/redesign-existing-projects",
-      "description": "Upgrades existing websites and apps to premium quality. Audits current design, identifies generic AI patterns, and applies high-end design standards without breaking functionality. Works with any CSS framework or vanilla CSS.",
-      "digest": "1c9eb169a5d157088924b3008b329313dd1cd959f5e2cd763d3b13aa397dd411",
+      "description": "Retired: redesigns, restyles and design reviews are part of design-taste-frontend. Runs only when called by name.",
+      "digest": "b4bcd6478ab46568eb4e947e42b2641e63472795c777d6f7a2facb60b333b316",
       "frontmatter": {
-        "description": "Upgrades existing websites and apps to premium quality. Audits current design, identifies generic AI patterns, and applies high-end design standards without breaking functionality. Works with any CSS framework or vanilla CSS.",
+        "description": "Retired: redesigns, restyles and design reviews are part of design-taste-frontend. Runs only when called by name.",
+        "disable-model-invocation": true,
         "name": "redesign-existing-projects"
       },
       "fullPagePath": "docs/skills/taste/redesign-existing-projects.md",
@@ -8284,7 +8252,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/redesign-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8305,10 +8273,11 @@
     },
     {
       "canonicalInvocation": "/stitch-design-taste",
-      "description": "Semantic Design System Skill for Google Stitch. Generates agent-friendly DESIGN.md files that enforce premium, anti-generic UI standards — strict typography, calibrated color, asymmetric layouts, perpetual micro-motion, and hardware-accelerated performance.",
-      "digest": "424f89d439ac40580586fcd3311de378619cc0693ea90fa9f8c026fbdaf64ada",
+      "description": "Classic skill for Google Stitch, opt-in: it runs only when called by name. Writes an agent-friendly DESIGN.md with strict type, colour and layout rules.",
+      "digest": "fd9bfe99d9ee07c80874e7ece706c479528b6b99e57a9429b9c4629935e6e52a",
       "frontmatter": {
-        "description": "Semantic Design System Skill for Google Stitch. Generates agent-friendly DESIGN.md files that enforce premium, anti-generic UI standards — strict typography, calibrated color, asymmetric layouts, perpetual micro-motion, and hardware-accelerated performance.",
+        "description": "Classic skill for Google Stitch, opt-in: it runs only when called by name. Writes an agent-friendly DESIGN.md with strict type, colour and layout rules.",
+        "disable-model-invocation": true,
         "name": "stitch-design-taste"
       },
       "fullPagePath": "docs/skills/taste/stitch-design-taste.md",
@@ -8327,7 +8296,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/stitch-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -8768,7 +8737,7 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "9304afa97f89b30609e4c538584fb3e0cd4df013",
+      "resolvedRevision": "0665bd812ae0908fcab17b96fd4f840defb882d9",
       "runtimeOnly": false,
       "skillCount": 1,
       "type": "git"
@@ -8832,9 +8801,9 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "b9ca2fd8047f4c72d7da90ebc1c1203e57c72cd2",
       "runtimeOnly": false,
-      "skillCount": 14,
+      "skillCount": 13,
       "type": "git"
     },
     {
@@ -8851,9 +8820,9 @@
     }
   ],
   "totals": {
-    "redistributable": 144,
+    "redistributable": 143,
     "runtimeOnly": 3,
-    "skills": 154,
+    "skills": 153,
     "sources": 14,
     "warnings": 0
   }
