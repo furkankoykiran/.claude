@@ -145,14 +145,6 @@
       "sourceId": "ui_ux_pro_max"
     },
     {
-      "key": "/brandkit",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "taste"
-    },
-    {
       "key": "/browse",
       "kind": "added",
       "manualReviewRequired": true,
@@ -274,6 +266,16 @@
       "sourceId": "gstack"
     },
     {
+      "key": "/conversion-tracking",
+      "kind": "added",
+      "manualReviewRequired": true,
+      "reasons": [
+        "new-skill-capability:executable/binary"
+      ],
+      "securitySensitive": true,
+      "sourceId": "marketing"
+    },
+    {
       "key": "/copy-editing",
       "kind": "added",
       "manualReviewRequired": false,
@@ -376,22 +378,6 @@
     },
     {
       "key": "/design-taste-frontend",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "taste"
-    },
-    {
-      "key": "/design-taste-frontend-v1",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "taste"
-    },
-    {
-      "key": "/design-taste-frontend-v2-experimental",
       "kind": "added",
       "manualReviewRequired": false,
       "reasons": [],
@@ -619,22 +605,6 @@
       "sourceId": "gstack"
     },
     {
-      "key": "/full-output-enforcement",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "taste"
-    },
-    {
-      "key": "/gpt-taste",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "taste"
-    },
-    {
       "key": "/graphifyy",
       "kind": "added",
       "manualReviewRequired": false,
@@ -676,14 +646,6 @@
       "sourceId": "gstack"
     },
     {
-      "key": "/high-end-visual-design",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "taste"
-    },
-    {
       "key": "/image",
       "kind": "added",
       "manualReviewRequired": true,
@@ -694,30 +656,6 @@
       "sourceId": "marketing"
     },
     {
-      "key": "/image-to-code",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "taste"
-    },
-    {
-      "key": "/imagegen-frontend-mobile",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "taste"
-    },
-    {
-      "key": "/imagegen-frontend-web",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "taste"
-    },
-    {
       "key": "/impeccable",
       "kind": "added",
       "manualReviewRequired": true,
@@ -726,14 +664,6 @@
       ],
       "securitySensitive": true,
       "sourceId": "impeccable"
-    },
-    {
-      "key": "/industrial-brutalist-ui",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "taste"
     },
     {
       "key": "/influencer-marketing",
@@ -861,6 +791,14 @@
       "sourceId": "gstack"
     },
     {
+      "key": "/link-building",
+      "kind": "added",
+      "manualReviewRequired": false,
+      "reasons": [],
+      "securitySensitive": false,
+      "sourceId": "marketing"
+    },
+    {
       "key": "/make-pdf",
       "kind": "added",
       "manualReviewRequired": true,
@@ -918,14 +856,6 @@
       "reasons": [],
       "securitySensitive": false,
       "sourceId": "anthropic"
-    },
-    {
-      "key": "/minimalist-ui",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "taste"
     },
     {
       "key": "/offers",
@@ -1125,14 +1055,6 @@
       "sourceId": "gstack"
     },
     {
-      "key": "/redesign-existing-projects",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "taste"
-    },
-    {
       "key": "/referrals",
       "kind": "added",
       "manualReviewRequired": false,
@@ -1329,14 +1251,6 @@
       "sourceId": "gstack"
     },
     {
-      "key": "/stitch-design-taste",
-      "kind": "added",
-      "manualReviewRequired": false,
-      "reasons": [],
-      "securitySensitive": false,
-      "sourceId": "taste"
-    },
-    {
       "key": "/sync-gbrain",
       "kind": "added",
       "manualReviewRequired": true,
@@ -1415,7 +1329,7 @@
   ],
   "schemaVersion": 2,
   "summary": {
-    "added": 154,
+    "added": 143,
     "licenseRestricted": 10,
     "manualReviewRequired": true,
     "massChange": false,
@@ -1429,7 +1343,7 @@
       "new-skill-capability:network-access"
     ],
     "runtimeOnly": 3,
-    "securitySensitive": 73,
+    "securitySensitive": 74,
     "updated": 0
   }
 }
