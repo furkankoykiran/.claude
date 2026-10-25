@@ -7,8 +7,8 @@ Generated index of every Claude Code skill, command, and runtime component repre
 Resolver version 1 · schema v1.
 
 - **Sources:** 14
-- **Skills / entries:** 154
-- **Redistributable (full body):** 144
+- **Skills / entries:** 143
+- **Redistributable (full body):** 133
 - **Runtime-only:** 3
 
 ## Agent-Reach (Panniantong/Agent-Reach)
@@ -129,7 +129,7 @@ repo: https://github.com/garrytan/gstack.git · ref: `4015c2870b064644131ed6f7cf
 ## Impeccable (pbakaus/impeccable)
 
 type: `git` · pack: `impeccable` · skills: 1 · redistribution: full
-repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `9304afa97f89`
+repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `936867543ac2`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -146,8 +146,8 @@ repo: https://github.com/multica-ai/andrej-karpathy-skills.git · ref: `origin/H
 
 ## Marketing skills (coreyhaines31/marketingskills)
 
-type: `git` · pack: `marketing` · skills: 50 · redistribution: full
-repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `365b412152b9`
+type: `git` · pack: `marketing` · skills: 52 · redistribution: full
+repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `e85f3cbc2e4a`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
@@ -165,6 +165,7 @@ repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD`
 | [/competitor-profiling](../../docs/skills/marketing/competitor-profiling.md) | When the user wants to research, profile, or analyze competitors from their URLs. Also use when the user mentions 'compe | full |
 | [/competitors](../../docs/skills/marketing/competitors.md) | When the user wants to create competitor comparison or alternative pages for SEO and buyer-facing use. Also use when the | full |
 | [/content-strategy](../../docs/skills/marketing/content-strategy.md) | When the user wants to plan a content strategy, decide what content to create, or figure out what topics to cover. Also  | full |
+| [/conversion-tracking](../../docs/skills/marketing/conversion-tracking.md) | Set up, audit, verify, or fix website conversion tracking. Use when the conversion is a form submission, booked meeting, | full |
 | [/copy-editing](../../docs/skills/marketing/copy-editing.md) | When the user wants to edit, review, or improve existing marketing copy, or refresh outdated content. Also use when the  | full |
 | [/copywriting](../../docs/skills/marketing/copywriting.md) | When the user wants to write, rewrite, or improve marketing copy for any page, including homepage, landing pages, pricin | full |
 | [/cro](../../docs/skills/marketing/cro.md) | When the user wants to optimize, improve, or increase conversions on any marketing page or form — including homepage, la | full |
@@ -177,6 +178,7 @@ repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD`
 | [/influencer-marketing](../../docs/skills/marketing/influencer-marketing.md) | When the user wants to run influencer, creator, or ambassador partnerships to promote their product — finding and vettin | full |
 | [/launch](../../docs/skills/marketing/launch.md) | When the user wants to plan a product launch, feature announcement, or release strategy. Also use when the user mentions | full |
 | [/lead-magnets](../../docs/skills/marketing/lead-magnets.md) | When the user wants to create, plan, or optimize a lead magnet for email capture or lead generation. Also use when the u | full |
+| [/link-building](../../docs/skills/marketing/link-building.md) | When the user wants to earn backlinks or third-party mentions that lift rankings and AI citations. Also use when the use | full |
 | [/marketing-council](../../docs/skills/marketing/marketing-council.md) | When the user wants multiple expert perspectives on a marketing question — a simulated board of advisors staffed by lege | full |
 | [/marketing-ideas](../../docs/skills/marketing/marketing-ideas.md) | When the user needs marketing ideas, inspiration, or strategies for their SaaS or software product. Also use when the us | full |
 | [/marketing-loops](../../docs/skills/marketing/marketing-loops.md) | When the user wants to set up a recurring, self-running marketing workflow — a repeatable loop an AI agent runs on a cad | full |
@@ -241,25 +243,12 @@ _Runtime-only — see notes below._
 
 ## Taste skills (Leonxlnx/taste-skill)
 
-type: `git` · pack: `taste` · skills: 14 · redistribution: full
-repo: https://github.com/Leonxlnx/taste-skill.git · ref: `origin/HEAD` · revision: `f624f37a8c65`
+type: `git` · pack: `taste` · skills: 1 · redistribution: full
+repo: https://github.com/Leonxlnx/taste-skill.git · ref: `origin/HEAD` · revision: `12af471f627f`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
-| [/brandkit](../../docs/skills/taste/brandkit.md) | Premium brand-kit image generation skill for creating high-end brand-guidelines boards, logo systems, identity decks, an | full |
 | [/design-taste-frontend](../../docs/skills/taste/design-taste-frontend.md) | tasteskill v2, the anti-slop frontend skill. Art direction for websites, distilled from a study of 247 curated gallery s | full |
-| [/design-taste-frontend-v1](../../docs/skills/taste/design-taste-frontend-v1.md) | The original v1 taste-skill, preserved for projects depending on its exact behavior. The current default is `design-tast | full |
-| [/design-taste-frontend-v2-experimental](../../docs/skills/taste/design-taste-frontend-v2-experimental.md) | Old v2 (experimental) of taste-skill, the single-file dial-driven version, preserved for projects depending on its exact | full |
-| [/full-output-enforcement](../../docs/skills/taste/full-output-enforcement.md) | Overrides default LLM truncation behavior. Enforces complete code generation, bans placeholder patterns, and handles tok | full |
-| [/gpt-taste](../../docs/skills/taste/gpt-taste.md) | Elite UX/UI & Advanced GSAP Motion Engineer. Enforces Python-driven true randomization for layout variance, strict AIDA  | full |
-| [/high-end-visual-design](../../docs/skills/taste/high-end-visual-design.md) | Teaches the AI to design like a high-end agency. Defines the exact fonts, spacing, shadows, card structures, and animati | full |
-| [/image-to-code](../../docs/skills/taste/image-to-code.md) | Elite website image-to-code skill for Codex. For visually important web tasks, it must first generate the design image(s | full |
-| [/imagegen-frontend-mobile](../../docs/skills/taste/imagegen-frontend-mobile.md) | Elite mobile app image-generation skill for creating premium, app-native screen concepts and flows. Designed for iOS, An | full |
-| [/imagegen-frontend-web](../../docs/skills/taste/imagegen-frontend-web.md) | Elite frontend image-direction skill for generating premium, conversion-aware website design references. CRITICAL OUTPUT | full |
-| [/industrial-brutalist-ui](../../docs/skills/taste/industrial-brutalist-ui.md) | Raw mechanical interfaces fusing Swiss typographic print with military terminal aesthetics. Rigid grids, extreme type sc | full |
-| [/minimalist-ui](../../docs/skills/taste/minimalist-ui.md) | Clean editorial-style interfaces. Warm monochrome palette, typographic contrast, flat bento grids, muted pastels. No gra | full |
-| [/redesign-existing-projects](../../docs/skills/taste/redesign-existing-projects.md) | Upgrades existing websites and apps to premium quality. Audits current design, identifies generic AI patterns, and appli | full |
-| [/stitch-design-taste](../../docs/skills/taste/stitch-design-taste.md) | Semantic Design System Skill for Google Stitch. Generates agent-friendly DESIGN.md files that enforce premium, anti-gene | full |
 
 ## UI/UX Pro Max (nextlevelbuilder/ui-ux-pro-max-skill)
 
