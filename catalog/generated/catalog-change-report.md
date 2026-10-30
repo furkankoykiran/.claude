@@ -2,16 +2,16 @@
 
 # Catalog change report
 
-- added: 154
+- added: 143
 - updated: 0
 - removed: 0
 - renamed: 0
 - license-restricted: 10
 - runtime-only: 3
-- security-sensitive: 73
+- security-sensitive: 74
 - **manual-review-required: true**
 
-## Added (154)
+## Added (143)
 
 - `/ab-testing`
 - `/ad-creative`
@@ -29,7 +29,6 @@
 - `/brag`
 - `/brag-slim`
 - `/brand`
-- `/brandkit`
 - `/browse`
 - `/canary`
 - `/careful`
@@ -43,6 +42,7 @@
 - `/content-strategy`
 - `/context-restore`
 - `/context-save`
+- `/conversion-tracking`
 - `/copy-editing`
 - `/copywriting`
 - `/cro`
@@ -55,8 +55,6 @@
 - `/design-shotgun`
 - `/design-system`
 - `/design-taste-frontend`
-- `/design-taste-frontend-v1`
-- `/design-taste-frontend-v2-experimental`
 - `/deslop-shared-libs`
 - `/devex-review`
 - `/diagram`
@@ -81,19 +79,12 @@
 - `/fk-writing-kit:linkedin-post`
 - `/free-tools`
 - `/freeze`
-- `/full-output-enforcement`
-- `/gpt-taste`
 - `/graphifyy`
 - `/gstack-upgrade`
 - `/guard`
 - `/health`
-- `/high-end-visual-design`
 - `/image`
-- `/image-to-code`
-- `/imagegen-frontend-mobile`
-- `/imagegen-frontend-web`
 - `/impeccable`
-- `/industrial-brutalist-ui`
 - `/influencer-marketing`
 - `/investigate`
 - `/ios-clean`
@@ -107,6 +98,7 @@
 - `/launch`
 - `/lead-magnets`
 - `/learn`
+- `/link-building`
 - `/make-pdf`
 - `/marketing-council`
 - `/marketing-ideas`
@@ -114,7 +106,6 @@
 - `/marketing-plan`
 - `/marketing-psychology`
 - `/mcp-builder`
-- `/minimalist-ui`
 - `/offers`
 - `/office-hours`
 - `/onboarding`
@@ -136,7 +127,6 @@
 - `/public-relations`
 - `/qa`
 - `/qa-only`
-- `/redesign-existing-projects`
 - `/referrals`
 - `/retro`
 - `/review`
@@ -158,7 +148,6 @@
 - `/sms`
 - `/social`
 - `/spec`
-- `/stitch-design-taste`
 - `/sync-gbrain`
 - `/test-audit`
 - `/ui-styling`
@@ -168,7 +157,7 @@
 - `/web-artifacts-builder`
 - `/xlsx`
 
-## Security-sensitive (73)
+## Security-sensitive (74)
 
 - `/agent-reach`
 - `/autoplan`
@@ -182,6 +171,7 @@
 - `/codex`
 - `/context-restore`
 - `/context-save`
+- `/conversion-tracking`
 - `/design-consultation`
 - `/design-html`
 - `/design-review`
@@ -244,7 +234,7 @@
 - `/web-artifacts-builder`
 - `/xlsx`
 
-## Manual-review-required (73)
+## Manual-review-required (74)
 
 - `/agent-reach`
 - `/autoplan`
@@ -258,6 +248,7 @@
 - `/codex`
 - `/context-restore`
 - `/context-save`
+- `/conversion-tracking`
 - `/design-consultation`
 - `/design-html`
 - `/design-review`
