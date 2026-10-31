@@ -76,7 +76,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/doc-coauthoring/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
+      "resolvedRevision": "ca45fc496a3436251f191354091d557da31c15b5",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -123,7 +123,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/docx/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
+      "resolvedRevision": "ca45fc496a3436251f191354091d557da31c15b5",
       "security": {
         "flags": [
           "executables:5"
@@ -149,7 +149,7 @@
     {
       "canonicalInvocation": "/mcp-builder",
       "description": "Guide for creating high-quality MCP (Model Context Protocol) servers that enable LLMs to interact with external services through well-designed tools. Use when building MCP servers to integrate external APIs or services, whether in Python (FastMCP) or Node/TypeScript (MCP SDK).",
-      "digest": "c0bd02483acbb365fbbc2370e6b68beba048e5267398a27ceb7332f6cc29b008",
+      "digest": "3b2ace9cadc148da1ed15d6458f81a1dea38c4df6fa4aee25a4f77ddc243dd08",
       "frontmatter": {
         "description": "Guide for creating high-quality MCP (Model Context Protocol) servers that enable LLMs to interact with external services through well-designed tools. Use when building MCP servers to integrate external APIs or services, whether in Python (FastMCP) or Node/TypeScript (MCP SDK).",
         "license": "Complete terms in LICENSE.txt",
@@ -171,7 +171,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/mcp-builder/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
+      "resolvedRevision": "ca45fc496a3436251f191354091d557da31c15b5",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -216,7 +216,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/pdf/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
+      "resolvedRevision": "ca45fc496a3436251f191354091d557da31c15b5",
       "security": {
         "flags": [
           "executables:1"
@@ -265,7 +265,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/pptx/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
+      "resolvedRevision": "ca45fc496a3436251f191354091d557da31c15b5",
       "security": {
         "flags": [
           "executables:4"
@@ -312,7 +312,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/skill-creator/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
+      "resolvedRevision": "ca45fc496a3436251f191354091d557da31c15b5",
       "security": {
         "flags": [
           "executables:7"
@@ -358,7 +358,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/web-artifacts-builder/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
+      "resolvedRevision": "ca45fc496a3436251f191354091d557da31c15b5",
       "security": {
         "flags": [
           "executables:2",
@@ -406,7 +406,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/xlsx/SKILL.md",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
+      "resolvedRevision": "ca45fc496a3436251f191354091d557da31c15b5",
       "security": {
         "flags": [
           "executables:2"
@@ -4716,14 +4716,14 @@
     {
       "canonicalInvocation": "/impeccable",
       "description": "Use when the user wants to design, redesign, shape, critique, audit, polish, simplify, harden, animate, or otherwise improve a frontend interface: websites, landing pages, dashboards, product UI, components, forms, settings, onboarding, empty states, and native iOS or Android screens. Handles UX review, hierarchy, layout, typography, color, motion, UX copy, accessibility, responsive behavior, edge cases, and capturing or documenting design systems (DESIGN.md, tokens). Also for making bland UI bolder, loud UI quieter, or ambitious visual effects. Not for backend-only or non-UI tasks.",
-      "digest": "8270bfd275adbfece4c2fb90acdf92b1b0781b37e981ac2bc34d4e0c51eb705b",
+      "digest": "a2ba4387401c11dc28fd58d4962df1a8dd39d5c3b1fdca45549171c6c26d6e4e",
       "frontmatter": {
         "argument-hint": "[shape · audit|critique · animate|bolder|colorize|delight|layout|overdrive|quieter|typeset · adapt|clarify|distill · harden|onboard|optimize|polish · init|document|extract|live|generate] [target]",
         "description": "Use when the user wants to design, redesign, shape, critique, audit, polish, simplify, harden, animate, or otherwise improve a frontend interface: websites, landing pages, dashboards, product UI, components, forms, settings, onboarding, empty states, and native iOS or Android screens. Handles UX review, hierarchy, layout, typography, color, motion, UX copy, accessibility, responsive behavior, edge cases, and capturing or documenting design systems (DESIGN.md, tokens). Also for making bland UI bolder, loud UI quieter, or ambitious visual effects. Not for backend-only or non-UI tasks.",
         "license": "Apache 2.0",
         "name": "impeccable",
         "user-invocable": true,
-        "version": "4.6.0"
+        "version": "4.8.0"
       },
       "fullPagePath": "docs/skills/impeccable/impeccable.md",
       "generated": true,
@@ -4741,7 +4741,7 @@
       "ref": "origin/HEAD",
       "relativePath": ".claude/skills/impeccable/SKILL.md",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "9304afa97f89b30609e4c538584fb3e0cd4df013",
+      "resolvedRevision": "2f97a85a4a87a80066a693bd3546b092bd300772",
       "security": {
         "flags": [
           "executables:1"
@@ -4760,7 +4760,7 @@
       "skillName": "impeccable",
       "sourceId": "impeccable",
       "sourceType": "git",
-      "version": "4.6.0",
+      "version": "4.8.0",
       "warnings": []
     },
     {
@@ -4810,11 +4810,11 @@
     {
       "canonicalInvocation": "/ab-testing",
       "description": "When the user wants to plan, design, or implement an A/B test or experiment, or build a growth experimentation program. Also use when the user mentions \"A/B test,\" \"split test,\" \"experiment,\" \"test this change,\" \"variant copy,\" \"multivariate test,\" \"hypothesis,\" \"should I test this,\" \"which version is better,\" \"test two versions,\" \"statistical significance,\" \"how long should I run this test,\" \"growth experiments,\" \"experiment velocity,\" \"experiment backlog,\" \"ICE score,\" \"experimentation program,\" or \"experiment playbook.\" Use this whenever someone is comparing two approaches and wants to measure which performs better, or when they want to build a systematic experimentation practice. For tracking implementation, see analytics. For page-level conversion optimization, see cro.",
-      "digest": "c84cf54b5ca7cde41e3984df5a375c904b9ce57942d19c7406a9c1e858af19fb",
+      "digest": "6eb117782c5093f6b2279d9a242c1cc3440e142824598448ae7be99f1d5d0afc",
       "frontmatter": {
         "description": "When the user wants to plan, design, or implement an A/B test or experiment, or build a growth experimentation program. Also use when the user mentions \"A/B test,\" \"split test,\" \"experiment,\" \"test this change,\" \"variant copy,\" \"multivariate test,\" \"hypothesis,\" \"should I test this,\" \"which version is better,\" \"test two versions,\" \"statistical significance,\" \"how long should I run this test,\" \"growth experiments,\" \"experiment velocity,\" \"experiment backlog,\" \"ICE score,\" \"experimentation program,\" or \"experiment playbook.\" Use this whenever someone is comparing two approaches and wants to measure which performs better, or when they want to build a systematic experimentation practice. For tracking implementation, see analytics. For page-level conversion optimization, see cro.",
         "metadata": {
-          "version": "2.0.2"
+          "version": "2.0.4"
         },
         "name": "ab-testing"
       },
@@ -4834,7 +4834,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/ab-testing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4856,11 +4856,11 @@
     {
       "canonicalInvocation": "/ad-creative",
       "description": "When the user wants to generate, iterate, or scale ad creative — headlines, descriptions, primary text, or full ad variations — for any paid advertising platform. Also use when the user mentions 'ad copy variations,' 'ad creative,' 'generate headlines,' 'RSA headlines,' 'bulk ad copy,' 'creative testing,' 'write me some ads,' 'Facebook ad copy,' 'Google ad headlines,' 'LinkedIn ad text,' 'static ads,' 'ad templates,' 'iMessage ad,' 'ChatGPT ad,' 'creative strategy,' 'creative roadmap,' 'creative retro,' 'hook writing,' 'creative review page,' 'motion video ad,' 'faceless video ad,' 'UGC ad,' 'greenscreen ad,' 'TikTok/Reels ad format,' 'Meta ad format tier list,' or 'creative format taxonomy.' Use it to produce or iterate ad copy at scale. Copy avoids AI tells like 'it's not X, it's Y' reveals. For campaign strategy and targeting, see ads. For landing page copy, see copywriting. Test hypotheses must be falsifiable, naming the metric, the comparison, and the expected direction.",
-      "digest": "68df8bd88f9fe9e0f6303a9e7f239a651f92592922495359e5cd22eb7782ebed",
+      "digest": "0a0347203f35a40084519c599e119c38ddbca3304d64bbc8b4110c3277ae369a",
       "frontmatter": {
         "description": "When the user wants to generate, iterate, or scale ad creative — headlines, descriptions, primary text, or full ad variations — for any paid advertising platform. Also use when the user mentions 'ad copy variations,' 'ad creative,' 'generate headlines,' 'RSA headlines,' 'bulk ad copy,' 'creative testing,' 'write me some ads,' 'Facebook ad copy,' 'Google ad headlines,' 'LinkedIn ad text,' 'static ads,' 'ad templates,' 'iMessage ad,' 'ChatGPT ad,' 'creative strategy,' 'creative roadmap,' 'creative retro,' 'hook writing,' 'creative review page,' 'motion video ad,' 'faceless video ad,' 'UGC ad,' 'greenscreen ad,' 'TikTok/Reels ad format,' 'Meta ad format tier list,' or 'creative format taxonomy.' Use it to produce or iterate ad copy at scale. Copy avoids AI tells like 'it's not X, it's Y' reveals. For campaign strategy and targeting, see ads. For landing page copy, see copywriting. Test hypotheses must be falsifiable, naming the metric, the comparison, and the expected direction.",
         "metadata": {
-          "version": "2.12.1"
+          "version": "2.12.2"
         },
         "name": "ad-creative"
       },
@@ -4880,7 +4880,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/ad-creative/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4901,12 +4901,12 @@
     },
     {
       "canonicalInvocation": "/ads",
-      "description": "When the user wants help with paid advertising campaigns on Google Ads, Meta (Facebook/Instagram), LinkedIn, Twitter/X, or other ad platforms. Also use when the user mentions 'PPC,' 'paid media,' 'ROAS,' 'CPA,' 'ad campaign,' 'retargeting,' 'audience targeting,' 'Google Ads,' 'Facebook ads,' 'LinkedIn ads,' 'ad budget,' 'cost per click,' 'ad spend,' 'should I run ads,' 'ABM,' 'account-based marketing,' 'B2B ads,' 'lead quality,' 'negative keywords,' 'Performance Max,' 'thought leader ads,' 'when should I kill an ad,' 'search terms report,' 'wasted spend,' or 'is this campaign working.' Use this for campaign strategy, audience targeting, bidding, and optimization. For bulk ad creative generation and iteration, see ad-creative. For landing page optimization, see cro. For outbound to target accounts, see cold-email. End every recommendation with facts, hypotheses, and missing data, and label unavailable inputs MISSING instead of estimating them.",
-      "digest": "a1080c3b139d670df5eb7073fa8cd90548bbe033fe335ac11b292d097ddf0628",
+      "description": "When the user wants help with paid advertising campaigns on Google Ads, Meta (Facebook/Instagram), LinkedIn, Twitter/X, or other ad platforms. Also use when the user mentions 'PPC,' 'paid media,' 'ROAS,' 'CPA,' 'ad campaign,' 'retargeting,' 'audience targeting,' 'Google Ads,' 'Facebook ads,' 'LinkedIn ads,' 'ad budget,' 'cost per click,' 'ad spend,' 'should I run ads,' 'ABM,' 'account-based marketing,' 'B2B ads,' 'lead quality,' 'negative keywords,' 'Performance Max,' 'thought leader ads,' 'when should I kill an ad,' 'search terms report,' 'wasted spend,' or 'is this campaign working.' Use this for campaign strategy, audience targeting, bidding, and optimization. For bulk ad creative generation and iteration, see ad-creative. For landing page optimization, see cro. For outbound to target accounts, see cold-email. For pixels, CAPI, and tracking audits, see conversion-tracking. End every recommendation with facts, hypotheses, and missing data, and label unavailable inputs MISSING instead of estimating them.",
+      "digest": "5648e2bc801f4455b9e43cb21fad00f97c4cf71122d30c5b609447b9ce400ca1",
       "frontmatter": {
-        "description": "When the user wants help with paid advertising campaigns on Google Ads, Meta (Facebook/Instagram), LinkedIn, Twitter/X, or other ad platforms. Also use when the user mentions 'PPC,' 'paid media,' 'ROAS,' 'CPA,' 'ad campaign,' 'retargeting,' 'audience targeting,' 'Google Ads,' 'Facebook ads,' 'LinkedIn ads,' 'ad budget,' 'cost per click,' 'ad spend,' 'should I run ads,' 'ABM,' 'account-based marketing,' 'B2B ads,' 'lead quality,' 'negative keywords,' 'Performance Max,' 'thought leader ads,' 'when should I kill an ad,' 'search terms report,' 'wasted spend,' or 'is this campaign working.' Use this for campaign strategy, audience targeting, bidding, and optimization. For bulk ad creative generation and iteration, see ad-creative. For landing page optimization, see cro. For outbound to target accounts, see cold-email. End every recommendation with facts, hypotheses, and missing data, and label unavailable inputs MISSING instead of estimating them.",
+        "description": "When the user wants help with paid advertising campaigns on Google Ads, Meta (Facebook/Instagram), LinkedIn, Twitter/X, or other ad platforms. Also use when the user mentions 'PPC,' 'paid media,' 'ROAS,' 'CPA,' 'ad campaign,' 'retargeting,' 'audience targeting,' 'Google Ads,' 'Facebook ads,' 'LinkedIn ads,' 'ad budget,' 'cost per click,' 'ad spend,' 'should I run ads,' 'ABM,' 'account-based marketing,' 'B2B ads,' 'lead quality,' 'negative keywords,' 'Performance Max,' 'thought leader ads,' 'when should I kill an ad,' 'search terms report,' 'wasted spend,' or 'is this campaign working.' Use this for campaign strategy, audience targeting, bidding, and optimization. For bulk ad creative generation and iteration, see ad-creative. For landing page optimization, see cro. For outbound to target accounts, see cold-email. For pixels, CAPI, and tracking audits, see conversion-tracking. End every recommendation with facts, hypotheses, and missing data, and label unavailable inputs MISSING instead of estimating them.",
         "metadata": {
-          "version": "2.6.1"
+          "version": "2.7.0"
         },
         "name": "ads"
       },
@@ -4926,7 +4926,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/ads/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4948,11 +4948,11 @@
     {
       "canonicalInvocation": "/ai-seo",
       "description": "When the user wants to optimize content for AI search engines, get cited by LLMs, or appear in AI-generated answers. Also use when the user mentions 'AI SEO,' 'AEO,' 'GEO,' 'LLMO,' 'answer engine optimization,' 'generative engine optimization,' 'LLM optimization,' 'AI Overviews,' 'optimize for ChatGPT,' 'optimize for Perplexity,' 'AI citations,' 'AI visibility,' 'zero-click search,' 'how do I show up in AI answers,' 'LLM mentions,' 'optimize for Claude/Gemini,' 'llms.txt,' 'llms-full.txt,' 'OKF,' 'Open Knowledge Format,' 'knowledge bundle,' 'agent-readable site,' 'agent readiness,' 'is my site agent-ready,' 'WebMCP,' 'do listicles still work for AI,' 'ChatGPT stopped citing comparison pages,' 'how do LLMs see our brand,' 'LinkedIn for AEO,' or 'AI citation format shift.' Use this whenever someone wants their content to be cited or surfaced by AI assistants and AI search engines. For traditional technical and on-page SEO audits, see seo-audit. For structured data implementation, see schema.",
-      "digest": "772358eb26667670d0b87bc0ea33859d83ffce7c6f5ec531c4e83bda189521c4",
+      "digest": "f5ace538a622678a786a4c1c89d7c64d7fb385ad70b171203c5f23dd5937e652",
       "frontmatter": {
         "description": "When the user wants to optimize content for AI search engines, get cited by LLMs, or appear in AI-generated answers. Also use when the user mentions 'AI SEO,' 'AEO,' 'GEO,' 'LLMO,' 'answer engine optimization,' 'generative engine optimization,' 'LLM optimization,' 'AI Overviews,' 'optimize for ChatGPT,' 'optimize for Perplexity,' 'AI citations,' 'AI visibility,' 'zero-click search,' 'how do I show up in AI answers,' 'LLM mentions,' 'optimize for Claude/Gemini,' 'llms.txt,' 'llms-full.txt,' 'OKF,' 'Open Knowledge Format,' 'knowledge bundle,' 'agent-readable site,' 'agent readiness,' 'is my site agent-ready,' 'WebMCP,' 'do listicles still work for AI,' 'ChatGPT stopped citing comparison pages,' 'how do LLMs see our brand,' 'LinkedIn for AEO,' or 'AI citation format shift.' Use this whenever someone wants their content to be cited or surfaced by AI assistants and AI search engines. For traditional technical and on-page SEO audits, see seo-audit. For structured data implementation, see schema.",
         "metadata": {
-          "version": "2.9.0"
+          "version": "2.12.0"
         },
         "name": "ai-seo"
       },
@@ -4972,7 +4972,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/ai-seo/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -4993,12 +4993,12 @@
     },
     {
       "canonicalInvocation": "/analytics",
-      "description": "When the user wants to set up, improve, or audit analytics tracking and measurement. Also use when the user mentions \"set up tracking,\" \"GA4,\" \"Google Analytics,\" \"conversion tracking,\" \"event tracking,\" \"UTM parameters,\" \"tag manager,\" \"GTM,\" \"analytics implementation,\" \"tracking plan,\" \"how do I measure this,\" \"track conversions,\" \"Mixpanel,\" \"Segment,\" \"are my events firing,\" or \"analytics isn't working.\" Use this whenever someone asks how to know if something is working or wants to measure marketing results. For choosing attribution models, comparing multi-touch/MMM/incrementality, or reconciling conflicting numbers across tools, see attribution. For A/B test measurement, see ab-testing. Rate metrics divide matching closed windows — never full-period spend by partial-period results.",
-      "digest": "9dafb413748bfea3ce05a527ff7df8db5cec590c09b38d948450ed87605d3592",
+      "description": "When the user wants to set up, improve, or audit analytics tracking and measurement. Also use when the user mentions \"set up tracking,\" \"GA4,\" \"Google Analytics,\" \"event tracking,\" \"UTM parameters,\" \"tag manager,\" \"GTM,\" \"analytics implementation,\" \"tracking plan,\" \"how do I measure this,\" \"Mixpanel,\" \"Segment,\" \"are my events firing,\" or \"analytics isn't working.\" Use this whenever someone asks how to know if something is working or wants to measure marketing results. For getting conversions into ad platforms (pixels, conversion tags, CAPI, server-side) and verifying they arrived, see conversion-tracking. For choosing attribution models, comparing multi-touch/MMM/incrementality, or reconciling conflicting numbers across tools, see attribution. For A/B test measurement, see ab-testing. Rate metrics divide matching closed windows — never full-period spend by partial-period results.",
+      "digest": "fa20208f3d1e880aad907e59219fd1a1ca16440e7735e50c110fe40ecc694884",
       "frontmatter": {
-        "description": "When the user wants to set up, improve, or audit analytics tracking and measurement. Also use when the user mentions \"set up tracking,\" \"GA4,\" \"Google Analytics,\" \"conversion tracking,\" \"event tracking,\" \"UTM parameters,\" \"tag manager,\" \"GTM,\" \"analytics implementation,\" \"tracking plan,\" \"how do I measure this,\" \"track conversions,\" \"Mixpanel,\" \"Segment,\" \"are my events firing,\" or \"analytics isn't working.\" Use this whenever someone asks how to know if something is working or wants to measure marketing results. For choosing attribution models, comparing multi-touch/MMM/incrementality, or reconciling conflicting numbers across tools, see attribution. For A/B test measurement, see ab-testing. Rate metrics divide matching closed windows — never full-period spend by partial-period results.",
+        "description": "When the user wants to set up, improve, or audit analytics tracking and measurement. Also use when the user mentions \"set up tracking,\" \"GA4,\" \"Google Analytics,\" \"event tracking,\" \"UTM parameters,\" \"tag manager,\" \"GTM,\" \"analytics implementation,\" \"tracking plan,\" \"how do I measure this,\" \"Mixpanel,\" \"Segment,\" \"are my events firing,\" or \"analytics isn't working.\" Use this whenever someone asks how to know if something is working or wants to measure marketing results. For getting conversions into ad platforms (pixels, conversion tags, CAPI, server-side) and verifying they arrived, see conversion-tracking. For choosing attribution models, comparing multi-touch/MMM/incrementality, or reconciling conflicting numbers across tools, see attribution. For A/B test measurement, see ab-testing. Rate metrics divide matching closed windows — never full-period spend by partial-period results.",
         "metadata": {
-          "version": "2.2.0"
+          "version": "2.2.2"
         },
         "name": "analytics"
       },
@@ -5018,7 +5018,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/analytics/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5040,11 +5040,11 @@
     {
       "canonicalInvocation": "/aso",
       "description": "When the user wants to audit or optimize an App Store or Google Play listing. Also use when the user mentions 'ASO audit,' 'app store optimization,' 'optimize my app listing,' 'improve app visibility,' 'app store ranking,' 'audit my listing,' 'why aren't people downloading my app,' 'improve my app conversion,' 'keyword optimization for app,' or 'compare my app to competitors.' Use when the user shares an App Store or Google Play URL and wants to improve it.",
-      "digest": "b09d347123ffb4736a5b6fccaabce6d814c0d57b77143cf50a3b01ef567df007",
+      "digest": "38e535dc5427248842281afba2b58dd72725f2bb2ffd6530c6d2b817b1c2000c",
       "frontmatter": {
         "description": "When the user wants to audit or optimize an App Store or Google Play listing. Also use when the user mentions 'ASO audit,' 'app store optimization,' 'optimize my app listing,' 'improve app visibility,' 'app store ranking,' 'audit my listing,' 'why aren't people downloading my app,' 'improve my app conversion,' 'keyword optimization for app,' or 'compare my app to competitors.' Use when the user shares an App Store or Google Play URL and wants to improve it.",
         "metadata": {
-          "version": "2.0.2"
+          "version": "2.0.3"
         },
         "name": "aso"
       },
@@ -5064,7 +5064,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/aso/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5085,12 +5085,12 @@
     },
     {
       "canonicalInvocation": "/attribution",
-      "description": "When the user wants to figure out which marketing actually drives conversions and revenue, choose or interpret an attribution model, or reconcile conflicting numbers across tools. Also use when the user mentions \"attribution,\" \"attribution model,\" \"first-touch vs last-touch,\" \"multi-touch,\" \"which channel drives revenue,\" \"what's my real CAC,\" \"my dashboards disagree,\" \"Google/Meta says X but GA says Y,\" \"media mix model,\" \"MMM,\" \"incrementality,\" \"geo lift,\" \"holdout test,\" \"how did you hear about us,\" \"self-reported attribution,\" \"dark social,\" or wants to instrument attribution themselves — \"stitch my bookings to their source,\" \"SavvyCal/Calendly attribution,\" \"close the identify gap,\" \"track conversions on a third-party domain,\" \"first-party / self-hosted attribution.\" For event tracking setup and UTMs, see analytics. For ad-platform pixels/CAPI, see ads. For pipeline and CRM revenue reporting, see revops. For the AI-search attribution blind spot, see ai-seo.",
-      "digest": "1fbc1c1d59ada11700751ba5a82d05280bb6b25bae74332fce64c8b6850b8cdb",
+      "description": "When the user wants to figure out which marketing actually drives conversions and revenue, choose or interpret an attribution model, or reconcile conflicting numbers across tools. Also use when the user mentions \"attribution,\" \"attribution model,\" \"first-touch vs last-touch,\" \"multi-touch,\" \"which channel drives revenue,\" \"what's my real CAC,\" \"my dashboards disagree,\" \"Google/Meta says X but GA says Y,\" \"media mix model,\" \"MMM,\" \"incrementality,\" \"geo lift,\" \"holdout test,\" \"how did you hear about us,\" \"self-reported attribution,\" \"dark social,\" or wants to instrument attribution themselves — \"stitch my bookings to their source,\" \"SavvyCal/Calendly attribution,\" \"close the identify gap,\" \"track conversions on a third-party domain,\" \"first-party / self-hosted attribution.\" For event tracking setup and UTMs, see analytics. For ad-platform pixels/CAPI and conversion tracking, see conversion-tracking. For pipeline and CRM revenue reporting, see revops. For the AI-search attribution blind spot, see ai-seo.",
+      "digest": "d35dfb814963ef98039ce77c93a411bfa1dbea24738613789f1cabc4d5755628",
       "frontmatter": {
-        "description": "When the user wants to figure out which marketing actually drives conversions and revenue, choose or interpret an attribution model, or reconcile conflicting numbers across tools. Also use when the user mentions \"attribution,\" \"attribution model,\" \"first-touch vs last-touch,\" \"multi-touch,\" \"which channel drives revenue,\" \"what's my real CAC,\" \"my dashboards disagree,\" \"Google/Meta says X but GA says Y,\" \"media mix model,\" \"MMM,\" \"incrementality,\" \"geo lift,\" \"holdout test,\" \"how did you hear about us,\" \"self-reported attribution,\" \"dark social,\" or wants to instrument attribution themselves — \"stitch my bookings to their source,\" \"SavvyCal/Calendly attribution,\" \"close the identify gap,\" \"track conversions on a third-party domain,\" \"first-party / self-hosted attribution.\" For event tracking setup and UTMs, see analytics. For ad-platform pixels/CAPI, see ads. For pipeline and CRM revenue reporting, see revops. For the AI-search attribution blind spot, see ai-seo.",
+        "description": "When the user wants to figure out which marketing actually drives conversions and revenue, choose or interpret an attribution model, or reconcile conflicting numbers across tools. Also use when the user mentions \"attribution,\" \"attribution model,\" \"first-touch vs last-touch,\" \"multi-touch,\" \"which channel drives revenue,\" \"what's my real CAC,\" \"my dashboards disagree,\" \"Google/Meta says X but GA says Y,\" \"media mix model,\" \"MMM,\" \"incrementality,\" \"geo lift,\" \"holdout test,\" \"how did you hear about us,\" \"self-reported attribution,\" \"dark social,\" or wants to instrument attribution themselves — \"stitch my bookings to their source,\" \"SavvyCal/Calendly attribution,\" \"close the identify gap,\" \"track conversions on a third-party domain,\" \"first-party / self-hosted attribution.\" For event tracking setup and UTMs, see analytics. For ad-platform pixels/CAPI and conversion tracking, see conversion-tracking. For pipeline and CRM revenue reporting, see revops. For the AI-search attribution blind spot, see ai-seo.",
         "metadata": {
-          "version": "1.1.5"
+          "version": "1.1.6"
         },
         "name": "attribution"
       },
@@ -5110,7 +5110,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/attribution/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5156,7 +5156,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/churn-prevention/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5202,7 +5202,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/co-marketing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5224,11 +5224,11 @@
     {
       "canonicalInvocation": "/cold-email",
       "description": "Write and run B2B cold outbound that gets replies, from cold emails and follow-ups to sending setup, LinkedIn, multichannel cadences, and reply handling. Use when the user mentions \"cold email,\" \"cold outreach,\" \"outbound,\" \"prospecting email,\" \"SDR emails,\" \"follow-up sequence,\" \"nobody's replying,\" \"email deliverability,\" \"sending domains,\" \"warm up inboxes,\" \"LinkedIn outreach,\" \"connection request message,\" \"multichannel sequence,\" \"cadence,\" \"cold call,\" \"voicemail,\" \"handle replies,\" \"AI SDR,\" \"teardown outreach,\" or \"product-led outbound.\" Send from secondary domains, verify lists first, turn off open tracking, and stop every channel when a prospect replies. Copy avoids AI tells like 'it's not X, it's Y' reveals. For building the list and account research, see prospecting. For lifecycle email, see emails. For call scripts and sales collateral, see sales-enablement.",
-      "digest": "46c2237821211425b8134b09ca6e610dcb8f68db73ccf9c7ceeffec4b2831262",
+      "digest": "953ff52975e2a9144a4dd76e4787a393b0c4dcd13f4089e79beab54d2be91a62",
       "frontmatter": {
         "description": "Write and run B2B cold outbound that gets replies, from cold emails and follow-ups to sending setup, LinkedIn, multichannel cadences, and reply handling. Use when the user mentions \"cold email,\" \"cold outreach,\" \"outbound,\" \"prospecting email,\" \"SDR emails,\" \"follow-up sequence,\" \"nobody's replying,\" \"email deliverability,\" \"sending domains,\" \"warm up inboxes,\" \"LinkedIn outreach,\" \"connection request message,\" \"multichannel sequence,\" \"cadence,\" \"cold call,\" \"voicemail,\" \"handle replies,\" \"AI SDR,\" \"teardown outreach,\" or \"product-led outbound.\" Send from secondary domains, verify lists first, turn off open tracking, and stop every channel when a prospect replies. Copy avoids AI tells like 'it's not X, it's Y' reveals. For building the list and account research, see prospecting. For lifecycle email, see emails. For call scripts and sales collateral, see sales-enablement.",
         "metadata": {
-          "version": "2.2.0"
+          "version": "2.2.1"
         },
         "name": "cold-email"
       },
@@ -5248,7 +5248,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/cold-email/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5270,11 +5270,11 @@
     {
       "canonicalInvocation": "/community-marketing",
       "description": "Build and leverage online communities to drive product growth and brand loyalty. Use when the user wants to create a community strategy, grow a Discord or Slack community, manage a forum or subreddit, build brand advocates, increase word-of-mouth, drive community-led growth, engage users post-signup, or turn customers into evangelists. Trigger phrases: \"build a community,\" \"community strategy,\" \"Discord community,\" \"Slack community,\" \"community-led growth,\" \"brand advocates,\" \"user community,\" \"forum strategy,\" \"community engagement,\" \"grow our community,\" \"ambassador program,\" \"community flywheel.\"",
-      "digest": "b68def94dc1ffb36e95117b4e9c34648b730af697bbad7690f1fcc6b37b97d53",
+      "digest": "8240058c37bd48fb6aba4ab096909de6916822c6726ae67dd11cf0868789529f",
       "frontmatter": {
         "description": "Build and leverage online communities to drive product growth and brand loyalty. Use when the user wants to create a community strategy, grow a Discord or Slack community, manage a forum or subreddit, build brand advocates, increase word-of-mouth, drive community-led growth, engage users post-signup, or turn customers into evangelists. Trigger phrases: \"build a community,\" \"community strategy,\" \"Discord community,\" \"Slack community,\" \"community-led growth,\" \"brand advocates,\" \"user community,\" \"forum strategy,\" \"community engagement,\" \"grow our community,\" \"ambassador program,\" \"community flywheel.\"",
         "metadata": {
-          "version": "2.0.1"
+          "version": "2.0.2"
         },
         "name": "community-marketing"
       },
@@ -5294,7 +5294,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/community-marketing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5315,12 +5315,12 @@
     },
     {
       "canonicalInvocation": "/competitor-profiling",
-      "description": "When the user wants to research, profile, or analyze competitors from their URLs. Also use when the user mentions 'competitor profile,' 'competitor research,' 'competitor analysis,' 'profile this competitor,' 'analyze competitor,' 'competitive intelligence,' 'competitor deep dive,' 'who are my competitors,' 'competitor landscape,' 'competitor dossier,' 'competitive audit,' or 'research these competitors.' Input is a list of competitor URLs. Output is structured competitor profile markdown files. For creating comparison/alternative pages from profiles, see competitors. For sales-specific battle cards, see sales-enablement. For researching accounts you're selling to, see prospecting.",
-      "digest": "241948b216a38d17c72f0bbe87e65fe81a0bc52a8754b05ddfde7e78db2bf545",
+      "description": "When the user wants to research, profile, or analyze competitors from their URLs. Also use when the user mentions 'competitor profile,' 'competitor research,' 'competitor analysis,' 'profile this competitor,' 'analyze competitor,' 'competitive intelligence,' 'competitor deep dive,' 'who are my competitors,' 'competitor landscape,' 'competitor dossier,' 'competitive audit,' or 'research these competitors.' Input is a list of competitor URLs. Output is structured competitor profile markdown files. For creating comparison/alternative pages from profiles, see competitors. For sales-specific battle cards, see sales-enablement. For researching accounts you're selling to, see prospecting. For how a competitor grew over time and what to copy, see reverse-engineer-marketing.",
+      "digest": "7d9bbc6205755a9598a562f00ad6d574e698929561bd76a657d16fcdd9d8c3c4",
       "frontmatter": {
-        "description": "When the user wants to research, profile, or analyze competitors from their URLs. Also use when the user mentions 'competitor profile,' 'competitor research,' 'competitor analysis,' 'profile this competitor,' 'analyze competitor,' 'competitive intelligence,' 'competitor deep dive,' 'who are my competitors,' 'competitor landscape,' 'competitor dossier,' 'competitive audit,' or 'research these competitors.' Input is a list of competitor URLs. Output is structured competitor profile markdown files. For creating comparison/alternative pages from profiles, see competitors. For sales-specific battle cards, see sales-enablement. For researching accounts you're selling to, see prospecting.",
+        "description": "When the user wants to research, profile, or analyze competitors from their URLs. Also use when the user mentions 'competitor profile,' 'competitor research,' 'competitor analysis,' 'profile this competitor,' 'analyze competitor,' 'competitive intelligence,' 'competitor deep dive,' 'who are my competitors,' 'competitor landscape,' 'competitor dossier,' 'competitive audit,' or 'research these competitors.' Input is a list of competitor URLs. Output is structured competitor profile markdown files. For creating comparison/alternative pages from profiles, see competitors. For sales-specific battle cards, see sales-enablement. For researching accounts you're selling to, see prospecting. For how a competitor grew over time and what to copy, see reverse-engineer-marketing.",
         "metadata": {
-          "version": "2.1.3"
+          "version": "2.1.5"
         },
         "name": "competitor-profiling"
       },
@@ -5340,7 +5340,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/competitor-profiling/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5386,7 +5386,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/competitors/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5408,11 +5408,11 @@
     {
       "canonicalInvocation": "/content-strategy",
       "description": "When the user wants to plan a content strategy, decide what content to create, or figure out what topics to cover. Also use when the user mentions \"content strategy,\" \"what should I write about,\" \"content ideas,\" \"blog strategy,\" \"topic clusters,\" \"content planning,\" \"editorial calendar,\" \"content marketing,\" \"content roadmap,\" \"what content should I create,\" \"blog topics,\" \"content pillars,\" or \"I don't know what to write.\" Use this whenever someone needs help deciding what content to produce, not just writing it. For writing individual pieces, see copywriting. For SEO-specific audits, see seo-audit. For social media content specifically, see social.",
-      "digest": "c38467cb2ffac1ae16150ed65fe603fb02e7939b39d841bd9ae69fedb56a5bd4",
+      "digest": "dbf206df0dbd4e6ccd259a184c534213dc855bd1027df15c38093e7396a9a435",
       "frontmatter": {
         "description": "When the user wants to plan a content strategy, decide what content to create, or figure out what topics to cover. Also use when the user mentions \"content strategy,\" \"what should I write about,\" \"content ideas,\" \"blog strategy,\" \"topic clusters,\" \"content planning,\" \"editorial calendar,\" \"content marketing,\" \"content roadmap,\" \"what content should I create,\" \"blog topics,\" \"content pillars,\" or \"I don't know what to write.\" Use this whenever someone needs help deciding what content to produce, not just writing it. For writing individual pieces, see copywriting. For SEO-specific audits, see seo-audit. For social media content specifically, see social.",
         "metadata": {
-          "version": "2.1.3"
+          "version": "2.1.5"
         },
         "name": "content-strategy"
       },
@@ -5432,7 +5432,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/content-strategy/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5452,13 +5452,61 @@
       "warnings": []
     },
     {
+      "canonicalInvocation": "/conversion-tracking",
+      "description": "Set up, audit, verify, or fix website conversion tracking. Use when the conversion is a form submission, booked meeting, chat, phone call, signup, or purchase; when conversions must reach Google Ads, Meta, GA4, LinkedIn, TikTok, or Microsoft Ads; when the work involves GTM tags and dataLayer events, pixels, the Conversions API (CAPI), Enhanced Conversions, server-side tagging, or gclid and fbclid capture; or when the user reports conversion problems like \"conversions stopped\", \"double counting\", \"spend but no conversions\", \"GA4 and Google Ads don't match\", or an Unverified or Inactive status. Covers lead gen and ecommerce. Always fire on confirmed success, never the submit click; verify a test conversion arrives; diagnose before changing anything; offer free and native paths alongside paid ones and disclose partner tools. For tracking plans and UTMs, see analytics. For attribution models, see attribution. For campaigns and bidding, see ads. For CRM lead-stage design, see revops.",
+      "digest": "c178d5ea4fee9c69005f493c993329d554bd4d4b0dbf19091917882789c47f31",
+      "frontmatter": {
+        "description": "Set up, audit, verify, or fix website conversion tracking. Use when the conversion is a form submission, booked meeting, chat, phone call, signup, or purchase; when conversions must reach Google Ads, Meta, GA4, LinkedIn, TikTok, or Microsoft Ads; when the work involves GTM tags and dataLayer events, pixels, the Conversions API (CAPI), Enhanced Conversions, server-side tagging, or gclid and fbclid capture; or when the user reports conversion problems like \"conversions stopped\", \"double counting\", \"spend but no conversions\", \"GA4 and Google Ads don't match\", or an Unverified or Inactive status. Covers lead gen and ecommerce. Always fire on confirmed success, never the submit click; verify a test conversion arrives; diagnose before changing anything; offer free and native paths alongside paid ones and disclose partner tools. For tracking plans and UTMs, see analytics. For attribution models, see attribution. For campaigns and bidding, see ads. For CRM lead-stage design, see revops.",
+        "metadata": {
+          "version": "1.0.1"
+        },
+        "name": "conversion-tracking"
+      },
+      "fullPagePath": "docs/skills/marketing/conversion-tracking.md",
+      "generated": true,
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT",
+        "matchesDeclaration": true,
+        "redistribution": "full"
+      },
+      "namespacedInvocations": [
+        "/conversion-tracking"
+      ],
+      "pack": "marketing",
+      "redistribution": "full",
+      "ref": "origin/HEAD",
+      "relativePath": "skills/conversion-tracking/SKILL.md",
+      "repo": "https://github.com/coreyhaines31/marketingskills.git",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
+      "security": {
+        "flags": [
+          "executables:1"
+        ],
+        "hasAgents": false,
+        "hasBashOrPowershell": false,
+        "hasCredentialRef": false,
+        "hasDynamicShell": false,
+        "hasExecutable": true,
+        "hasHiddenFiles": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasNetworkRef": false,
+        "toolCount": 0
+      },
+      "skillName": "conversion-tracking",
+      "sourceId": "marketing",
+      "sourceType": "git",
+      "warnings": []
+    },
+    {
       "canonicalInvocation": "/copy-editing",
       "description": "When the user wants to edit, review, or improve existing marketing copy, or refresh outdated content. Also use when the user mentions 'edit this copy,' 'review my copy,' 'copy feedback,' 'proofread,' 'polish this,' 'make this better,' 'copy sweep,' 'tighten this up,' 'this reads awkwardly,' 'clean up this text,' 'too wordy,' 'sharpen the messaging,' 'refresh this content,' 'update this page,' 'this content is outdated,' or 'content audit,' 'this sounds like AI,' 'AI slop,' 'de-slop this,' or 'make it sound human.' Use this when the user already has copy and wants it improved or refreshed rather than rewritten from scratch. Every edit removes AI tells such as 'it's not X, it's Y' reveals, 'no X, no Y, no Z' lists, and sentences that trail into extra comma clauses. A request to fix one line gets a point edit that changes only that line. For writing new copy, see copywriting.",
-      "digest": "d57967135d1bcd49cc341c444eee231b9ed5be518b35bbe5d50a0bd65d6f00c5",
+      "digest": "0e82252278557483b5a8d7b2c29b3929c31e5eafb8bc7bfa87cd4fe5bb41141a",
       "frontmatter": {
         "description": "When the user wants to edit, review, or improve existing marketing copy, or refresh outdated content. Also use when the user mentions 'edit this copy,' 'review my copy,' 'copy feedback,' 'proofread,' 'polish this,' 'make this better,' 'copy sweep,' 'tighten this up,' 'this reads awkwardly,' 'clean up this text,' 'too wordy,' 'sharpen the messaging,' 'refresh this content,' 'update this page,' 'this content is outdated,' or 'content audit,' 'this sounds like AI,' 'AI slop,' 'de-slop this,' or 'make it sound human.' Use this when the user already has copy and wants it improved or refreshed rather than rewritten from scratch. Every edit removes AI tells such as 'it's not X, it's Y' reveals, 'no X, no Y, no Z' lists, and sentences that trail into extra comma clauses. A request to fix one line gets a point edit that changes only that line. For writing new copy, see copywriting.",
         "metadata": {
-          "version": "2.2.0"
+          "version": "2.2.1"
         },
         "name": "copy-editing"
       },
@@ -5478,7 +5526,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/copy-editing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5500,11 +5548,11 @@
     {
       "canonicalInvocation": "/copywriting",
       "description": "When the user wants to write, rewrite, or improve marketing copy for any page, including homepage, landing pages, pricing pages, feature pages, about pages, or product pages. Also use when the user says \"write copy for,\" \"improve this copy,\" \"rewrite this page,\" \"marketing copy,\" \"headline help,\" \"CTA copy,\" \"value proposition,\" \"tagline,\" \"hero section copy,\" \"this copy is weak,\" \"this sounds like AI,\" \"AI slop,\" \"make it sound human,\" or \"help me describe my product.\" Drafts never use AI tells like \"it's not X, it's Y\" reveals, \"no X, no Y, no Z\" lists, or sentences that trail into extra comma clauses. For email copy, see emails. For popup copy, see popups. For editing existing copy, see copy-editing. For the offer underneath the copy (bonuses, guarantees, value framing), see offers. Claims must be supportable, and a declined claim names the evidence that would unlock it. Diagnoses the input first (blank brief, real voice, or point edit) and changes only what it calls for.",
-      "digest": "fc7f65de65bb64ea1fc61731c5ff0cf00ce433ec510ab4aff0a990a071ab233d",
+      "digest": "c707394f34128461b1fea8f63839a601a4fdc1d02b1c26d27896f18af68f08fb",
       "frontmatter": {
         "description": "When the user wants to write, rewrite, or improve marketing copy for any page, including homepage, landing pages, pricing pages, feature pages, about pages, or product pages. Also use when the user says \"write copy for,\" \"improve this copy,\" \"rewrite this page,\" \"marketing copy,\" \"headline help,\" \"CTA copy,\" \"value proposition,\" \"tagline,\" \"hero section copy,\" \"this copy is weak,\" \"this sounds like AI,\" \"AI slop,\" \"make it sound human,\" or \"help me describe my product.\" Drafts never use AI tells like \"it's not X, it's Y\" reveals, \"no X, no Y, no Z\" lists, or sentences that trail into extra comma clauses. For email copy, see emails. For popup copy, see popups. For editing existing copy, see copy-editing. For the offer underneath the copy (bonuses, guarantees, value framing), see offers. Claims must be supportable, and a declined claim names the evidence that would unlock it. Diagnoses the input first (blank brief, real voice, or point edit) and changes only what it calls for.",
         "metadata": {
-          "version": "2.3.1"
+          "version": "2.3.2"
         },
         "name": "copywriting"
       },
@@ -5524,7 +5572,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/copywriting/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5570,7 +5618,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/cro/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5592,11 +5640,11 @@
     {
       "canonicalInvocation": "/customer-research",
       "description": "When the user wants to conduct, analyze, or synthesize customer research. Use when the user mentions \"customer research,\" \"ICP research,\" \"talk to customers,\" \"analyze transcripts,\" \"customer interviews,\" \"survey analysis,\" \"support ticket analysis,\" \"voice of customer,\" \"VOC,\" \"build personas,\" \"customer personas,\" \"jobs to be done,\" \"JTBD,\" \"what do customers say,\" \"what are customers struggling with,\" \"Reddit mining,\" \"G2 reviews,\" \"review mining,\" \"digital watering holes,\" \"community research,\" \"forum research,\" \"competitor reviews,\" \"customer sentiment,\" \"PMF survey,\" \"product/market fit survey,\" \"customer interview questions,\" \"interview outreach,\" \"Sales Safari,\" or \"find out why customers churn/convert/buy.\" Use for analyzing existing research assets, mining online sources, AND running primary research (interviews and surveys). For writing copy informed by research, see copywriting. For acting on research to improve pages, see cro.",
-      "digest": "d4e6cc5df73c31ca5c8af9d7010141e1fa978369471e5349a3ba4842009b495d",
+      "digest": "967c2cf33862f51ece5f6b102106524805d811196fceef62ba451ba654f92a43",
       "frontmatter": {
         "description": "When the user wants to conduct, analyze, or synthesize customer research. Use when the user mentions \"customer research,\" \"ICP research,\" \"talk to customers,\" \"analyze transcripts,\" \"customer interviews,\" \"survey analysis,\" \"support ticket analysis,\" \"voice of customer,\" \"VOC,\" \"build personas,\" \"customer personas,\" \"jobs to be done,\" \"JTBD,\" \"what do customers say,\" \"what are customers struggling with,\" \"Reddit mining,\" \"G2 reviews,\" \"review mining,\" \"digital watering holes,\" \"community research,\" \"forum research,\" \"competitor reviews,\" \"customer sentiment,\" \"PMF survey,\" \"product/market fit survey,\" \"customer interview questions,\" \"interview outreach,\" \"Sales Safari,\" or \"find out why customers churn/convert/buy.\" Use for analyzing existing research assets, mining online sources, AND running primary research (interviews and surveys). For writing copy informed by research, see copywriting. For acting on research to improve pages, see cro.",
         "metadata": {
-          "version": "2.0.4"
+          "version": "2.0.5"
         },
         "name": "customer-research"
       },
@@ -5616,7 +5664,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/customer-research/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5638,11 +5686,11 @@
     {
       "canonicalInvocation": "/directory-submissions",
       "description": "When the user wants to submit their product to startup, SaaS, AI, agent, MCP, no-code, or review directories for backlinks, domain rating, and discovery. Also use when the user mentions \"directory submissions,\" \"submit to directories,\" \"backlinks from directories,\" \"list my product,\" \"submit to Product Hunt,\" \"BetaList,\" \"TAAFT,\" \"Futurepedia,\" \"G2 listing,\" \"Capterra listing,\" \"AlternativeTo,\" \"SaaSHub,\" \"AI directories,\" \"MCP registry,\" \"publish my MCP server,\" \"awesome list,\" \"llms.txt directory,\" \"Claude plugin directory,\" \"agent directory,\" \"dofollow backlinks,\" \"launch directories,\" or \"directory tracker.\" Use this whenever someone is planning the directory layer of a product launch or an ongoing backlink campaign. For the broader launch moment, see launch. For programmatic SEO pages that should live behind these backlinks, see programmatic-seo. For AI citation optimization, see ai-seo.",
-      "digest": "3a7d3737bd3092c7ac2971424c678a58351560ebc17211376afa103e307e7ce0",
+      "digest": "5e1c212d697cc838e2dabecd20999e7fb885d7556233bc6b8dd5f582a6ce7089",
       "frontmatter": {
         "description": "When the user wants to submit their product to startup, SaaS, AI, agent, MCP, no-code, or review directories for backlinks, domain rating, and discovery. Also use when the user mentions \"directory submissions,\" \"submit to directories,\" \"backlinks from directories,\" \"list my product,\" \"submit to Product Hunt,\" \"BetaList,\" \"TAAFT,\" \"Futurepedia,\" \"G2 listing,\" \"Capterra listing,\" \"AlternativeTo,\" \"SaaSHub,\" \"AI directories,\" \"MCP registry,\" \"publish my MCP server,\" \"awesome list,\" \"llms.txt directory,\" \"Claude plugin directory,\" \"agent directory,\" \"dofollow backlinks,\" \"launch directories,\" or \"directory tracker.\" Use this whenever someone is planning the directory layer of a product launch or an ongoing backlink campaign. For the broader launch moment, see launch. For programmatic SEO pages that should live behind these backlinks, see programmatic-seo. For AI citation optimization, see ai-seo.",
         "metadata": {
-          "version": "2.1.1"
+          "version": "2.1.4"
         },
         "name": "directory-submissions"
       },
@@ -5662,7 +5710,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/directory-submissions/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [
           "network-access"
@@ -5710,7 +5758,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/emails/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5756,7 +5804,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/events/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5778,11 +5826,11 @@
     {
       "canonicalInvocation": "/free-tools",
       "description": "When the user wants to plan, evaluate, or build a free tool for marketing purposes — lead generation, SEO value, or brand awareness. Also use when the user mentions \"engineering as marketing,\" \"free tool,\" \"marketing tool,\" \"calculator,\" \"generator,\" \"interactive tool,\" \"lead gen tool,\" \"build a tool for leads,\" \"free resource,\" \"ROI calculator,\" \"grader tool,\" \"audit tool,\" \"should I build a free tool,\" or \"tools for lead gen.\" Use this whenever someone wants to build something useful and give it away to attract leads or earn links. For downloadable content lead magnets (ebooks, checklists, templates), see lead-magnets.",
-      "digest": "0e78e62e754bef2fb30b4c6c272ddde28183e52b6992b1f27d179a68c1d245f0",
+      "digest": "fd12efb74e74c390ed9fc95b11c863e075c211933e048d625d234f203830a171",
       "frontmatter": {
         "description": "When the user wants to plan, evaluate, or build a free tool for marketing purposes — lead generation, SEO value, or brand awareness. Also use when the user mentions \"engineering as marketing,\" \"free tool,\" \"marketing tool,\" \"calculator,\" \"generator,\" \"interactive tool,\" \"lead gen tool,\" \"build a tool for leads,\" \"free resource,\" \"ROI calculator,\" \"grader tool,\" \"audit tool,\" \"should I build a free tool,\" or \"tools for lead gen.\" Use this whenever someone wants to build something useful and give it away to attract leads or earn links. For downloadable content lead magnets (ebooks, checklists, templates), see lead-magnets.",
         "metadata": {
-          "version": "2.0.2"
+          "version": "2.0.3"
         },
         "name": "free-tools"
       },
@@ -5802,7 +5850,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/free-tools/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5824,11 +5872,11 @@
     {
       "canonicalInvocation": "/image",
       "description": "When the user wants to create, generate, edit, or optimize images for marketing — blog heroes, social graphics, product mockups, profile banners, listing visuals, or brand assets. Also use when the user mentions 'AI image generation,' 'generate an image,' 'create a graphic,' 'product mockup,' 'hero image,' 'social media graphic,' 'banner image,' 'cover photo,' 'profile banner,' 'listing screenshot,' 'Flux,' 'Flux Kontext,' 'Midjourney,' 'DALL-E,' 'GPT Image,' 'ChatGPT Images,' 'Ideogram,' 'Gemini image,' 'Nano Banana,' 'Recraft,' 'Stable Diffusion,' 'Canva,' 'Figma,' 'image optimization,' 'compress images,' 'WebP,' or 'OG image.' Use this for general-purpose marketing image creation and optimization. For paid ad image creative and platform-specific ad specs, see ad-creative. For video production, see video.",
-      "digest": "351b3c81926922e875e8065ec6d845b6d3499ff5d1ce79acd21358b60a55071b",
+      "digest": "0f01abe6b0aa8ab1784e0892e832c670242a7283f32b54e45b2b8719bf7b9f07",
       "frontmatter": {
         "description": "When the user wants to create, generate, edit, or optimize images for marketing — blog heroes, social graphics, product mockups, profile banners, listing visuals, or brand assets. Also use when the user mentions 'AI image generation,' 'generate an image,' 'create a graphic,' 'product mockup,' 'hero image,' 'social media graphic,' 'banner image,' 'cover photo,' 'profile banner,' 'listing screenshot,' 'Flux,' 'Flux Kontext,' 'Midjourney,' 'DALL-E,' 'GPT Image,' 'ChatGPT Images,' 'Ideogram,' 'Gemini image,' 'Nano Banana,' 'Recraft,' 'Stable Diffusion,' 'Canva,' 'Figma,' 'image optimization,' 'compress images,' 'WebP,' or 'OG image.' Use this for general-purpose marketing image creation and optimization. For paid ad image creative and platform-specific ad specs, see ad-creative. For video production, see video.",
         "metadata": {
-          "version": "2.0.2"
+          "version": "2.0.3"
         },
         "name": "image"
       },
@@ -5848,7 +5896,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/image/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [
           "network-access"
@@ -5896,7 +5944,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/influencer-marketing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5942,7 +5990,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/launch/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -5964,11 +6012,11 @@
     {
       "canonicalInvocation": "/lead-magnets",
       "description": "When the user wants to create, plan, or optimize a lead magnet for email capture or lead generation. Also use when the user mentions \"lead magnet,\" \"gated content,\" \"content upgrade,\" \"downloadable,\" \"ebook,\" \"cheat sheet,\" \"checklist,\" \"template download,\" \"opt-in,\" \"freebie,\" \"PDF download,\" \"resource library,\" \"content offer,\" \"email capture content,\" \"Notion template,\" \"spreadsheet template,\" \"what should I give away for emails,\" \"course as a skill,\" or \"package our content as an agent skill.\" Use this for planning what to create and how to distribute it. For interactive tools as lead magnets, see free-tools. For writing the actual content, see copywriting. For the email sequence after capture, see emails.",
-      "digest": "8fc3aebcecfc380532cf4280c6504655a312005d27b8c3196fab1491a6d5fb81",
+      "digest": "f7fb9a51e4e525ef9b8e970caf8d3ea4ad93b673151954030975ae8fa7c240d2",
       "frontmatter": {
         "description": "When the user wants to create, plan, or optimize a lead magnet for email capture or lead generation. Also use when the user mentions \"lead magnet,\" \"gated content,\" \"content upgrade,\" \"downloadable,\" \"ebook,\" \"cheat sheet,\" \"checklist,\" \"template download,\" \"opt-in,\" \"freebie,\" \"PDF download,\" \"resource library,\" \"content offer,\" \"email capture content,\" \"Notion template,\" \"spreadsheet template,\" \"what should I give away for emails,\" \"course as a skill,\" or \"package our content as an agent skill.\" Use this for planning what to create and how to distribute it. For interactive tools as lead magnets, see free-tools. For writing the actual content, see copywriting. For the email sequence after capture, see emails.",
         "metadata": {
-          "version": "2.1.0"
+          "version": "2.1.1"
         },
         "name": "lead-magnets"
       },
@@ -5988,7 +6036,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/lead-magnets/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6003,6 +6051,52 @@
         "toolCount": 0
       },
       "skillName": "lead-magnets",
+      "sourceId": "marketing",
+      "sourceType": "git",
+      "warnings": []
+    },
+    {
+      "canonicalInvocation": "/link-building",
+      "description": "When the user wants to earn backlinks or third-party mentions that lift rankings and AI citations. Also use when the user mentions 'link building,' 'linkbuilding,' 'backlinks,' 'get more backlinks,' 'link prospecting,' 'link gap,' 'competitor backlinks,' 'unlinked mentions,' 'link reclamation,' 'broken link building,' 'resource pages,' 'guest posting,' 'get into best-of lists,' 'listicle outreach,' 'domain rating,' 'referring domains,' 'anchor text,' or 'is this link vendor safe.' Use this whenever rankings stall on authority or someone wants off-site mentions that AI engines cite. Never recommend buying links that pass ranking credit: paid or exchanged placements get rel=sponsored or nofollow. For press coverage and journalist requests, see public-relations. For directories, see directory-submissions. For reviews, see referrals. For Reddit and communities, see community-marketing. For on-site AI citation work, see ai-seo.",
+      "digest": "71877090f52b0d4daa1cd278427a84680498f9745efa78cbf0ae2a538f8c1780",
+      "frontmatter": {
+        "description": "When the user wants to earn backlinks or third-party mentions that lift rankings and AI citations. Also use when the user mentions 'link building,' 'linkbuilding,' 'backlinks,' 'get more backlinks,' 'link prospecting,' 'link gap,' 'competitor backlinks,' 'unlinked mentions,' 'link reclamation,' 'broken link building,' 'resource pages,' 'guest posting,' 'get into best-of lists,' 'listicle outreach,' 'domain rating,' 'referring domains,' 'anchor text,' or 'is this link vendor safe.' Use this whenever rankings stall on authority or someone wants off-site mentions that AI engines cite. Never recommend buying links that pass ranking credit: paid or exchanged placements get rel=sponsored or nofollow. For press coverage and journalist requests, see public-relations. For directories, see directory-submissions. For reviews, see referrals. For Reddit and communities, see community-marketing. For on-site AI citation work, see ai-seo.",
+        "metadata": {
+          "version": "1.0.1"
+        },
+        "name": "link-building"
+      },
+      "fullPagePath": "docs/skills/marketing/link-building.md",
+      "generated": true,
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT",
+        "matchesDeclaration": true,
+        "redistribution": "full"
+      },
+      "namespacedInvocations": [
+        "/link-building"
+      ],
+      "pack": "marketing",
+      "redistribution": "full",
+      "ref": "origin/HEAD",
+      "relativePath": "skills/link-building/SKILL.md",
+      "repo": "https://github.com/coreyhaines31/marketingskills.git",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
+      "security": {
+        "flags": [],
+        "hasAgents": false,
+        "hasBashOrPowershell": false,
+        "hasCredentialRef": false,
+        "hasDynamicShell": false,
+        "hasExecutable": false,
+        "hasHiddenFiles": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasNetworkRef": false,
+        "toolCount": 0
+      },
+      "skillName": "link-building",
       "sourceId": "marketing",
       "sourceType": "git",
       "warnings": []
@@ -6034,7 +6128,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-council/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6056,11 +6150,11 @@
     {
       "canonicalInvocation": "/marketing-ideas",
       "description": "When the user needs marketing ideas, inspiration, or strategies for their SaaS or software product. Also use when the user asks for 'marketing ideas,' 'growth ideas,' 'how to market,' 'marketing strategies,' 'marketing tactics,' 'ways to promote,' 'ideas to grow,' 'what else can I try,' 'I don't know how to market this,' 'brainstorm marketing,' or 'what marketing should I do.' Use this as a starting point whenever someone is stuck or looking for inspiration on how to grow. For specific channel execution, see the relevant skill (ads, social, emails, etc.).",
-      "digest": "7a0dc3451f7a6fb0389067ebb4bfa66e74f66d28d4716674a4a044fdf88c6758",
+      "digest": "ba0e532f59621a04d43cc453634674e16195260584d8d396b2b2d61f541ab6db",
       "frontmatter": {
         "description": "When the user needs marketing ideas, inspiration, or strategies for their SaaS or software product. Also use when the user asks for 'marketing ideas,' 'growth ideas,' 'how to market,' 'marketing strategies,' 'marketing tactics,' 'ways to promote,' 'ideas to grow,' 'what else can I try,' 'I don't know how to market this,' 'brainstorm marketing,' or 'what marketing should I do.' Use this as a starting point whenever someone is stuck or looking for inspiration on how to grow. For specific channel execution, see the relevant skill (ads, social, emails, etc.).",
         "metadata": {
-          "version": "2.0.1"
+          "version": "2.0.2"
         },
         "name": "marketing-ideas"
       },
@@ -6080,7 +6174,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-ideas/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6102,11 +6196,11 @@
     {
       "canonicalInvocation": "/marketing-loops",
       "description": "When the user wants to set up a recurring, self-running marketing workflow — a repeatable loop an AI agent runs on a cadence (weekly, daily, on a trigger) rather than a one-off task. Also use when the user mentions 'marketing loop,' 'recurring marketing workflow,' 'automate my marketing,' 'marketing on autopilot,' 'weekly marketing review,' 'ad fatigue check,' 'weekly ads check,' 'content refresh loop,' 'churn watch,' 'ranking drop alert,' 'run my SEO,' 'SEO operator,' 'daily SEO agent,' 'run my outbound,' 'AI SDR,' 'reply triage,' 'always-on marketing,' 'marketing automation workflow,' or 'run this every week.' Use this to pick, adapt, and schedule an ongoing marketing loop that orchestrates the other marketing skills. For one-off marketing ideas, see marketing-ideas. For the experimentation loop specifically, see ab-testing.",
-      "digest": "6bcaa1a0a58dfcf2d377fbf63cd3b4e0580834aba0076439b9bdd015bdf3c26c",
+      "digest": "5b4193af8662e57a4bc98d30e2f215a9291d4d0bb3a3f3f46596e0bedc399764",
       "frontmatter": {
         "description": "When the user wants to set up a recurring, self-running marketing workflow — a repeatable loop an AI agent runs on a cadence (weekly, daily, on a trigger) rather than a one-off task. Also use when the user mentions 'marketing loop,' 'recurring marketing workflow,' 'automate my marketing,' 'marketing on autopilot,' 'weekly marketing review,' 'ad fatigue check,' 'weekly ads check,' 'content refresh loop,' 'churn watch,' 'ranking drop alert,' 'run my SEO,' 'SEO operator,' 'daily SEO agent,' 'run my outbound,' 'AI SDR,' 'reply triage,' 'always-on marketing,' 'marketing automation workflow,' or 'run this every week.' Use this to pick, adapt, and schedule an ongoing marketing loop that orchestrates the other marketing skills. For one-off marketing ideas, see marketing-ideas. For the experimentation loop specifically, see ab-testing.",
         "metadata": {
-          "version": "1.6.0"
+          "version": "1.7.0"
         },
         "name": "marketing-loops"
       },
@@ -6126,7 +6220,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-loops/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6172,7 +6266,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-plan/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6218,7 +6312,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/marketing-psychology/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6240,11 +6334,11 @@
     {
       "canonicalInvocation": "/offers",
       "description": "When the user wants to design, construct, or improve an offer — the thing they actually sell — including value framing, bonus stacking, guarantee design, scarcity/urgency, naming, and payment structure. Also use when the user mentions 'offer,' 'offer design,' 'build an offer,' 'grand slam offer,' 'irresistible offer,' 'value stack,' 'bonus stack,' 'guarantee,' 'risk reversal,' 'money-back guarantee,' 'scarcity,' 'urgency,' 'high-ticket offer,' 'productize a service,' 'naming an offer,' 'payment plan,' 'down-sell,' 'upsell offer,' or 'why isn't my offer converting.' Best for services, agencies, courses, coaching, info products, high-ticket B2B, and direct-response. If you run pure self-serve SaaS, read pricing first — tiers and packaging do more work there. For price level itself (tiers, freemium, value metric), see pricing. For the page that presents the offer, see copywriting. For the launch moment, see launch. For sales collateral, see sales-enablement.",
-      "digest": "9bbc10ed82ac9a3f53de1d537065b156616afe55d822a05336ced097ac9a7964",
+      "digest": "ceb66665ae4bc4b62f65ea2864ced8dce6368cc45104ee32b2ee35aeb94171b7",
       "frontmatter": {
         "description": "When the user wants to design, construct, or improve an offer — the thing they actually sell — including value framing, bonus stacking, guarantee design, scarcity/urgency, naming, and payment structure. Also use when the user mentions 'offer,' 'offer design,' 'build an offer,' 'grand slam offer,' 'irresistible offer,' 'value stack,' 'bonus stack,' 'guarantee,' 'risk reversal,' 'money-back guarantee,' 'scarcity,' 'urgency,' 'high-ticket offer,' 'productize a service,' 'naming an offer,' 'payment plan,' 'down-sell,' 'upsell offer,' or 'why isn't my offer converting.' Best for services, agencies, courses, coaching, info products, high-ticket B2B, and direct-response. If you run pure self-serve SaaS, read pricing first — tiers and packaging do more work there. For price level itself (tiers, freemium, value metric), see pricing. For the page that presents the offer, see copywriting. For the launch moment, see launch. For sales collateral, see sales-enablement.",
         "metadata": {
-          "version": "1.0.2"
+          "version": "1.0.3"
         },
         "name": "offers"
       },
@@ -6264,7 +6358,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/offers/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6310,7 +6404,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/onboarding/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6331,12 +6425,12 @@
     },
     {
       "canonicalInvocation": "/paywalls",
-      "description": "When the user wants to create or optimize in-app paywalls, upgrade screens, upsell modals, or feature gates. Also use when the user mentions \"paywall,\" \"upgrade screen,\" \"upgrade modal,\" \"upsell,\" \"feature gate,\" \"convert free to paid,\" \"freemium conversion,\" \"trial expiration screen,\" \"limit reached screen,\" \"plan upgrade prompt,\" \"in-app pricing,\" \"free users won't upgrade,\" \"trial to paid conversion,\" or \"how do I get users to pay.\" Use this for any in-product moment where you're asking users to upgrade. Distinct from public pricing pages (see cro) — this focuses on in-product upgrade moments where the user has already experienced value. For pricing decisions, see pricing.",
-      "digest": "53da41886b549e62c44a90093cd1b0d5c5229125cc579eb56efeb443b89a49a4",
+      "description": "When the user wants to create or optimize in-app paywalls, upgrade screens, upsell modals, or feature gates. Also use when the user mentions \"paywall,\" \"upgrade screen,\" \"upgrade modal,\" \"upsell,\" \"feature gate,\" \"convert free to paid,\" \"freemium conversion,\" \"trial expiration screen,\" \"limit reached screen,\" \"plan upgrade prompt,\" \"in-app pricing,\" \"free users won't upgrade,\" \"trial to paid conversion,\" or \"how do I get users to pay,\" \"mobile app paywall,\" \"subscription app paywall,\" or \"App Store subscription pricing.\" Use this for any in-product moment where you're asking users to upgrade. Distinct from public pricing pages (see cro) — this focuses on in-product upgrade moments where the user has already experienced value. For pricing decisions, see pricing.",
+      "digest": "dc6ce27666725df7f7ff38e94c10facf954e724960d4a83a282dbb73372ff32f",
       "frontmatter": {
-        "description": "When the user wants to create or optimize in-app paywalls, upgrade screens, upsell modals, or feature gates. Also use when the user mentions \"paywall,\" \"upgrade screen,\" \"upgrade modal,\" \"upsell,\" \"feature gate,\" \"convert free to paid,\" \"freemium conversion,\" \"trial expiration screen,\" \"limit reached screen,\" \"plan upgrade prompt,\" \"in-app pricing,\" \"free users won't upgrade,\" \"trial to paid conversion,\" or \"how do I get users to pay.\" Use this for any in-product moment where you're asking users to upgrade. Distinct from public pricing pages (see cro) — this focuses on in-product upgrade moments where the user has already experienced value. For pricing decisions, see pricing.",
+        "description": "When the user wants to create or optimize in-app paywalls, upgrade screens, upsell modals, or feature gates. Also use when the user mentions \"paywall,\" \"upgrade screen,\" \"upgrade modal,\" \"upsell,\" \"feature gate,\" \"convert free to paid,\" \"freemium conversion,\" \"trial expiration screen,\" \"limit reached screen,\" \"plan upgrade prompt,\" \"in-app pricing,\" \"free users won't upgrade,\" \"trial to paid conversion,\" or \"how do I get users to pay,\" \"mobile app paywall,\" \"subscription app paywall,\" or \"App Store subscription pricing.\" Use this for any in-product moment where you're asking users to upgrade. Distinct from public pricing pages (see cro) — this focuses on in-product upgrade moments where the user has already experienced value. For pricing decisions, see pricing.",
         "metadata": {
-          "version": "2.0.0"
+          "version": "2.1.1"
         },
         "name": "paywalls"
       },
@@ -6356,7 +6450,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/paywalls/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6378,11 +6472,11 @@
     {
       "canonicalInvocation": "/popups",
       "description": "When the user wants to create or optimize popups, modals, overlays, slide-ins, or banners for conversion purposes. Also use when the user mentions \"exit intent,\" \"popup conversions,\" \"modal optimization,\" \"lead capture popup,\" \"email popup,\" \"announcement banner,\" \"overlay,\" \"collect emails with a popup,\" \"exit popup,\" \"scroll trigger,\" \"sticky bar,\" or \"notification bar.\" Use this for any overlay or interrupt-style conversion element. For forms outside of popups, see cro. For general page conversion optimization, see cro.",
-      "digest": "45969a983f4275246ae91483f9d65ce59cc1648581b0dbc7388c2b745f21bfe9",
+      "digest": "80e08c78db83c2219a7398eb4190fddb648e461a2f8f14b26ea52e7c56f44302",
       "frontmatter": {
         "description": "When the user wants to create or optimize popups, modals, overlays, slide-ins, or banners for conversion purposes. Also use when the user mentions \"exit intent,\" \"popup conversions,\" \"modal optimization,\" \"lead capture popup,\" \"email popup,\" \"announcement banner,\" \"overlay,\" \"collect emails with a popup,\" \"exit popup,\" \"scroll trigger,\" \"sticky bar,\" or \"notification bar.\" Use this for any overlay or interrupt-style conversion element. For forms outside of popups, see cro. For general page conversion optimization, see cro.",
         "metadata": {
-          "version": "2.0.0"
+          "version": "2.0.1"
         },
         "name": "popups"
       },
@@ -6402,7 +6496,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/popups/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6448,7 +6542,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/pricing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6494,7 +6588,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/product-marketing/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6516,11 +6610,11 @@
     {
       "canonicalInvocation": "/programmatic-seo",
       "description": "When the user wants to create SEO-driven pages at scale using templates and data. Also use when the user mentions \"programmatic SEO,\" \"template pages,\" \"pages at scale,\" \"directory pages,\" \"location pages,\" \"[keyword] + [city] pages,\" \"comparison pages,\" \"integration pages,\" \"building many pages for SEO,\" \"pSEO,\" \"generate 100 pages,\" \"data-driven pages,\" \"templated landing pages,\" or \"which CMS for pSEO.\" Use this whenever someone wants to create many similar pages targeting different keywords or locations. For auditing existing SEO issues, see seo-audit. For content strategy planning, see content-strategy.",
-      "digest": "5bc3b6835df5294bc37d42cf62a4170b4d691d73e99339d3858e6a93ad7edf0d",
+      "digest": "8b699d2e559dae5806c348e5b0f74bbeabd8a428f505cab39a33065297c1c8d9",
       "frontmatter": {
         "description": "When the user wants to create SEO-driven pages at scale using templates and data. Also use when the user mentions \"programmatic SEO,\" \"template pages,\" \"pages at scale,\" \"directory pages,\" \"location pages,\" \"[keyword] + [city] pages,\" \"comparison pages,\" \"integration pages,\" \"building many pages for SEO,\" \"pSEO,\" \"generate 100 pages,\" \"data-driven pages,\" \"templated landing pages,\" or \"which CMS for pSEO.\" Use this whenever someone wants to create many similar pages targeting different keywords or locations. For auditing existing SEO issues, see seo-audit. For content strategy planning, see content-strategy.",
         "metadata": {
-          "version": "2.1.0"
+          "version": "2.1.1"
         },
         "name": "programmatic-seo"
       },
@@ -6540,7 +6634,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/programmatic-seo/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6561,12 +6655,12 @@
     },
     {
       "canonicalInvocation": "/prospecting",
-      "description": "When the user wants to find, qualify, and build a list of prospects to reach out to, across B2B SaaS, general B2B, or local small businesses. Also use when the user mentions \"prospecting,\" \"build a prospect list,\" \"find leads,\" \"lead list,\" \"outbound list,\" \"target account list,\" \"ICP-fit accounts,\" \"find local businesses,\" \"find my first customers,\" \"design partners,\" \"signal-based outbound,\" \"buying signals,\" \"intent data,\" \"job change alerts,\" \"waterfall enrichment,\" \"Clay table,\" \"lookalike accounts,\" \"catch-all emails,\" \"account tiering,\" or \"research this account before I reach out.\" Always verify emails before they reach a sequence, and never scrape LinkedIn. Define audiences in Sales Navigator and pull contacts from licensed data. Covers list building, signals, enrichment, verification, and account research. For the outreach itself (copy, sending setup, LinkedIn, cadences, replies), see cold-email. For researching competitors, see competitor-profiling.",
-      "digest": "2061d1b4ea0499464c8a711a4e6650e62845b8f0fa9b65626406eb5f0e8bbe59",
+      "description": "When the user wants to find, qualify, and build a list of prospects to reach out to, across B2B SaaS, general B2B, or local small businesses. Also use when the user mentions \"prospecting,\" \"build a prospect list,\" \"find leads,\" \"lead list,\" \"outbound list,\" \"target account list,\" \"ICP-fit accounts,\" \"find local businesses,\" \"find my first customers,\" \"design partners,\" \"signal-based outbound,\" \"gap plays,\" \"buying signals,\" \"intent data,\" \"job change alerts,\" \"waterfall enrichment,\" \"Clay table,\" \"lookalike accounts,\" \"catch-all emails,\" \"account tiering,\" or \"research this account before I reach out.\" Always verify emails before they reach a sequence, and never scrape LinkedIn. Define audiences in Sales Navigator and pull contacts from licensed data. Covers list building, signals, enrichment, verification, and account research. For the outreach itself (copy, sending setup, LinkedIn, cadences, replies), see cold-email. For researching competitors, see competitor-profiling.",
+      "digest": "4247ffd05cc4fe45878a884d11c54358f9959d4dfc69f1fbd280cc40f77d1afd",
       "frontmatter": {
-        "description": "When the user wants to find, qualify, and build a list of prospects to reach out to, across B2B SaaS, general B2B, or local small businesses. Also use when the user mentions \"prospecting,\" \"build a prospect list,\" \"find leads,\" \"lead list,\" \"outbound list,\" \"target account list,\" \"ICP-fit accounts,\" \"find local businesses,\" \"find my first customers,\" \"design partners,\" \"signal-based outbound,\" \"buying signals,\" \"intent data,\" \"job change alerts,\" \"waterfall enrichment,\" \"Clay table,\" \"lookalike accounts,\" \"catch-all emails,\" \"account tiering,\" or \"research this account before I reach out.\" Always verify emails before they reach a sequence, and never scrape LinkedIn. Define audiences in Sales Navigator and pull contacts from licensed data. Covers list building, signals, enrichment, verification, and account research. For the outreach itself (copy, sending setup, LinkedIn, cadences, replies), see cold-email. For researching competitors, see competitor-profiling.",
+        "description": "When the user wants to find, qualify, and build a list of prospects to reach out to, across B2B SaaS, general B2B, or local small businesses. Also use when the user mentions \"prospecting,\" \"build a prospect list,\" \"find leads,\" \"lead list,\" \"outbound list,\" \"target account list,\" \"ICP-fit accounts,\" \"find local businesses,\" \"find my first customers,\" \"design partners,\" \"signal-based outbound,\" \"gap plays,\" \"buying signals,\" \"intent data,\" \"job change alerts,\" \"waterfall enrichment,\" \"Clay table,\" \"lookalike accounts,\" \"catch-all emails,\" \"account tiering,\" or \"research this account before I reach out.\" Always verify emails before they reach a sequence, and never scrape LinkedIn. Define audiences in Sales Navigator and pull contacts from licensed data. Covers list building, signals, enrichment, verification, and account research. For the outreach itself (copy, sending setup, LinkedIn, cadences, replies), see cold-email. For researching competitors, see competitor-profiling.",
         "metadata": {
-          "version": "1.3.0"
+          "version": "1.5.0"
         },
         "name": "prospecting"
       },
@@ -6586,7 +6680,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/prospecting/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6608,11 +6702,11 @@
     {
       "canonicalInvocation": "/public-relations",
       "description": "When the user wants help with public relations, earned media, press coverage, journalist outreach, or media strategy (not pull requests). Also use when the user mentions 'PR,' 'press,' 'press release,' 'media outreach,' 'pitch a journalist,' 'get featured,' 'media list,' 'media kit,' 'press kit,' 'newsjacking,' 'news hijack,' 'HARO,' 'Qwoted,' 'Featured,' 'reporter request,' 'tech press,' 'TechCrunch,' 'thought leadership placement,' 'op-ed,' 'guest article,' 'press contacts,' 'podcast prep,' 'podcast guest,' 'prep me for this podcast,' 'how do I get press,' 'PR crisis,' 'crisis communications,' 'respond to backlash,' 'we got hacked,' 'data breach statement,' or 'holding statement.' Also covers crisis response when something goes wrong. For startup/SaaS/AI directory submissions, see directory-submissions. For product launches, see launch. For social-media engagement, see social. For cold-email outreach to prospects, see cold-email.",
-      "digest": "82244d6403025c4d91a41fb9a73418c34ef17d89a00311ea49e4fc018cb2ce09",
+      "digest": "ebff362205600b4d30c615903300b140867036d951e7dfc24105a4b3a03819c2",
       "frontmatter": {
         "description": "When the user wants help with public relations, earned media, press coverage, journalist outreach, or media strategy (not pull requests). Also use when the user mentions 'PR,' 'press,' 'press release,' 'media outreach,' 'pitch a journalist,' 'get featured,' 'media list,' 'media kit,' 'press kit,' 'newsjacking,' 'news hijack,' 'HARO,' 'Qwoted,' 'Featured,' 'reporter request,' 'tech press,' 'TechCrunch,' 'thought leadership placement,' 'op-ed,' 'guest article,' 'press contacts,' 'podcast prep,' 'podcast guest,' 'prep me for this podcast,' 'how do I get press,' 'PR crisis,' 'crisis communications,' 'respond to backlash,' 'we got hacked,' 'data breach statement,' or 'holding statement.' Also covers crisis response when something goes wrong. For startup/SaaS/AI directory submissions, see directory-submissions. For product launches, see launch. For social-media engagement, see social. For cold-email outreach to prospects, see cold-email.",
         "metadata": {
-          "version": "1.2.0"
+          "version": "1.2.1"
         },
         "name": "public-relations"
       },
@@ -6632,7 +6726,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/public-relations/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6678,7 +6772,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/referrals/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6698,13 +6792,59 @@
       "warnings": []
     },
     {
+      "canonicalInvocation": "/reverse-engineer-marketing",
+      "description": "When the user wants to reverse engineer how another company grew and copy what worked. Also use when the user mentions 'reverse engineer,' 'how did X grow,' 'how does X get customers,' 'growth teardown,' 'marketing teardown,' 'GTM teardown,' 'growth blueprint,' 'what is X doing for marketing,' 'what made X take off,' 'copy X's playbook,' 'X's distribution strategy,' 'what content works for X,' 'funnel hack,' 'map their funnel,' or 'watch what X is doing.' Builds a dated log of a company's moves against its traffic curve from public data, sign-ups and demos, team interviews, and hidden signals (DNS, certificate logs, archives, sponsorships), compares it with the user's own data, and turns what lined up with growth into plays routed to the skill that runs each one. For a snapshot profile of a competitor's positioning, pricing, and features, see competitor-profiling. For comparison pages, see competitors. For why a single post went viral, see social.",
+      "digest": "7468a8a8895272b7753abdc0c31d6222e7739b1706defcc07d7cc3edf2b9aa9a",
+      "frontmatter": {
+        "description": "When the user wants to reverse engineer how another company grew and copy what worked. Also use when the user mentions 'reverse engineer,' 'how did X grow,' 'how does X get customers,' 'growth teardown,' 'marketing teardown,' 'GTM teardown,' 'growth blueprint,' 'what is X doing for marketing,' 'what made X take off,' 'copy X's playbook,' 'X's distribution strategy,' 'what content works for X,' 'funnel hack,' 'map their funnel,' or 'watch what X is doing.' Builds a dated log of a company's moves against its traffic curve from public data, sign-ups and demos, team interviews, and hidden signals (DNS, certificate logs, archives, sponsorships), compares it with the user's own data, and turns what lined up with growth into plays routed to the skill that runs each one. For a snapshot profile of a competitor's positioning, pricing, and features, see competitor-profiling. For comparison pages, see competitors. For why a single post went viral, see social.",
+        "metadata": {
+          "version": "1.0.0"
+        },
+        "name": "reverse-engineer-marketing"
+      },
+      "fullPagePath": "docs/skills/marketing/reverse-engineer-marketing.md",
+      "generated": true,
+      "license": {
+        "declared": "MIT",
+        "detected": "MIT",
+        "matchesDeclaration": true,
+        "redistribution": "full"
+      },
+      "namespacedInvocations": [
+        "/reverse-engineer-marketing"
+      ],
+      "pack": "marketing",
+      "redistribution": "full",
+      "ref": "origin/HEAD",
+      "relativePath": "skills/reverse-engineer-marketing/SKILL.md",
+      "repo": "https://github.com/coreyhaines31/marketingskills.git",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
+      "security": {
+        "flags": [],
+        "hasAgents": false,
+        "hasBashOrPowershell": false,
+        "hasCredentialRef": false,
+        "hasDynamicShell": false,
+        "hasExecutable": false,
+        "hasHiddenFiles": false,
+        "hasHooks": false,
+        "hasMcpOrLsp": false,
+        "hasNetworkRef": false,
+        "toolCount": 0
+      },
+      "skillName": "reverse-engineer-marketing",
+      "sourceId": "marketing",
+      "sourceType": "git",
+      "warnings": []
+    },
+    {
       "canonicalInvocation": "/revops",
       "description": "When the user wants help with revenue operations, lead lifecycle management, or marketing-to-sales handoff processes. Also use when the user mentions 'RevOps,' 'revenue operations,' 'lead scoring,' 'outbound pipeline stages,' 'lead routing,' 'MQL,' 'SQL,' 'pipeline stages,' 'deal desk,' 'CRM automation,' 'marketing-to-sales handoff,' 'data hygiene,' 'leads aren't getting to sales,' 'pipeline management,' 'lead qualification,' or 'when should marketing hand off to sales.' Use this for anything involving the systems and processes that connect marketing to revenue. For cold outreach emails, see cold-email. For email drip campaigns, see emails. For pricing decisions, see pricing.",
-      "digest": "69d9608fbc65b7e905098715e58d460f5e78987eee8969c36d537daf32d8e5fc",
+      "digest": "946b154e0ac49bed1825f4a7b62807e72da6f67ce19636879da3d51362ec1482",
       "frontmatter": {
         "description": "When the user wants help with revenue operations, lead lifecycle management, or marketing-to-sales handoff processes. Also use when the user mentions 'RevOps,' 'revenue operations,' 'lead scoring,' 'outbound pipeline stages,' 'lead routing,' 'MQL,' 'SQL,' 'pipeline stages,' 'deal desk,' 'CRM automation,' 'marketing-to-sales handoff,' 'data hygiene,' 'leads aren't getting to sales,' 'pipeline management,' 'lead qualification,' or 'when should marketing hand off to sales.' Use this for anything involving the systems and processes that connect marketing to revenue. For cold outreach emails, see cold-email. For email drip campaigns, see emails. For pricing decisions, see pricing.",
         "metadata": {
-          "version": "2.2.1"
+          "version": "2.2.2"
         },
         "name": "revops"
       },
@@ -6724,7 +6864,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/revops/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6770,7 +6910,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/sales-enablement/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6816,7 +6956,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/schema/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6838,11 +6978,11 @@
     {
       "canonicalInvocation": "/seo-audit",
       "description": "When the user wants to audit, review, or diagnose SEO issues on their site. Also use when the user mentions \"SEO audit,\" \"technical SEO,\" \"why am I not ranking,\" \"SEO issues,\" \"on-page SEO,\" \"meta tags review,\" \"SEO health check,\" \"my traffic dropped,\" \"lost rankings,\" \"not showing up in Google,\" \"site isn't ranking,\" \"Google update hit me,\" \"page speed,\" \"core web vitals,\" \"crawl errors,\" \"indexing issues,\" \"stuck on page 2,\" \"striking distance keywords,\" \"title tag rewrite,\" \"low CTR,\" \"local SEO,\" \"Google Business Profile,\" or \"map pack.\" Use this even if the user just says something vague like \"my SEO is bad\" or \"help with SEO\" — start with an audit. For building pages at scale to target keywords, see programmatic-seo. For adding structured data, see schema. For AI search optimization, see ai-seo.",
-      "digest": "c32eab4d0a71d7557ace78c0366b495c0df6a74ecb44a69d4b8ba0166efc17e6",
+      "digest": "3bd436f1e023d3cb810c252b67d619ba2856ae1ba49238e41d178c2be6461a10",
       "frontmatter": {
         "description": "When the user wants to audit, review, or diagnose SEO issues on their site. Also use when the user mentions \"SEO audit,\" \"technical SEO,\" \"why am I not ranking,\" \"SEO issues,\" \"on-page SEO,\" \"meta tags review,\" \"SEO health check,\" \"my traffic dropped,\" \"lost rankings,\" \"not showing up in Google,\" \"site isn't ranking,\" \"Google update hit me,\" \"page speed,\" \"core web vitals,\" \"crawl errors,\" \"indexing issues,\" \"stuck on page 2,\" \"striking distance keywords,\" \"title tag rewrite,\" \"low CTR,\" \"local SEO,\" \"Google Business Profile,\" or \"map pack.\" Use this even if the user just says something vague like \"my SEO is bad\" or \"help with SEO\" — start with an audit. For building pages at scale to target keywords, see programmatic-seo. For adding structured data, see schema. For AI search optimization, see ai-seo.",
         "metadata": {
-          "version": "2.2.1"
+          "version": "2.2.2"
         },
         "name": "seo-audit"
       },
@@ -6862,7 +7002,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/seo-audit/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [
           "network-access"
@@ -6910,7 +7050,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/signup/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -6956,7 +7096,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/site-architecture/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7002,7 +7142,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/sms/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7024,11 +7164,11 @@
     {
       "canonicalInvocation": "/social",
       "description": "When the user wants help creating, scheduling, or optimizing social media content for LinkedIn, Twitter/X, Instagram, TikTok, or Facebook, or wants to do social listening and engagement triage. Also use when the user mentions 'LinkedIn post,' 'Twitter thread,' 'social media,' 'content calendar,' 'social scheduling,' 'engagement,' 'viral content,' 'what should I post,' 'repurpose this content,' 'tweet ideas,' 'LinkedIn carousel,' 'social media strategy,' 'grow my following,' 'TikTok video,' 'Reels,' 'Shorts,' 'video script,' 'video hook,' 'short-form video,' 'create a reel,' 'social listening,' 'brand mentions,' 'competitor monitoring,' 'top posts to comment on,' 'find people asking for,' 'carousel,' 'slide-by-slide,' or 'document post.' Use this for social content, repurposing, scheduling, video scripts, and listening. Posts avoid AI tells like 'it's not X, it's Y' reveals and broetry. For broader content strategy, see content-strategy. For paid ads, see ad-creative. For earned media, see public-relations.",
-      "digest": "1283dfcd44aceb243da5a436523cd8fa7e3e1f7d7aa28d5a087fe8309856d17d",
+      "digest": "de0f6a11590ea01e449d377a8d8aa1d617a6dc0011e00f4508946d9aeb7fd8af",
       "frontmatter": {
         "description": "When the user wants help creating, scheduling, or optimizing social media content for LinkedIn, Twitter/X, Instagram, TikTok, or Facebook, or wants to do social listening and engagement triage. Also use when the user mentions 'LinkedIn post,' 'Twitter thread,' 'social media,' 'content calendar,' 'social scheduling,' 'engagement,' 'viral content,' 'what should I post,' 'repurpose this content,' 'tweet ideas,' 'LinkedIn carousel,' 'social media strategy,' 'grow my following,' 'TikTok video,' 'Reels,' 'Shorts,' 'video script,' 'video hook,' 'short-form video,' 'create a reel,' 'social listening,' 'brand mentions,' 'competitor monitoring,' 'top posts to comment on,' 'find people asking for,' 'carousel,' 'slide-by-slide,' or 'document post.' Use this for social content, repurposing, scheduling, video scripts, and listening. Posts avoid AI tells like 'it's not X, it's Y' reveals and broetry. For broader content strategy, see content-strategy. For paid ads, see ad-creative. For earned media, see public-relations.",
         "metadata": {
-          "version": "2.4.0"
+          "version": "2.4.1"
         },
         "name": "social"
       },
@@ -7048,7 +7188,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/social/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [
           "network-access"
@@ -7072,11 +7212,11 @@
     {
       "canonicalInvocation": "/video",
       "description": "When the user wants to create, generate, or produce video content using AI tools or programmatic frameworks. Also use when the user mentions 'video production,' 'AI video,' 'Remotion,' 'Hyperframes,' 'HeyGen,' 'Synthesia,' 'Veo,' 'Sora,' 'Runway,' 'Kling,' 'Seedance,' 'Hailuo,' 'MiniMax,' 'Pika,' 'Hunyuan,' 'Wan,' 'video generation,' 'AI avatar,' 'talking head video,' 'programmatic video,' 'video template,' 'explainer video,' 'product demo video,' 'record a product demo,' 'feature demo video,' 'in-app demo,' 'video pipeline,' 'copy this edit,' 'match this video style,' 'reverse-engineer this video,' 'edit like this reference,' or 'make me a video.' Use this for video creation, generation, and production workflows. For video content strategy and what to post, see social. For paid video ad creative, see ad-creative.",
-      "digest": "6c7ae1d26ba5b85a09c282258a112100609796f609b22b36e4dde7c7aeca0558",
+      "digest": "25c1b763b4a9829a76698eb40684cb350993beaa4be6b2c728c114e6bbf7e200",
       "frontmatter": {
         "description": "When the user wants to create, generate, or produce video content using AI tools or programmatic frameworks. Also use when the user mentions 'video production,' 'AI video,' 'Remotion,' 'Hyperframes,' 'HeyGen,' 'Synthesia,' 'Veo,' 'Sora,' 'Runway,' 'Kling,' 'Seedance,' 'Hailuo,' 'MiniMax,' 'Pika,' 'Hunyuan,' 'Wan,' 'video generation,' 'AI avatar,' 'talking head video,' 'programmatic video,' 'video template,' 'explainer video,' 'product demo video,' 'record a product demo,' 'feature demo video,' 'in-app demo,' 'video pipeline,' 'copy this edit,' 'match this video style,' 'reverse-engineer this video,' 'edit like this reference,' or 'make me a video.' Use this for video creation, generation, and production workflows. For video content strategy and what to post, see social. For paid video ad creative, see ad-creative.",
         "metadata": {
-          "version": "2.2.1"
+          "version": "2.4.0"
         },
         "name": "video"
       },
@@ -7096,7 +7236,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/video/SKILL.md",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7745,54 +7885,11 @@
       "warnings": []
     },
     {
-      "canonicalInvocation": "/brandkit",
-      "description": "Premium brand-kit image generation skill for creating high-end brand-guidelines boards, logo systems, identity decks, and visual-world presentations. Trained for minimalist, cinematic, editorial, dark-tech, luxury, cultural, security, gaming, developer-tool, and consumer-app brand systems. Optimized for intentional logo concepting, refined composition, sparse typography, strong symbolic meaning, premium mockups, art-directed imagery, and flexible grid layouts.",
-      "digest": "68d88dfad5228c5e5a1a2e79381439c8899b07f2188ac170109d698f1488be8e",
-      "frontmatter": {
-        "description": "Premium brand-kit image generation skill for creating high-end brand-guidelines boards, logo systems, identity decks, and visual-world presentations. Trained for minimalist, cinematic, editorial, dark-tech, luxury, cultural, security, gaming, developer-tool, and consumer-app brand systems. Optimized for intentional logo concepting, refined composition, sparse typography, strong symbolic meaning, premium mockups, art-directed imagery, and flexible grid layouts.",
-        "name": "brandkit"
-      },
-      "fullPagePath": "docs/skills/taste/brandkit.md",
-      "generated": true,
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT",
-        "matchesDeclaration": true,
-        "redistribution": "full"
-      },
-      "namespacedInvocations": [
-        "/brandkit"
-      ],
-      "pack": "taste",
-      "redistribution": "full",
-      "ref": "origin/HEAD",
-      "relativePath": "skills/brandkit/SKILL.md",
-      "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
-      "security": {
-        "flags": [],
-        "hasAgents": false,
-        "hasBashOrPowershell": false,
-        "hasCredentialRef": false,
-        "hasDynamicShell": false,
-        "hasExecutable": false,
-        "hasHiddenFiles": false,
-        "hasHooks": false,
-        "hasMcpOrLsp": false,
-        "hasNetworkRef": false,
-        "toolCount": 0
-      },
-      "skillName": "brandkit",
-      "sourceId": "taste",
-      "sourceType": "git",
-      "warnings": []
-    },
-    {
       "canonicalInvocation": "/design-taste-frontend",
-      "description": "tasteskill v2, the anti-slop frontend skill. Art direction for websites, distilled from a study of 247 curated gallery sites (One Page Love, Awwwards Sites of the Day). Deals researched directions (idea, composition, type, palette, photographs, section blueprints) from a library, enforces a strict no-slop house style with a real-browser inspector, and runs a look-and-fix loop on screenshots. Use this whenever you build, design, redesign, restyle, polish or review a landing page, marketing site, portfolio, product page, one-pager, hero or any public-facing web page, in any stack (HTML/CSS, React, Next.js, Vue, Svelte, Astro, Tailwind) — also when the user says a page looks generic, templated, \"AI-made\", sloppy, or asks to make it look designed, premium, award-level or less like every other site. Not for dashboards or app screens.",
-      "digest": "8429f8f5efecf7f802ec8d0f5659cc2b53dae092f1e47f340f9ab56ae0726400",
+      "description": "tasteskill v2, the anti-slop frontend skill. Art direction for websites, distilled from a study of 247 curated gallery sites (One Page Love, Awwwards Sites of the Day). Deals researched directions (idea, composition, type, palette, photographs, section blueprints) from a library, enforces a strict no-slop house style with a real-browser inspector, and runs a look-and-fix loop on screenshots. Use this whenever you build, design, redesign, restyle, polish or review a landing page, marketing site, portfolio, product page, one-pager, hero or any public-facing web page, in any stack (HTML/CSS, React, Next.js, Vue, Svelte, Astro, Tailwind) — also when the user says a page looks generic, templated, \"AI-made\", sloppy, or asks to make it look designed, premium, award-level or less like every other site. Also for app screens: dashboards, admin and analytics views, settings, inboxes and other screens people work in, with their own run and rules.",
+      "digest": "65cbe58db289e72b06f2ff075b19f4cc7202619a73930dd7faceaef3712acc16",
       "frontmatter": {
-        "description": "tasteskill v2, the anti-slop frontend skill. Art direction for websites, distilled from a study of 247 curated gallery sites (One Page Love, Awwwards Sites of the Day). Deals researched directions (idea, composition, type, palette, photographs, section blueprints) from a library, enforces a strict no-slop house style with a real-browser inspector, and runs a look-and-fix loop on screenshots. Use this whenever you build, design, redesign, restyle, polish or review a landing page, marketing site, portfolio, product page, one-pager, hero or any public-facing web page, in any stack (HTML/CSS, React, Next.js, Vue, Svelte, Astro, Tailwind) — also when the user says a page looks generic, templated, \"AI-made\", sloppy, or asks to make it look designed, premium, award-level or less like every other site. Not for dashboards or app screens.",
+        "description": "tasteskill v2, the anti-slop frontend skill. Art direction for websites, distilled from a study of 247 curated gallery sites (One Page Love, Awwwards Sites of the Day). Deals researched directions (idea, composition, type, palette, photographs, section blueprints) from a library, enforces a strict no-slop house style with a real-browser inspector, and runs a look-and-fix loop on screenshots. Use this whenever you build, design, redesign, restyle, polish or review a landing page, marketing site, portfolio, product page, one-pager, hero or any public-facing web page, in any stack (HTML/CSS, React, Next.js, Vue, Svelte, Astro, Tailwind) — also when the user says a page looks generic, templated, \"AI-made\", sloppy, or asks to make it look designed, premium, award-level or less like every other site. Also for app screens: dashboards, admin and analytics views, settings, inboxes and other screens people work in, with their own run and rules.",
         "name": "design-taste-frontend"
       },
       "fullPagePath": "docs/skills/taste/design-taste-frontend.md",
@@ -7811,7 +7908,7 @@
       "ref": "origin/HEAD",
       "relativePath": "skills/taste-skill/SKILL.md",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "12af471f627f866411b4bd785b19646d3672784c",
       "security": {
         "flags": [],
         "hasAgents": false,
@@ -7826,522 +7923,6 @@
         "toolCount": 0
       },
       "skillName": "design-taste-frontend",
-      "sourceId": "taste",
-      "sourceType": "git",
-      "warnings": []
-    },
-    {
-      "canonicalInvocation": "/design-taste-frontend-v1",
-      "description": "The original v1 taste-skill, preserved for projects depending on its exact behavior. The current default is `design-taste-frontend` (v2), which is a new skill. Use this v1 install name only if you need exact backward compatibility.",
-      "digest": "5f6d8795cda85edf7602407e670e7254b9ed9913498e2dbef6b28fe01e291dcb",
-      "frontmatter": {
-        "description": "The original v1 taste-skill, preserved for projects depending on its exact behavior. The current default is `design-taste-frontend` (v2), which is a new skill. Use this v1 install name only if you need exact backward compatibility.",
-        "name": "design-taste-frontend-v1"
-      },
-      "fullPagePath": "docs/skills/taste/design-taste-frontend-v1.md",
-      "generated": true,
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT",
-        "matchesDeclaration": true,
-        "redistribution": "full"
-      },
-      "namespacedInvocations": [
-        "/design-taste-frontend-v1"
-      ],
-      "pack": "taste",
-      "redistribution": "full",
-      "ref": "origin/HEAD",
-      "relativePath": "skills/taste-skill-v1/SKILL.md",
-      "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
-      "security": {
-        "flags": [],
-        "hasAgents": false,
-        "hasBashOrPowershell": false,
-        "hasCredentialRef": false,
-        "hasDynamicShell": false,
-        "hasExecutable": false,
-        "hasHiddenFiles": false,
-        "hasHooks": false,
-        "hasMcpOrLsp": false,
-        "hasNetworkRef": false,
-        "toolCount": 0
-      },
-      "skillName": "design-taste-frontend-v1",
-      "sourceId": "taste",
-      "sourceType": "git",
-      "warnings": []
-    },
-    {
-      "canonicalInvocation": "/design-taste-frontend-v2-experimental",
-      "description": "Old v2 (experimental) of taste-skill, the single-file dial-driven version, preserved for projects depending on its exact behavior. The current default is `design-taste-frontend` (v2). Use this install name only if you need the earlier behavior. Anti-slop frontend rules for landing pages, portfolios, and redesigns, with real design systems when applicable, audit-first redesigns and a strict pre-flight check.",
-      "digest": "dd6de800d8fe4ebaa414418e7d593f48f10717a286e97b3f25f576177ebde1d8",
-      "frontmatter": {
-        "description": "Old v2 (experimental) of taste-skill, the single-file dial-driven version, preserved for projects depending on its exact behavior. The current default is `design-taste-frontend` (v2). Use this install name only if you need the earlier behavior. Anti-slop frontend rules for landing pages, portfolios, and redesigns, with real design systems when applicable, audit-first redesigns and a strict pre-flight check.",
-        "name": "design-taste-frontend-v2-experimental"
-      },
-      "fullPagePath": "docs/skills/taste/design-taste-frontend-v2-experimental.md",
-      "generated": true,
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT",
-        "matchesDeclaration": true,
-        "redistribution": "full"
-      },
-      "namespacedInvocations": [
-        "/design-taste-frontend-v2-experimental"
-      ],
-      "pack": "taste",
-      "redistribution": "full",
-      "ref": "origin/HEAD",
-      "relativePath": "skills/taste-skill-v2-experimental/SKILL.md",
-      "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
-      "security": {
-        "flags": [],
-        "hasAgents": false,
-        "hasBashOrPowershell": false,
-        "hasCredentialRef": false,
-        "hasDynamicShell": false,
-        "hasExecutable": false,
-        "hasHiddenFiles": false,
-        "hasHooks": false,
-        "hasMcpOrLsp": false,
-        "hasNetworkRef": false,
-        "toolCount": 0
-      },
-      "skillName": "design-taste-frontend-v2-experimental",
-      "sourceId": "taste",
-      "sourceType": "git",
-      "warnings": []
-    },
-    {
-      "canonicalInvocation": "/full-output-enforcement",
-      "description": "Overrides default LLM truncation behavior. Enforces complete code generation, bans placeholder patterns, and handles token-limit splits cleanly. Apply to any task requiring exhaustive, unabridged output.",
-      "digest": "8b762528d90b6e18f70a8b2a2e8c1ff6116629270769936355593e0a94e63e62",
-      "frontmatter": {
-        "description": "Overrides default LLM truncation behavior. Enforces complete code generation, bans placeholder patterns, and handles token-limit splits cleanly. Apply to any task requiring exhaustive, unabridged output.",
-        "name": "full-output-enforcement"
-      },
-      "fullPagePath": "docs/skills/taste/full-output-enforcement.md",
-      "generated": true,
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT",
-        "matchesDeclaration": true,
-        "redistribution": "full"
-      },
-      "namespacedInvocations": [
-        "/full-output-enforcement"
-      ],
-      "pack": "taste",
-      "redistribution": "full",
-      "ref": "origin/HEAD",
-      "relativePath": "skills/output-skill/SKILL.md",
-      "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
-      "security": {
-        "flags": [],
-        "hasAgents": false,
-        "hasBashOrPowershell": false,
-        "hasCredentialRef": false,
-        "hasDynamicShell": false,
-        "hasExecutable": false,
-        "hasHiddenFiles": false,
-        "hasHooks": false,
-        "hasMcpOrLsp": false,
-        "hasNetworkRef": false,
-        "toolCount": 0
-      },
-      "skillName": "full-output-enforcement",
-      "sourceId": "taste",
-      "sourceType": "git",
-      "warnings": []
-    },
-    {
-      "canonicalInvocation": "/gpt-taste",
-      "description": "Elite UX/UI & Advanced GSAP Motion Engineer. Enforces Python-driven true randomization for layout variance, strict AIDA page structure, wide editorial typography (bans 6-line wraps), gapless bento grids, strict GSAP ScrollTriggers (pinning, stacking, scrubbing), inline micro-images, and massive section spacing.",
-      "digest": "d9d493cfd3f68c3f81136d73fc1f9630de4ea1a44f531387de76288ce8410813",
-      "frontmatter": {
-        "description": "Elite UX/UI & Advanced GSAP Motion Engineer. Enforces Python-driven true randomization for layout variance, strict AIDA page structure, wide editorial typography (bans 6-line wraps), gapless bento grids, strict GSAP ScrollTriggers (pinning, stacking, scrubbing), inline micro-images, and massive section spacing.",
-        "name": "gpt-taste"
-      },
-      "fullPagePath": "docs/skills/taste/gpt-taste.md",
-      "generated": true,
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT",
-        "matchesDeclaration": true,
-        "redistribution": "full"
-      },
-      "namespacedInvocations": [
-        "/gpt-taste"
-      ],
-      "pack": "taste",
-      "redistribution": "full",
-      "ref": "origin/HEAD",
-      "relativePath": "skills/gpt-tasteskill/SKILL.md",
-      "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
-      "security": {
-        "flags": [],
-        "hasAgents": false,
-        "hasBashOrPowershell": false,
-        "hasCredentialRef": false,
-        "hasDynamicShell": false,
-        "hasExecutable": false,
-        "hasHiddenFiles": false,
-        "hasHooks": false,
-        "hasMcpOrLsp": false,
-        "hasNetworkRef": false,
-        "toolCount": 0
-      },
-      "skillName": "gpt-taste",
-      "sourceId": "taste",
-      "sourceType": "git",
-      "warnings": []
-    },
-    {
-      "canonicalInvocation": "/high-end-visual-design",
-      "description": "Teaches the AI to design like a high-end agency. Defines the exact fonts, spacing, shadows, card structures, and animations that make a website feel expensive. Blocks all the common defaults that make AI designs look cheap or generic.",
-      "digest": "d1ec08dc59dff2675ff2f223b4d43177ef0d6431e7d5015eabda697cdb175f95",
-      "frontmatter": {
-        "description": "Teaches the AI to design like a high-end agency. Defines the exact fonts, spacing, shadows, card structures, and animations that make a website feel expensive. Blocks all the common defaults that make AI designs look cheap or generic.",
-        "name": "high-end-visual-design"
-      },
-      "fullPagePath": "docs/skills/taste/high-end-visual-design.md",
-      "generated": true,
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT",
-        "matchesDeclaration": true,
-        "redistribution": "full"
-      },
-      "namespacedInvocations": [
-        "/high-end-visual-design"
-      ],
-      "pack": "taste",
-      "redistribution": "full",
-      "ref": "origin/HEAD",
-      "relativePath": "skills/soft-skill/SKILL.md",
-      "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
-      "security": {
-        "flags": [],
-        "hasAgents": false,
-        "hasBashOrPowershell": false,
-        "hasCredentialRef": false,
-        "hasDynamicShell": false,
-        "hasExecutable": false,
-        "hasHiddenFiles": false,
-        "hasHooks": false,
-        "hasMcpOrLsp": false,
-        "hasNetworkRef": false,
-        "toolCount": 0
-      },
-      "skillName": "high-end-visual-design",
-      "sourceId": "taste",
-      "sourceType": "git",
-      "warnings": []
-    },
-    {
-      "canonicalInvocation": "/image-to-code",
-      "description": "Elite website image-to-code skill for Codex. For visually important web tasks, it must first generate the design image(s) itself, deeply analyze them, then implement the website to match them as closely as possible. In Codex, it must prefer large, readable, section-specific images instead of tiny compressed boards, generate fresh standalone images for sections or detail views instead of cropping old ones, avoid lazy under-generation, avoid cards-inside-cards-inside-cards UI, and keep the hero clean, spacious, readable, and visible on a small laptop.",
-      "digest": "2ff717a550fc0f0e04922cd5e999d1dd285d3433ad236cbf88723b68cb807454",
-      "frontmatter": {
-        "description": "Elite website image-to-code skill for Codex. For visually important web tasks, it must first generate the design image(s) itself, deeply analyze them, then implement the website to match them as closely as possible. In Codex, it must prefer large, readable, section-specific images instead of tiny compressed boards, generate fresh standalone images for sections or detail views instead of cropping old ones, avoid lazy under-generation, avoid cards-inside-cards-inside-cards UI, and keep the hero clean, spacious, readable, and visible on a small laptop.",
-        "name": "image-to-code"
-      },
-      "fullPagePath": "docs/skills/taste/image-to-code.md",
-      "generated": true,
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT",
-        "matchesDeclaration": true,
-        "redistribution": "full"
-      },
-      "namespacedInvocations": [
-        "/image-to-code"
-      ],
-      "pack": "taste",
-      "redistribution": "full",
-      "ref": "origin/HEAD",
-      "relativePath": "skills/image-to-code-skill/SKILL.md",
-      "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
-      "security": {
-        "flags": [],
-        "hasAgents": false,
-        "hasBashOrPowershell": false,
-        "hasCredentialRef": false,
-        "hasDynamicShell": false,
-        "hasExecutable": false,
-        "hasHiddenFiles": false,
-        "hasHooks": false,
-        "hasMcpOrLsp": false,
-        "hasNetworkRef": false,
-        "toolCount": 0
-      },
-      "skillName": "image-to-code",
-      "sourceId": "taste",
-      "sourceType": "git",
-      "warnings": []
-    },
-    {
-      "canonicalInvocation": "/imagegen-frontend-mobile",
-      "description": "Elite mobile app image-generation skill for creating premium, app-native screen concepts and flows. Designed for iOS, Android, and cross-platform mobile products. Prioritizes clean hierarchy, comfortably readable text, strong multi-screen consistency, controlled color palettes, non-generic creative direction, textured surfaces, image-led composition, tasteful custom iconography, and clean phone mockup framing. By default, screens should be shown inside a subtle premium iPhone or similar phone mockup with a visible frame, while the main focus stays on the app content itself. This skill generates images only. It does not write code.",
-      "digest": "c8e760b90269975a2f62c8b2d012834195106c553275d59d329d4fdf8f970d61",
-      "frontmatter": {
-        "description": "Elite mobile app image-generation skill for creating premium, app-native screen concepts and flows. Designed for iOS, Android, and cross-platform mobile products. Prioritizes clean hierarchy, comfortably readable text, strong multi-screen consistency, controlled color palettes, non-generic creative direction, textured surfaces, image-led composition, tasteful custom iconography, and clean phone mockup framing. By default, screens should be shown inside a subtle premium iPhone or similar phone mockup with a visible frame, while the main focus stays on the app content itself. This skill generates images only. It does not write code.",
-        "name": "imagegen-frontend-mobile"
-      },
-      "fullPagePath": "docs/skills/taste/imagegen-frontend-mobile.md",
-      "generated": true,
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT",
-        "matchesDeclaration": true,
-        "redistribution": "full"
-      },
-      "namespacedInvocations": [
-        "/imagegen-frontend-mobile"
-      ],
-      "pack": "taste",
-      "redistribution": "full",
-      "ref": "origin/HEAD",
-      "relativePath": "skills/imagegen-frontend-mobile/SKILL.md",
-      "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
-      "security": {
-        "flags": [],
-        "hasAgents": false,
-        "hasBashOrPowershell": false,
-        "hasCredentialRef": false,
-        "hasDynamicShell": false,
-        "hasExecutable": false,
-        "hasHiddenFiles": false,
-        "hasHooks": false,
-        "hasMcpOrLsp": false,
-        "hasNetworkRef": false,
-        "toolCount": 0
-      },
-      "skillName": "imagegen-frontend-mobile",
-      "sourceId": "taste",
-      "sourceType": "git",
-      "warnings": []
-    },
-    {
-      "canonicalInvocation": "/imagegen-frontend-web",
-      "description": "Elite frontend image-direction skill for generating premium, conversion-aware website design references. CRITICAL OUTPUT RULE — generate ONE separate horizontal image FOR EVERY section. A landing page with 8 sections produces 8 images. Never compress multiple sections into one image. Enforces composition variety (not always left-text / right-image), background-image freedom, varied CTAs, varied hero scales (giant / mid / mini minimalist), narrative concept spine, second-read moments, and a single consistent palette across all images. Optimized for landing pages, marketing sites, and product comps that developers or coding models can accurately recreate.",
-      "digest": "08db04d0f9dd6cd21f1ecb2e233bd63a9fd1b03032e733126e7ec0388bb945b6",
-      "frontmatter": {
-        "description": "Elite frontend image-direction skill for generating premium, conversion-aware website design references. CRITICAL OUTPUT RULE — generate ONE separate horizontal image FOR EVERY section. A landing page with 8 sections produces 8 images. Never compress multiple sections into one image. Enforces composition variety (not always left-text / right-image), background-image freedom, varied CTAs, varied hero scales (giant / mid / mini minimalist), narrative concept spine, second-read moments, and a single consistent palette across all images. Optimized for landing pages, marketing sites, and product comps that developers or coding models can accurately recreate.",
-        "name": "imagegen-frontend-web"
-      },
-      "fullPagePath": "docs/skills/taste/imagegen-frontend-web.md",
-      "generated": true,
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT",
-        "matchesDeclaration": true,
-        "redistribution": "full"
-      },
-      "namespacedInvocations": [
-        "/imagegen-frontend-web"
-      ],
-      "pack": "taste",
-      "redistribution": "full",
-      "ref": "origin/HEAD",
-      "relativePath": "skills/imagegen-frontend-web/SKILL.md",
-      "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
-      "security": {
-        "flags": [],
-        "hasAgents": false,
-        "hasBashOrPowershell": false,
-        "hasCredentialRef": false,
-        "hasDynamicShell": false,
-        "hasExecutable": false,
-        "hasHiddenFiles": false,
-        "hasHooks": false,
-        "hasMcpOrLsp": false,
-        "hasNetworkRef": false,
-        "toolCount": 0
-      },
-      "skillName": "imagegen-frontend-web",
-      "sourceId": "taste",
-      "sourceType": "git",
-      "warnings": []
-    },
-    {
-      "canonicalInvocation": "/industrial-brutalist-ui",
-      "description": "Raw mechanical interfaces fusing Swiss typographic print with military terminal aesthetics. Rigid grids, extreme type scale contrast, utilitarian color, analog degradation effects. For data-heavy dashboards, portfolios, or editorial sites that need to feel like declassified blueprints.",
-      "digest": "ffd95c3651267383f330d63baca790e9ddadabf301a78887a0d9af546c2d197b",
-      "frontmatter": {
-        "description": "Raw mechanical interfaces fusing Swiss typographic print with military terminal aesthetics. Rigid grids, extreme type scale contrast, utilitarian color, analog degradation effects. For data-heavy dashboards, portfolios, or editorial sites that need to feel like declassified blueprints.",
-        "name": "industrial-brutalist-ui"
-      },
-      "fullPagePath": "docs/skills/taste/industrial-brutalist-ui.md",
-      "generated": true,
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT",
-        "matchesDeclaration": true,
-        "redistribution": "full"
-      },
-      "namespacedInvocations": [
-        "/industrial-brutalist-ui"
-      ],
-      "pack": "taste",
-      "redistribution": "full",
-      "ref": "origin/HEAD",
-      "relativePath": "skills/brutalist-skill/SKILL.md",
-      "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
-      "security": {
-        "flags": [],
-        "hasAgents": false,
-        "hasBashOrPowershell": false,
-        "hasCredentialRef": false,
-        "hasDynamicShell": false,
-        "hasExecutable": false,
-        "hasHiddenFiles": false,
-        "hasHooks": false,
-        "hasMcpOrLsp": false,
-        "hasNetworkRef": false,
-        "toolCount": 0
-      },
-      "skillName": "industrial-brutalist-ui",
-      "sourceId": "taste",
-      "sourceType": "git",
-      "warnings": []
-    },
-    {
-      "canonicalInvocation": "/minimalist-ui",
-      "description": "Clean editorial-style interfaces. Warm monochrome palette, typographic contrast, flat bento grids, muted pastels. No gradients, no heavy shadows.",
-      "digest": "4ef81e1685f1436d95b1a2e6c3692c9abfa4bbb0b812624dd94d799ef862769b",
-      "frontmatter": {
-        "description": "Clean editorial-style interfaces. Warm monochrome palette, typographic contrast, flat bento grids, muted pastels. No gradients, no heavy shadows.",
-        "name": "minimalist-ui"
-      },
-      "fullPagePath": "docs/skills/taste/minimalist-ui.md",
-      "generated": true,
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT",
-        "matchesDeclaration": true,
-        "redistribution": "full"
-      },
-      "namespacedInvocations": [
-        "/minimalist-ui"
-      ],
-      "pack": "taste",
-      "redistribution": "full",
-      "ref": "origin/HEAD",
-      "relativePath": "skills/minimalist-skill/SKILL.md",
-      "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
-      "security": {
-        "flags": [],
-        "hasAgents": false,
-        "hasBashOrPowershell": false,
-        "hasCredentialRef": false,
-        "hasDynamicShell": false,
-        "hasExecutable": false,
-        "hasHiddenFiles": false,
-        "hasHooks": false,
-        "hasMcpOrLsp": false,
-        "hasNetworkRef": false,
-        "toolCount": 0
-      },
-      "skillName": "minimalist-ui",
-      "sourceId": "taste",
-      "sourceType": "git",
-      "warnings": []
-    },
-    {
-      "canonicalInvocation": "/redesign-existing-projects",
-      "description": "Upgrades existing websites and apps to premium quality. Audits current design, identifies generic AI patterns, and applies high-end design standards without breaking functionality. Works with any CSS framework or vanilla CSS.",
-      "digest": "1c9eb169a5d157088924b3008b329313dd1cd959f5e2cd763d3b13aa397dd411",
-      "frontmatter": {
-        "description": "Upgrades existing websites and apps to premium quality. Audits current design, identifies generic AI patterns, and applies high-end design standards without breaking functionality. Works with any CSS framework or vanilla CSS.",
-        "name": "redesign-existing-projects"
-      },
-      "fullPagePath": "docs/skills/taste/redesign-existing-projects.md",
-      "generated": true,
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT",
-        "matchesDeclaration": true,
-        "redistribution": "full"
-      },
-      "namespacedInvocations": [
-        "/redesign-existing-projects"
-      ],
-      "pack": "taste",
-      "redistribution": "full",
-      "ref": "origin/HEAD",
-      "relativePath": "skills/redesign-skill/SKILL.md",
-      "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
-      "security": {
-        "flags": [],
-        "hasAgents": false,
-        "hasBashOrPowershell": false,
-        "hasCredentialRef": false,
-        "hasDynamicShell": false,
-        "hasExecutable": false,
-        "hasHiddenFiles": false,
-        "hasHooks": false,
-        "hasMcpOrLsp": false,
-        "hasNetworkRef": false,
-        "toolCount": 0
-      },
-      "skillName": "redesign-existing-projects",
-      "sourceId": "taste",
-      "sourceType": "git",
-      "warnings": []
-    },
-    {
-      "canonicalInvocation": "/stitch-design-taste",
-      "description": "Semantic Design System Skill for Google Stitch. Generates agent-friendly DESIGN.md files that enforce premium, anti-generic UI standards — strict typography, calibrated color, asymmetric layouts, perpetual micro-motion, and hardware-accelerated performance.",
-      "digest": "424f89d439ac40580586fcd3311de378619cc0693ea90fa9f8c026fbdaf64ada",
-      "frontmatter": {
-        "description": "Semantic Design System Skill for Google Stitch. Generates agent-friendly DESIGN.md files that enforce premium, anti-generic UI standards — strict typography, calibrated color, asymmetric layouts, perpetual micro-motion, and hardware-accelerated performance.",
-        "name": "stitch-design-taste"
-      },
-      "fullPagePath": "docs/skills/taste/stitch-design-taste.md",
-      "generated": true,
-      "license": {
-        "declared": "MIT",
-        "detected": "MIT",
-        "matchesDeclaration": true,
-        "redistribution": "full"
-      },
-      "namespacedInvocations": [
-        "/stitch-design-taste"
-      ],
-      "pack": "taste",
-      "redistribution": "full",
-      "ref": "origin/HEAD",
-      "relativePath": "skills/stitch-skill/SKILL.md",
-      "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
-      "security": {
-        "flags": [],
-        "hasAgents": false,
-        "hasBashOrPowershell": false,
-        "hasCredentialRef": false,
-        "hasDynamicShell": false,
-        "hasExecutable": false,
-        "hasHiddenFiles": false,
-        "hasHooks": false,
-        "hasMcpOrLsp": false,
-        "hasNetworkRef": false,
-        "toolCount": 0
-      },
-      "skillName": "stitch-design-taste",
       "sourceId": "taste",
       "sourceType": "git",
       "warnings": []
@@ -8711,7 +8292,7 @@
       "redistribution": "metadata-only",
       "ref": "origin/HEAD",
       "repo": "https://github.com/anthropics/skills.git",
-      "resolvedRevision": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
+      "resolvedRevision": "ca45fc496a3436251f191354091d557da31c15b5",
       "runtimeOnly": false,
       "skillCount": 8,
       "type": "git"
@@ -8768,7 +8349,7 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/pbakaus/impeccable.git",
-      "resolvedRevision": "9304afa97f89b30609e4c538584fb3e0cd4df013",
+      "resolvedRevision": "2f97a85a4a87a80066a693bd3546b092bd300772",
       "runtimeOnly": false,
       "skillCount": 1,
       "type": "git"
@@ -8792,9 +8373,9 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/coreyhaines31/marketingskills.git",
-      "resolvedRevision": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "resolvedRevision": "88c79f6528a9347420e57ceb1fff9a60de651768",
       "runtimeOnly": false,
-      "skillCount": 50,
+      "skillCount": 53,
       "type": "git"
     },
     {
@@ -8832,9 +8413,9 @@
       "redistribution": "full",
       "ref": "origin/HEAD",
       "repo": "https://github.com/Leonxlnx/taste-skill.git",
-      "resolvedRevision": "f624f37a8c650b9cc550253104925efe4c8de246",
+      "resolvedRevision": "12af471f627f866411b4bd785b19646d3672784c",
       "runtimeOnly": false,
-      "skillCount": 14,
+      "skillCount": 1,
       "type": "git"
     },
     {
@@ -8851,9 +8432,9 @@
     }
   ],
   "totals": {
-    "redistributable": 144,
+    "redistributable": 134,
     "runtimeOnly": 3,
-    "skills": 154,
+    "skills": 144,
     "sources": 14,
     "warnings": 0
   }
