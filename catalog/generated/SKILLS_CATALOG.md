@@ -7,8 +7,8 @@ Generated index of every Claude Code skill, command, and runtime component repre
 Resolver version 1 · schema v1.
 
 - **Sources:** 14
-- **Skills / entries:** 154
-- **Redistributable (full body):** 144
+- **Skills / entries:** 144
+- **Redistributable (full body):** 138
 - **Runtime-only:** 3
 
 ## Agent-Reach (Panniantong/Agent-Reach)
@@ -23,18 +23,18 @@ repo: https://github.com/Panniantong/Agent-Reach.git · ref: `a19a171fa980a07858
 ## Anthropic skills (anthropics/skills)
 
 type: `git` · pack: `anthropic` · skills: 8 · redistribution: metadata-only
-repo: https://github.com/anthropics/skills.git · ref: `origin/HEAD` · revision: `dbd4588f9e10`
+repo: https://github.com/anthropics/skills.git · ref: `origin/HEAD` · revision: `2c5958ecac7c`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
 | [/doc-coauthoring](../../docs/skills/anthropic/doc-coauthoring.md) | Guide users through a structured workflow for co-authoring documentation. Use when user wants to write documentation, pr | metadata-only |
-| [/docx](../../docs/skills/anthropic/docx.md) | Use this skill whenever the user wants to create, read, edit, or manipulate Word documents (.docx files) or Word templat | metadata-only |
+| [/docx](../../docs/skills/anthropic/docx.md) | Use this skill whenever the user wants to create, read, edit, or manipulate Word documents (.docx files) or Word templat | full |
 | [/mcp-builder](../../docs/skills/anthropic/mcp-builder.md) | Guide for creating high-quality MCP (Model Context Protocol) servers that enable LLMs to interact with external services | full |
-| [/pdf](../../docs/skills/anthropic/pdf.md) | Use this skill whenever the user wants to do anything with PDF files. This includes reading or extracting text/tables fr | metadata-only |
-| [/pptx](../../docs/skills/anthropic/pptx.md) | Use this skill any time a .pptx or .potx file is involved in any way — as input, output, or both. This includes: creatin | metadata-only |
+| [/pdf](../../docs/skills/anthropic/pdf.md) | Use this skill whenever the user wants to do anything with PDF files. This includes reading or extracting text/tables fr | full |
+| [/pptx](../../docs/skills/anthropic/pptx.md) | Use this skill any time a .pptx or .potx file is involved in any way — as input, output, or both. This includes: creatin | full |
 | [/skill-creator](../../docs/skills/anthropic/skill-creator.md) | Create new skills, modify and improve existing skills, and measure skill performance. Use when users want to create a sk | full |
 | [/web-artifacts-builder](../../docs/skills/anthropic/web-artifacts-builder.md) | Suite of tools for creating elaborate, multi-component claude.ai HTML artifacts using modern frontend web technologies ( | full |
-| [/xlsx](../../docs/skills/anthropic/xlsx.md) | Use this skill any time a spreadsheet file is the primary input or output. This means any task where the user wants to:  | metadata-only |
+| [/xlsx](../../docs/skills/anthropic/xlsx.md) | Use this skill any time a spreadsheet file is the primary input or output. This means any task where the user wants to:  | full |
 
 ## BRAG Full Runtime (latent-spaces/brag)
 
@@ -129,11 +129,11 @@ repo: https://github.com/garrytan/gstack.git · ref: `4015c2870b064644131ed6f7cf
 ## Impeccable (pbakaus/impeccable)
 
 type: `git` · pack: `impeccable` · skills: 1 · redistribution: full
-repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `9304afa97f89`
+repo: https://github.com/pbakaus/impeccable.git · ref: `origin/HEAD` · revision: `c1e0e5492fbb`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
-| [/impeccable](../../docs/skills/impeccable/impeccable.md) | Use when the user wants to design, redesign, shape, critique, audit, polish, simplify, harden, animate, or otherwise imp | full |
+| [/impeccable](../../docs/skills/impeccable/impeccable.md) | Use to design, redesign, critique, audit, polish or animate a frontend: websites, landing pages, dashboards, app UI, com | full |
 
 ## Karpathy guidelines (multica-ai/andrej-karpathy-skills)
 
@@ -146,61 +146,64 @@ repo: https://github.com/multica-ai/andrej-karpathy-skills.git · ref: `origin/H
 
 ## Marketing skills (coreyhaines31/marketingskills)
 
-type: `git` · pack: `marketing` · skills: 50 · redistribution: full
-repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `365b412152b9`
+type: `git` · pack: `marketing` · skills: 53 · redistribution: full
+repo: https://github.com/coreyhaines31/marketingskills.git · ref: `origin/HEAD` · revision: `3e729622e3de`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
-| [/ab-testing](../../docs/skills/marketing/ab-testing.md) | When the user wants to plan, design, or implement an A/B test or experiment, or build a growth experimentation program.  | full |
-| [/ad-creative](../../docs/skills/marketing/ad-creative.md) | When the user wants to generate, iterate, or scale ad creative — headlines, descriptions, primary text, or full ad varia | full |
-| [/ads](../../docs/skills/marketing/ads.md) | When the user wants help with paid advertising campaigns on Google Ads, Meta (Facebook/Instagram), LinkedIn, Twitter/X,  | full |
-| [/ai-seo](../../docs/skills/marketing/ai-seo.md) | When the user wants to optimize content for AI search engines, get cited by LLMs, or appear in AI-generated answers. Als | full |
-| [/analytics](../../docs/skills/marketing/analytics.md) | When the user wants to set up, improve, or audit analytics tracking and measurement. Also use when the user mentions "se | full |
-| [/aso](../../docs/skills/marketing/aso.md) | When the user wants to audit or optimize an App Store or Google Play listing. Also use when the user mentions 'ASO audit | full |
-| [/attribution](../../docs/skills/marketing/attribution.md) | When the user wants to figure out which marketing actually drives conversions and revenue, choose or interpret an attrib | full |
-| [/churn-prevention](../../docs/skills/marketing/churn-prevention.md) | When the user wants to reduce churn, build cancellation flows, set up save offers, recover failed payments, or implement | full |
-| [/co-marketing](../../docs/skills/marketing/co-marketing.md) | When the user wants to find co-marketing partners, plan joint campaigns, or brainstorm partnership opportunities. Use wh | full |
-| [/cold-email](../../docs/skills/marketing/cold-email.md) | Write and run B2B cold outbound that gets replies, from cold emails and follow-ups to sending setup, LinkedIn, multichan | full |
-| [/community-marketing](../../docs/skills/marketing/community-marketing.md) | Build and leverage online communities to drive product growth and brand loyalty. Use when the user wants to create a com | full |
-| [/competitor-profiling](../../docs/skills/marketing/competitor-profiling.md) | When the user wants to research, profile, or analyze competitors from their URLs. Also use when the user mentions 'compe | full |
-| [/competitors](../../docs/skills/marketing/competitors.md) | When the user wants to create competitor comparison or alternative pages for SEO and buyer-facing use. Also use when the | full |
-| [/content-strategy](../../docs/skills/marketing/content-strategy.md) | When the user wants to plan a content strategy, decide what content to create, or figure out what topics to cover. Also  | full |
-| [/copy-editing](../../docs/skills/marketing/copy-editing.md) | When the user wants to edit, review, or improve existing marketing copy, or refresh outdated content. Also use when the  | full |
-| [/copywriting](../../docs/skills/marketing/copywriting.md) | When the user wants to write, rewrite, or improve marketing copy for any page, including homepage, landing pages, pricin | full |
-| [/cro](../../docs/skills/marketing/cro.md) | When the user wants to optimize, improve, or increase conversions on any marketing page or form — including homepage, la | full |
-| [/customer-research](../../docs/skills/marketing/customer-research.md) | When the user wants to conduct, analyze, or synthesize customer research. Use when the user mentions "customer research, | full |
-| [/directory-submissions](../../docs/skills/marketing/directory-submissions.md) | When the user wants to submit their product to startup, SaaS, AI, agent, MCP, no-code, or review directories for backlin | full |
-| [/emails](../../docs/skills/marketing/emails.md) | When the user wants to create or optimize an email sequence, drip campaign, automated email flow, or lifecycle email pro | full |
-| [/events](../../docs/skills/marketing/events.md) | When the user wants to plan, run, sponsor, speak at, or get pipeline from events — webinars, conferences, trade shows, m | full |
-| [/free-tools](../../docs/skills/marketing/free-tools.md) | When the user wants to plan, evaluate, or build a free tool for marketing purposes — lead generation, SEO value, or bran | full |
-| [/image](../../docs/skills/marketing/image.md) | When the user wants to create, generate, edit, or optimize images for marketing — blog heroes, social graphics, product  | full |
-| [/influencer-marketing](../../docs/skills/marketing/influencer-marketing.md) | When the user wants to run influencer, creator, or ambassador partnerships to promote their product — finding and vettin | full |
-| [/launch](../../docs/skills/marketing/launch.md) | When the user wants to plan a product launch, feature announcement, or release strategy. Also use when the user mentions | full |
-| [/lead-magnets](../../docs/skills/marketing/lead-magnets.md) | When the user wants to create, plan, or optimize a lead magnet for email capture or lead generation. Also use when the u | full |
-| [/marketing-council](../../docs/skills/marketing/marketing-council.md) | When the user wants multiple expert perspectives on a marketing question — a simulated board of advisors staffed by lege | full |
-| [/marketing-ideas](../../docs/skills/marketing/marketing-ideas.md) | When the user needs marketing ideas, inspiration, or strategies for their SaaS or software product. Also use when the us | full |
-| [/marketing-loops](../../docs/skills/marketing/marketing-loops.md) | When the user wants to set up a recurring, self-running marketing workflow — a repeatable loop an AI agent runs on a cad | full |
-| [/marketing-plan](../../docs/skills/marketing/marketing-plan.md) | When the user needs a comprehensive marketing plan for a client, a company they advise, or their own product. Also use w | full |
-| [/marketing-psychology](../../docs/skills/marketing/marketing-psychology.md) | When the user wants to apply psychological principles, mental models, or behavioral science to marketing. Also use when  | full |
-| [/offers](../../docs/skills/marketing/offers.md) | When the user wants to design, construct, or improve an offer — the thing they actually sell — including value framing,  | full |
-| [/onboarding](../../docs/skills/marketing/onboarding.md) | When the user wants to optimize post-signup onboarding, user activation, first-run experience, or time-to-value. Also us | full |
-| [/paywalls](../../docs/skills/marketing/paywalls.md) | When the user wants to create or optimize in-app paywalls, upgrade screens, upsell modals, or feature gates. Also use wh | full |
-| [/popups](../../docs/skills/marketing/popups.md) | When the user wants to create or optimize popups, modals, overlays, slide-ins, or banners for conversion purposes. Also  | full |
-| [/pricing](../../docs/skills/marketing/pricing.md) | When the user wants help with pricing decisions, packaging, or monetization strategy. Also use when the user mentions 'p | full |
-| [/product-marketing](../../docs/skills/marketing/product-marketing.md) | When the user wants to create or update their product marketing context document. Also use when the user mentions 'produ | full |
-| [/programmatic-seo](../../docs/skills/marketing/programmatic-seo.md) | When the user wants to create SEO-driven pages at scale using templates and data. Also use when the user mentions "progr | full |
-| [/prospecting](../../docs/skills/marketing/prospecting.md) | When the user wants to find, qualify, and build a list of prospects to reach out to, across B2B SaaS, general B2B, or lo | full |
-| [/public-relations](../../docs/skills/marketing/public-relations.md) | When the user wants help with public relations, earned media, press coverage, journalist outreach, or media strategy (no | full |
-| [/referrals](../../docs/skills/marketing/referrals.md) | When the user wants to create, optimize, or analyze a referral program, affiliate program, or word-of-mouth strategy. Al | full |
-| [/revops](../../docs/skills/marketing/revops.md) | When the user wants help with revenue operations, lead lifecycle management, or marketing-to-sales handoff processes. Al | full |
-| [/sales-enablement](../../docs/skills/marketing/sales-enablement.md) | When the user wants to create sales collateral, pitch decks, one-pagers, objection handling docs, or demo scripts. Also  | full |
-| [/schema](../../docs/skills/marketing/schema.md) | When the user wants to add, fix, or optimize schema markup and structured data on their site. Also use when the user men | full |
-| [/seo-audit](../../docs/skills/marketing/seo-audit.md) | When the user wants to audit, review, or diagnose SEO issues on their site. Also use when the user mentions "SEO audit," | full |
-| [/signup](../../docs/skills/marketing/signup.md) | When the user wants to optimize signup, registration, account creation, or trial activation flows. Also use when the use | full |
-| [/site-architecture](../../docs/skills/marketing/site-architecture.md) | When the user wants to plan, map, or restructure their website's page hierarchy, navigation, URL structure, or internal  | full |
-| [/sms](../../docs/skills/marketing/sms.md) | When the user wants to plan, build, or optimize SMS, MMS, or WhatsApp marketing — including welcome flows, abandoned car | full |
-| [/social](../../docs/skills/marketing/social.md) | When the user wants help creating, scheduling, or optimizing social media content for LinkedIn, Twitter/X, Instagram, Ti | full |
-| [/video](../../docs/skills/marketing/video.md) | When the user wants to create, generate, or produce video content using AI tools or programmatic frameworks. Also use wh | full |
+| [/ab-testing](../../docs/skills/marketing/ab-testing.md) | When the user wants to plan, run, or read A/B tests, or asks a judgement call on one: is the result real, can we stop, w | full |
+| [/ad-creative](../../docs/skills/marketing/ad-creative.md) | When the user wants to write or judge ad creative, or asks which ad, hook, or angle to run or kill: headlines, primary t | full |
+| [/ads](../../docs/skills/marketing/ads.md) | When the user wants to plan, run, or fix paid ads on Google, Meta, and LinkedIn, or asks a judgement call on them: are a | full |
+| [/ai-seo](../../docs/skills/marketing/ai-seo.md) | When the user wants to get cited and recommended in AI answers (ChatGPT, Perplexity, AI Overviews), or asks why AI cites | full |
+| [/analytics](../../docs/skills/marketing/analytics.md) | When the user wants to set up or audit analytics, or asks whether a metric or number is calculated right, what to track, | full |
+| [/aso](../../docs/skills/marketing/aso.md) | When the user wants to audit or optimize an App Store or Google Play listing, or asks which title, keywords, or screensh | full |
+| [/attribution](../../docs/skills/marketing/attribution.md) | When the user wants to work out which marketing drives revenue, or asks whether a channel is really working, which numbe | full |
+| [/churn-prevention](../../docs/skills/marketing/churn-prevention.md) | When the user wants to reduce churn, or asks why customers cancel, whether to offer a discount or pause: cancellation fl | full |
+| [/co-marketing](../../docs/skills/marketing/co-marketing.md) | When the user wants co-marketing partners or joint campaigns, or asks whether a partner fits, a size mismatch matters, o | full |
+| [/cold-email](../../docs/skills/marketing/cold-email.md) | When the user wants to write or run B2B cold outbound, or asks whether an opener, reason to reach out, or email works or | full |
+| [/community-marketing](../../docs/skills/marketing/community-marketing.md) | When the user wants to build or grow an online community, or asks whether a community is worth it, where to host it, or  | full |
+| [/competitor-profiling](../../docs/skills/marketing/competitor-profiling.md) | When the user wants to research competitors into dated profiles, or asks what a rival charges, claims, or is doing, or w | full |
+| [/competitors](../../docs/skills/marketing/competitors.md) | When the user wants to create or audit comparison and alternative pages ('X vs Y', 'X alternative', 'best X alternatives | full |
+| [/content-strategy](../../docs/skills/marketing/content-strategy.md) | When the user wants to plan content, or asks which topic or piece to prioritize, what to write about, or why posts bring | full |
+| [/conversion-tracking](../../docs/skills/marketing/conversion-tracking.md) | When the user wants to set up, audit, or fix conversion tracking to Google Ads, Meta, GA4, LinkedIn, and TikTok, or asks | full |
+| [/copy-editing](../../docs/skills/marketing/copy-editing.md) | When the user wants to edit, tighten, proofread, or refresh existing copy, or asks whether to keep, cut, or change a lin | full |
+| [/copywriting](../../docs/skills/marketing/copywriting.md) | When the user wants to write or rewrite page copy (homepage, landing, pricing, feature), or asks which headline, promise | full |
+| [/cro](../../docs/skills/marketing/cro.md) | When the user wants more conversions from a page or form, or asks why a page isn't converting, what to change first, or  | full |
+| [/customer-research](../../docs/skills/marketing/customer-research.md) | When the user wants to run or synthesize customer research, or asks what customer quotes, reviews, or feedback really me | full |
+| [/directory-submissions](../../docs/skills/marketing/directory-submissions.md) | When the user wants to list a product in startup, SaaS, AI, MCP, and review directories, or asks which directories are w | full |
+| [/emails](../../docs/skills/marketing/emails.md) | When the user wants to create or improve automated email sequences, or asks what to send, when, or whether an email or f | full |
+| [/events](../../docs/skills/marketing/events.md) | When the user wants to plan, run, sponsor, or speak at events, or asks whether an event or booth is worth the money: web | full |
+| [/free-tools](../../docs/skills/marketing/free-tools.md) | When the user wants to plan or build a free tool as marketing, or asks whether a tool idea is worth building or which on | full |
+| [/image](../../docs/skills/marketing/image.md) | When the user wants to create, generate, edit, or optimize marketing images, or asks which approach to take (generate, d | full |
+| [/influencer-marketing](../../docs/skills/marketing/influencer-marketing.md) | When the user wants creator, influencer, or ambassador partnerships, or asks which creators fit, what to pay, which righ | full |
+| [/launch](../../docs/skills/marketing/launch.md) | When the user wants to plan a product or feature launch, or asks whether it's ready, when to announce, or how to get not | full |
+| [/lead-magnets](../../docs/skills/marketing/lead-magnets.md) | When the user wants to plan or improve a lead magnet, or asks what to give away for emails or how much to ask in return  | full |
+| [/link-building](../../docs/skills/marketing/link-building.md) | When the user wants backlinks and mentions that lift rankings and AI citations, or asks how to get sites to link or whet | full |
+| [/marketing-council](../../docs/skills/marketing/marketing-council.md) | When the user wants several expert takes on a marketing decision, or asks what a famous marketer would say about it: a s | full |
+| [/marketing-ideas](../../docs/skills/marketing/marketing-ideas.md) | When the user wants marketing ideas or growth tactics for a software product, or asks what to try to get attention or th | full |
+| [/marketing-loops](../../docs/skills/marketing/marketing-loops.md) | When the user wants a recurring marketing job an AI agent runs on a cadence or trigger, or asks what a weekly or daily a | full |
+| [/marketing-plan](../../docs/skills/marketing/marketing-plan.md) | When the user wants a full marketing or go-to-market plan for a client, an advised company, or their own product, or ask | full |
+| [/marketing-psychology](../../docs/skills/marketing/marketing-psychology.md) | When the user wants to apply psychology to marketing, or asks why buyers behave or value things as they do, or whether a | full |
+| [/offers](../../docs/skills/marketing/offers.md) | When the user wants to design or improve the offer itself, or asks why it isn't selling or how to add urgency honestly:  | full |
+| [/onboarding](../../docs/skills/marketing/onboarding.md) | When the user wants better onboarding and activation, or asks why new users don't stick or what the first session should | full |
+| [/paywalls](../../docs/skills/marketing/paywalls.md) | When the user wants to create or improve in-app paywalls and upgrade moments, or asks when or how hard to ask free users | full |
+| [/popups](../../docs/skills/marketing/popups.md) | When the user wants to create or improve popups, modals, slide-ins, sticky bars, and banners, or asks whether one will h | full |
+| [/pricing](../../docs/skills/marketing/pricing.md) | When the user wants to set pricing and packaging, or asks what to charge, whether to raise prices, or how to move existi | full |
+| [/product-marketing](../../docs/skills/marketing/product-marketing.md) | When the user wants to create or update the product marketing context doc (.agents/product-marketing.md), or asks what b | full |
+| [/programmatic-seo](../../docs/skills/marketing/programmatic-seo.md) | When the user wants SEO pages at scale from templates and data, or asks whether a page set will rank or look thin: locat | full |
+| [/prospecting](../../docs/skills/marketing/prospecting.md) | When the user wants to find and qualify prospects for outbound, or asks who to target first, which signal to prioritize, | full |
+| [/public-relations](../../docs/skills/marketing/public-relations.md) | When the user wants press and media coverage, or asks what to say to a reporter, whether a story is newsworthy, or how t | full |
+| [/referrals](../../docs/skills/marketing/referrals.md) | When the user wants referral and affiliate programs or word of mouth, or asks what to reward, how much to pay, or which  | full |
+| [/reverse-engineer-marketing](../../docs/skills/marketing/reverse-engineer-marketing.md) | When the user wants to know how another company grew and what to copy, or asks what a competitor did and when: a dated l | full |
+| [/revops](../../docs/skills/marketing/revops.md) | When the user wants to design revenue operations, or asks when a lead is ready for sales or why sales and marketing disa | full |
+| [/sales-enablement](../../docs/skills/marketing/sales-enablement.md) | When the user wants sales collateral, or asks what to give a champion or rep, or how to answer an objection or make the  | full |
+| [/schema](../../docs/skills/marketing/schema.md) | When the user wants to add, fix, or validate schema markup (JSON-LD), or asks which type fits a page or whether some mar | full |
+| [/seo-audit](../../docs/skills/marketing/seo-audit.md) | When the user wants to audit or diagnose SEO, or asks why traffic dropped, a page won't rank, or whether a setup like ca | full |
+| [/signup](../../docs/skills/marketing/signup.md) | When the user wants better signup, registration, and trial start flows, or asks which fields or steps to cut or whether  | full |
+| [/site-architecture](../../docs/skills/marketing/site-architecture.md) | When the user wants to plan or restructure a website, or asks which pages they need or where something belongs: hierarch | full |
+| [/sms](../../docs/skills/marketing/sms.md) | When the user wants SMS, MMS, or WhatsApp marketing, or asks whether texting is worth it or a message is allowed: abando | full |
+| [/social](../../docs/skills/marketing/social.md) | When the user wants organic social content for LinkedIn, X, Instagram, TikTok, or Facebook, or asks what to post, which  | full |
+| [/video](../../docs/skills/marketing/video.md) | When the user wants to create video with AI tools or code, or asks which approach to use (screen recording, AI avatar, g | full |
 
 ## Claude Code plugin marketplaces
 
@@ -241,25 +244,12 @@ _Runtime-only — see notes below._
 
 ## Taste skills (Leonxlnx/taste-skill)
 
-type: `git` · pack: `taste` · skills: 14 · redistribution: full
-repo: https://github.com/Leonxlnx/taste-skill.git · ref: `origin/HEAD` · revision: `f624f37a8c65`
+type: `git` · pack: `taste` · skills: 1 · redistribution: full
+repo: https://github.com/Leonxlnx/taste-skill.git · ref: `origin/HEAD` · revision: `f6b76575f949`
 
 | invocation | description | redistribution |
 | --- | --- | --- |
-| [/brandkit](../../docs/skills/taste/brandkit.md) | Premium brand-kit image generation skill for creating high-end brand-guidelines boards, logo systems, identity decks, an | full |
-| [/design-taste-frontend](../../docs/skills/taste/design-taste-frontend.md) | tasteskill v2, the anti-slop frontend skill. Art direction for websites, distilled from a study of 247 curated gallery s | full |
-| [/design-taste-frontend-v1](../../docs/skills/taste/design-taste-frontend-v1.md) | The original v1 taste-skill, preserved for projects depending on its exact behavior. The current default is `design-tast | full |
-| [/design-taste-frontend-v2-experimental](../../docs/skills/taste/design-taste-frontend-v2-experimental.md) | Old v2 (experimental) of taste-skill, the single-file dial-driven version, preserved for projects depending on its exact | full |
-| [/full-output-enforcement](../../docs/skills/taste/full-output-enforcement.md) | Overrides default LLM truncation behavior. Enforces complete code generation, bans placeholder patterns, and handles tok | full |
-| [/gpt-taste](../../docs/skills/taste/gpt-taste.md) | Elite UX/UI & Advanced GSAP Motion Engineer. Enforces Python-driven true randomization for layout variance, strict AIDA  | full |
-| [/high-end-visual-design](../../docs/skills/taste/high-end-visual-design.md) | Teaches the AI to design like a high-end agency. Defines the exact fonts, spacing, shadows, card structures, and animati | full |
-| [/image-to-code](../../docs/skills/taste/image-to-code.md) | Elite website image-to-code skill for Codex. For visually important web tasks, it must first generate the design image(s | full |
-| [/imagegen-frontend-mobile](../../docs/skills/taste/imagegen-frontend-mobile.md) | Elite mobile app image-generation skill for creating premium, app-native screen concepts and flows. Designed for iOS, An | full |
-| [/imagegen-frontend-web](../../docs/skills/taste/imagegen-frontend-web.md) | Elite frontend image-direction skill for generating premium, conversion-aware website design references. CRITICAL OUTPUT | full |
-| [/industrial-brutalist-ui](../../docs/skills/taste/industrial-brutalist-ui.md) | Raw mechanical interfaces fusing Swiss typographic print with military terminal aesthetics. Rigid grids, extreme type sc | full |
-| [/minimalist-ui](../../docs/skills/taste/minimalist-ui.md) | Clean editorial-style interfaces. Warm monochrome palette, typographic contrast, flat bento grids, muted pastels. No gra | full |
-| [/redesign-existing-projects](../../docs/skills/taste/redesign-existing-projects.md) | Upgrades existing websites and apps to premium quality. Audits current design, identifies generic AI patterns, and appli | full |
-| [/stitch-design-taste](../../docs/skills/taste/stitch-design-taste.md) | Semantic Design System Skill for Google Stitch. Generates agent-friendly DESIGN.md files that enforce premium, anti-gene | full |
+| [/design-taste-frontend](../../docs/skills/taste/design-taste-frontend.md) | tasteskill 2.5.1, the anti-slop frontend skill. Builds professional company websites at the level of figma.com and x.ai: | full |
 
 ## UI/UX Pro Max (nextlevelbuilder/ui-ux-pro-max-skill)
 
